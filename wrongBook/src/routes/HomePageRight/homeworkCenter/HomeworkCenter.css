@@ -1,0 +1,28 @@
+:global(.operateLink){
+    cursor: pointer;
+    color: #03A9F4;
+}
+.homeworkTitle{
+    height: 35px;
+    text-align: left;
+}
+.homework{
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    background: #1daef8;
+    color: #fff;
+    text-align: center;
+    float: right;
+    cursor: pointer;
+}
+.ptitle{
+    font-weight: 500;
+    font-size: 16px;
+    display: inline-block;
+    color: #fff;
+    background: #1bb6fb;
+    padding: 10px 15px;
+    border-radius: 5px;
+}

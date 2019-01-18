@@ -1,0 +1,12 @@
+html, body, :global(#root) {
+	height: 100%;
+	background-color: #F4F5F5;
+	padding: 0px;
+	margin: 0px;
+}
+:global(.homePageContaier) {
+	min-width: 1350px;
+}
+:global(.HomePageFooter) {
+	min-width: 1200px;
+}

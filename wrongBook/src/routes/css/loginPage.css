@@ -1,0 +1,52 @@
+:global(.backTop){
+    position: relative;
+    text-align: center;
+    color: #fff;
+    height: 180px;
+    /* width:100%; */
+    /* background-size: cover; */
+    background: url('../images/ct-ic-bg-n.png') no-repeat ;
+}
+:global(.backTop p){
+    position: absolute;
+    width: 100%;
+}
+:global(.loginTopClass){
+    width: 100%;
+}
+:global(.loginTopContO){
+    font-weight: bold;
+    font-size: 24px;
+    top: 50px;
+}
+:global(.loginTopContT){
+    text-align: center;
+    font-size: 18px;
+    top: 100px;
+}
+:global(.wrap .login-form){
+    max-width: 300px;
+    margin: 100px auto 0 auto;
+}
+:global(.wrap .login-form-forgot) {
+    float: right;
+}
+:global(.wrap .ant-input) {
+    height: 45px;
+    line-height: 45px;
+}
+:global(.wrap .ant-row) {
+    margin-bottom: 10px;
+}
+:global(.wrap .login-form-button) {
+    width: 100%;
+    height: 45px;
+    line-height: 45px;
+    margin-top: 10px;
+}
+:global(.viFooter){
+    color: #e0e0e0;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+}

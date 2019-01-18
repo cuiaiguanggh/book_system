@@ -1,0 +1,272 @@
+:global(.homeworkDetailsLeft){
+    width: 200px;
+    display: inline-block;
+    float: left;
+    height: 780px;
+    position: relative;
+    background: #fff;
+    margin-right: 20px;
+    box-shadow: 0 1px 3px rgba(26,26,26,.1);
+}
+    
+.HomePageCent{
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px 0px;
+    height: calc(100% - 120px);
+}
+:global(.homeworkDetailsLeft ul){
+    height: calc(100% - 50px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+:global(.homeworkDetailsLeft ul li){
+    padding-left:42px !important;
+}
+:global(.homeworkDetailsLeft ul li:hover){
+    background:#fafafa;
+}
+:global(.homeworkDetailsLeft ul li.ant-menu-item-selected){
+    background-color:#fafafa !important;
+}
+:global(.homeworkDetailsCont){
+    background: #fff;
+    padding: 20px;
+    position: relative;
+}
+:global(.piePie .antd-pro-charts--pie-total){
+    left: 45% !important;
+}
+:global(.scoredetailLayout .pieChart .pie-sub-title) {
+    font-size: 16px;
+}
+:global(.pieWidth .antd-pro-charts--pie-legend){
+    margin-left: -70px;
+}
+:global(.pieMarginLeft .antd-pro-charts--pie-legend li){
+    width: 60px;
+}
+:global(.pieMarginLeft .antd-pro-charts--pie-legend){
+    width: 320px;
+    margin-left: -145px;
+}
+:global(.homeworkDetailsCont .pieChart .antd-pro-charts--pie-legendTitle) {
+    padding-left: 15px;
+}
+:global(.homeworkDetailsCont .pieChart .antd-pro-charts--pie-dot){
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    top: 5px;
+    display: block;
+}
+:global(.pieChartRig){
+    padding-right: 10%;
+}
+:global(.bordRight){
+    border-right: 1px solid #eee;
+}
+:global(.pieChartRig .antd-pro-charts--pie-total){
+    position: absolute;
+    left: 40%;
+    top: 48% !important;
+    text-align: center;
+    height: 25px;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+:global(.pieChartRig .antd-pro-charts--pie-dot){
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    top: 5px;
+    display: inline-block;;
+}
+:global(.pieChartRig .pie-sub-title) {
+    font-size: 16px;
+}
+:global(.pieChartRig .antd-pro-charts--pie-pie) {
+    text-align: center;
+}
+:global(.pieChartRig .antd-pro-charts--pie-legend) {
+    display: inline-block;
+    position: absolute;
+    top: 20%;
+    left: 65%;
+    padding: 0;
+    text-align: left;
+}
+:global(.pieChartRig .antd-pro-charts--pie-legend li){
+    cursor: context-menu;
+    list-style-type: none;
+}
+:global(.pieChartRig .antd-pro-charts--pie-legendTitle){
+    padding-left: 5px;
+}
+:global(.pieChartRig .ant-divider-vertical) {
+    display: none;
+}
+:global(.pieChartRig .antd-pro-charts--pie-percent) {
+    display: none;
+}
+:global(.pieChartRig .antd-pro-charts--pie-value) {
+    display: none;
+}
+:global(.barChart){
+    width: 250px;;
+}
+:global(#starBg){
+    width: 80px;
+    height: 15px;
+    display: inline-block;
+    position: relative;
+    background:url("../../images/t-gx-xin-n-2.png") no-repeat;
+}
+:global(#starOver){
+    height:15px;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    background:url("../../images/t-gx-xin-2-n-2.png") no-repeat;
+}
+:global(.homeworkOperate){
+    color: #03A9F4;
+    cursor: pointer;
+}
+:global(.noData){
+    position: absolute;
+    top: 50%;
+    left: 90px;
+    z-index: 0;
+}
+:global(.hasData){
+    display: none;
+}
+
+
+.ptitle{
+    font-size: 16px;
+    color: #333333;
+}
+.backScoreDetails{
+    display: block;
+    cursor: pointer;
+    height: 50px;
+    line-height: 50px;
+    padding-left: 40px;
+    border-bottom: 1px solid #e7e7e7;
+}
+.transparent{
+    height: 20px;
+    margin: 0;
+    background: #f4f5f5;
+}
+.detailP{
+    font-size: 12px;
+    color: #999999;
+}
+.titleP{
+    margin-bottom: 20px;
+    margin-top: 70px;
+    font-size: 16px;
+    display: inline-block;
+    color: #fff;
+    background: #1bb6fb;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+.scoreRank{
+    text-align: left;
+}
+.scoreRank span{
+    float: right;
+}
+.mainChart{
+    width: 100%;
+    height: 400px;
+}
+:global(.iframeCont){
+    height: 700px;
+}
+/* 定义滚动条 */
+body::-webkit-scrollbar{
+	width: 10px;
+    height: 16px;
+    background-color: rgba(0,0,0,0.2);
+}
+body::-webkit-scrollbar{
+	width: 8px;
+    height: 11px;
+    background-color: rgba(0,0,0,0.2);
+}
+body::-webkit-scrollbar:hover{
+    background-color: rgb(0,0,0);
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+body::-webkit-scrollbar-track{
+    border-radius: 0;
+    background-color: #e8e8e8;
+}
+
+/*定义滑块 内阴影+圆角*/
+body::-webkit-scrollbar-thumb{
+    border-radius: 8px;
+    background-color: rgba(0,0,0,0.2);
+}
+:global(.scoredetail tr:hover .v5){
+    background: #ff6661;
+}
+:global(.scoredetail tr:hover .v4){
+    background: #ffcd61;
+}
+:global(.scoredetail tr:hover .v3){
+    background: #5cc0ff;
+}
+:global(.scoredetail tr:hover .v2){
+    background: #74d64b;
+}
+:global(.scoredetail tr:hover .v1){
+    background: #2fbd68;
+}
+:global(.scoredetail tr .v5){
+    background: #ff6661;
+}
+:global(.scoredetail tr .v4){
+    background: #ffcd61;
+}
+:global(.scoredetail tr .v3){
+    background: #5cc0ff;
+}
+:global(.scoredetail tr .v2){
+    background: #74d64b;
+}
+:global(.scoredetail tr .v1){
+    background: #2fbd68;
+}
+.iframe{
+    border:0;
+    height:780px;
+    width:calc(100% - 220px)
+}
+.divSpin{
+    position: fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+}
+.spinInner{
+    position: absolute;
+    top:30%;
+    width:100px;
+    height:100px;
+    background: #000000;
+    border-radius: 5px;
+    margin:0 auto;
+    left:0;
+    right:0;
+    text-align: center;
+    line-height: 136px;
+    opacity: 0.8;
+}
