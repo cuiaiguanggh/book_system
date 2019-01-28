@@ -5,6 +5,9 @@ import {
 	updateClass,
 	deleteClass,
 	addClass,
+	queryHomeworkList,
+	getClassList,
+	getYears,
 } from '../services/classHomeService';
 import {
 	pageRelevantSchool
@@ -18,6 +21,7 @@ export default {
   
 	state: {
 		classList: [],
+		classList1:[],
 		classNews:[],
 		className:'',
 		classAdmin:'',
@@ -26,10 +30,15 @@ export default {
 		classInfoPayload:[],
 		schoolList:[],
 		schoolId:'',
+		workList:[],
+		yearList:[],
 	},
 	reducers: {
 		classList(state, {payload}) {
 			return { ...state, classList:payload };
+		},
+		classList1(state, {payload}) {
+			return { ...state, classList1:payload };
 		},
 		classNews(state, {payload}) {
 			return { ...state, classNews:payload };
@@ -50,10 +59,17 @@ export default {
 			return { ...state, classInfoPayload:payload };
 		},
 		schoolList(state, {payload}) {
+			console.log(payload)
 			return { ...state, schoolList:payload };
 		},
 		schoolId(state, {payload}) {
 			return { ...state, schoolId:payload };
+		},
+		workList(state, {payload}) {
+			return { ...state, workList:payload };
+		},
+		yearList(state, {payload}) {
+			return { ...state, yearList:payload };
 		},
 	},
 	subscriptions: {
@@ -197,6 +213,55 @@ export default {
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'schoolList',
+					payload:res.data
+				})
+			}else{
+				message.err(res.data.msg)
+			}
+			
+		},
+		*queryHomeworkList({payload}, {put, select}) {
+			// 返回班级作业列表
+			console.log(payload)
+			let res = yield queryHomeworkList(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'workList',
+					payload:res.data
+				})
+			}else{
+				message.err(res.data.msg)
+			}
+		},
+		*getClassList({payload}, {put, select}) {
+			// 返回教师所在班级列表
+			console.log(payload)
+			let res = yield getClassList(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'classList1',
+					payload:res.data
+				})
+			}else{
+				message.err(res.data.msg)
+			}
+			
+		},
+		*getYears({payload}, {put, select}) {
+			// 学年返回
+			let res = yield getYears(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'yearList',
 					payload:res.data
 				})
 			}else{

@@ -29,11 +29,23 @@ function addSchool(payload){
         data:payload
     });
 }
+function teacherList(payload){
+    return request(dataCenter('/user/teacherList'), {
+        data:payload
+    });
+}
+function administrativeDivision(payload){
+    return request(dataCenter('/sys/config/administrativeDivision'), {
+        data:payload
+    });
+}
 export {
     functionList,
     pageRelevantSchool,
     schoolInfo,
     updateSchool,
     deleteSchool,
-    addSchool
+    addSchool,
+    teacherList,
+    administrativeDivision,
 };

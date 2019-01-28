@@ -1,405 +1,425 @@
 import React from 'react';
-import { Layout, Table, Input,Breadcrumb,Modal,Radio,Button,Pagination  } from 'antd';
+import { Layout, Table, Input,message,  Popover, Pagination, Form,Rate ,Modal,Select, Icon
+} from 'antd';
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
+// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './UserList.less';
 import store from 'store';
+
+const confirm = Modal.confirm;
+const Option = Select.Option;
 const { Content } = Layout;
 const Search = Input.Search;
-const RadioGroup = Radio.Group;
-const confirm = Modal.confirm;
 //作业中心界面内容
+
 class HomeworkCenter extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = { 
 			editingKey: '',
-			current:'student',
-		  visible1: false,
-		  visible:false,
-			phaseId:1,
+			visible: false,
+			visible1:false,
 			schoolId:'',
-		};
-	}
-	handleOk = (e) => {
-		this.setState({
-		  visible1: false,
-		  visible: false,
-		});
-		this.props.dispatch({
-			type: 'homePage/changeSchool',
-			payload:this.state.schoolId
-		});
-	}
-	  handleCancel = (e) => {
-		this.setState({
-		  visible1: false,
-		  visible: false,
-		});
-	  }
-	render() {
-		let dispatch = this.props.dispatch;
-		let state = this.props.state;
-		const columns = [{
-		title: '名称',
-			dataIndex: 'name',
-			key: 'name',
-			render: (text, record) => (
-				<div
-					onClick={() =>{
-					}}>
-					{text}
-				</div>
-			)
-		},
-		{
-			title: '手机号',
-			dataIndex: 'position',
-			key: 'position',
-			render: (text, record) => (
-				<div
-					onClick={() =>{
-						dispatch(
-							routerRedux.push({
-								pathname: '/homeworkDetails',
-								hash:`${record.key}`
-								})
-						)
-					}}>
-					{text}
-				</div>
-			)
-		},
-		{
-			title: '所在学校',
-			dataIndex: 'type',
-			key: 'type',
-			render: (text, record) => (
-				<div
-					onClick={() =>{
-						dispatch(
-							routerRedux.push({
-								pathname: '/homeworkDetails',
-								hash:`${record.key}`
-								})
-						)
-					}}>
-					{text}
-				</div>
-			)
-		},
-		{
-		title: '操作',
-			dataIndex: 'operate',
-			key: 'operate',
-			render: (text, record) => (
-				<div className="operateLink"
-					>
-					<span
-					style={{cursor:'pointer',margin:'0 10px'}}
-					onClick={()=>{
-						
-						let data = {
-							schoolId:record.key
-						}
-						this.setState({visible:true,schoolId:record.key})
-						this.props.dispatch({
-							type: 'homePage/schoolInfo',
-							payload:data
-						});
-					}
-					}>编辑</span>
-					<span
-					style={{cursor:'pointer',margin:'0 10px'}}
-					onClick={()=>{
-						let This = this;
-						confirm({
-							title: '确定删除此学校么?',
-							okText: '是',
-							cancelText: '否',
-							onOk() {
-								let data = {
-									schoolId:record.key
+	};
+		this.columns = [
+			{
+				title: '姓名',
+				dataIndex: 'name',
+				key: 'name',
+			},
+			{
+				title:'手机号',
+				dataIndex:'phone',
+				key:'phone',
+			},
+			{
+				title:'所在班级',
+				dataIndex:'class',
+				key:'class',
+				render: (text, record) => {
+					let str = record.list.classes;
+					if(str!=null){
+						let classes = str.split(',')
+						const content = (
+							<div style={{paddingBottom:"10px"}}>
+								{
+									classes.map((item,i)=>(
+										<p key={i}
+											style={{padding:'10px',paddingBottom:'0',margin:'0'}}
+										>{item}</p>
+									))
 								}
-								This.props.dispatch({
-									type: 'homePage/deleteSchool',
-									payload:data
-								});
-							},
-							onCancel() {
-							  console.log('Cancel');
-							},
-						  });
-					}}
-					>删除</span>
+							</div>
+						  )
+						return(
+							<div style={{textAlign:'center',position:"relative"}}>
+								<span>{classes[0]}</span>
+								<Popover trigger="click" content={content} >
+									<Icon type="plus-circle"  style={{position:'absolute',right:'10px',fontSize:'18px'}}></Icon>
+								</Popover>
+							</div>
+						)
+					}else{
+						return (
+							<div style={{textAlign:'center'}}>暂无班级</div>
+							);
+					}
+				},
+			},
+			{
+			title: '操作',
+			dataIndex: 'operation',
+			render: (text, record) => {
+				const editable = this.isEditing(record);
+				return (
+				<div>
+					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+						// this.setState({
+						// 	visible:true,
+						// })
+						// let data ={
+						// 	schoolId:store.get('wrongBookNews').schoolId,
+						// 	page:1,
+						// 	pageSize:9999,
+						// }
+						// this.props.dispatch({
+						// 	type: 'userInfo/pageClass',
+						// 	payload:data
+						// });
+					}}>加入班级</span>
+					
+					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+						// 	let This = this;
+						// 	confirm({
+						// 		title: `确定删除${record.name}么?`,
+						// 		okText: '是',
+						// 		cancelText: '否',
+						// 		onOk() {
+						// 			let data = {
+						// 				classId:record.key
+						// 			}
+						// 			This.props.dispatch({
+						// 				type: 'userInfo/deleteClass',
+						// 				payload:data
+						// 			});
+						// 		},
+						// 		onCancel() {
+						// 			console.log('Cancel');
+						// 		},
+						//   });
+					}}>踢出班级</span>
 				</div>
+				);
+			},
+			},
+		];
+	}
+
+	isEditing = record => record.key === this.state.editingKey;
+
+	cancel = () => {
+	this.setState({ editingKey: '' });
+	};
+	
+	save(form, key) {
+	form.validateFields((error, row) => {
+		message.warning('修改功能暂未开放');
+		this.setState({ editingKey: '' });
+	});
+	}
+
+	edit(key) {
+		this.setState({ editingKey: key });
+	}
+	chooseSchool(){
+		const rodeType = store.get('wrongBookNews').rodeType
+		if(rodeType === 10){
+			let schoolList = this.props.state.schoolList;
+			const children = [];
+			if(schoolList.data){
+				for (let i = 0; i < schoolList.data.list.length; i++) {
+					let data = schoolList.data.list[i]
+					children.push(<Option key={data.schoolId}>{data.schoolName}</Option>);
+				}
+				return(
+					<Select
+						showSearch
+						style={{ width: 200,marginRight:'10px' }}
+						optionFilterProp="children"
+						placeholder='请选择学校'
+						onChange={(value)=>{
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/user',
+									hash:'page=1'
+									})
+							)
+							this.setState({schoolId:value})
+							let data ={
+								schoolId:value,
+								pageNum:1,
+								pageSize:10
+							}
+							this.props.dispatch({
+								type: 'userInfo/schoolId',
+								payload:value
+							});
+							this.props.dispatch({
+								type: 'userInfo/pageUser',
+								payload:data
+							});
+						}}
+						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+					>
+						{children}
+					</Select>
+				)
+			}
+			
+		}else if(rodeType === 20){
+			let classList = this.props.state.classList;
+			const children = [];
+			if(classList.data){
+				for (let i = 0; i < classList.data.list.length; i++) {
+					let data = classList.data.list[i]
+					children.push(<Option key={data.classId}>{data.className}</Option>);
+				}
+				return(
+					<Select
+						showSearch
+						style={{ width: 200,marginRight:'10px' }}
+						optionFilterProp="children"
+						placeholder='请选择班级'
+						onChange={(value)=>{
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/user',
+									hash:'page=1'
+									})
+							)
+							let data ={
+								classId:value,
+								pageNum:1,
+								pageSize:10
+							}
+							this.props.dispatch({
+								type: 'userInfo/classId',
+								payload:value
+							});
+							this.props.dispatch({
+								type: 'userInfo/pageUser',
+								payload:data
+							});
+						}}
+						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+					>
+						{children}
+					</Select>
+				)
+			}
+			
+		}
+		
+		{
+			return(
+				<span style={{marginRight:'10px'}}>班级列表</span>
 			)
-		}];
-		console.log(store.get('wrongBookNews'))
-		let schoolList = state.schoolList;
+		}		
+	}
+	render() {
+		let state = this.props.state;
+		let userList = state.userList;
 		const dataSource = [];
 		let total = 0;
-		if(schoolList.data ){
-			total = schoolList.data.total
-			for(let i = 0;i < schoolList.data.list.length; i ++){
+		let pages = 1;
+		if(userList.data ){
+			total = userList.data.total
+			pages = userList.data.pages
+			for(let i = 0;i < userList.data.list.length; i ++){
 				let p = {};
-				let det = schoolList.data.list[i];
-				p["key"] = det.schoolId;
-				p["name"] = det.schoolName;
-				p["position"] = det.address;
-				p["type"] = det.phaseName;
-				p["principal"] = det.masterName;
-				p["introduce"] = det.des;
+				let det = userList.data.list[i];
+				p["key"] = det.userId;
+				p["name"] = det.userName;
+				p["phone"] = det.phone;
+				p["list"] = det;
 				dataSource[i]=p;
 			}
 		}
-		let schoolInfo = this.props.state.schoolInfo;
+		let classInfo = state.classNews;
 		const hash = this.props.location.hash;
 		let cur = hash.substr(hash.indexOf("page=")+5)*1;
-		return(
-			<Layout >
-				<Breadcrumb style={{ padding: '16px 0',background:'#F4F5F5' }}>
-					<Breadcrumb.Item>学校管理</Breadcrumb.Item>
-				</Breadcrumb>
+		if(cur === 0){
+			cur = 1
+		}
+		let classList = state.classList;
+		const children = [];
+		if(classList.data){
+			for (let i = 0; i < classList.data.length; i++) {
+				let data = classList.data[i]
+				children.push(<Option key={data.classId}>{data.className}</Option>);
+			}
+		}
+		const rodeType = store.get('wrongBookNews').rodeType
+		return (
+			<Layout>
 				<Content style={{ overflow: 'initial' }}>
-					<div className={style.layout} style={{ padding: 24, background: '#fff' }}>
-						<div style={{overflow:'hidden',marginBottom:"5px",textAlign:'right'}}>
-							
+					<div className={style.gradeboder} >
+						<div className={style.gradeTop}>
+							{this.chooseSchool()}
+							<span>共{total}个用户</span>
+							{
+								rodeType === 10?
+								<div className={style.addGrade} onClick={()=>{
+									this.setState({visible:true})
+									
+								}}>添加</div>:''
+							}
+								
 							<Search
-								placeholder="学校名称"
-								style={{width:'300px'}}
+								style={{float:'right',width:'300px',marginRight:'10px'}}
+								placeholder="班级名称"
 								enterButton="搜索"
 								onSearch={value => console.log(value)}
 							/>
-							<Button 
-								style={{verticalAlign:'bottom',marginLeft:'10px'}}
-								onClick={()=>{
-									this.setState({
-										visible1:true
-									})
-								}}
-							 	type="primary">添加</Button>
 						</div>
-						<Table className={style.scoreDetTable}
-						 dataSource={dataSource}
-						 columns={columns}
-						 pagination={true}
-						 bordered={true}
-						 rowKey={(record, index)=> index}/>
-						 {
-							 total>0?
+						<Table
+							bordered
+							dataSource={dataSource}
+							columns={this.columns}
+							rowClassName="editable-row"
+						/>
+						{
+							 pages>1?
 							 <Pagination defaultCurrent={cur} 
 							 	onChange={(pageNumber)=>{
 									this.props.dispatch(
 										routerRedux.push({
-											pathname: '/school',
+											pathname: '/user',
 											hash:`page=${pageNumber}`
 											})
 									)
-									let data ={
-										pageNum:pageNumber,
-										pageSize:10
+									const rodeType = store.get('wrongBookNews').rodeType
+
+									if(rodeType === 10){
+										
+										let data ={
+											schoolId:this.props.state.schoolId,
+											pageNum:pageNumber,
+											pageSize:10
+										}
+										this.props.dispatch({
+											type: 'userInfo/pageUser',
+											payload:data
+										});
+									}else if(rodeType === 20){
+										
+										let data ={
+											classId:this.props.state.classId,
+											pageNum:pageNumber,
+											pageSize:10
+										}
+										this.props.dispatch({
+											type: 'userInfo/pageUser',
+											payload:data
+										});
 									}
-									dispatch({
-										type: 'homePage/pageRelevantSchool',
-										payload:data
-									});
 								 }}
 							 	pageSize={10} defaultPageSize={10}  total={total} />:
 							 ''
 						}
 					</div>
-					<Modal
-						title="编辑"
+				</Content>
+				<Modal
+						title="添加用户"
 						visible={this.state.visible}
-						onOk={this.handleOk}
-						onCancel={this.handleCancel}
-						okText='确定'
-						cancelText='取消'
-						>
-						{
-							schoolInfo.data ?
-							<div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}} >学校</span>
-									<Input 
-										defaultValue={this.props.state.schoolName}
-										onChange={(e)=>{
-											this.props.dispatch({
-												type: 'homePage/changeSchoolName',
-												payload:e.target.value
-											});
-										}}
-									 style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>类型</span>
-									<RadioGroup onChange={(e)=>{
-										this.props.dispatch({
-											type: 'homePage/changephaseId',
-											payload:e.target.value
-										});
-									}}
-									 value={this.props.state.phaseId}>
-										<Radio value={1}>小学</Radio>
-										<Radio value={2}>初中</Radio>
-										<Radio value={3}>高中</Radio>
-									</RadioGroup>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>校长</span>
-									<Input defaultValue={schoolInfo.data.masterName}
-										onChange={(e)=>{
-											this.props.dispatch({
-												type: 'homePage/changeMasterName',
-												payload:e.target.value
-											});
-										}}  style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>位置</span>
-									<Input defaultValue={schoolInfo.data.address} 
-									onChange={(e)=>{
-										this.props.dispatch({
-											type: 'homePage/changeaddress',
-											payload:e.target.value
-										});
-									}} style={{width:'200px'}}/>
-								</div>
-								<div>
-									<span style={{width:"80px",display:'inline-block'}}>介绍</span>
-									<Input defaultValue={schoolInfo.data.des} 
-									onChange={(e)=>{
-										this.props.dispatch({
-											type: 'homePage/changedes',
-											payload:e.target.value
-										});
-									}} style={{width:'200px'}}/>
-								</div>
-							</div>
-							:
-							<div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}} >学校</span>
-									<Input style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>类型</span>
-									<RadioGroup onChange={this.onChange} value='1'>
-										<Radio value={1}>小学</Radio>
-										<Radio value={2}>初中</Radio>
-										<Radio value={3}>高中</Radio>
-									</RadioGroup>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>校长</span>
-									<Input style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>位置</span>
-									<Input style={{width:'200px'}}/>
-								</div>
-								<div>
-									<span style={{width:"80px",display:'inline-block'}}>介绍</span>
-									<Input  style={{width:'200px'}}/>
-								</div>
-							</div>
-						}
-							
-					</Modal>
-					<Modal
-						title="添加学校"
-						visible={this.state.visible1}
 						onOk={()=>{
-							this.setState({visible1:false})
+							this.setState({
+								visible: false,
+							});
+							let data ={
+								classId:1,
+								userId:1,
+							}
 							this.props.dispatch({
-								type: 'homePage/addSchool',
+								type: 'userInfo/updateClass',
 							});
 						}}
-						onCancel={this.handleCancel}
+						onCancel={()=>{
+							this.setState({
+								visible: false,
+							});
+						}}
 						okText='确定'
 						cancelText='取消'
 						>
-							<div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}} >学校</span>
-									<Input 
-										defaultValue={this.props.state.schoolName}
-										onChange={(e)=>{
-											this.props.dispatch({
-												type: 'homePage/changeSchoolName',
-												payload:e.target.value
-											});
-										}}
-									 style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>类型</span>
-									<RadioGroup onChange={(e)=>{
-										this.props.dispatch({
-											type: 'homePage/changephaseId',
-											payload:e.target.value
-										});
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}} >手机号</span>
+								<Input 
+									onChange={(e)=>{
 									}}
-									 value={this.props.state.phaseId}>
-										<Radio value={1}>小学</Radio>
-										<Radio value={2}>初中</Radio>
-										<Radio value={3}>高中</Radio>
-									</RadioGroup>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>校长</span>
-									<Input defaultValue={this.props.state.masterName}
-										onChange={(e)=>{
-											this.props.dispatch({
-												type: 'homePage/changeMasterName',
-												payload:e.target.value
-											});
-										}}  style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>位置</span>
-									<Input defaultValue={this.props.state.address} 
+									style={{width:'200px'}}/>
+							</div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}}>姓名</span>
+								<Input 
 									onChange={(e)=>{
-										this.props.dispatch({
-											type: 'homePage/changeaddress',
-											payload:e.target.value
-										});
-									}} style={{width:'200px'}}/>
-								</div>
-								<div>
-									<span style={{width:"80px",display:'inline-block'}}>介绍</span>
-									<Input defaultValue={this.props.state.des} 
-									onChange={(e)=>{
-										this.props.dispatch({
-											type: 'homePage/changedes',
-											payload:e.target.value
-										});
-									}} style={{width:'200px'}}/>
-								</div>
+										
+									}}  style={{width:'200px'}}/>
 							</div>
 					</Modal>
-				</Content>
+					
 			</Layout>
 		);
-	}
+	  }
+
 	componentDidMount(){
-		const {dispatch} = this.props;
 		const hash = this.props.location.hash;
 		let page = hash.substr(hash.indexOf("page=")+5)*1;
-		let data ={
-			pageNum:page,
-			pageSize:10
+		if(page === 0){
+			page = 1
 		}
-		// dispatch({
-		// 	type: 'homePage/pageRelevantSchool',
-		// 	payload:data
-		// });
+		const {dispatch} = this.props;
+		const rodeType = store.get('wrongBookNews').rodeType
+		if(rodeType === 10){
+			let data1 = {
+				pageNum:1,
+				pageSize:9999
+			}
+			dispatch({
+				type: 'userInfo/pageRelevantSchool',
+				payload:data1
+			});
+		}else if(rodeType === 20){
+			let data1 = {
+				schoolId:store.get('wrongBookNews').schoolId,
+				pageNum:1,
+				pageSize:9999
+			}
+			dispatch({
+				type: 'userInfo/pageClass',
+				payload:data1
+			});
+
+			let data ={
+				schoolId:store.get('wrongBookNews').schoolId,
+				pageNum:1,
+				pageSize:10
+			}
+			this.props.dispatch({
+				type: 'userInfo/schoolId',
+				payload:store.get('wrongBookNews').schoolId
+			});
+			this.props.dispatch({
+				type: 'userInfo/pageUser',
+				payload:data
+			});
+		}
 	}
 }
 
 export default connect((state) => ({
 	state: {
-		...state.homePage,
+		...state.userInfo,
 	}
 }))(HomeworkCenter);

@@ -5,6 +5,8 @@ import {
 	updateSchool,
 	deleteSchool,
 	addSchool,
+	teacherList,
+	administrativeDivision,
 } from '../services/homePageService';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
@@ -25,13 +27,22 @@ export default {
 		phaseId:1,
 		schoolName:'',
 		masterName:'',
+		masterPhone:'',
+		provinces:'',
+		citys:'',
+		areas:'',
 		address:'',
 		des:'',
 		schoolPay:[],
+		tealist:[],
+		city:[],
 	},
 	reducers: {
 		classNews(state, {payload}) {
 			return { ...state, classNews:payload };
+		},
+		city(state, {payload}) {
+			return { ...state, city:payload };
 		},
 		pageHomeworkList(state, {payload}) {
 			return { ...state, pageHomeworkList:payload };
@@ -57,6 +68,18 @@ export default {
 		changeMasterName(state, {payload}) {
 			return { ...state, masterName:payload}
 		},
+		changeMasterPhone(state, {payload}) {
+			return { ...state, masterPhone:payload}
+		},
+		provinces(state, {payload}) {
+			return { ...state, provinces:payload}
+		},
+		citys(state, {payload}) {
+			return { ...state, citys:payload}
+		},
+		areas(state, {payload}) {
+			return { ...state, areas:payload}
+		},
 		changeaddress(state, {payload}) {
 			return { ...state, address:payload}
 		},
@@ -65,6 +88,9 @@ export default {
 		},
 		schoolPay(state, {payload}) {
 			return { ...state, schoolPay:payload}
+		},
+		tealist(state, {payload}) {
+			return { ...state, tealist:payload}
 		},
 	},
 	subscriptions: {
@@ -93,6 +119,23 @@ export default {
 				type: 'MenuList',
 				payload:MenuList
 			})
+		},
+		
+		*administrativeDivision({payload}, {put, select}) {
+			// 区域信息返回
+			let res = yield administrativeDivision(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'city',
+					payload:res.data
+				})
+			}
+			else{
+				message.err(res.data.msg)
+			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
 			// 学校列表返回
@@ -153,7 +196,7 @@ export default {
 		},
 		*changeSchool({payload}, {put, select}) {
 			// 修改学校信息
-			let {phaseId,schoolName,masterName, address, des,schoolPay} = yield select(state => state.homePage)
+			let {phaseId,schoolName,masterName, address, des,schoolPay,provinces,citys,areas} = yield select(state => state.homePage)
 			let data = {
 				schoolId:payload,
 				schoolName:schoolName,
@@ -161,6 +204,9 @@ export default {
 				masterName:masterName,
 				des:des,
 				phaseId:phaseId,
+				province:provinces,
+				city:citys,
+				area:areas
 			}
 			let res = yield updateSchool(data);
 			if(res.data && res.data.result === 0){
@@ -196,19 +242,40 @@ export default {
 		},
 		*addSchool({payload}, {put, select}) {
 			// 修改学校信息
-			let {phaseId,schoolName,masterName, address, des,schoolPay} = yield select(state => state.homePage)
+			let {phaseId,schoolName,masterName,masterPhone, address, des,schoolPay,citys,provinces,areas} = yield select(state => state.homePage)
 			let data = {
 				schoolName:schoolName,
 				address:address,
 				masterName:masterName,
+				phone:masterPhone,
 				des:des,
 				phaseId:phaseId,
+				province:provinces,
+				city:citys,
+				area:areas,
 			}
+			console.log(data)
 			let res = yield addSchool(data);
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'pageRelevantSchool',
 					payload:schoolPay
+				})
+			}
+			else if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else{
+				message.err(res.data.msg)
+			}
+			
+		},
+		*teacherList({payload}, {put, select}) {
+			// 获取教师列表
+			let res = yield teacherList(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'tealist',
+					payload:res.data
 				})
 			}
 			else if(res.hasOwnProperty("err")){

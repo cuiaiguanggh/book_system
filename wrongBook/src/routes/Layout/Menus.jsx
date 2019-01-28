@@ -3,9 +3,11 @@ import 'antd/dist/antd.css';
 import {Menu, Icon,Popover} from 'antd';
 import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
+import QRCode from 'qrcode.react';
 import {Link} from "dva/router";
 import store from 'store';
 import style from './Menus.less';
+import Top from './top'
 const SubMenu = Menu.SubMenu;
 const userNews = store.get('wrongBookNews')
 //主界面内容
@@ -20,38 +22,6 @@ class HomePageLeft extends Component {
 		this.setState({
 			current: e.key,
 		  });
-	}
-	showConfirm = () => {
-		// confirm({
-		// 	title: '',
-		// 	content: '确认退出',
-		// 	onOk() {
-        //         dispatch(
-        //             routerRedux.push({
-        //                 pathname: '/login',
-        //               })
-        //         )
-		// 	},
-		// 	onCancel() {
-		// 		console.log('Cancel');
-		// 	},
-		// });
-    }
-    userInfoCont = () => {
-		const rodeType = store.get('wrongBookNews').rodeType
-		let Name=''
-		if(rodeType === 10){
-			Name = '总管理'
-		}if(rodeType === 20){
-			Name = '校管理'
-		}if(rodeType === 30){
-			Name = '班管理'
-		}
-        return (
-            <div style={{display:"inline-block"}}>
-                <div className="btnBack" >{Name}</div>
-            </div>
-        )
 	}
 	//返回导航栏目
 	Menus() {
@@ -72,105 +42,103 @@ class HomePageLeft extends Component {
 						hash:`page=1`
 					})
 				)
-			else if(rodeType === 20)
+			// else if(rodeType === 20)
+			// 	this.props.dispatch(
+			// 		routerRedux.push({
+			// 			pathname: '/schoolNews',
+			// 		})
+			// 	)
+			else if(rodeType === 30 || rodeType === 20)
 				this.props.dispatch(
 					routerRedux.push({
-						pathname: '/schoolNews',
+						pathname: '/grade',
+						hash:`page=1`
 					})
 				)
-			else if(rodeType === 30)
-			this.props.dispatch(
-				routerRedux.push({
-					pathname: '/grade',
-					hash:`page=1`
-				})
-			)
 			else if(rodeType === 40)
-			this.props.dispatch(
-				routerRedux.push({
-					pathname: '/class',
-					})
-			)
+				this.props.dispatch(
+					routerRedux.push({
+						pathname: '/class',
+						})
+				)
 		}
 		
 		if (memuList !== ''){
 			memuList.map((item,i) =>{
 				// 学校管理模块
-				if(item === 100)
-					if(rodeType === 10)
-					menus.push(<Menu.Item key="school">
-					<Link to='school#page=1' replace>
-						<Icon type="bar-chart" />学校管理
-					</Link>
-					</Menu.Item>)
-					else if(rodeType === 20)
-					menus.push(<Menu.Item key="schoolNews"><Link to="/schoolNews" replace><Icon type="bar-chart" />学校详情</Link></Menu.Item>)
+				if(item === 100){
+					if(rodeType === 10){
+						menus.push(<Menu.Item key="school">
+							<Link to='school#page=1' replace>
+								<Icon type="bar-chart" />学校管理
+							</Link>
+						</Menu.Item>)
+					}else if(rodeType === 20){
+					// menus.push(<Menu.Item key="schoolNews"><Link to="/schoolNews" replace><Icon type="bar-chart" />学校详情</Link></Menu.Item>)
+					}
+				}
 				// 班级管理模块
-				if(item === 200)
-					menus.push(<SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
-						{
-							userNews.rodeType<= 30? 
-							<Menu.Item key="grade">
-								<Link to='grade#page=1' replace>
-									<Icon type="bar-chart" />班级列表
-								</Link>
-						</Menu.Item>:
-							<Menu.Item key="class"><Link to="/class" replace>班级详情</Link></Menu.Item>
-						}
-						<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" />添加班级</Link></Menu.Item>
-					</SubMenu>)
+				if(item === 200){
+					if(rodeType <= 20){
+						menus.push(<SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
+								<Menu.Item key="grade">
+									<Link to='grade#page=1' replace>
+										<Icon type="bar-chart" />班级列表
+									</Link>
+							</Menu.Item>
+							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" />批量导入</Link></Menu.Item>
+						</SubMenu>)
+					}else{
+						menus.push(<Menu.Item key="grade">
+							<Link to='grade#page=1' replace>
+								<Icon type="bar-chart" />班级列表
+							</Link>
+						</Menu.Item>)
+					}
+				}
 				// 作业中心
-				if(item === 300)
-					menus.push(<Menu.Item key="home" style={{cursor:'pointer'}}>
-						<Link to="/home"  style={{cursor:'pointer'}} replace >
+				if(item === 300){
+					menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
+						<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
 						<Icon type="file-text" /><span style={{cursor:'pointer'}}>作业中心</span></Link>
-				</Menu.Item>)
+					</Menu.Item>)
+				}
 				// 用户管理
-				if(item === 400)
-					menus.push(<Menu.Item key="user"><Link to="/user" replace><Icon type="bar-chart" />用户管理</Link></Menu.Item>)
+				if(item === 400){
+					if(rodeType <= 20){
+						menus.push(<Menu.Item key="user"><Link to="/user" replace><Icon type="bar-chart" />用户管理</Link></Menu.Item>)
+					}
+				}
 			})
 			return(menus)
 		}
 	}
 	render() {
+		let  value= `http://hw-test.mizholdings.com/static/sc?schoolId=${store.get('wrongBookNews').schoolId}&year=2018`
 		let hash = this.props.location.pathname;
-        let defaultKey = hash.substr(hash.indexOf("/")+1);
-		const content = (
-            <div className={style.userPover}>
-              <p>个人信息</p>
-              <p onClick={()=>{
-				  	this.props.dispatch(
-						routerRedux.push({
-							pathname: '/login',
-							})
-					)
-			  }}>退出</p>
-            </div>
-		  );
+		if(!store.get('wrongBookNews')){
+			this.props.dispatch(
+				routerRedux.push({
+					pathname: '/login'
+				})
+			)
+		}
+		let defaultKey = hash.substr(hash.indexOf("/")+1);
+		if(defaultKey.indexOf('school') ===0){
+			defaultKey = 'school'
+		}else if(defaultKey.indexOf('grade') ===0){
+			defaultKey = 'grade'
+		}
 		let userNews = store.get('wrongBookNews')
+		const rodeType = store.get('wrongBookNews').rodeType
+
 		return (
 			<div className={style.homePageContaier}>
-				<div className="navClass">
-					<img alt='' src={require("../images/t_nv_ig_n.png")} />
-					<span></span>
-					<div className={style.usinfo}>
-						{this.userInfoCont()}
-						<img  alt={userNews.userName} src={userNews.avatarUrl}/>
-						<Popover
-						 	content={content} 
-							// trigger="click"
-							 type="primary"
-							 placement="bottom"
-						>
-							<div 
-							className="btnBack" 
-							 type="primary"
-							onClick={this.showConfirm.bind(this)}>
-								<span>{userNews.userName}</span>
-							</div>
-						</Popover>
-					</div>
-				</div>
+				
+				{
+					!store.get('wrongBookNews')?
+					'':<Top/>
+				}
 				<div className={style.HomePageCent}>
 
 					<div className='pageLeftCont'>
@@ -184,15 +152,23 @@ class HomePageLeft extends Component {
 							defaultOpenKeys={['sub']}
 							// inlineCollapsed={col}
 						>
-							{this.Menus()}
+							{
+								!store.get('wrongBookNews')?
+								'':this.Menus()
+							}
 						
 						</Menu>
+							{
+								rodeType === 10 ?'':
+								<div className={style.qrcode}>
+									<QRCode className='qrcode' value={value} />
+									<p>加入班级</p>
+								</div>
+							}
 							<p className={style.phoneNum}>400-889-1291</p>
 						</div>
 						<div className='homePageContaier'>
-							<div className={style.HomePageCent}>
-								{this.props.children}
-							</div>
+							{this.props.children}
 						</div>
 					</div>
 				</div>
@@ -201,6 +177,13 @@ class HomePageLeft extends Component {
 	}
 	componentDidMount () {
 		const {dispatch} = this.props;
+		if(!store.get('wrongBookNews')){
+			this.props.dispatch(
+				routerRedux.push({
+					pathname: '/login'
+				})
+			)
+		}
 		dispatch({
 			type: 'homePage/functionList'
 		});

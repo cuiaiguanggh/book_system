@@ -20,6 +20,7 @@ class HomeworkCenter extends React.Component {
 			editingKey: '',
 			visible: false,
 			visible1:false,
+			schoolId:'',
 	};
 		this.columns = [
 			{
@@ -27,6 +28,20 @@ class HomeworkCenter extends React.Component {
 				dataIndex: 'name',
 				key: 'name',
 				width: '20%',
+				render: (text, record) => {
+					return (
+						<div onClick={()=>{
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/classInfo',
+									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+									})
+							)
+						}}>
+							{text}
+						</div>
+					);
+				}
 			},
 			{
 				title:'班主任',
@@ -54,7 +69,7 @@ class HomeworkCenter extends React.Component {
 				width: '15%',
 			},
 			{
-				title:'作业数量',
+				title:'错题数量',
 				dataIndex:'workNum',
 				key:'workNum',
 				width: '15%',
@@ -166,6 +181,7 @@ class HomeworkCenter extends React.Component {
 								type: 'classHome/pageClass',
 								payload:data
 							});
+							this.setState({schoolId:value})
 						}}
 						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 					>
@@ -183,25 +199,49 @@ class HomeworkCenter extends React.Component {
 	render() {
 		let state = this.props.state;
 		let classList = state.classList;
+		let classList1 = state.classList1;
 		const dataSource = [];
-		let total = 1;
+		let total = 0;
+		const rodeType = store.get('wrongBookNews').rodeType;
 		let pages = 1;
-		if(classList.data ){
-			total = classList.data.total
-			pages = classList.data.pages
-			for(let i = 0;i < classList.data.list.length; i ++){
-				let p = {};
-				let det = classList.data.list[i];
-				p["key"] = det.classId;
-				p['classCode'] = det.classCode;
-				p["name"] = det.className;
-				p["gradeId"] = det.gradeId;
-				p["stars"] = det.stars;
-				p["teacherName"] = det.classAdmin;
-				p["stuNum"] = det.studentNum;
-				p["workNum"] = det.workNum;
-				p["list"] = det;
-				dataSource[i]=p;
+		if(rodeType <=20){
+				
+			if(classList.data ){
+				total = classList.data.total
+				pages = classList.data.pages
+				for(let i = 0;i < classList.data.list.length; i ++){
+					let p = {};
+					let det = classList.data.list[i];
+					p["key"] = det.classId;
+					p['classCode'] = det.classCode;
+					p["name"] = det.className;
+					p["gradeId"] = det.gradeId;
+					p["stars"] = det.stars;
+					p["teacherName"] = det.classAdmin;
+					p["stuNum"] = det.studentNum;
+					p["workNum"] = det.workNum;
+					p["list"] = det;
+					dataSource[i]=p;
+				}
+			}
+		}else{
+			if(classList1.data ){
+				total = classList1.data.length
+				// pages = classList.data.pages
+				for(let i = 0;i < classList1.data.length; i ++){
+					let p = {};
+					let det = classList1.data[i];
+					p["key"] = det.classId;
+					p['classCode'] = det.classCode;
+					p["name"] = det.className;
+					p["gradeId"] = det.gradeId;
+					p["stars"] = det.stars;
+					p["teacherName"] = det.classAdmin;
+					p["stuNum"] = det.studentNum;
+					p["workNum"] = det.workNum;
+					p["list"] = det;
+					dataSource[i]=p;
+				}
 			}
 		}
 		let classInfo = state.classNews;
@@ -218,6 +258,7 @@ class HomeworkCenter extends React.Component {
 				children.push(<Option key={data.userId}>{data.userName}</Option>);
 			}
 		}
+		console.log(rodeType)
 		return (
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
@@ -225,21 +266,47 @@ class HomeworkCenter extends React.Component {
 						<div className={style.gradeTop}>
 							{this.chooseSchool()}
 							<span>共{total}个班级</span>
+							{
+								rodeType <= 20 ?
 								<div className={style.addGrade} onClick={()=>{
-									this.setState({visible1:true})
-									let data1 = {
-										schoolId:this.props.state.schoolId
+									if(this.state.schoolId === '' && rodeType === 10){
+										message.warning("请先选择学校")
+									}else{
+										this.setState({visible1:true})
+										let data1 = {
+											schoolId:this.props.state.schoolId
+										}
+										this.props.dispatch({
+											type: 'classHome/teacherList',
+											payload:data1
+										});
 									}
-									this.props.dispatch({
-										type: 'classHome/teacherList',
-										payload:data1
-									});
-								}}>添加</div>
+									
+								}}>添加</div>:''
+							}
+								
 							<Search
 								style={{float:'right',width:'300px',marginRight:'10px'}}
 								placeholder="班级名称"
 								enterButton="搜索"
-								onSearch={value => console.log(value)}
+								onSearch={value => {
+									let data ={
+										pageNum:1,
+										pageSize:10,
+										className:value,
+										schoolId:this.props.state.schoolId
+									}
+									this.props.dispatch({
+										type: 'classHome/pageClass',
+										payload:data
+									});
+									this.props.dispatch(
+										routerRedux.push({
+											pathname: '/grade',
+											hash:'page=1'
+										})
+									)
+								}}
 							/>
 						</div>
 						<Table
@@ -333,20 +400,6 @@ class HomeworkCenter extends React.Component {
 									}
 									
 								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>评级</span>
-									<Rate value={classInfo.data.stars} disabled />
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>人数</span>
-									<Input value={classInfo.data.studentNum} disabled
-									style={{width:'200px'}}/>
-								</div>
-								<div>
-									<span style={{width:"80px",display:'inline-block'}}>作业数量</span>
-									<Input defaultValue={classInfo.data.workNum} disabled
-									style={{width:'200px'}}/>
-								</div>
 							</div>
 							:
 							<div>
@@ -358,20 +411,6 @@ class HomeworkCenter extends React.Component {
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}}>班主任</span>
 									<Input  style={{width:'200px'}}/>
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>评级</span>
-									{/* <Rate  /> */}
-								</div>
-								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>人数</span>
-									<InputNumber  disabled
-									style={{width:'200px'}}/>
-								</div>
-								<div>
-									<span style={{width:"80px",display:'inline-block'}}>人数</span>
-									<InputNumber  disabled
-									style={{width:'200px'}}/>
 								</div>
 							</div>
 						}
@@ -453,7 +492,7 @@ class HomeworkCenter extends React.Component {
 				type: 'classHome/pageRelevantSchool',
 				payload:data1
 			});
-		}else{
+		}else if(rodeType === 20 ){
 			let data ={
 				schoolId:store.get('wrongBookNews').schoolId,
 				pageNum:page,
@@ -466,6 +505,10 @@ class HomeworkCenter extends React.Component {
 			dispatch({
 				type: 'classHome/pageClass',
 				payload:data
+			});
+		}else{
+			dispatch({
+				type: 'classHome/getClassList',
 			});
 		}
 	}

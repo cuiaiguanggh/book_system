@@ -31,7 +31,29 @@ function addClass(payload){
         data:payload
     });
 }
-
+function pageUser(payload){
+    return request(dataCenter('/user/pageUser'),{
+        data:payload
+    });
+}
+function updateInfo(payload){
+    return request(dataCenter('/user/updateInfo'),{
+        data:payload
+    });
+}
+function queryHomeworkList(payload){
+    return request(dataCenter('/web/report/queryHomeworkList'),{
+        data:payload
+    });
+}
+function getClassList(){
+    return request(dataCenter('/user/getClassList'));
+}
+function getYears(payload){
+    return request(dataCenter('/sys/config/getEnableYears'),{
+        data:payload
+    });
+}
 export {
     pageClass,
     classInfo,
@@ -39,4 +61,9 @@ export {
     updateClass,
     deleteClass,
     addClass,
+    pageUser,
+    updateInfo,
+    queryHomeworkList,
+    getClassList,
+    getYears,
 };

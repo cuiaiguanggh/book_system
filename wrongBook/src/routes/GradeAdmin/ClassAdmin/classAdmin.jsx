@@ -8,7 +8,7 @@ import store from 'store';
 // import * as XLSX from 'xlsx';
 
 const { Content } = Layout;
-// const Search = Input.Search;
+const Search = Input.Search;
 const FormItem = Form.Item;
 const EditableContext = React.createContext();
 
@@ -71,7 +71,7 @@ class HomeworkCenter extends React.Component {
 		super(props);
 		this.state = { 
 			 editingKey: '',
-			 current:'student'
+			 current:'teacher'
 			};
 		this.tea = [{
 			title: '姓名',
@@ -79,16 +79,11 @@ class HomeworkCenter extends React.Component {
 			key: 'name',
 			editable: true,
 		},
+
 		{
 			title:'手机号',
 			dataIndex:'phone',
 			key:'phone',
-			editable: true,
-		},
-		{
-			title:'学科',
-			dataIndex:'sub',
-			key:'sub',
 			editable: true,
 		},
 		{
@@ -97,12 +92,7 @@ class HomeworkCenter extends React.Component {
 			key:'OnwerTeacher',
 			editable: true,
 		},
-		{
-			title:'作业次数',
-			dataIndex:'workNum',
-			key:'workNum',
-			editable: true,
-		},];
+	];
 		
 		this.stu = [{
 			title: '姓名',
@@ -181,18 +171,17 @@ class HomeworkCenter extends React.Component {
 	render() {
 		let state = this.props.state;
 		
-		let pageHomeworkDetiles = state.classNews;
+		let pageHomeworkDetiles = state.tealist;
 		const dataSource = [];
-		if(pageHomeworkDetiles !== ''){
-			for(let i = 0;i < pageHomeworkDetiles.length; i ++){
+		console.log(pageHomeworkDetiles)
+		if(pageHomeworkDetiles.data){
+			for(let i = 0;i < pageHomeworkDetiles.data.length; i ++){
 				let p = {};
-				let det = pageHomeworkDetiles[i];
-				p["key"] = det.classId;
-				p["name"] = det.className;
-				p['teacherName'] = '教师名称'
-				p['stuNum'] = '人数'
-				p['workNum'] = '作业数量'
-				p["operate"] = '查看详情';
+				let det = pageHomeworkDetiles.data[i];
+				p["key"] = det.userId;
+				p["head"] = det.avatarUrl;
+				p["name"] = det.userName;
+				p['phone'] = det.phone
 				dataSource[i]=p;
 			}
 		}
@@ -221,13 +210,9 @@ class HomeworkCenter extends React.Component {
 		  });
 		return(
 			<Layout>
-				<Breadcrumb style={{ padding: '16px 0',background:'#F4F5F5' }}>
-					<Breadcrumb.Item>班级管理</Breadcrumb.Item>
-					<Breadcrumb.Item>编辑</Breadcrumb.Item>
-				</Breadcrumb>
 				<Content style={{ overflow: 'initial' }}>
 					<div className={style.gradeboder} >
-					<Menu
+					{/* <Menu
 						onClick={(e)=>{
 							this.setState({current:e.key})
 						}}
@@ -240,7 +225,16 @@ class HomeworkCenter extends React.Component {
 						<Menu.Item key="student" >
 						学生
 						</Menu.Item>
-					</Menu>
+					</Menu> */}
+					<div style={{overflow:'hidden',marginBottom:"5px",textAlign:'right'}}>
+							
+							<Search
+								placeholder="教师名称"
+								style={{width:'300px'}}
+								enterButton="搜索"
+								onSearch={value => console.log(value)}
+							/>
+						</div>
 					<Table 
 						className={style.scoreDetTable}
 						dataSource={dataSource}
@@ -256,17 +250,6 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount(){
-		let data ={
-			classId:store.get('grouplistId')
-		}
-		const {dispatch} = this.props;
-		dispatch({
-			type: 'homePage/reportqueryClassList'
-		});
-		this.props.dispatch({
-			type: 'homePage/queryClassBookChapterList',
-			payload:data
-		});
 	}
 }
 

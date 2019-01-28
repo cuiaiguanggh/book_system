@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout,message,Upload, Icon, Button,Table
+import { Layout,message,Select, Icon, Button,Table
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -7,6 +7,8 @@ import style from './addClass.less';
 import store from 'store';
 import Dropzone from 'react-dropzone'
 import * as XLSX from 'xlsx';
+import {dataCenter} from '../../../config/dataCenter'
+const Option = Select.Option;
 
 const { Content } = Layout;
 
@@ -18,15 +20,18 @@ class HomeworkCenter extends React.Component {
 		this.state = { 
 			 editingKey: '',
 			 current:'student',
-			 fileArr: []
-
+			 fileArr: [],
+			 file:[]
 			};
 	}
 	onImportExcel = file =>{
 		const { files } = file.target;
 		const fileReader = new FileReader();
+			this.setState({file:files})
 			fileReader.onload = event => {
 				try {
+				this.setState({file:fileReader})
+
 				const { result } = event.target;
 				// 以二进制流方式读取得到整份excel表格对象
 				const workbook = XLSX.read(result, { type: 'binary' });
@@ -51,9 +56,12 @@ class HomeworkCenter extends React.Component {
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
+			this.setState({file:acceptedFiles})
+
 			const fileReader = new FileReader();
 			fileReader.onload = event => {
 				try {
+					this.setState({file:fileReader})
 				const { result } = event.target;
 				const workbook = XLSX.read(result, { type: 'binary' });
 				let data = []; 
@@ -69,6 +77,71 @@ class HomeworkCenter extends React.Component {
 				}
 			};
 			fileReader.readAsBinaryString(acceptedFiles[0]);	
+	}
+	chooseSchool(){
+		const rodeType = store.get('wrongBookNews').rodeType
+		if(rodeType === 10){
+		let schoolList = this.props.state.schoolList;
+			const children = [];
+			if(schoolList.data){
+				for (let i = 0; i < schoolList.data.list.length; i++) {
+					let data = schoolList.data.list[i]
+					children.push(<Option key={data.schoolId}>{data.schoolName}</Option>);
+				}
+				return(
+					<Select
+						showSearch
+						style={{ width: 200,marginRight:'10px' }}
+						optionFilterProp="children"
+Z						onChange={(value)=>{
+							this.props.dispatch({
+								type: 'classHome/schoolId',
+								payload:value
+							});
+							this.setState({schoolId:value})
+							this.props.dispatch({
+								type: 'classHome/getYears',
+								payload:{
+									schoolId:value
+								}
+							});
+						}}
+						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+					>
+						{children}
+					</Select>
+				)
+			}
+			
+		}	
+	}
+	chooseYear(){
+		const rodeType = store.get('wrongBookNews').rodeType
+		if(rodeType === 10){
+		let yearList = this.props.state.yearList;
+			const children = [];
+			if(yearList.data){
+				for (let i = 0; i < yearList.data.length; i++) {
+					let data = yearList.data[i]
+					children.push(<Option key={data}>{data}</Option>);
+				}
+			}
+			
+			return(
+				<Select
+					showSearch
+					style={{ width: 200,marginRight:'10px' }}
+					optionFilterProp="children"
+					placeholder='请选择学年'
+					onChange={(value)=>{
+						this.setState({year:value})
+					}}
+					filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+				>
+					{children}
+				</Select>
+			)
+		}	
 	}
 	render() {
 		let state = this.props.state;
@@ -120,12 +193,18 @@ class HomeworkCenter extends React.Component {
 				dataSource[i]=p;
 			}
 		}
-		
-
+		const rodeType = store.get('wrongBookNews').rodeType
 		return(
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
 					<div className={style.gradeboder}>
+					<div style={{marginBottom:'10px'}}>
+						{this.chooseSchool()}
+						{this.chooseYear()}
+						<Button onClick={()=>{
+						window.open("http://homework.mizholdings.com/qiniu/31000/7511/9CC79499-AB06-4AB1-AD9B-301E5CDAE501/班级导入模板.xlsx",'_blank');    
+						}}>下载模板</Button>
+					</div>
 						<Dropzone onDrop={this.onDrop}>
 							{({getRootProps, getInputProps, isDragActive}) => {
 								return (
@@ -154,18 +233,60 @@ class HomeworkCenter extends React.Component {
 							columns={columns}
 							rowClassName="editable-row"
 						/>
+						{
+							dataSource != ''?
+							<Button onClick={()=>{
+								let fileObj = document.getElementById('file').files[0];
+								let form = new FormData();
+								form.append('excelFile',fileObj);
+								let token = store.get('wrongBookToken');
+
+								let schoolId ='';
+								if(rodeType === 10){
+									schoolId=this.state.schoolId
+								}else{
+									schoolId= store.get('wrongBookNews').schoolId
+								}
+								form.append('schoolId',schoolId)
+								form.append('year',this.state.year)
+								
+								fetch(dataCenter('/user/importTeacherExcel?token=' + token), {
+									method: "POST",
+									body: form
+								})
+								.then(response => response.json())
+								.then(res => {
+									if(res.result == 0){
+										message.success(res.data.msg)
+									}
+								})
+								.catch(function(error) {
+									console.log('request failed: ', error)
+								})
+							}}>添加</Button>:''
+						}
 					</div>
 				</Content>
 			</Layout>
 		)
 	}
 	componentDidMount(){
-		
+		const rodeType = store.get('wrongBookNews').rodeType
+		if(rodeType === 10){
+			let data1 = {
+				pageNum:1,
+				pageSize:9999
+			}
+			this.props.dispatch({
+				type: 'classHome/pageRelevantSchool',
+				payload:data1
+			});
+		}
 	}
 }
 
 export default connect((state) => ({
 	state: {
-		...state.homePage,
+		...state.classHome,
 	}
 }))(HomeworkCenter);

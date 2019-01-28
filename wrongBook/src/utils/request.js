@@ -46,7 +46,7 @@ export default function request(url, options) {
   let data = options.data || {};
   let dataBody;
   let loginSession = store.get('wrongBookToken');
-  if(loginSession){
+  if(loginSession !== ''){
       data.token = loginSession;
   }
   dataBody = formatOpt(data);
