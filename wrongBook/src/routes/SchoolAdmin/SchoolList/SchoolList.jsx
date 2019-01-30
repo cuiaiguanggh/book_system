@@ -189,7 +189,7 @@ class HomeworkCenter extends React.Component {
 					}
 					this.setState({visible2:true,text:data})
 				}}>
-					详情
+					简介
 				</div>
 			)
 		},
@@ -342,7 +342,7 @@ class HomeworkCenter extends React.Component {
 									  let data = {
 									    province:this.state.provinces,
 									    city:this.state.city,
-									    areas:e.props.children,
+									    area:e.props.children,
 									    page:1,
 									    pageSize:10
 									  }
@@ -686,7 +686,6 @@ class HomeworkCenter extends React.Component {
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}} >学校</span>
 									<Input 
-										defaultValue={this.props.state.schoolName}
 										onChange={(e)=>{
 											this.props.dispatch({
 												type: 'homePage/changeSchoolName',
@@ -711,7 +710,7 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}}>校管理员</span>
-									<Input defaultValue={this.props.state.masterName}
+									<Input 
 										onChange={(e)=>{
 											this.props.dispatch({
 												type: 'homePage/changeMasterName',
@@ -722,7 +721,7 @@ class HomeworkCenter extends React.Component {
 								
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}}>手机号</span>
-									<Input defaultValue={this.props.state.masterPhone}
+									<Input
 										onChange={(e)=>{
 											this.props.dispatch({
 												type: 'homePage/changeMasterPhone',
@@ -732,7 +731,7 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}}>位置</span>
-									<Input defaultValue={this.props.state.address} 
+									<Input 
 									onChange={(e)=>{
 										this.props.dispatch({
 											type: 'homePage/changeaddress',
@@ -742,7 +741,7 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div>
 									<span style={{width:"80px",display:'inline-block',verticalAlign: 'top'}}>介绍</span>
-									<TextArea defaultValue={this.props.state.des} 
+									<TextArea 
 									onChange={(e)=>{
 										this.props.dispatch({
 											type: 'homePage/changedes',

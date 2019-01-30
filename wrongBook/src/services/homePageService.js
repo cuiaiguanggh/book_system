@@ -30,7 +30,7 @@ function addSchool(payload){
     });
 }
 function teacherList(payload){
-    return request(dataCenter('/user/teacherList'), {
+    return request(dataCenter('/user/memberList'), {
         data:payload
     });
 }

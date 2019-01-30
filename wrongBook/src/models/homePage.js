@@ -36,6 +36,8 @@ export default {
 		schoolPay:[],
 		tealist:[],
 		city:[],
+		infoClass:'',
+		infoSchool:'',
 	},
 	reducers: {
 		classNews(state, {payload}) {
@@ -91,6 +93,12 @@ export default {
 		},
 		tealist(state, {payload}) {
 			return { ...state, tealist:payload}
+		},
+		infoSchool(state, {payload}) {
+			return { ...state, infoSchool:payload}
+		},
+		infoClass(state, {payload}) {
+			return { ...state, infoClass:payload}
 		},
 	},
 	subscriptions: {
@@ -271,7 +279,16 @@ export default {
 		},
 		*teacherList({payload}, {put, select}) {
 			// 获取教师列表
-			let res = yield teacherList(payload);
+			console.log(payload)
+			let {infoClass,infoSchool} = yield select(state => state.homePage)
+			let data = {
+				type:payload.type,
+				classId:infoClass,
+				schoolId:infoSchool,
+				page:1,
+				pageSize:9999
+			}
+			let res = yield teacherList(data);
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'tealist',

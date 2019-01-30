@@ -100,7 +100,7 @@ class HomePageLeft extends Component {
 				if(item === 300){
 					menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
 						<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
-						<Icon type="file-text" /><span style={{cursor:'pointer'}}>作业中心</span></Link>
+						<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
 					</Menu.Item>)
 				}
 				// 用户管理
@@ -114,7 +114,19 @@ class HomePageLeft extends Component {
 		}
 	}
 	render() {
-		let  value= `http://hw-test.mizholdings.com/static/sc?schoolId=${store.get('wrongBookNews').schoolId}&year=2018`
+		let  value= ''
+		let userNews = store.get('wrongBookNews')
+		let rodeType = ''
+		if(!store.get('wrongBookNews')){
+			this.props.dispatch(
+				routerRedux.push({
+					pathname: '/login'
+				})
+			)
+		}else{
+			value= `http://hw-test.mizholdings.com/static/sc?schoolId=${store.get('wrongBookNews').schoolId}&year=2018`
+			rodeType = store.get('wrongBookNews').rodeType
+		}
 		let hash = this.props.location.pathname;
 		if(!store.get('wrongBookNews')){
 			this.props.dispatch(
@@ -129,8 +141,6 @@ class HomePageLeft extends Component {
 		}else if(defaultKey.indexOf('grade') ===0){
 			defaultKey = 'grade'
 		}
-		let userNews = store.get('wrongBookNews')
-		const rodeType = store.get('wrongBookNews').rodeType
 
 		return (
 			<div className={style.homePageContaier}>

@@ -32,6 +32,7 @@ export default {
 		schoolId:'',
 		workList:[],
 		yearList:[],
+		nowYear:'',
 	},
 	reducers: {
 		classList(state, {payload}) {
@@ -70,6 +71,9 @@ export default {
 		},
 		yearList(state, {payload}) {
 			return { ...state, yearList:payload };
+		},
+		nowYear(state, {payload}) {
+			return { ...state, nowYear:payload };
 		},
 	},
 	subscriptions: {
@@ -238,7 +242,6 @@ export default {
 		},
 		*getClassList({payload}, {put, select}) {
 			// 返回教师所在班级列表
-			console.log(payload)
 			let res = yield getClassList(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
@@ -263,6 +266,10 @@ export default {
 				yield put ({
 					type: 'yearList',
 					payload:res.data
+				})
+				yield put ({
+					type: 'nowYear',
+					payload:res.data.data[0]
 				})
 			}else{
 				message.err(res.data.msg)

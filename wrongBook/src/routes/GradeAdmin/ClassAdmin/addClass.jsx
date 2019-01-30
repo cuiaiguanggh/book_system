@@ -21,7 +21,9 @@ class HomeworkCenter extends React.Component {
 			 editingKey: '',
 			 current:'student',
 			 fileArr: [],
-			 file:[]
+			 file:[],
+			 schoolId:'',
+			 year:''
 			};
 	}
 	onImportExcel = file =>{
@@ -92,8 +94,9 @@ class HomeworkCenter extends React.Component {
 					<Select
 						showSearch
 						style={{ width: 200,marginRight:'10px' }}
+						placeholder='请选择学校'
 						optionFilterProp="children"
-Z						onChange={(value)=>{
+						onChange={(value)=>{
 							this.props.dispatch({
 								type: 'classHome/schoolId',
 								payload:value
@@ -117,7 +120,7 @@ Z						onChange={(value)=>{
 	}
 	chooseYear(){
 		const rodeType = store.get('wrongBookNews').rodeType
-		if(rodeType === 10){
+		if(rodeType <= 20){
 		let yearList = this.props.state.yearList;
 			const children = [];
 			if(yearList.data){
@@ -125,22 +128,45 @@ Z						onChange={(value)=>{
 					let data = yearList.data[i]
 					children.push(<Option key={data}>{data}</Option>);
 				}
+				return(
+					<Select
+						showSearch
+						style={{ width: 200,marginRight:'10px' }}
+						optionFilterProp="children"
+						placeholder='请选择学年'
+						value={this.props.state.nowYear}
+						onChange={(value)=>{
+							this.props.dispatch({
+								type: 'classHome/nowYear',
+								payload:value
+							})
+						}}
+						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+					>
+						{children}
+					</Select>
+				)
+			}else{
+				return(
+					<Select
+						showSearch
+						style={{ width: 200,marginRight:'10px' }}
+						optionFilterProp="children"
+						placeholder='请选择学年'
+						onChange={(value)=>{
+							this.props.dispatch({
+								type: 'classHome/nowYear',
+								payload:value
+							})
+						}}
+						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+					>
+						{children}
+					</Select>
+				)
 			}
 			
-			return(
-				<Select
-					showSearch
-					style={{ width: 200,marginRight:'10px' }}
-					optionFilterProp="children"
-					placeholder='请选择学年'
-					onChange={(value)=>{
-						this.setState({year:value})
-					}}
-					filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-				>
-					{children}
-				</Select>
-			)
+			
 		}	
 	}
 	render() {
@@ -247,22 +273,37 @@ Z						onChange={(value)=>{
 								}else{
 									schoolId= store.get('wrongBookNews').schoolId
 								}
-								form.append('schoolId',schoolId)
-								form.append('year',this.state.year)
-								
-								fetch(dataCenter('/user/importTeacherExcel?token=' + token), {
-									method: "POST",
-									body: form
-								})
-								.then(response => response.json())
-								.then(res => {
-									if(res.result == 0){
-										message.success(res.data.msg)
+								if(store.get('wrongBookNews').rodeType === 1){
+									if(schoolId === ''){
+										message.warning('请选择学校')
 									}
-								})
-								.catch(function(error) {
-									console.log('request failed: ', error)
-								})
+								}
+								else{
+									if( this.props.state.nowYear === ''){
+										message.warning('请选择学段')
+									}else{
+										form.append('schoolId',schoolId)
+										form.append('year',this.props.state.nowYear)
+										
+										fetch(dataCenter('/user/importTeacherExcel?token=' + token), {
+											method: "POST",
+											body: form
+										})
+										.then(response => response.json())
+										.then(res => {
+											if(res.result === 0){
+												message.success(res.msg)
+											}else{
+												message.error(res.msg)
+											}
+										})
+										.catch(function(error) {
+											message.error(error.msg)
+										})
+									}
+									
+								}
+								
 							}}>添加</Button>:''
 						}
 					</div>
@@ -280,6 +321,13 @@ Z						onChange={(value)=>{
 			this.props.dispatch({
 				type: 'classHome/pageRelevantSchool',
 				payload:data1
+			});
+		}else{
+			this.props.dispatch({
+				type: 'classHome/getYears',
+				payload:{
+					schoolId:store.get('wrongBookNews').schoolId
+				}
 			});
 		}
 	}

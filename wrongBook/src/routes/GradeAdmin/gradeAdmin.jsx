@@ -34,7 +34,7 @@ class HomeworkCenter extends React.Component {
 							this.props.dispatch(
 								routerRedux.push({
 									pathname: '/classInfo',
-									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+									hash:`sId=${this.state.schoolId}&id=${record.key}`
 									})
 							)
 						}}>
@@ -219,7 +219,7 @@ class HomeworkCenter extends React.Component {
 					p["stars"] = det.stars;
 					p["teacherName"] = det.classAdmin;
 					p["stuNum"] = det.studentNum;
-					p["workNum"] = det.workNum;
+					p["workNum"] = det.wqNum;
 					p["list"] = det;
 					dataSource[i]=p;
 				}
@@ -498,6 +498,7 @@ class HomeworkCenter extends React.Component {
 				pageNum:page,
 				pageSize:10
 			}
+			this.setState({schoolId:store.get('wrongBookNews').schoolId})
 			this.props.dispatch({
 				type: 'classHome/schoolId',
 				payload:store.get('wrongBookNews').schoolId
@@ -507,6 +508,7 @@ class HomeworkCenter extends React.Component {
 				payload:data
 			});
 		}else{
+			this.setState({schoolId:store.get('wrongBookNews').schoolId})
 			dispatch({
 				type: 'classHome/getClassList',
 			});

@@ -15,7 +15,8 @@ class HomePageLeft extends Component {
 	constructor(props) {
 		super(props);
 		this.state={
-			current:'home'
+			current:'home',
+
 		}
 	}
 	menuClick = (e) =>{
@@ -26,39 +27,27 @@ class HomePageLeft extends Component {
 		let head = hash.split('&id=');
 		let link = `classInfo#${head[0]}&id=`
 		let userNews = store.get('wrongBookNews')
-		if(userNews.rodeType === 10){
-			let ids = hash.substr(hash.indexOf("sId=")+4);
-			let id = ids.split('&id=');
-			let data1 = {
-					classId:e.key,
-					pageSize:9999,
-					pageNum:1,
-					type:1
+		if(e.key !== id){
+			if(userNews.rodeType === 10){
+				dispatch({
+					type: 'homePage/infoClass',
+					payload:e.key
+				});
+			}else{
+				let id = hash.substr(hash.indexOf("&id=")+4);
+				dispatch({
+					type: 'homePage/infoClass',
+					payload:e.key
+				});
 			}
-			dispatch({
-					type: 'homePage/teacherList',
-					payload:data1
-			});
-		}else{
-			let id = hash.substr(hash.indexOf("&id=")+4);
-
-			let data = {
-				classId:e.key,
-				pageSize:9999,
-				pageNum:1,
-				type:1
-			}
-			dispatch({
-					type: 'homePage/teacherList',
-					payload:data
-			});
-		}
-		dispatch(
-			routerRedux.push({
-				pathname: '/classInfo',
-				hash:`sId=${head[0]}&id=${e.key}`
+			dispatch(
+				routerRedux.push({
+					pathname: '/classInfo',
+					hash:`sId=${head[0]}&id=${e.key}`
 				})
-		)
+			)
+		}
+		
 	}
 	showConfirm = () => {
 		// confirm({
@@ -179,11 +168,9 @@ class HomePageLeft extends Component {
 	componentDidMount () {
         const {dispatch} = this.props;
 		let hash = this.props.location.hash;
-		console.log(hash)
         let userNews = store.get('wrongBookNews')
         if(userNews.rodeType === 10){
 			let ids = hash.substr(hash.indexOf("sId=")+4);
-			console.log(ids)
             let id = ids.split('&id=');
             let data = {
                 schoolId:id[0],
@@ -194,32 +181,41 @@ class HomePageLeft extends Component {
                 type: 'classHome/pageClass',
                 payload:data
 			});
-			let data1 = {
-					classId:id[1],
-					pageSize:9999,
-					pageNum:1,
-					type:1
-			}
+			
 			dispatch({
-					type: 'homePage/teacherList',
-					payload:data1
+				type: 'homePage/infoClass',
+				payload:id[1]
+			});
+			dispatch({
+				type: 'homePage/infoSchool',
+				payload:id[0]
 			});
         }else{
 			let id = hash.substr(hash.indexOf("&id=")+4);
-
-			let data = {
-				schoolId:userNews.schoolId,
-				classId:id[1],
-				pageSize:9999,
-				pageNum:1,
-				type:1
-			}
 			dispatch({
-					type: 'homePage/teacherList',
-					payload:data
+				type: 'homePage/infoClass',
+				payload:id
+			});
+			dispatch({
+				type: 'homePage/infoSchool',
+				payload:userNews.schoolId
+			});
+			let data = {
+                schoolId:userNews.schoolId,
+                pageSize:9999,
+                pageNum:1
+            }
+            dispatch({
+                type: 'classHome/pageClass',
+                payload:data
 			});
         }
-
+		this.props.dispatch({
+			type: 'homePage/teacherList',
+			payload:{
+				type:1
+			}
+		});
 		
 	}
 }

@@ -112,42 +112,6 @@ class HomeworkCenter extends React.Component {
 			key:'stuNum',
 			editable: true,
 		},
-		
-		{
-			title: '操作',
-			dataIndex: 'operation',
-			render: (text, record) => {
-				const editable = this.isEditing(record);
-				return (
-				<div>
-					{editable ? (
-					<span>
-						<EditableContext.Consumer>
-						{form => (
-							<a
-							onClick={() => this.save(form, record.key)}
-							style={{ marginRight: 8 }}
-							>
-							保存
-							</a>
-						)}
-						</EditableContext.Consumer>
-						<Popconfirm
-						title="确定要取消修改么?"
-						okText='确认'
-						cancelText='取消'
-						onConfirm={() => this.cancel(record.key)}
-						>
-						<a>取消</a>
-						</Popconfirm>
-					</span>
-					) : (
-					<a onClick={() => this.edit(record.key)}>编辑</a>
-					)}
-				</div>
-				);
-			},
-			},
 		];
 	}
 	isEditing = record => record.key === this.state.editingKey;
@@ -182,6 +146,7 @@ class HomeworkCenter extends React.Component {
 				p["head"] = det.avatarUrl;
 				p["name"] = det.userName;
 				p['phone'] = det.phone
+				p['OnwerTeacher'] = det.admin ===1 ?'是':''
 				dataSource[i]=p;
 			}
 		}
@@ -212,9 +177,25 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
 					<div className={style.gradeboder} >
-					{/* <Menu
+					<Menu
 						onClick={(e)=>{
 							this.setState({current:e.key})
+							if(e.key === 'teacher'){
+								this.props.dispatch({
+									type: 'homePage/teacherList',
+									payload:{
+										type:1
+									}
+								});
+							}else {
+								this.props.dispatch({
+									type: 'homePage/teacherList',
+									payload:{
+										type:3
+									}
+								});
+							}
+							
 						}}
 						selectedKeys={[this.state.current]}
 						mode="horizontal"
@@ -225,7 +206,7 @@ class HomeworkCenter extends React.Component {
 						<Menu.Item key="student" >
 						学生
 						</Menu.Item>
-					</Menu> */}
+					</Menu>
 					<div style={{overflow:'hidden',marginBottom:"5px",textAlign:'right'}}>
 							
 							<Search
@@ -250,6 +231,7 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount(){
+		
 	}
 }
 

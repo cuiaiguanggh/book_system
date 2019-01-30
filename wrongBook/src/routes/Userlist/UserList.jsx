@@ -74,7 +74,7 @@ class HomeworkCenter extends React.Component {
 				const editable = this.isEditing(record);
 				return (
 				<div>
-					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+					{/* <span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
 						// this.setState({
 						// 	visible:true,
 						// })
@@ -108,7 +108,7 @@ class HomeworkCenter extends React.Component {
 						// 			console.log('Cancel');
 						// 		},
 						//   });
-					}}>踢出班级</span>
+					}}>踢出班级</span> */}
 				</div>
 				);
 			},
