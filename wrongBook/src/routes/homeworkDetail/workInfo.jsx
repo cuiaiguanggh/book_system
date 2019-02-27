@@ -1,13 +1,14 @@
 import React,{ Component } from "react";
 import 'antd/dist/antd.css';
 import {Menu, Icon,Popover} from 'antd';
-import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
 import {Link} from "dva/router";
+import { connect } from 'dva';
 import store from 'store';
 import style from './workInfo.less';
 import {dataCenter} from '../../config/dataCenter'
-import Top from '../Layout/top'
+import Top from '../Layout/top';
+import Tem from '../tempdata/tempdata'
 const SubMenu = Menu.SubMenu;
 const userNews = store.get('wrongBookNews')
 //主界面内容
@@ -107,7 +108,7 @@ class HomePageLeft extends Component {
 						</div>
 						<div className='homePageContaier1'>
                             <iframe  className={style.iframe} src={iframeSrc}></iframe>
-                            {/* <ClassAdmin></ClassAdmin> */}
+                            {/* <Tem location={this.props.location}></Tem> */}
 						</div>
 					</div>
 				</div>
@@ -115,10 +116,17 @@ class HomePageLeft extends Component {
 		)
 	}
 	componentDidMount () {
+		let userNews = store.get('wrongBookNews')
+		if(userNews == undefined){
+			this.props.dispatch(
+				routerRedux.push({
+					pathname: '/login',
+					})
+			)
+		}
         const {dispatch} = this.props;
 		let hash = this.props.location.hash;
         let ids = hash.substr(hash.indexOf("sId=")+4);
-        console.log(ids)
         let id = ids.split('&id=');
         let data = {
             classId:id[0],
@@ -127,8 +135,14 @@ class HomePageLeft extends Component {
             type: 'classHome/queryHomeworkList',
             payload:data
         });
-
-		
+        
+        let data1 = {
+            homeworkId:id[1],
+        }
+        dispatch({
+            type: 'temp/queryScoreDetail',
+            payload:data1
+        });
 	}
 }
 

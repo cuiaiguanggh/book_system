@@ -113,6 +113,7 @@ class HomeworkCenter extends React.Component {
 			width: '25%',
 			render: (text, record) => (
 				<div
+				className='space'
 					onClick={() =>{
 					}}>
 					{text}
@@ -182,7 +183,7 @@ class HomeworkCenter extends React.Component {
 			key: 'introduce',
 			width: '10%',
 			render: (text, record) => (
-				<div style={{cursor:'pointer'}} onClick={()=>{
+				<div style={{color:'#1890ff',cursor:'pointer'}} onClick={()=>{
 					let data = text;
 					if(data === ''){
 						data = '暂无信息'
@@ -367,7 +368,10 @@ class HomeworkCenter extends React.Component {
 									onChange={(value,e)=>{
 										let data = {
 											page:1,
-											pageSize:10
+											pageSize:10,
+										}
+										if(value !== 0){
+											data.phaseId=value
 										}
 										if(this.state.SearchValue !== ''){
 											data.schoolName = this.state.SearchValue
@@ -388,6 +392,7 @@ class HomeworkCenter extends React.Component {
 									}}
 									filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 								>
+									<Option key={0} value={0}>全部</Option>
 									<Option key={1} value={1}>小学</Option>
 									<Option key={2} value={2}>初中</Option>
 									<Option key={3} value={3}>高中</Option>

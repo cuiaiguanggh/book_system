@@ -31,7 +31,7 @@ export default {
 			store.set('wrongBookToken','')
 			let {identity, certification} = yield select(state => state.login);
 			let res = yield loginTiku(identity, certification);
-			if(!res.hasOwnProperty("err")){
+			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
 					let data = res.data
 					store.set('wrongBookNews',data.data)
@@ -57,10 +57,10 @@ export default {
 				}else{
 					message.warning(res.data.msg)
 				}
-			}else{
-				message.warning(res.data.msg)
-				// message.warning('系统错误，请稍后再试')
-			}
+			// }else{
+			// 	message.warning(res.data.msg)
+			// 	// message.warning('系统错误，请稍后再试')
+			// }
 		},
 	},
   

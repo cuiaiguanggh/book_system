@@ -12,7 +12,7 @@ function classInfo(payload){
     });
 }
 function teacherList(payload){
-    return request(dataCenter('/user/teacherList'),{
+    return request(dataCenter('/user/memberList'),{
         data:payload
     });
 }
@@ -54,6 +54,27 @@ function getYears(payload){
         data:payload
     });
 }
+function createSchoolUser(payload){
+    return request(dataCenter('/user/createSchoolUser'),{
+        data:payload
+    });
+}
+function subjectNodeList(payload){
+    return request(dataCenter('/sys/config/subjectNodeList'),{
+        data:payload
+    });
+}
+function administrativeDivision(payload){
+    return request(dataCenter('/sys/config/administrativeDivision'), {
+        data:payload
+    });
+}
+function kickClass(payload){
+    return request(dataCenter('/user/kickClass'), {
+        data:payload
+    });
+}
+
 export {
     pageClass,
     classInfo,
@@ -66,4 +87,8 @@ export {
     queryHomeworkList,
     getClassList,
     getYears,
+    createSchoolUser,
+    subjectNodeList,
+    administrativeDivision,
+    kickClass,
 };

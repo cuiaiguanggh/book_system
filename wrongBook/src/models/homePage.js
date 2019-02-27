@@ -7,6 +7,9 @@ import {
 	addSchool,
 	teacherList,
 	administrativeDivision,
+	kickClass,
+	createSchoolUser,
+	subjectNodeList
 } from '../services/homePageService';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
@@ -38,6 +41,8 @@ export default {
 		city:[],
 		infoClass:'',
 		infoSchool:'',
+		memType:1,
+		sublist:[],
 	},
 	reducers: {
 		classNews(state, {payload}) {
@@ -99,6 +104,12 @@ export default {
 		},
 		infoClass(state, {payload}) {
 			return { ...state, infoClass:payload}
+		},
+		memType(state, {payload}) {
+			return { ...state, memType:payload}
+		},
+		sublist(state, {payload}) {
+			return { ...state, sublist:payload };
 		},
 	},
 	subscriptions: {
@@ -262,7 +273,6 @@ export default {
 				city:citys,
 				area:areas,
 			}
-			console.log(data)
 			let res = yield addSchool(data);
 			if(res.data && res.data.result === 0){
 				yield put ({
@@ -279,7 +289,6 @@ export default {
 		},
 		*teacherList({payload}, {put, select}) {
 			// 获取教师列表
-			console.log(payload)
 			let {infoClass,infoSchool} = yield select(state => state.homePage)
 			let data = {
 				type:payload.type,
@@ -293,6 +302,67 @@ export default {
 				yield put ({
 					type: 'tealist',
 					payload:res.data
+				})
+			}
+			else if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else{
+				message.err(res.data.msg)
+			}
+			
+		},
+		
+		*createSchoolUser({payload}, {put, select}) {
+			// 学年返回
+			let res = yield createSchoolUser(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				message.success(res.data.msg)
+				let data = {
+					type:1
+				}
+				yield put ({
+					type: 'teacherList',
+					payload:data
+				})
+				
+			}else{
+				message.err(res.data.msg)
+			}
+			
+		},
+		*subjectNodeList({payload}, {put, select}) {
+			let res = yield subjectNodeList(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'sublist',
+					payload:res.data
+				})
+			}else{
+				message.err(res.data.msg)
+			}
+			
+		},
+		*kickClass({payload}, {put, select}) {
+			// 用户踢出班级
+			let {infoClass,memType} = yield select(state => state.homePage)
+			let data = {
+				userId:payload.userId,
+				classId:infoClass,
+			}
+			let res = yield kickClass(data);
+			if(res.data && res.data.result === 0){
+				message.success(res.data.msg)
+				yield put ({
+					type: 'teacherList',
+					payload:{
+						type:memType
+					}
 				})
 			}
 			else if(res.hasOwnProperty("err")){

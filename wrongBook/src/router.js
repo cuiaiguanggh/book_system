@@ -1,7 +1,7 @@
 import React from 'react';
-import { Router, Route,Switch  } from 'dva/router';
+import { Router, Route,Switch,  } from 'dva/router';
 // import ComponentWarp from '../../components/ComponentWarp';
-
+import { Icon} from 'antd';
 import Login from './routes/Login/loginPage';
 import ClassAdmin from './routes/GradeAdmin/ClassAdmin/classAdmin'
 import GradeAdmin from './routes/GradeAdmin/gradeAdmin';
@@ -12,16 +12,26 @@ import AddClass from './routes/GradeAdmin/ClassAdmin/addClass'
 import UserList from './routes/Userlist/UserList'
 import MyNews from './routes/Layout/userLeft'
 import ClassInfo from './routes/GradeAdmin/ClassAdmin/classList'
-import WorkDetail from './routes/homeworkDetail/homeworkDetail'
-import WorkInfo from './routes/homeworkDetail/workInfo'
-import Test from './routes/test/test'
+// import WorkDetail from './routes/homeworkDetail/homeworkDetail'
+import WorkDetail from './routes/workDetail/homeworkDetail'
 
-function RouterConfig({ history }) {
+import WorkInfo from './routes/homeworkDetail/workInfo'
+import dynamic from 'dva/dynamic'
+
+function RouterConfig({ history,app }) {
+  const Login = dynamic({
+    app,
+    component: () => import('./routes/Login/loginPage')
+  })
+  
+  const Home = dynamic({
+    app,
+    component: () => import('./routes/Layout/Menus')
+  })
   return (
     <Router history={history}>
       <Switch>
         <Route path="/login"  component={Login} />
-        <Route path="/test"  component={Test} />
         <Route path="/UserInfo" component={MyNews} />
         <Route path="/workInfo" component={WorkInfo} />
         <Route path="/classInfo" component={ClassInfo} />

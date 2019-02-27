@@ -177,30 +177,66 @@ class HomeworkCenter extends React.Component {
 				dataIndex: 'name',
 				key: 'name',
 				width: '20%',
+				render: (text, record) => (
+					<div
+					className='space'
+						onClick={() =>{
+						}}>
+						{text}
+					</div>
+				)
 			},
 			{
 				title:'教师姓名',
 				dataIndex:'teacher',
 				key:'teacher',
 				width: '20%',
+				render: (text, record) => (
+					<div
+						onClick={() =>{
+						}}>
+						{text}
+					</div>
+				)
 			},
 			{
 				title:'班主任',
 				dataIndex:'teacherName',
 				key:'teacherName',
 				width: '20%',
+				render: (text, record) => (
+					<div
+						onClick={() =>{
+						}}>
+						{text}
+					</div>
+				)
 			},
 			{
 				title:'学科',
 				dataIndex:'sub',
 				key:'sub',
 				width: '20%',
+				render: (text, record) => (
+					<div
+						onClick={() =>{
+						}}>
+						{text}
+					</div>
+				)
 			},
 			{
 				title:'手机',
 				dataIndex:'phone',
 				key:'phone',
 				width: '20%',
+				render: (text, record) => (
+					<div
+						onClick={() =>{
+						}}>
+						{text}
+					</div>
+				)
 			},
 		];
 		let fileArr = this.state.fileArr
@@ -228,7 +264,7 @@ class HomeworkCenter extends React.Component {
 						{this.chooseSchool()}
 						{this.chooseYear()}
 						<Button onClick={()=>{
-						window.open("http://homework.mizholdings.com/qiniu/31000/7511/9CC79499-AB06-4AB1-AD9B-301E5CDAE501/班级导入模板.xlsx",'_blank');    
+						window.open("http://homework.mizholdings.com/qiniu/31000/7511/D0539650-0039-4CAF-9CE5-7845AFD8ABED/教师信息采集模板.XLSX",'_blank');    
 						}}>下载模板</Button>
 					</div>
 						<Dropzone onDrop={this.onDrop}>
@@ -261,7 +297,10 @@ class HomeworkCenter extends React.Component {
 						/>
 						{
 							dataSource != ''?
-							<Button onClick={()=>{
+							<Button
+								type="primary"
+								style={{display:'block',margin:'0 auto'}}
+								 onClick={()=>{
 								let fileObj = document.getElementById('file').files[0];
 								let form = new FormData();
 								form.append('excelFile',fileObj);
@@ -304,7 +343,7 @@ class HomeworkCenter extends React.Component {
 									
 								}
 								
-							}}>添加</Button>:''
+							}}>确认添加</Button>:''
 						}
 					</div>
 				</Content>

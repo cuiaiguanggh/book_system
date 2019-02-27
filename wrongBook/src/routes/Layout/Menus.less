@@ -1,19 +1,21 @@
 .homePageContaier{
     min-width: 1350px;
     overflow: hidden;
+    max-width: 2000px;
 
     .HomePageCent{
         width: 80%;
         margin: 0 auto;
         height: calc(100% - 120px);
-        // overflow: hidden;
+        overflow: hidden;
         margin-top: 10px;
 
         :global(.pageLeftCont){
             height: 100%;
             overflow: hidden;
             float: left;
-            
+            width:100% ;
+
             :global(.homePageLeft){
                 display: inline-block;
                 float: left;
@@ -56,6 +58,11 @@
                 //     border-right:none!important;
                 //     font-family: "anticon" !important;
                 // }
+            }
+            .homepageRight{
+                width: calc(~"100% - 220px");
+                display: inline-block;
+                float: left;
             }
         }
     }

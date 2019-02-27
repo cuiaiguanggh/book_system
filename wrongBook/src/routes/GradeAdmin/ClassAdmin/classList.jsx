@@ -16,7 +16,7 @@ class HomePageLeft extends Component {
 		super(props);
 		this.state={
 			current:'home',
-
+			type:1
 		}
 	}
 	menuClick = (e) =>{
@@ -29,6 +29,7 @@ class HomePageLeft extends Component {
 		let userNews = store.get('wrongBookNews')
 		if(e.key !== id){
 			if(userNews.rodeType === 10){
+
 				dispatch({
 					type: 'homePage/infoClass',
 					payload:e.key
@@ -39,6 +40,7 @@ class HomePageLeft extends Component {
 					type: 'homePage/infoClass',
 					payload:e.key
 				});
+				
 			}
 			dispatch(
 				routerRedux.push({
@@ -46,6 +48,11 @@ class HomePageLeft extends Component {
 					hash:`sId=${head[0]}&id=${e.key}`
 				})
 			)
+			dispatch({
+				type: 'homePage/teacherList',
+				payload:this.props.state.memType
+			});
+			
 		}
 		
 	}
@@ -84,17 +91,24 @@ class HomePageLeft extends Component {
 	//返回导航栏目
 	Menus() {
         let userNews = store.get('wrongBookNews')
-        let classList = this.props.state.classList;
-        let location = this.props.location.hash;
+		let location = this.props.location.hash;
+		let classList = [];
         let hash = location.substr(location.indexOf("sId=")+4);
         let id = location.substr(location.indexOf("&id=")+4);
-        let head = hash.split('&id=');
-        let link = `classInfo#${head[0]}&id=`
+		let head = hash.split('&id=');
+		let ha =store.get('wrong_hash')
+		let link = `/grade#${ha.substr(ha.indexOf("#")+1)}`
+		const rodeType = store.get('wrongBookNews').rodeType
+		if(rodeType <= 20){
+			classList = this.props.state.classList;
+		}else{
+			classList = this.props.state.classList1;
+		}
         if(classList.data){
             return(
                 <div style={style.leftInfo}>
                     <h3 style={{padding:'5px',textAlign:'center'}}>
-                        <Link to='/'>
+                        <Link to={link}>
                             <Icon type="left" style={{float:'left',fontSize:'20px',lineHeight:'30px',cursor:'pointer'}}/>
                         </Link>教师列表
                     </h3>
@@ -108,15 +122,25 @@ class HomePageLeft extends Component {
                         // inlineCollapsed={col}
                     >
                         {
+							rodeType <= 20 ?
                             classList.data.list.map((item,i)=>{
 								const {dispatch} = this.props;
                                 return (
                                     <Menu.Item key={item.classId} >
 											{item.className}
                                     </Menu.Item>
+								)
+								}
+							):
+							classList.data.map((item,i)=>{
+								const {dispatch} = this.props;
+                                return (
+                                    <Menu.Item key={item.classId} >
+											{item.className}
+                                    </Menu.Item>
                                 )
-                            }
-                            )
+								}
+							)
                         }
                     </Menu>
                 </div>
@@ -124,29 +148,8 @@ class HomePageLeft extends Component {
         }
 		
 	}
-	children() {
-		return(
-			<div>
-                123123
-            </div>
-		)
-	}
 	render() {
 		let hash = this.props.location.pathname;
-        let defaultKey = hash.substr(hash.indexOf("/")+1);
-		const content = (
-            <div className={style.userPover}>
-              <p>个人信息</p>
-              <p onClick={()=>{
-				  	this.props.dispatch(
-						routerRedux.push({
-							pathname: '/login',
-							})
-					)
-			  }}>退出</p>
-            </div>
-		  );
-		let userNews = store.get('wrongBookNews')
 		return (
 			<div className={style.homePageContaier}>
 				<Top/>
@@ -158,7 +161,7 @@ class HomePageLeft extends Component {
 							<p className={style.phoneNum}>400-889-1291</p>
 						</div>
 						<div className='homePageContaier'>
-                            <ClassAdmin></ClassAdmin>
+                            <ClassAdmin location={this.props.location}></ClassAdmin>
 						</div>
 					</div>
 				</div>
@@ -169,7 +172,7 @@ class HomePageLeft extends Component {
         const {dispatch} = this.props;
 		let hash = this.props.location.hash;
         let userNews = store.get('wrongBookNews')
-        if(userNews.rodeType === 10){
+        if(userNews.rodeType <= 20){
 			let ids = hash.substr(hash.indexOf("sId=")+4);
             let id = ids.split('&id=');
             let data = {
@@ -206,8 +209,7 @@ class HomePageLeft extends Component {
                 pageNum:1
             }
             dispatch({
-                type: 'classHome/pageClass',
-                payload:data
+                type: 'classHome/getClassList',
 			});
         }
 		this.props.dispatch({
@@ -216,7 +218,9 @@ class HomePageLeft extends Component {
 				type:1
 			}
 		});
-		
+		this.props.dispatch({
+			type: 'homePage/subjectNodeList',
+		});
 	}
 }
 

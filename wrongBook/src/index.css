@@ -6,6 +6,7 @@ html, body, :global(#root) {
 }
 :global(.homePageContaier) {
 	min-width: 1350px;
+	max-width: 2000px;
 }
 :global(.HomePageFooter) {
 	min-width: 1200px;

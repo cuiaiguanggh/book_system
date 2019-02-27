@@ -40,35 +40,49 @@ class HomePageLeft extends Component {
 		  
 		return (
 				<div className="navClass">
-					<Link to="/"  style={{cursor:'pointer'}} replace >
-						<img alt='' style={{height:'40px'}} src={require("../images/t_nv_ig_n.png")}/>
-					</Link>
-					<span style={{marginLeft:50,fontSize:16}}>
-					{
-						userNews.rodeType > 10 ?
-						userNews.schoolName:''
-					}
-					</span>
-					<div className={style.usinfo}>
-						<img  alt='' src={userNews.avatarUrl===null?'':userNews.avatarUrl }/>
-						
-						<Popover
-						 	content={content} 
-							// trigger="click"
-							 type="primary"
-							 placement="bottom"
-						>
-							<div 
-							className="btnBack" 
-							 type="primary">
-								<span>{userNews.userName}</span>
-							</div>
-						</Popover>
+				{
+					userNews ==undefined?'':
+					<div>
+						<Link to="/"  style={{cursor:'pointer'}} replace >
+							<img alt='' style={{height:'40px'}} src={require("../images/t_nv_ig_n.png")}/>
+						</Link>
+						<span style={{marginLeft:50,fontSize:16}}>
+						{
+							userNews.rodeType > 10 ?
+							userNews.schoolName:''
+						}
+						</span>
+						<div className={style.usinfo}>
+							<img  alt='' src={userNews.avatarUrl===null?'':userNews.avatarUrl }/>
+							
+							<Popover
+								content={content} 
+								// trigger="click"
+								type="primary"
+								placement="bottom"
+							>
+								<div 
+								className="btnBack" 
+								type="primary">
+									<span>{userNews.userName}</span>
+								</div>
+							</Popover>
+						</div>
 					</div>
+				}
+					
 				</div>
 		)
 	}
 	componentDidMount () {
+		let userNews = store.get('wrongBookNews')
+		if(userNews == undefined){
+			this.props.dispatch(
+				routerRedux.push({
+					pathname: '/login',
+					})
+			)
+		}
 	}
 }
 

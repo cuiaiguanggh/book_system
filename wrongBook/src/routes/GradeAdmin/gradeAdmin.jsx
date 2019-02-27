@@ -30,11 +30,12 @@ class HomeworkCenter extends React.Component {
 				width: '20%',
 				render: (text, record) => {
 					return (
-						<div onClick={()=>{
+						<div className='space' style={{cursor:'pointer'}} onClick={()=>{
+							store.set('wrong_hash', this.props.location.hash)
 							this.props.dispatch(
 								routerRedux.push({
 									pathname: '/classInfo',
-									hash:`sId=${this.state.schoolId}&id=${record.key}`
+									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
 									})
 							)
 						}}>
@@ -48,6 +49,21 @@ class HomeworkCenter extends React.Component {
 				dataIndex:'teacherName',
 				key:'teacherName',
 				width: '15%',
+				render: (text, record) => {
+					return (
+						<div style={{cursor:'pointer'}} onClick={()=>{
+							store.set('wrong_hash', this.props.location.hash)
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/classInfo',
+									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+									})
+							)
+						}}>
+							{text}
+						</div>
+					);
+				}
 			},
 			{
 				title:'评级',
@@ -56,23 +72,61 @@ class HomeworkCenter extends React.Component {
 				width: '20%',
 				render: (text, record) => {
 					return (
-					<div>
-						<Rate disabled defaultValue={text} />
-					</div>
+						<div style={{cursor:'pointer'}} onClick={()=>{
+							store.set('wrong_hash', this.props.location.hash)
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/classInfo',
+									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+									})
+							)
+						}}>
+							{text}
+						</div>
 					);
-				},
+				}
 			},
 			{
 				title:'人数',
 				dataIndex:'stuNum',
 				key:'stuNum',
 				width: '15%',
+				render: (text, record) => {
+					return (
+						<div style={{cursor:'pointer'}} onClick={()=>{
+							store.set('wrong_hash', this.props.location.hash)
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/classInfo',
+									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+									})
+							)
+						}}>
+							{text}
+						</div>
+					);
+				}
 			},
 			{
-				title:'错题数量',
+				title:'错题报告数量',
 				dataIndex:'workNum',
 				key:'workNum',
 				width: '15%',
+				render: (text, record) => {
+					return (
+						<div style={{cursor:'pointer'}} onClick={()=>{
+							store.set('wrong_hash', this.props.location.hash)
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/classInfo',
+									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+									})
+							)
+						}}>
+							{text}
+						</div>
+					);
+				}
 			},
 			{
 			title: '操作',
@@ -94,7 +148,8 @@ class HomeworkCenter extends React.Component {
 							payload:data
 						});
 						let data1 = {
-							schoolId:store.get('wrongBookNews').schoolId
+							schoolId:store.get('wrongBookNews').schoolId,
+							type:1
 						}
 						this.props.dispatch({
 							type: 'classHome/teacherList',
@@ -161,7 +216,8 @@ class HomeworkCenter extends React.Component {
 						style={{ width: 200,marginRight:'10px' }}
 						optionFilterProp="children"
 						placeholder='请选择学校'
-						onChange={(value)=>{
+						onChange={(value,e)=>{
+							console.log(e.props.children)
 							this.props.dispatch(
 								routerRedux.push({
 									pathname: '/grade',
@@ -274,7 +330,8 @@ class HomeworkCenter extends React.Component {
 									}else{
 										this.setState({visible1:true})
 										let data1 = {
-											schoolId:this.props.state.schoolId
+											schoolId:this.props.state.schoolId,
+											type:1
 										}
 										this.props.dispatch({
 											type: 'classHome/teacherList',
@@ -508,6 +565,10 @@ class HomeworkCenter extends React.Component {
 				payload:data
 			});
 		}else{
+			this.props.dispatch({
+				type: 'classHome/schoolId',
+				payload:store.get('wrongBookNews').schoolId
+			});
 			this.setState({schoolId:store.get('wrongBookNews').schoolId})
 			dispatch({
 				type: 'classHome/getClassList',

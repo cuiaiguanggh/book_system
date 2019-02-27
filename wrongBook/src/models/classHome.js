@@ -33,6 +33,7 @@ export default {
 		workList:[],
 		yearList:[],
 		nowYear:'',
+		sublist:[],
 	},
 	reducers: {
 		classList(state, {payload}) {
@@ -74,6 +75,15 @@ export default {
 		},
 		nowYear(state, {payload}) {
 			return { ...state, nowYear:payload };
+		},
+		sublist(state, {payload}) {
+			return { ...state, sublist:payload };
+		},
+		infoSchool(state, {payload}) {
+			return { ...state, infoSchool:payload}
+		},
+		infoClass(state, {payload}) {
+			return { ...state, infoClass:payload}
 		},
 	},
 	subscriptions: {
@@ -129,7 +139,15 @@ export default {
 		},
 		*teacherList({payload}, {put, select}) {
 			// 教师列表查询
-			let res = yield teacherList(payload);
+			let {infoClass,infoSchool} = yield select(state => state.homePage)
+			let data = {
+				type:payload.type,
+				classId:infoClass,
+				schoolId:infoSchool,
+				page:1,
+				pageSize:9999
+			}
+			let res = yield teacherList(data);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else
@@ -226,7 +244,6 @@ export default {
 		},
 		*queryHomeworkList({payload}, {put, select}) {
 			// 返回班级作业列表
-			console.log(payload)
 			let res = yield queryHomeworkList(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
@@ -247,6 +264,13 @@ export default {
 				yield put(routerRedux.push('/login'))
 			}else
 			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'queryHomeworkList',
+					payload:{
+						classId:res.data.data[0].classId
+					}
+				})
+
 				yield put ({
 					type: 'classList1',
 					payload:res.data

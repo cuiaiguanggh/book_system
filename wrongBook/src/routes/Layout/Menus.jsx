@@ -80,14 +80,18 @@ class HomePageLeft extends Component {
 				// 班级管理模块
 				if(item === 200){
 					if(rodeType <= 20){
-						menus.push(<SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
+						menus.push(
+						// <SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
 								<Menu.Item key="grade">
 									<Link to='grade#page=1' replace>
-										<Icon type="bar-chart" />班级列表
+										<Icon type="bar-chart" />班级管理
 									</Link>
 							</Menu.Item>
+						// </SubMenu>
+						)
+						menus.push(
 							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" />批量导入</Link></Menu.Item>
-						</SubMenu>)
+						)
 					}else{
 						menus.push(<Menu.Item key="grade">
 							<Link to='grade#page=1' replace>
@@ -104,11 +108,11 @@ class HomePageLeft extends Component {
 					</Menu.Item>)
 				}
 				// 用户管理
-				if(item === 400){
-					if(rodeType <= 20){
-						menus.push(<Menu.Item key="user"><Link to="/user" replace><Icon type="bar-chart" />用户管理</Link></Menu.Item>)
-					}
-				}
+				// if(item === 400){
+				// 	if(rodeType <= 20){
+				// 		menus.push(<Menu.Item key="user"><Link to="/user" replace><Icon type="bar-chart" />用户管理</Link></Menu.Item>)
+				// 	}
+				// }
 			})
 			return(menus)
 		}
@@ -177,7 +181,7 @@ class HomePageLeft extends Component {
 							}
 							<p className={style.phoneNum}>400-889-1291</p>
 						</div>
-						<div className='homePageContaier'>
+						<div className={style.homepageRight}>
 							{this.props.children}
 						</div>
 					</div>

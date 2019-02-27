@@ -39,6 +39,27 @@ function administrativeDivision(payload){
         data:payload
     });
 }
+function kickClass(payload){
+    return request(dataCenter('/user/kickClass'), {
+        data:payload
+    });
+}
+function createSchoolUser(payload){
+    return request(dataCenter('/user/createSchoolUser'),{
+        data:payload
+    });
+}
+function subjectNodeList(payload){
+    return request(dataCenter('/sys/config/subjectNodeList'),{
+        data:payload
+    });
+}
+function kickClass(payload){
+    return request(dataCenter('/user/kickClass'), {
+        data:payload
+    });
+}
+
 export {
     functionList,
     pageRelevantSchool,
@@ -47,5 +68,8 @@ export {
     deleteSchool,
     addSchool,
     teacherList,
+    kickClass,
+    createSchoolUser,
+    subjectNodeList,
     administrativeDivision,
 };

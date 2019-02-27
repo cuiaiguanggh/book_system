@@ -29,7 +29,7 @@ class HomeworkCenter extends React.Component {
 				key: 'name',
 				render: (text, record) => {
 					return (
-						<div onClick={()=>{
+						<div className="space" onClick={()=>{
 							this.props.dispatch(
 								routerRedux.push({
 									pathname: '/workInfo',
@@ -41,21 +41,6 @@ class HomeworkCenter extends React.Component {
 						</div>
 					);
 				}
-			},
-			{
-			title: '操作',
-			dataIndex: 'operation',
-			render: (text, record) => {
-				const editable = this.isEditing(record);
-				return (
-				<div>
-					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
-					}}>查看</span>
-					
-					
-				</div>
-				);
-			},
 			},
 		];
 	}
@@ -232,7 +217,7 @@ class HomeworkCenter extends React.Component {
 									});
 								 }}
 							 	pageSize={10} defaultPageSize={10}  total={total} />:
-							 ''
+							''
 						}
 					</div>
 				</Content>
