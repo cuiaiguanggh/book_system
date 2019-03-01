@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Tabs, Input,Modal,Select,Table,Checkbox,Rate
+import { Layout, Tabs, Input,Modal,Select,Table,Checkbox,Rate, message
 } from 'antd';
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
@@ -31,21 +31,10 @@ class HomeworkCenter extends React.Component {
 			editingKey: '',
 			visible: false,
 			visible1:false,
-			classId:''
+			classId:'',
+			checked:false,
 	};
 		this.columns = [
-			{
-				title: '姓名',
-				dataIndex: 'name',
-				key: 'name',
-				render: (text, record) => {
-					return (
-						<div className='space'  style={{cursor:'pointer'}}>
-							{text+1}
-						</div>
-					);
-				}
-			},
 			{
 				title:'排序',
 				dataIndex:'sort',
@@ -54,7 +43,19 @@ class HomeworkCenter extends React.Component {
 				render: (text, record) => {
 					return (
 						<div style={{cursor:'pointer'}}>
-							{text+1}
+							{text+1 }
+						</div>
+					);
+				}
+			},
+			{
+				title: '姓名',
+				dataIndex: 'name',
+				key: 'name',
+				render: (text, record) => {
+					return (
+						<div className='space'  style={{cursor:'pointer'}}>
+							{text}
 						</div>
 					);
 				}
@@ -65,14 +66,13 @@ class HomeworkCenter extends React.Component {
 				key:'stars',
 				width: '20%',
 				render: (text, record) => {
-					var s = text * 100;
+					let key = ''; 
+					if(!this.state.checked){
+						var s = text * 100;
 					var scoreArea = [ 80, 60, 40, 20,0];
 					let are = [1,2,3,4,5]
-					let key = []; 
-
 					for (var j=0; j<scoreArea.length; j++ ) {
 						//是否优秀
-						console.log(scoreArea[j],s)
 						if( j == 0 ){
 							if (s>=scoreArea[j]) {
 								for(let i =0 ;i<are[j] ;i++){
@@ -91,6 +91,28 @@ class HomeworkCenter extends React.Component {
 							<Rate value={key} />
 						</div>
 					);
+					}else{
+						return (
+							<div style={{cursor:'pointer'}}>
+							</div>
+						);
+					}
+					
+				}
+			},
+			{
+				title:'错题量',
+				dataIndex:'wrongNum',
+				key:'wrongNum',
+				width: '15%',
+				render: (text, record) => {
+					console.log(record)
+					let num = text.split('/')
+					return (
+						<div style={{cursor:'pointer'}} >
+							{!this.state.checked ?`${num[1]-num[0]}题`:''}
+						</div>
+					);
 				}
 			},
 			{
@@ -100,16 +122,8 @@ class HomeworkCenter extends React.Component {
 				width: '15%',
 				render: (text, record) => {
 					return (
-						<div style={{cursor:'pointer'}} onClick={()=>{
-							store.set('wrong_hash', this.props.location.hash)
-							this.props.dispatch(
-								routerRedux.push({
-									pathname: '/classInfo',
-									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
-									})
-							)
-						}}>
-							{(text * 100).toFixed(0)}%
+						<div style={{cursor:'pointer'}} >
+							{!this.state.checked ?`${(text * 100).toFixed(0)}%`:''}
 						</div>
 					);
 				}
@@ -121,7 +135,7 @@ class HomeworkCenter extends React.Component {
 				return (
 				<div>
 					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
-						
+						message.warning('此功能暂未开放')
 					}}>习题详情</span>
 				</div>
 				);
@@ -137,28 +151,60 @@ class HomeworkCenter extends React.Component {
 		let QuestionDetail = this.props.state.QuestionDetail;
 		let data = testScoreInfo.data;
 		var worstScoret = (data.worst.score * 100).toFixed(0);
-		
+		let Num = data.worst.count.split('/')
+		let wost = Num[1]-Num[0]
+		let key = 0;
+		for(let i =0;i<data.userScoreList.length;i++){
+			key = data.userScoreList[i].wrongScore+key
+		}
+	
 		return(
-			<table border="1"  className='data-view-table'>
-				<thead>
-					<tr>
-						<th>提交人数</th>
-						<th>未提交人数</th>
-						<th>平均错误率</th>
-						<th>试题量</th>
-						<th>做错题量</th>
-					</tr>
-				</thead>
-			<tbody>
-				<tr>
-					<td>{data.commit}</td>
-					<td>{data.total - data.commit}</td>
-					<td>{(data.wrongAverage * 100).toFixed(0)}%</td>
-					<td>{QuestionDetail.data.qsList.length}题</td>
-					<td>{(QuestionDetail.data.qsList.length*data.wrongAverage ).toFixed(0)}题</td>
-				</tr>
-			</tbody>
-			</table>
+			<div>
+				<div className={style.dataView3}>
+					<span>
+						提交人数
+					</span>
+					<div style={{textAlign:'center'}}>
+						<span style={{fontSize:'60px',color:'#1daef8'}}>{data.commit}/</span>
+						<span style={{fontSize:'30px',color:'#1daef8'}}>{data.total}人</span>
+					</div>
+				</div>
+				<div className={style.dataView3} style={{borderLeft:"1px solid #ccc",borderRight:'1px solid #ccc'}}>
+				<span>平均错误率</span>
+					<div style={{textAlign:'center'}}>
+						<span style={{fontSize:'60px',color:'#2bdec6'}}>{(key/data.userScoreList.length * 100).toFixed(0)}%</span>
+					</div>
+				</div>
+				<div className={style.dataView3}>
+				<span>错题量</span>
+					<div style={{textAlign:'center'}}>
+						<span style={{fontSize:'60px',color:'#ffbf00'}}>{wost}/</span>
+						<span style={{fontSize:'30px',color:'#ffbf00'}}>{QuestionDetail.data.qsList.length}题</span>
+					</div>
+				</div>
+				{/* <div>平均错误率</div> */}
+			</div>
+
+			// <table border="1"  className='data-view-table'>
+			// 	<thead>
+			// 		<tr>
+			// 			<th>提交人数</th>
+			// 			<th>未提交人数</th>
+			// 			<th>平均错误率</th>
+			// 			<th>试题量</th>
+			// 			<th>做错题量</th>
+			// 		</tr>
+			// 	</thead>
+			// <tbody>
+			// 	<tr>
+			// 		<td>{data.commit}</td>
+			// 		<td>{data.total - data.commit}</td>
+			// 		<td>{(data.wrongAverage * 100).toFixed(0)}%</td>
+			// 		<td>{QuestionDetail.data.qsList.length}题</td>
+			// 		<td>{(QuestionDetail.data.qsList.length*data.wrongAverage ).toFixed(0)}题</td>
+			// 	</tr>
+			// </tbody>
+			// </table>
 		)
 	}
 	DistributionGroup () {
@@ -216,7 +262,7 @@ class HomeworkCenter extends React.Component {
 						data : ['(<20%)优秀', '(20%<39%)良好', '(40%<59%)良好', '(60%<100%)良好', '(-)未提交'],
 						axisLabel: {
 　　　　　　　　　　　　　//这个是倾斜角度，也是考虑到文字过多的时候，方式覆盖采用倾斜
-//                     rotate: 30,
+                    // rotate: 30,
 　　　　　　　　　　　　//这里是考虑到x轴文件过多的时候设置的，如果文字太多，默认是间隔显示，设置为0，标示全部显示，当然，如果x轴都不显示，那也就没有意义了
 								interval :0
 								}
@@ -226,7 +272,7 @@ class HomeworkCenter extends React.Component {
 					{
 							type : 'value',
 							name:'人数',
-							interval: data.total/4,
+							// interval: data.total/4,
 　　　　　　　　　　//下面是显示格式化，一般来说还是用的上的
 							axisLabel: {
 									formatter: '{value} '
@@ -247,19 +293,19 @@ class HomeworkCenter extends React.Component {
 													];
 													return colorList[params.dataIndex]
 											},
-											barBorderRadius: [100,100,100,100]
+											barBorderRadius: [200,200,200,200]
 											,
 　　　　　　　　　　　　　　//以下为是否显示，显示位置和显示格式的设置了
 											label: {
 													show: true,
-													position: [30,-20,0,0],
+													position: 'top',
 													formatter: '{c}'
 													// formatter: '{b}\n{c}'
 											}
 									}
 							},
 							//设置柱的宽度，要是数据太少，柱子太宽不美观~
-							barWidth:22,
+							barWidth:40,
 							data: areaCount
 					}
 			]
@@ -277,22 +323,35 @@ class HomeworkCenter extends React.Component {
 		let QuestionDetail = state.QuestionDetail;
 		let dataSource =[];
 		if(testScoreInfo.data){
+			if(this.state.checked){
+				for(let i = 0;i < testScoreInfo.data.undoneList.length; i ++){
+					let p = {};
+					let det = testScoreInfo.data.undoneList[i];
+					p["key"] = i;
+					p["sort"] = i;
+					p["name"] = det;
+					dataSource[i]=p;
+				}
+			}else{
 				for(let i = 0;i < testScoreInfo.data.userScoreList.length; i ++){
 					let p = {};
 					let det = testScoreInfo.data.userScoreList[i];
 					p["key"] = det.userId;
 					p["name"] = det.userName;
 					p["sort"] = i;
-					p["stars"] = det.wrongScore;
-					p["wrong"] = det.wrongScore;
+					p['wrongNum'] = det.count;
+					p["stars"] = det.wrongScore*1;
+					p["wrong"] = det.wrongScore*1;
 					p["list"] = det;
 					dataSource[i]=p;
 				}
+			}
+				
 		}
 		return (
 				<div className={style.borderOut} >
 						<div className={style.borderInner}>
-							<h3>数据概况</h3>
+							<h3>整体概览</h3>
 								{testScoreInfo.data && QuestionDetail.data ? this.workData():''}
 						</div>
 						<div className={style.borderInner}>
@@ -307,14 +366,15 @@ class HomeworkCenter extends React.Component {
 
 								<Checkbox
 									style={{float:'right'}}
+									checked={this.state.checked}
 									onChange={(e) =>{
-									console.log(e.target.checked)
+										this.setState({checked:e.target.checked})
 								}}>未提交学生</Checkbox>
-								<Search
+								{/* <Search
 									placeholder="输入学生名称"
 									onSearch={value => console.log(value)}
 									style={{ width: 200,float:'right',lineHeight:'50px' }}
-								/>
+								/> */}
 							</div>
 							
 							<Table

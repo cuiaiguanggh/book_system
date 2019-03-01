@@ -133,7 +133,7 @@ export default {
 			// else{
 			// 	message.err(res.data.msg)
 			// }
-			let MenuList = [100,200,300,400]
+			let MenuList = [300,100,200,400]
 			yield put ({
 				type: 'MenuList',
 				payload:MenuList

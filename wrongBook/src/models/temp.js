@@ -27,6 +27,9 @@ export default {
 		classInfoPayload:[],
 		schoolId:'',
 		workList:[],
+		className:'',
+		workName:'',
+		workId:'',
 	},
 	reducers: {
 		scoreList(state, {payload}) {
@@ -51,6 +54,15 @@ export default {
 		workList(state, {payload}) {
 			return { ...state, workList:payload };
 		},
+		className(state, {payload}) {
+			return { ...state, className:payload };
+		},
+		workName(state, {payload}) {
+			return { ...state, workName:payload };
+		},
+		workId(state, {payload}) {
+			return { ...state, workId:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -59,7 +71,6 @@ export default {
   
 	effects: {
 		*pageClass({payload}, {put, select}) {
-			console.log(payload)
 			// 班级列表
 			yield put ({
 				type: 'classInfoPayload',
@@ -70,13 +81,25 @@ export default {
 				yield put(routerRedux.push('/login'))
 			}else
 			if(res.data && res.data.result === 0){
+				
+				yield put ({
+					type: 'queryHomeworkList',
+					payload:{
+						classId:res.data.data.list[0].classId
+					}
+				})
+				
+				yield put ({
+					type: 'className',
+					payload:res.data.data.list[0].className
+				})
 				yield put ({
 					type: 'classList',
 					payload:res.data
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.success(res.data.msg)
 			}
 		},
 		*getClassList({payload}, {put, select}) {
@@ -92,11 +115,15 @@ export default {
 						classId:res.data.data[0].classId
 					}
 				})
-
+				yield put ({
+					type: 'className',
+					payload:res.data.data[0].className
+				})
 				yield put ({
 					type: 'classList1',
 					payload:res.data
 				})
+				
 			}else{
 				message.err(res.data.msg)
 			}
@@ -105,29 +132,39 @@ export default {
 		*queryHomeworkList({payload}, {put, select}) {
 			// 返回班级作业列表
 			let res = yield queryHomeworkList(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
-				let data = {
-					homeworkId:res.data.data[0].homeworkId,
+			if(res.data.result === 0){
+				if(res.data.data.length > 0 ){
+					let data = {
+						homeworkId:res.data.data[0].homeworkId,
+					}
+					yield put ({
+						type: 'queryScoreDetail',
+						payload:data
+					})
+					yield put ({
+						type: 'queryQuestionDetail',
+						payload:data
+					})
+					yield put ({
+						type: 'workId',
+						payload:res.data.data[0].homeworkId
+					})
+					yield put ({
+						type: 'workName',
+						payload:res.data.data[0].name
+					})
+					yield put ({
+						type: 'workList',
+						payload:res.data
+					})
+				}else{
+					message.warning('此班级暂无作业')
+					yield put ({
+						type: 'workList',
+						payload:res.data
+					})
 				}
 				
-				yield put ({
-					type: 'queryScoreDetail',
-					payload:data
-				})
-				yield put ({
-					type: 'queryQuestionDetail',
-					payload:data
-				})
-
-				yield put ({
-					type: 'workList',
-					payload:res.data
-				})
-			}else{
-				message.err(res.data.msg)
 			}
 		},
 

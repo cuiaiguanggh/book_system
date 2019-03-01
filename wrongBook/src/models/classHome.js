@@ -93,16 +93,15 @@ export default {
   
 	effects: {
 		*pageClass({payload}, {put, select}) {
-			console.log(payload)
 			// 班级列表
 			yield put ({
 				type: 'classInfoPayload',
 				payload:payload
 			})
 			let res = yield pageClass(payload);
-			if(res.hasOwnProperty("err")){
+			if(res.data.result != 0 ){
 				yield put(routerRedux.push('/login'))
-			}else
+			}
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'classList',
@@ -260,9 +259,9 @@ export default {
 		*getClassList({payload}, {put, select}) {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
-			if(res.hasOwnProperty("err")){
+			if(res.data.result != 0){
 				yield put(routerRedux.push('/login'))
-			}else
+			}
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'queryHomeworkList',

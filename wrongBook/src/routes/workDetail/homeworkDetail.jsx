@@ -54,11 +54,33 @@ class HomeworkCenter extends React.Component {
 		this.setState({ activeKey });
 	}
 	operations() {
-		let classList = this.props.state.classList1;
+		const rodeType = store.get('wrongBookNews').rodeType;
+		let classList =  rodeType == 20 ? this.props.state.classList :this.props.state.classList1
 		if(classList.data){
 			const content = (
-				<div style={{width:100}}>
+				<div  style={{width:100,padding:'0'}}>
 					{
+						rodeType == 20 ?
+							classList.data.list.map((item,i) =>(
+								<p key={i}
+								className={style.PList}
+								onClick={()=>{
+									this.setState({
+										classId:item.classId
+									})
+									this.props.dispatch({
+										type: 'temp/className',
+										payload: item.className
+									});
+									this.props.dispatch({
+										type: 'temp/queryHomeworkList',
+										payload:{
+											classId: item.classId
+										}
+									});
+								}}>{item.className}</p>
+							))
+						:
 						classList.data.map((item,i) =>(
 							<p key={i}
 							className={style.PList}
@@ -85,7 +107,7 @@ class HomeworkCenter extends React.Component {
 						<span
 							style={{cursor:'pointer', padding:'0 10px',width: 100,marginRight:10,textAlign:'right' }}
 						>
-							<span>{classList.data[0].className}</span>
+							<span>{this.props.state.className}</span>
 						<Icon type="caret-down" />
 						</span>
 					</Popover>
@@ -97,9 +119,9 @@ class HomeworkCenter extends React.Component {
 	}
 	workList() {
 		let workList = this.props.state.workList;
-		if(workList.data){
+		if(workList.data && workList.data.length >0){
 			const content = (
-				<div>
+				<div style={{padding:'0'}}>
 					{
 						workList.data.map((item,i) =>(
 							<p key={i} 
@@ -111,13 +133,22 @@ class HomeworkCenter extends React.Component {
 								let data = {
 									homeworkId:item.homeworkId,
 								}
+								
 								this.props.dispatch({
-										type: 'temp/queryScoreDetail',
-										payload:data
+									type: 'temp/workId',
+									payload:item.homeworkId
 								});
 								this.props.dispatch({
-										type: 'temp/queryQuestionDetail',
-										payload:data
+									type: 'temp/workName',
+									payload:item.name
+								});
+								this.props.dispatch({
+									type: 'temp/queryScoreDetail',
+									payload:data
+								});
+								this.props.dispatch({
+									type: 'temp/queryQuestionDetail',
+									payload:data
 								});
 							}}>{item.name}</p>
 						))
@@ -126,14 +157,17 @@ class HomeworkCenter extends React.Component {
 			);
 
 			return(
-					<Popover placement="bottom"content={content} trigger="hover">
-						<span
-							style={{cursor:'pointer',padding:'0 10px', width: 100,marginRight:10,textAlign:'right' }}
-						>
-							<span>{workList.data[0].name}</span>
-							<Icon type="caret-down" />
-						</span>
-					</Popover>
+					<span>
+						<span>作业:</span>
+						<Popover placement="bottom"content={content} trigger="hover">
+							<span
+								style={{cursor:'pointer',padding:'0 10px', width: 100,marginRight:10,textAlign:'right' }}
+							>
+								<span>{this.props.state.workName}</span>
+								<Icon type="caret-down" />
+							</span>
+						</Popover>
+					</span>
 			)
 		}
 	}
@@ -143,7 +177,7 @@ class HomeworkCenter extends React.Component {
 			<Layout >
 				<Content style={{ overflow: 'initial' }}>
 				<div className={style.borderOut} >
-					<Tabs defaultActiveKey="2" value='large' tabBarExtraContent={this.operations()} onChange={this.onChange}>
+					<Tabs defaultActiveKey="1" value='large' tabBarExtraContent={this.operations()} onChange={this.onChange}>
 						<TabPane tab="成绩分析" key="1">
 							<Analysis/>
 						</TabPane>

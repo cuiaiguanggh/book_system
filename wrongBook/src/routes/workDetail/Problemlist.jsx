@@ -1,12 +1,12 @@
 import React from 'react';
-import { Layout, Tabs, Input,Modal,Select,Icon,Progress, message,Anchor 
+import { Layout, Tabs, Input,Modal,Select,Icon,Progress, message,Anchor ,Button
 } from 'antd';
 // import {Link} from "dva/router";
 import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './Problemlist.less';
 import store from 'store';
-
+import {dataCenter} from '../../config/dataCenter'
 const { Link } = Anchor;
 const TabPane = Tabs.TabPane;
 const confirm = Modal.confirm;
@@ -27,6 +27,8 @@ class HomeworkCenter extends React.Component {
             classId:'',
             questionKey:0,
             showAns:'',
+            loading: false,
+            wordUrl:'',
 	};
 	}
 	wronglist () {
@@ -38,15 +40,61 @@ class HomeworkCenter extends React.Component {
             <div>
                 {
                     list.map((item,i) =>{
-                        if(item.wrongScore!= 0){
+                        var scoreArea = [20,40];
+                        let s =parseInt(item.wrongScore*100);
+                        let are = ['#dcf2de','#fef7e3','#fcd8d2']
+                        let key = ['#50c059','#ffbf00','#ee6b52']; 
+                        
+                        let color = ''
+                        if(item.wrongScore == 1){
                             return(
                                 <div key={i} 
                                 onClick={()=>this.scrollToAnchor(`ids${i}`)}
                                 style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
                                     <Progress 
                                         type="circle" 
-                                        strokeColor='#ff7f69' 
-                                        percent={item.wrongScore*100} 
+                                        strokeColor={key[2]}
+                                        percent={100} 
+                                        width={60}
+                                        color='#ff7f69' 
+                                        status="exception"
+                                        format={() => '100%'} 
+                                        style={{padding:'10px'}}
+                                    />
+                                    <p>{i+1}</p>  
+                                </div>
+                                
+                            )
+                        }else if(item.wrongScore == 0){
+                            return(
+                                <div key={i} style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
+                                    <Progress 
+                                    type="circle" 
+                                    percent={100} 
+                                    color={key[2]}
+                                    width={60} 
+                                    style={{padding:'10px'}}
+                                    format={() => '0%'} />
+                                    <p>{i+1}</p>  
+                                </div>
+                            )
+                        }else{
+                            // console.log(i,s,scoreArea[0],scoreArea[1])
+                            if(s < scoreArea[0]){
+                                color = key[0]
+                            }else if (s >=  scoreArea[0] && s < scoreArea[1]) {
+                                color = key[1]
+                            }else{
+                                color = key[2]
+                            }
+                            return(
+                                <div key={i} 
+                                onClick={()=>this.scrollToAnchor(`ids${i}`)}
+                                style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
+                                    <Progress 
+                                        type="circle" 
+                                        strokeColor={color}
+                                        percent={parseInt(item.wrongScore*100)} 
                                         width={60}
                                         style={{padding:'10px'}}
                                     />
@@ -54,19 +102,10 @@ class HomeworkCenter extends React.Component {
                                 </div>
                                 
                             )
-                        }else{
-                            return(
-                                <div key={i} style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
-                                    <Progress 
-                                    type="circle" 
-                                    percent={100} 
-                                    width={60} 
-                                    style={{padding:'10px'}}
-                                    format={() => '0%'} />
-                                    <p>{i+1}</p>  
-                                </div>
-                            )
                         }
+
+
+                        
                     })
                 }
             </div>
@@ -86,10 +125,11 @@ class HomeworkCenter extends React.Component {
                             return(
                                 <div id={ids} key={i} className={style.questonInner}>
                                     <div style={{padding:'10px'}}>
-                                        <img src={item.question} style={{width:'80%'}}></img>
+                                        <span>{i+1}、</span>
+                                        <img src={item.question} style={{width:'80%',verticalAlign:'top'}}></img>
                                     </div>
                                     <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
-                                        <span>班级错误率：{item.wrongScore *100}%</span>
+                                        <span>班级错误率：{(item.wrongScore *100).toFixed(0)}%</span>
                                         <span className={style.showAns} onClick={()=>{
                                             this.setState({visible:true,questionKey:i})
                                         }}>错题统计</span>
@@ -126,15 +166,15 @@ class HomeworkCenter extends React.Component {
                                     )
                                 }
                             }else{
-                                if (s>=scoreArea[j] && s<scoreArea[j-1]) {
+                                if (s < scoreArea[j] && s >=scoreArea[j-1]) {
                                     return(
-                                        <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'0 5px',display:'inline-block',textAlign:'center'}}>
+                                        <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'5px',display:'inline-block',textAlign:'center'}}>
                                         <span style={{cursor:'pointer',background:are[1],color:key[1],display:'inline-block',padding:'0 5px',width:'100%'}} key={i}>第{i+1}题</span>
                                         </div>
                                     )
                                 }else{
                                     return(
-                                        <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'0 5px',display:'inline-block',textAlign:'center'}}>
+                                        <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'5px',display:'inline-block',textAlign:'center'}}>
                                         <span style={{cursor:'pointer',background:are[2],color:key[2],display:'inline-block',padding:'0 5px',width:'100%'}} key={i}>第{i+1}题</span>
                                         </div>
                                     )
@@ -244,16 +284,37 @@ class HomeworkCenter extends React.Component {
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.qsList[key].userAnswerList.length-1
         }
-        console.log(key)
+        console.log(this.state.wordUrl)
 		return (
             <div className={style.borderOut} >
 
                 <div className={style.borderInner}>
-                    <h3>作业错误率</h3>
+                    <h3>作业错误率 
+                    </h3>
                     {testScoreInfo.data && QuestionDetail.data ? this.wronglist():''}
                 </div>
                 <div className={style.borderInner}>
-                    <h3>错题详情</h3>
+                    <h3>错题详情
+                    <Button type="primary" 
+                        style={{float:'right'}}
+                        loading={this.state.loading} 
+                        onClick={()=>{
+                            let load = !this.state.loading
+                            this.setState({loading:load})
+                            let This = this;
+                            if(!this.state.loading){
+                                let url = dataCenter('/web/report/getTeacherWrongBook?homeworkId='+this.props.state.workId)
+                                // window.open(url,'_blank'); 
+                                // console.log(url) 
+                                this.setState({wordUrl:url})
+                            }
+                            setTimeout(function(){
+                                This.setState({loading:!load,wordUrl:''})
+                            },10000)
+                        }}>
+                    下载错题详情
+                        </Button></h3>
+                    <iframe style={{display:"none"}} src ={this.state.wordUrl}></iframe>
                     <div style={{width:"70%",float:'left'}}>
                         <div className={style.leftBody}>
                             {QuestionDetail.data?this.questionList():''}

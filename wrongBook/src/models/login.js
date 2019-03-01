@@ -30,7 +30,7 @@ export default {
 			// 业务逻辑
 			store.set('wrongBookToken','')
 			let {identity, certification} = yield select(state => state.login);
-			let res = yield loginTiku(identity, certification);
+			let res = yield loginTiku(payload);
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
 					let data = res.data
@@ -40,7 +40,6 @@ export default {
 					if(rodeType === 10){
 						yield put(routerRedux.push({
 							pathname: '/school',
-							hash:"page=1"
 						}))
 					}else 
 					// if(rodeType ===20){
@@ -50,17 +49,12 @@ export default {
 					// }else 
 					if(rodeType ===30 || rodeType ===20){
 						yield put(routerRedux.push({
-							pathname: '/grade',
-							hash:"page=1"
+							pathname: '/workDetail',
 						}))
 					}
 				}else{
 					message.warning(res.data.msg)
 				}
-			// }else{
-			// 	message.warning(res.data.msg)
-			// 	// message.warning('系统错误，请稍后再试')
-			// }
 		},
 	},
   

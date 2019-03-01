@@ -1,0 +1,99 @@
+.normal{
+    background:url('../images/el-bs-n@3x.png');
+    width:100%;
+    position: absolute;
+    top:0;
+    bottom:0;
+    background-size: cover;
+}
+.loginInner{
+    position: absolute;
+    width:564px;
+    height:478px;
+    right:200px;
+    top:0px;
+    bottom:0;
+    margin:auto;
+    border-radius: 10px;
+    border:1px solid #ccc;
+    padding:60px;
+    text-align: center;
+    background:#fff;
+    
+}
+.loginInner h2{
+    color:#00b1fe;
+}
+:global(.log){
+    /* height:156px; */
+    width:386px;
+    /* border:1px solid #ccc; */
+    margin:30px auto;
+    /* overflow: hidden; */
+}
+.loginName,.loginPass{
+    width:100%;
+    height:78px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+.loginName{
+    border-bottom: none;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.loginPass{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.nameLogo{
+    display: inline-block;
+    height: 22px;
+    width:22px;
+    background:url('../images/dl-sj-n@3x.png') no-repeat;
+    background-size: cover;
+    margin:28px;
+}
+.passLogo{
+    display: inline-block;
+    height: 22px;
+    width:22px;
+    background:url('../images/dl-mm-n@3x.png') no-repeat;
+    background-size: cover;
+    margin:28px;
+}
+.inputLeft{
+    margin:18px 0;
+    width:1px;
+    height:42px;
+    border-left: 1px solid #ccc;
+    display: inline-block;
+    vertical-align: top;
+}
+.inputOut{
+    height:42px;
+    display: inline-block;
+    vertical-align: top;
+    margin:10px 30px;
+}
+input{
+    -webkit-tap-highlight-color:rgba(255,0,0,0);
+}
+:global(.log .ant-input):focus{
+    border-color:none!important;
+    outline: none!important;
+    box-shadow:none!important;
+    -webkit-box-shadow:none!important;
+    border:none!important;
+}
+.login{
+  width: 386px;
+  height: 45px;
+  border-radius: 3px;
+  background-color: #00b1ff;
+  margin:30px auto;
+  color:#fff;
+  line-height: 45px;
+  font-size: 18px;
+  cursor: pointer;
+}

@@ -49,7 +49,7 @@ export default function request(url, options) {
   if(loginSession !== ''){
       data.token = loginSession;
   }
-  //  data.token = '03D5D20F-1298-4E26-9230-1B34DA4BFF37'
+  //  data.token = 'B73689EB-A142-4FB7-B20F-1F515F472E15'
   dataBody = formatOpt(data);
   if(options.body && dataBody) {
     dataBody = options.body + '&' + dataBody;

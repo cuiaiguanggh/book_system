@@ -48,19 +48,13 @@ class HomePageLeft extends Component {
 			// 			pathname: '/schoolNews',
 			// 		})
 			// 	)
-			else if(rodeType === 30 || rodeType === 20)
+			else if(rodeType === 30 || rodeType === 20){
 				this.props.dispatch(
 					routerRedux.push({
-						pathname: '/grade',
-						hash:`page=1`
+						pathname: '/workDetail',
 					})
 				)
-			else if(rodeType === 40)
-				this.props.dispatch(
-					routerRedux.push({
-						pathname: '/class',
-						})
-				)
+			}
 		}
 		
 		if (memuList !== ''){

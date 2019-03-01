@@ -1,33 +1,62 @@
 import React from 'react';
 import { Router, Route,Switch,  } from 'dva/router';
-// import ComponentWarp from '../../components/ComponentWarp';
-import { Icon} from 'antd';
-import Login from './routes/Login/loginPage';
-import ClassAdmin from './routes/GradeAdmin/ClassAdmin/classAdmin'
-import GradeAdmin from './routes/GradeAdmin/gradeAdmin';
-import Home from './routes/Layout/Menus'
-import SchoolAdmin from './routes/SchoolAdmin/SchoolList/SchoolList'
-import SchoolNews from './routes/SchoolAdmin/SchoolNews/SchoolNews'
-import AddClass from './routes/GradeAdmin/ClassAdmin/addClass'
-import UserList from './routes/Userlist/UserList'
-import MyNews from './routes/Layout/userLeft'
-import ClassInfo from './routes/GradeAdmin/ClassAdmin/classList'
-// import WorkDetail from './routes/homeworkDetail/homeworkDetail'
-import WorkDetail from './routes/workDetail/homeworkDetail'
+import Loadable from 'react-loadable';
+import List from 'react-content-loader';
 
-import WorkInfo from './routes/homeworkDetail/workInfo'
-import dynamic from 'dva/dynamic'
 
-function RouterConfig({ history,app }) {
-  const Login = dynamic({
-    app,
-    component: () => import('./routes/Login/loginPage')
-  })
+const Login = Loadable({
+  loader: () => import('./routes/log/login'),
+  loading: () => <List/>,
+});
+const MyNews = Loadable({
+  loader: () => import('./routes/Layout/userLeft'),
+  loading: () => <List/>,
+});
+const WorkInfo = Loadable({
+  loader: () => import('./routes/homeworkDetail/workInfo'),
+  loading: () => <List/>,
+});
+const ClassInfo = Loadable({
+  loader: () => import('./routes/GradeAdmin/ClassAdmin/classList'),
+  loading: () => <List/>,
+});
+
+const Home = Loadable({
+  loader: () => import('./routes/Layout/Menus'),
+  loading: () => <List/>,
+});
+const GradeAdmin = Loadable({
+  loader: () => import('./routes/GradeAdmin/gradeAdmin'),
+  loading: () => <List/>,
+});
+const ClassAdmin = Loadable({
+  loader: () => import('./routes/GradeAdmin/ClassAdmin/classAdmin'),
+  loading: () => <List/>,
+});
+const AddClass = Loadable({
+  loader: () => import('./routes/GradeAdmin/ClassAdmin/addClass'),
+  loading: () => <List/>,
+});
+const SchoolAdmin = Loadable({
+  loader: () => import('./routes/SchoolAdmin/SchoolList/SchoolList'),
+  loading: () => <List/>,
+});
+const SchoolNews = Loadable({
+  loader: () => import('./routes/SchoolAdmin/SchoolNews/SchoolNews'),
+  loading: () => <List/>,
+});
+const UserList = Loadable({
+  loader: () => import('./routes/Userlist/UserList'),
+  loading: () => <List/>,
+});
+const WorkDetail = Loadable({
+  loader: () => import('./routes/workDetail/homeworkDetail'),
+  loading: () => <List/>,
+});
+
+
+function RouterConfig({ history }) {
   
-  const Home = dynamic({
-    app,
-    component: () => import('./routes/Layout/Menus')
-  })
   return (
     <Router history={history}>
       <Switch>

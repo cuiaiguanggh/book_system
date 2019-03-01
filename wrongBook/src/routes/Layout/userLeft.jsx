@@ -64,11 +64,6 @@ class HomePageLeft extends Component {
 			</div>
 		)
 	}
-	children() {
-		return(
-			<UserInfo />
-		)
-	}
 	render() {
 		let hash = this.props.location.pathname;
         let defaultKey = hash.substr(hash.indexOf("/")+1);
@@ -96,7 +91,7 @@ class HomePageLeft extends Component {
 							<p className={style.phoneNum}>400-889-1291</p>
 						</div>
 						<div className='homePageContaier'>
-                                {this.children()}
+							<UserInfo />
 						</div>
 					</div>
 				</div>
