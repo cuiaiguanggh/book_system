@@ -120,19 +120,6 @@ export default {
 	effects: {
 		*functionList({payload}, {put, select}) {
 			// 导航栏信息
-			// let res = yield functionList(payload);
-			// if(res.hasOwnProperty("err")){
-			// 	yield put(routerRedux.push('/login'))
-			// }else
-			// if(res.data && res.data.result === 0){
-			// 	yield put ({
-			// 		type: 'MenuList',
-			// 		payload:res.data.data
-			// 	})
-			// }
-			// else{
-			// 	message.err(res.data.msg)
-			// }
 			let MenuList = [300,100,200,400]
 			yield put ({
 				type: 'MenuList',
@@ -153,7 +140,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -173,7 +161,8 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -209,7 +198,8 @@ export default {
 			else if(res.err){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -237,7 +227,8 @@ export default {
 			else if(res.err){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -255,7 +246,8 @@ export default {
 			else if(res.err){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -283,7 +275,8 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -307,7 +300,8 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -329,7 +323,8 @@ export default {
 				})
 				
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -344,7 +339,8 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -368,7 +364,8 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},

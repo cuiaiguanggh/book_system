@@ -109,7 +109,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*classInfo({payload}, {put, select}) {
@@ -133,7 +134,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*teacherList({payload}, {put, select}) {
@@ -157,7 +159,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*updateClass({payload}, {put, select}) {
@@ -179,7 +182,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*addClass({payload}, {put, select}) {
@@ -201,7 +205,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*deleteClass({payload}, {put, select}) {
@@ -218,7 +223,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -237,7 +243,8 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -253,7 +260,8 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*getClassList({payload}, {put, select}) {
@@ -275,7 +283,8 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -295,7 +304,8 @@ export default {
 					payload:res.data.data[0]
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},

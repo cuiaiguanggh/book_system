@@ -256,7 +256,7 @@ class HomeworkCenter extends React.Component {
 				let p = {};
 				let det = pageHomeworkDetiles.data[i];
 				p["key"] = det.userId;
-				p["head"] = det.avatarUrl;
+				p["head"] = det.avatarUrl ? det.avatarUrl:'http://images.mizholdings.com/face/default/02.gif'
 				p["name"] = det.userName;
 				p['phone'] = det.phone
 				p['OnwerTeacher'] = det.admin ===1 ?'是':''

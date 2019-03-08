@@ -3,12 +3,42 @@
     // padding: 24px;
     // background: #fff;
 
-
-
     .borderInner{
         background:#fff;
         padding:10px;
         overflow: hidden;
+
+        .quesList{
+            position: relative;
+            width:10%;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            
+            .num{
+                position: absolute;
+                top:-7px;
+                right: -10px;
+                width:38px;
+                height:28px;
+                display: block;
+                background:#eee;
+                text-align: center;
+                color:#fff;
+                opacity:0.5;
+                background:#000;
+                line-height: 28px;
+                border-top-left-radius: 20px;
+                border-top-right-radius: 20px;
+                border-bottom-right-radius: 20px;
+                display: none;
+            }
+        }
+        .quesList:hover {
+            .num{
+                display: block;
+            }
+        }
 
         .leftBody{
             padding:10px;
@@ -18,10 +48,35 @@
             .questonInner{
                 border:1px solid #e7e7e7;
                 margin-bottom: 10px;
+
+                .questionTop{
+                    border-bottom: 1px solid #e7e7e7;
+                    font-weight: 600;
+                    padding:10px;
+                    background:#fafafa;
+                    overflow: hidden;
+                    line-height: 30px;
+                }
+                
                 .question{
                     width:80%;
                 }
             }
+            .questonInner:hover{
+                border:1px solid #00b1ff;
+
+                .questionTop{
+                    border-bottom: 1px solid #c7e5fc;
+                    background:#c7e5fc;
+                }
+            }
+
+
+            .questonInner:hover .questionTop{
+                    border-bottom: 1px solid #c7e5fc;
+                    background:#c7e5fc;
+            }
+
             .showAns{
                 width: 88px;
                 height: 30px;
@@ -50,6 +105,7 @@
         top:-50px;
     
         :global(.ant-modal-close-icon){
+            color:#fff;
             font-size:40px
         }
     }
@@ -57,6 +113,7 @@
         font-size: 40px;
         position: absolute;
         left:-100px;
+        color:#fff;
         top:300px;
         cursor:pointer;
         height: 60px;
@@ -69,6 +126,7 @@
         font-size: 40px;
         position: absolute;
         right:-100px;
+        color:#fff;
         top:300px;
         cursor:pointer;
         height: 60px;

@@ -7,6 +7,15 @@ import List from 'react-content-loader';
 const Login = Loadable({
   loader: () => import('./routes/log/login'),
   loading: () => <List/>,
+});9
+const LoginP = Loadable({
+  loader: () => import('./routes/log/LoginPage'),
+  loading: () => <List/>,
+});
+
+const FindPsd = Loadable({
+  loader: () => import('./routes/log/finPsd'),
+  loading: () => <List/>,
 });
 const MyNews = Loadable({
   loader: () => import('./routes/Layout/userLeft'),
@@ -54,16 +63,22 @@ const WorkDetail = Loadable({
   loading: () => <List/>,
 });
 
-
+const StudentDetail = Loadable({
+  loader: () => import('./routes/studentDetail/studentDetail'),
+  loading: () => <List/>,
+});
 function RouterConfig({ history }) {
   
   return (
     <Router history={history}>
       <Switch>
         <Route path="/login"  component={Login} />
+        <Route path="/loginPhone"  component={LoginP} />
+        <Route path="/fin_psd"  component={FindPsd} />
         <Route path="/UserInfo" component={MyNews} />
         <Route path="/workInfo" component={WorkInfo} />
         <Route path="/classInfo" component={ClassInfo} />
+        <Route path="/studentDetail" component={StudentDetail} />
           <Home>
             {/* <Route path="/" component={IndexPage} /> */}
             <Route path="/grade" component={GradeAdmin} />

@@ -11,7 +11,13 @@ function queryQuestionDetail(payload){
         data:payload
     });
 }
+function homeworkDetail(payload){
+    return request(dataCenter('/web/report/homeworkDetail'),{
+        data:payload
+    });
+}
 export {
     queryScoreDetail,
     queryQuestionDetail,
+    homeworkDetail,
 };

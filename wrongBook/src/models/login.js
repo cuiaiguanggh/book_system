@@ -34,12 +34,19 @@ export default {
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
 					let data = res.data
+					if(payload.rem){
+						let tim = new Date()*1
+						store.set('logTime',tim)
+					}else{
+						store.set('logTime','')
+					}
 					store.set('wrongBookNews',data.data)
 					store.set('wrongBookToken',data.data.token)
 					let rodeType = data.data.rodeType;
 					if(rodeType === 10){
 						yield put(routerRedux.push({
 							pathname: '/school',
+							hash:'page=1'
 						}))
 					}else 
 					// if(rodeType ===20){
@@ -54,6 +61,7 @@ export default {
 					}
 				}else{
 					message.warning(res.data.msg)
+					yield put(routerRedux.push('/login'))
 				}
 		},
 	},

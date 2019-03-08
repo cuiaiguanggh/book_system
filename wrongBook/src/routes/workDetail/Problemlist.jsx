@@ -44,13 +44,19 @@ class HomeworkCenter extends React.Component {
                         let s =parseInt(item.wrongScore*100);
                         let are = ['#dcf2de','#fef7e3','#fcd8d2']
                         let key = ['#50c059','#ffbf00','#ee6b52']; 
-                        
+                        let num = 0;                    
                         let color = ''
+                        for(let j = 0; j<item.userAnswerList.length; j++) {
+                            if(item.userAnswerList[j].result == 0){
+                                num ++
+                            }
+                        }
                         if(item.wrongScore == 1){
+                            console.log(item)
                             return(
                                 <div key={i} 
-                                onClick={()=>this.scrollToAnchor(`ids${i}`)}
-                                style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
+                                className={style.quesList}
+                                onClick={()=>this.scrollToAnchor(`ids${i}`)}>
                                     <Progress 
                                         type="circle" 
                                         strokeColor={key[2]}
@@ -61,13 +67,17 @@ class HomeworkCenter extends React.Component {
                                         format={() => '100%'} 
                                         style={{padding:'10px'}}
                                     />
+                                    <span className={style.num}>{num}人</span>
                                     <p>{i+1}</p>  
                                 </div>
                                 
                             )
                         }else if(item.wrongScore == 0){
+                            console.log(item)
+
                             return(
-                                <div key={i} style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
+                                <div key={i} 
+                                className={style.quesList}>
                                     <Progress 
                                     type="circle" 
                                     percent={100} 
@@ -75,12 +85,12 @@ class HomeworkCenter extends React.Component {
                                     width={60} 
                                     style={{padding:'10px'}}
                                     format={() => '0%'} />
+                                    <span className={style.num}>{num}人</span>
                                     <p>{i+1}</p>  
                                 </div>
                             )
                         }else{
-                            // console.log(i,s,scoreArea[0],scoreArea[1])
-                            if(s < scoreArea[0]){
+                            if(s < scoreArea[0]){ 
                                 color = key[0]
                             }else if (s >=  scoreArea[0] && s < scoreArea[1]) {
                                 color = key[1]
@@ -89,8 +99,8 @@ class HomeworkCenter extends React.Component {
                             }
                             return(
                                 <div key={i} 
-                                onClick={()=>this.scrollToAnchor(`ids${i}`)}
-                                style={{width:'10%',display:'inline-block',textAlign:'center',cursor:'pointer'}}>
+                                className={style.quesList}
+                                onClick={()=>this.scrollToAnchor(`ids${i}`)}>
                                     <Progress 
                                         type="circle" 
                                         strokeColor={color}
@@ -98,6 +108,7 @@ class HomeworkCenter extends React.Component {
                                         width={60}
                                         style={{padding:'10px'}}
                                     />
+                                    <span className={style.num}>{num}人</span>
                                     <p>{i+1}</p>  
                                 </div>
                                 
@@ -122,20 +133,35 @@ class HomeworkCenter extends React.Component {
                     QuestionDetail.data.qsList.map((item,i) =>{
                         if(item.wrongScore!=0){
                             let ids = `ids${i}`
+                            let ans = []
+                            for(let i=0;i< item.userAnswerList.length;i++){
+                                if(item.userAnswerList[i].result == 0 ){
+                                    ans.push( item.userAnswerList[i].answer)
+                                }
+                                
+                            }
                             return(
-                                <div id={ids} key={i} className={style.questonInner}>
+                                <div id={ids} key={i} className={style.questonInner} onClick={()=>{
+                                    this.setState({visible:true,questionKey:i,showAns:ans[0]})
+                                    setTimeout(() => {
+                                        let w = document.getElementsByClassName('wrongNum');
+                                        for(let j = 0;j<w.length;j++){
+                                            w[j].className='wrongNum'
+                                        }
+                                        w[0].className='wrongNum wrongNumOn'
+                                    }, 10);
+                                }}>
+                                    <div className={style.questionTop}>
+                                        <span style={{paddingRight:'10px'}}>第{i+1}题</span>
+                                        <span>班级错误率：{(item.wrongScore *100).toFixed(0)}%</span>
+                                        <span>（答错{ans.length}人）</span>
+                                        {/* <span className={style.showAns} >错题统计</span> */}
+                                    </div>
                                     <div style={{padding:'10px'}}>
                                         <span>{i+1}、</span>
-                                        <img src={item.question} style={{width:'80%',verticalAlign:'top'}}></img>
-                                    </div>
-                                    <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
-                                        <span>班级错误率：{(item.wrongScore *100).toFixed(0)}%</span>
-                                        <span className={style.showAns} onClick={()=>{
-                                            this.setState({visible:true,questionKey:i})
-                                        }}>错题统计</span>
+                                        <img src={item.question} style={{width:'500px',verticalAlign:'top'}}></img>
                                     </div>
                                 </div>
-    
                             )
                         }
                     })
@@ -161,7 +187,7 @@ class HomeworkCenter extends React.Component {
                                 if (s<scoreArea[j]) {
                                     return(
                                         <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'5px',display:'inline-block',textAlign:'center'}}>
-                                            <span style={{cursor:'pointer',background:are[0],color:key[0],display:'inline-block',padding:'0 5px',width:'100%'}}>第{i+1}题</span>
+                                            <span style={{cursor:'pointer',background:are[0],color:key[0],display:'inline-block',padding:'0 5px',width:'56px',height:'27px',lineHeight:'27px'}}>第{i+1}题</span>
                                         </div>
                                     )
                                 }
@@ -169,13 +195,13 @@ class HomeworkCenter extends React.Component {
                                 if (s < scoreArea[j] && s >=scoreArea[j-1]) {
                                     return(
                                         <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'5px',display:'inline-block',textAlign:'center'}}>
-                                        <span style={{cursor:'pointer',background:are[1],color:key[1],display:'inline-block',padding:'0 5px',width:'100%'}} key={i}>第{i+1}题</span>
+                                        <span style={{cursor:'pointer',background:are[1],color:key[1],display:'inline-block',padding:'0 5px',width:'56px',height:'27px',lineHeight:'27px'}} key={i}>第{i+1}题</span>
                                         </div>
                                     )
                                 }else{
                                     return(
                                         <div onClick={()=>this.scrollToAnchor(`ids${i}`)} key={i} style={{width:'33%',padding:'5px',display:'inline-block',textAlign:'center'}}>
-                                        <span style={{cursor:'pointer',background:are[2],color:key[2],display:'inline-block',padding:'0 5px',width:'100%'}} key={i}>第{i+1}题</span>
+                                        <span style={{cursor:'pointer',background:are[2],color:key[2],display:'inline-block',padding:'0 5px',width:'56px',height:'27px',lineHeight:'27px'}} key={i}>第{i+1}题</span>
                                         </div>
                                     )
                                 }
@@ -199,20 +225,21 @@ class HomeworkCenter extends React.Component {
             if(question.userAnswerList[i].result == 1){
                 trueNum.push(question.userAnswerList[i].userName)
 
-            }else{
+            }else if(question.userAnswerList[i].result == 0){
                 wrongNum.push(question.userAnswerList[i].userName)
                 wrongQues.push(question.userAnswerList[i].answer)
             }
 
-        }
+        }   
+        let Num = trueNum.length+ wrongNum.length
         return(
             <div>
                 <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
                     <div style={{padding:'10px'}}>
-                        <img src={question.question} style={{width:'80%'}}></img>
+                        <img src={question.question} style={{width:'500px'}}></img>
                     </div>
                     <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
-                        <span>班级错误率：{question.wrongScore *100}%</span>
+                        <span>班级错误率：{(question.wrongScore *100).toFixed(0)}%</span>
                     </div>
                 </div>
                 <div style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
@@ -225,7 +252,7 @@ class HomeworkCenter extends React.Component {
                         答对（{trueNum.length}人）
                         </span>
                         <span style={{float:'right',color:"#88ca54"}}>
-                        {trueNum.length/question.userAnswerList.length *100}%</span>
+                        {(trueNum.length/Num *100).toFixed(0)}%</span>
                         </h3>
                     <div style={{borderBottom:'1px solid #ccc',marginBottom:'10px',padding:'10px 0'}}>
                         {
@@ -242,12 +269,12 @@ class HomeworkCenter extends React.Component {
                         答错（{wrongNum.length}人）
                         </span>
                         <span style={{float:'right',color:"#ff6976"}}>
-                        {wrongNum.length/question.userAnswerList.length *100}%</span>
+                        {(wrongNum.length/Num *100).toFixed(0)}%</span>
                     </h3>
                     <div>
                         {
                            wrongNum.map((item,i) =>(
-                            <span key={i} className='wrongNum' 
+                            <span key={i} className={i == 0?'wrongNum wrongNumOn' :'wrongNum'} 
                                 onClick={()=>{
                                     let w = document.getElementsByClassName('wrongNum');
                                     for(let j = 0;j<w.length;j++){
@@ -263,7 +290,7 @@ class HomeworkCenter extends React.Component {
                 </div>
                 {
                     this.state.showAns != ''?
-                    <img width='100%' src={this.state.showAns}></img>:''
+                    <img width='500px' src={this.state.showAns}></img>:''
                 }
             </div>
         )
@@ -282,9 +309,8 @@ class HomeworkCenter extends React.Component {
         let key = this.state.questionKey;
         let MaxKey = 0
         if(QuestionDetail.data){
-            MaxKey = QuestionDetail.data.qsList[key].userAnswerList.length-1
+            MaxKey = QuestionDetail.data.qsList.length-1;
         }
-        console.log(this.state.wordUrl)
 		return (
             <div className={style.borderOut} >
 
@@ -305,7 +331,6 @@ class HomeworkCenter extends React.Component {
                             if(!this.state.loading){
                                 let url = dataCenter('/web/report/getTeacherWrongBook?homeworkId='+this.props.state.workId)
                                 // window.open(url,'_blank'); 
-                                // console.log(url) 
                                 this.setState({wordUrl:url})
                             }
                             setTimeout(function(){
@@ -315,12 +340,12 @@ class HomeworkCenter extends React.Component {
                     下载错题详情
                         </Button></h3>
                     <iframe style={{display:"none"}} src ={this.state.wordUrl}></iframe>
-                    <div style={{width:"70%",float:'left'}}>
+                    <div style={{width:'calc(100% - 240px)',float:'left'}}>
                         <div className={style.leftBody}>
                             {QuestionDetail.data?this.questionList():''}
                         </div>                  
                     </div>
-                    <div style={{width:'30%',float:'left'}}>
+                    <div style={{width:'240px',float:'left'}}>
                         <div className={style.rightBody}>
                             <div style={{borderBottom:'1px solid #e7e7e7',padding:'10px',background:'#fafafa'}}>答题情况（错误率）</div>
                             <div style={{padding:'10px 0'}}>
@@ -361,9 +386,17 @@ class HomeworkCenter extends React.Component {
                             if(key == 0){
                                 message.warning('已是第一题')
                             }else{
+                                this.setState({showAns:''})
+                                let w = document.getElementsByClassName('wrongNum');
+                                for(let j = 0;j<w.length;j++){
+                                    w[j].className='wrongNum'
+                                }
+                                w[0].className='wrongNum wrongNumOn'
                                 for(let i=0;i< QuestionDetail.data.qsList[key-1].userAnswerList.length;i++){
                                     if(QuestionDetail.data.qsList[key-1].userAnswerList[i].result !=1 ){
-                                        this.setState({questionKey:key-1})
+                                        this.setState({questionKey:key-1,
+                                            showAns:QuestionDetail.data.qsList[key-1].userAnswerList[i].answer})
+                                        
                                         return
                                     }
                                 }
@@ -373,13 +406,18 @@ class HomeworkCenter extends React.Component {
                     <Icon
                         className={style.icRight}
                         onClick={()=>{
-                            QuestionDetail.data.qsList[key+1]
                             if(key == MaxKey){
                                 message.warning('已是最后一题')
                             }else{
-                                for(let i=0;i< QuestionDetail.data.qsList[key-1].userAnswerList.length;i++){
+                                let w = document.getElementsByClassName('wrongNum');
+                                for(let j = 0;j<w.length;j++){
+                                    w[j].className='wrongNum'
+                                }
+                                w[0].className='wrongNum wrongNumOn'
+                                for(let i=0;i< QuestionDetail.data.qsList[key+1].userAnswerList.length;i++){
                                     if(QuestionDetail.data.qsList[key+1*1].userAnswerList[i].result !=1 ){
-                                        this.setState({questionKey:key+1*1})
+                                        this.setState({questionKey:key+1*1,
+                                            showAns:QuestionDetail.data.qsList[key+1].userAnswerList[i].answer})
                                         return
                                     }
                                 }

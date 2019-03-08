@@ -36,12 +36,12 @@ class HomeworkCenter extends React.Component {
 				render: (text, record) => {
 					return (
 						<div className="space" onClick={()=>{
-							this.props.dispatch(
-								routerRedux.push({
-									pathname: '/workInfo',
-									hash:`sId=${this.state.classId}&id=${record.key}`
-									})
-							)
+							// this.props.dispatch(
+							// 	routerRedux.push({
+							// 		pathname: '/workInfo',
+							// 		hash:`sId=${this.state.classId}&id=${record.key}`
+							// 		})
+							// )
 						}}>
 							{text}
 						</div>
@@ -171,17 +171,79 @@ class HomeworkCenter extends React.Component {
 			)
 		}
 	}
+	getGrade() {
+		const rodeType = store.get('wrongBookNews').rodeType;
+		let classList =  rodeType == 20 ? this.props.state.classList :this.props.state.classList1
+		if(classList.data){
+			return(
+				<div  style={{background:'#fff',textAlign:'left',padding:'10px'}}>
+					{
+						rodeType == 20 ?
+							classList.data.list.map((item,i) =>(
+								<span key={i}
+								className={i ==0 ?'SList SListon':'SList'}
+								onClick={()=>{
+									this.setState({
+										classId:item.classId
+									})
+									let w = document.getElementsByClassName('SList');
+									for(let j = 0;j<w.length;j++){
+										w[j].className='SList'
+									}
+									w[i].className='SList SListon'
+
+									this.props.dispatch({
+										type: 'temp/className',
+										payload: item.className
+									});
+									this.props.dispatch({
+										type: 'temp/queryHomeworkList',
+										payload:{
+											classId: item.classId
+										}
+									});
+								}}>{item.className}</span>
+							))
+						:
+						classList.data.map((item,i) =>(
+							<span key={i}
+							className={i ==0 ?'SList SListon':'SList'}
+							 onClick={()=>{
+								this.setState({
+									classId:item.classId
+								})
+								let w = document.getElementsByClassName('SList');
+								for(let j = 0;j<w.length;j++){
+									w[j].className='SList'
+								}
+								w[i].className='SList SListon'
+								
+								this.props.dispatch({
+									type: 'temp/queryHomeworkList',
+									payload:{
+										classId:item.classId
+									}
+								});
+							}}>{item.className}</span>
+						))
+					}
+				</div>
+			)
+		}
+	}
 	render() {
 	
 		return (
 			<Layout >
 				<Content style={{ overflow: 'initial' }}>
 				<div className={style.borderOut} >
-					<Tabs defaultActiveKey="1" value='large' tabBarExtraContent={this.operations()} onChange={this.onChange}>
+					<Tabs defaultActiveKey="1" value='large' tabBarExtraContent={this.workList()} onChange={this.onChange}>
 						<TabPane tab="成绩分析" key="1">
+							{this.getGrade()}
 							<Analysis/>
 						</TabPane>
 						<TabPane tab="查看习题" key="2">
+							{this.getGrade()}
 							<Problemlist/>
 						</TabPane>
 					</Tabs>

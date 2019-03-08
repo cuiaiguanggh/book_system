@@ -1,6 +1,7 @@
 import {
 	queryScoreDetail,
 	queryQuestionDetail,
+	homeworkDetail,
 } from '../services/tempService';
 import {
 	pageClass,
@@ -30,6 +31,7 @@ export default {
 		className:'',
 		workName:'',
 		workId:'',
+		workDetail:[],
 	},
 	reducers: {
 		scoreList(state, {payload}) {
@@ -62,6 +64,9 @@ export default {
 		},
 		workId(state, {payload}) {
 			return { ...state, workId:payload };
+		},
+		workDetail(state, {payload}) {
+			return { ...state, workDetail:payload };
 		},
 	},
 	subscriptions: {
@@ -99,7 +104,9 @@ export default {
 				})
 			}
 			else{
-				message.success(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
+
 			}
 		},
 		*getClassList({payload}, {put, select}) {
@@ -125,7 +132,8 @@ export default {
 				})
 				
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -165,6 +173,9 @@ export default {
 					})
 				}
 				
+			}else{
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 
@@ -182,7 +193,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*queryQuestionDetail({payload}, {put, select}) {
@@ -198,7 +210,25 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
+			}
+		},
+		*homeworkDetail({payload}, {put, select}) {
+			// 导航栏信息
+			let res = yield homeworkDetail(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'workDetail',
+					payload:res.data
+				})
+			}
+			else{
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Tabs, Input,Modal,Select,Table,Checkbox,Rate, message
+import { Layout, Tabs, Input,Modal,Select,Table,Checkbox,Rate, message,Icon
 } from 'antd';
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
@@ -33,6 +33,7 @@ class HomeworkCenter extends React.Component {
 			visible1:false,
 			classId:'',
 			checked:false,
+			key:0
 	};
 		this.columns = [
 			{
@@ -106,13 +107,19 @@ class HomeworkCenter extends React.Component {
 				key:'wrongNum',
 				width: '15%',
 				render: (text, record) => {
-					console.log(record)
-					let num = text.split('/')
-					return (
-						<div style={{cursor:'pointer'}} >
-							{!this.state.checked ?`${num[1]-num[0]}题`:''}
-						</div>
-					);
+					if(!this.state.checked){
+						let num = text.split('/')
+						return (
+							<div style={{cursor:'pointer'}} >
+								{!this.state.checked ?`${num[1]-num[0]}题`:''}
+							</div>
+						);
+					}else{
+						return (
+							<div style={{cursor:'pointer'}}>
+							</div>
+						)
+					}
 				}
 			},
 			{
@@ -132,13 +139,27 @@ class HomeworkCenter extends React.Component {
 			title: '操作',
 			dataIndex: 'operation',
 			render: (text, record) => {
-				return (
-				<div>
-					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
-						message.warning('此功能暂未开放')
-					}}>习题详情</span>
-				</div>
-				);
+				if(!this.state.checked){
+					return (
+					<div>
+						<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+							message.warning('此功能暂未开放');
+							// this.setState({visible:true})
+							// let hash = `workId=${this.props.state.workId}&stId=${record.key}`
+							// this.props.dispatch(
+							// 	routerRedux.push({
+							// 		pathname: '/studentDetail',
+							// 		hash:hash
+							// 		})
+							// )
+						}}>习题详情</span>
+					</div>
+					);
+				}else{
+					return(
+						<div></div>
+					)
+				}
 			},
 			},
 		];
@@ -184,27 +205,6 @@ class HomeworkCenter extends React.Component {
 				</div>
 				{/* <div>平均错误率</div> */}
 			</div>
-
-			// <table border="1"  className='data-view-table'>
-			// 	<thead>
-			// 		<tr>
-			// 			<th>提交人数</th>
-			// 			<th>未提交人数</th>
-			// 			<th>平均错误率</th>
-			// 			<th>试题量</th>
-			// 			<th>做错题量</th>
-			// 		</tr>
-			// 	</thead>
-			// <tbody>
-			// 	<tr>
-			// 		<td>{data.commit}</td>
-			// 		<td>{data.total - data.commit}</td>
-			// 		<td>{(data.wrongAverage * 100).toFixed(0)}%</td>
-			// 		<td>{QuestionDetail.data.qsList.length}题</td>
-			// 		<td>{(QuestionDetail.data.qsList.length*data.wrongAverage ).toFixed(0)}题</td>
-			// 	</tr>
-			// </tbody>
-			// </table>
 		)
 	}
 	DistributionGroup () {
@@ -316,7 +316,10 @@ class HomeworkCenter extends React.Component {
 		},1)
 		
 	}
+	workDetail() {
+		let testScoreInfo = this.props.state.scoreList;
 
+	}
 	render() {
 		let state = this.props.state;
 		let testScoreInfo = state.scoreList;
@@ -348,6 +351,9 @@ class HomeworkCenter extends React.Component {
 			}
 				
 		}
+		let key = this.state.key;
+		
+		let MaxKey = testScoreInfo.data ? testScoreInfo.data.userScoreList.length:0;
 		return (
 				<div className={style.borderOut} >
 						<div className={style.borderInner}>
@@ -376,7 +382,40 @@ class HomeworkCenter extends React.Component {
 									style={{ width: 200,float:'right',lineHeight:'50px' }}
 								/> */}
 							</div>
-							
+							<Modal
+                    visible={this.state.visible}
+                    width='1000px'
+                    className="showques"
+                    footer={null}
+                    onOk={()=>{
+                        this.setState({visible:false})
+                    }}
+                    onCancel={()=>{
+                        this.setState({visible:false})
+                    }}
+                >
+										{testScoreInfo.data?this.workDetail() : ''}
+                    <Icon 
+                        className={style.icLeft}
+                        onClick={()=>{
+                            if(key == 0){
+                                message.warning('已是第一题')
+                            }else{
+
+                            }
+                        }}
+                        type="left" />
+                    <Icon
+                        className={style.icRight}
+                        onClick={()=>{
+                            if(key == MaxKey){
+                                message.warning('已是最后一题')
+                            }else{
+                               
+                            }
+                        }}
+                        type="right" />
+                </Modal>
 							<Table
 								bordered
 								dataSource={dataSource}

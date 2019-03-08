@@ -73,7 +73,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*teacherList({payload}, {put, select}) {
@@ -89,7 +90,8 @@ export default {
 				})
 			}
 			else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -127,7 +129,8 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 		*updateInfo({payload}, {put, select}) {
@@ -145,7 +148,8 @@ export default {
 				yield put(routerRedux.push('/userInfo'))
 
 			}else{
-				message.err(res.data.msg)
+				message.error(res.data.msg)
+				yield put(routerRedux.push('/login'))
 			}
 		},
 

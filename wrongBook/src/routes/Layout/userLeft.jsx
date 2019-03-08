@@ -44,7 +44,7 @@ class HomePageLeft extends Component {
 		let userNews = store.get('wrongBookNews')
 		return(
 			<div style={style.leftInfo}>
-				<img alt='' src={userNews.avatarUrl}/>
+				<img alt='' src={userNews.avatarUrl ? userNews.avatarUrl:'http://images.mizholdings.com/face/default/02.gif' }/>
 				<h2>{userNews.userName}</h2>
 				<Menu
 					mode="inline"

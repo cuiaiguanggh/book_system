@@ -8,6 +8,7 @@ import {Link} from "dva/router";
 import store from 'store';
 import style from './Menus.less';
 import Top from './top'
+import moment from 'moment';
 const SubMenu = Menu.SubMenu;
 const userNews = store.get('wrongBookNews')
 //主界面内容
@@ -60,7 +61,7 @@ class HomePageLeft extends Component {
 		if (memuList !== ''){
 			memuList.map((item,i) =>{
 				// 学校管理模块
-				if(item === 100){
+				if(item === 100 ){
 					if(rodeType === 10){
 						menus.push(<Menu.Item key="school">
 							<Link to='school#page=1' replace>
@@ -95,7 +96,7 @@ class HomePageLeft extends Component {
 					}
 				}
 				// 作业中心
-				if(item === 300){
+				if(item === 300 && rodeType != 10){
 					menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
 						<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
 						<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
@@ -184,6 +185,12 @@ class HomePageLeft extends Component {
 		)
 	}
 	componentDidMount () {
+		let logTime = store.get('logTime');
+		if(!logTime && logTime == ''){
+			let nowTime = new Date() - 10800000;
+			console.log(moment().add('hours', 3)*1-moment()*1)
+		}
+
 		const {dispatch} = this.props;
 		if(!store.get('wrongBookNews')){
 			this.props.dispatch(

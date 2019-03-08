@@ -17,18 +17,19 @@ class HomeworkCenter extends React.Component {
 			changePhone:0,
 			phone:store.get('wrongBookNews').phone,
 			name:store.get('wrongBookNews').userName,
-			headUrl:store.get('wrongBookNews').avatarUrl,
+			headUrl:store.get('wrongBookNews').avatarUrl  
 		}
 	}
 	render() {
 		let userNews = store.get('wrongBookNews')
+		console.log()
 		return(
 			<Layout>
 				<Content style={{ overflow: 'initial'}}>
 					<h3 style={{ background: '#fff',borderBottom:'1px solid #eee',margin:'0',padding:'10px 24px'}}>个人信息</h3>
 					<div className={style.layout} style={{ padding: 24, background: '#fff',height:735   }}>
 						<div className={style.headport}>
-							<img alt='' src={userNews.avatarUrl}/>
+							<img alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl :'http://images.mizholdings.com/face/default/02.gif'}/>
 							
 							<div style={{display:'inline-block',verticalAlign:"bottom"}}>
 								<p>{userNews.userName}</p>
