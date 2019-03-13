@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import 'antd/dist/antd.css';
 import { connect } from 'dva';
-import { Input,Button } from 'antd';
+import { Input,Button, message } from 'antd';
 import style from './findPsd.less';
 import {routerRedux} from 'dva/router';
 import Top from '../Layout/top';
@@ -11,9 +11,10 @@ class HomePage extends Component {
 		super(props);
 		this.state={
       phone:'',
-      code:1,
+      code:'',
       checked:false,
-      verification:''
+      verification:'',
+      pc:0,
 		}
 	}
   handleChange(value) {
@@ -23,12 +24,12 @@ class HomePage extends Component {
     return (
       <div className={style.normal}>
         <Top type='findPsd'></Top>
-        <img className={style.innerImg}  src={require('../images/dl-pig-n.png')}
-          
-        />
-        <div className={style.loginInner}>
+        <img className={style.innerImg}  src={require('../images/dl-pig-n.png')} />
+        {
+          this.props.state.upd == 0?
+          <div className={style.loginInner}>
             {
-              this.state.verification == ''?
+              this.props.state.vc == 0?
               <div className ={style.findMenu}>
                 <span style={{color:'#00b1ff'}}>1.验证手机号</span> 
                 <span>></span>
@@ -41,13 +42,13 @@ class HomePage extends Component {
               </div>
             }
             {
-              this.state.verification == '' ?
+              this.props.state.vc == 0 ?
                 <div className={style.log}>
                   <div className={style.loginName}>
                     {/* <img src={require('../../images/dl-sj-n@3x.png')} /> */}
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
-                      <Input  style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
+                      <Input maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
                         this.setState({phone:e.target.value})
                       }}/>
                     </div>
@@ -60,9 +61,27 @@ class HomePage extends Component {
                       }} />
                     </div>
                     {
-                      this.state.code !=''?
-                      <Button className={style.codeButton} type="primary">获取验证码</Button>:
-                      <Button className={style.codeButton} type="primary" disabled>获取验证码</Button>
+                      this.state.pc == 0?
+                      <Button className={style.codeButton} onClick={()=>{
+                          if(this.state.phone!= '' &&this.state.phone.length == 11){
+                            this.setState({pc:1})
+                            this.props.dispatch({
+                              type : 'login/getVC',
+                              payload:{
+                                phone:this.state.phone
+                              }
+                            });
+                            setTimeout(() => {
+                              this.setState({pc:0})
+                            }, 60000);
+                          }else{
+                            message.warning("请输入正确的手机格式")
+                          }
+                          
+                      }} type="primary">获取验证码</Button>:
+                      <Button className={style.codeButton} type="primary" loading>
+                        获取验证码
+                      </Button>
                     }
                   </div>
                 </div>:
@@ -71,56 +90,60 @@ class HomePage extends Component {
                     {/* <img src={require('../../images/dl-sj-n@3x.png')} /> */}
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>新密码</p>
-                      <Input  style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
-                        this.setState({phone:e.target.value})
+                      <Input value={this.state.pass} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
+                        this.setState({pass:e.target.value})
                       }}/>
                     </div>
                   </div>
                   <div className={style.loginPass}>
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}></p>
-                      <Input placeholder="再次输入新密码" style={{border:'none',padding:'0 10px',height:'42px'}} onChange={(e)=>{
-                        this.setState({code:e.target.value})
+                      <Input value={this.state.passa}  placeholder="再次输入新密码" style={{border:'none',padding:'0 10px',height:'42px'}} onChange={(e)=>{
+                        this.setState({passa:e.target.value})
                       }} />
                     </div>
                   </div>
               </div>
             }
             {
-              this.state.verification == '' ?
+              this.props.state.vc == 0 ?
               <div className={style.login} onClick={()=>{
                 let data ={
-                  username:this.state.name,
-                  password:this.state.pass,
-                  rem:this.state.checked,
+                  phone:this.state.phone,
+                  vc:this.state.code,
                 }
                 this.props.dispatch({
-                  type : 'login/login',
+                  type : 'login/checkVC',
                   payload:data
                 });
-                // this.props.
               }}>下一步</div>:
               <div className={style.login} onClick={()=>{
-                let data ={
-                  username:this.state.name,
-                  password:this.state.pass,
-                  rem:this.state.checked,
-                }
+                if(this.state.pass == this.state.passa){
                 this.props.dispatch({
-                  type : 'login/login',
-                  payload:data
+                  type : 'login/updateInfo',
+                  payload:{
+                    password:this.state.pass
+                  }
                 });
+                }else{
+                  message.warning('两次密码必须一致')
+                }
                 // this.props.
               }}>提交</div>
             }
            
-        </div>
+        </div>:
+          <div className={style.loginInner}>
+              修改密码成功
+          </div>
+        }
+        
       </div>
     );
   }
 }
 export default connect((state) => ({
 	state: {
-			...state.userManage,
+			...state.login,
 	}
 }))(HomePage);

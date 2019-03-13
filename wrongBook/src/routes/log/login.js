@@ -84,7 +84,7 @@ class HomePage extends Component {
                 }}
               ><span>记住密码</span>
               </Checkbox>
-              {/* <span className={style.forgotPassword}
+              <span className={style.forgotPassword}
                 onClick={()=>{
 
                   this.props.dispatch(
@@ -93,7 +93,7 @@ class HomePage extends Component {
                       })
                   )
                 }}
-              >忘记密码</span> */}
+              >忘记密码</span>
             </div>
         </div>
       </div>

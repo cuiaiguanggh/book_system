@@ -8,8 +8,25 @@ function loginTiku(payload){
         data:payload
     });
 }
-
+function getVC(payload){
+    return request(dataCenter('/base/service/getVC'),{
+        data:payload
+    });
+}
+function checkVC(payload){
+    return request(dataCenter('/base/service/checkVC'),{
+        data:payload
+    });
+}
+function updateInfo(payload){
+    return request(dataCenter('/user/updateInfo'),{
+        data:payload
+    });
+}
 
 export {
-    loginTiku
+    loginTiku,
+    getVC,
+    checkVC,
+    updateInfo,
 };

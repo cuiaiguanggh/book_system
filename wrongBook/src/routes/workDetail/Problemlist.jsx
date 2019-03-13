@@ -289,7 +289,11 @@ class HomeworkCenter extends React.Component {
                     </div>
                 </div>
                 {
+                    // this.state.showAns.map((item,i)=>(
+                    //     <img width='500px' src={this.state.showAns}></img>
+                    // ))
                     this.state.showAns != ''?
+                    
                     <img width='500px' src={this.state.showAns}></img>:''
                 }
             </div>
