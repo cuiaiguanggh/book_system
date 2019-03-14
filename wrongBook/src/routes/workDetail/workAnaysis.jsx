@@ -143,15 +143,15 @@ class HomeworkCenter extends React.Component {
 					return (
 					<div>
 						<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
-							message.warning('此功能暂未开放');
-							// this.setState({visible:true})
-							// let hash = `workId=${this.props.state.workId}&stId=${record.key}`
-							// this.props.dispatch(
-							// 	routerRedux.push({
-							// 		pathname: '/studentDetail',
-							// 		hash:hash
-							// 		})
-							// )
+							// message.warning('此功能暂未开放');
+							this.setState({visible:true})
+							let hash = `workId=${this.props.state.workId}&stId=${record.key}`
+							this.props.dispatch(
+								routerRedux.push({
+									pathname: '/studentDetail',
+									hash:hash
+									})
+							)
 						}}>习题详情</span>
 					</div>
 					);

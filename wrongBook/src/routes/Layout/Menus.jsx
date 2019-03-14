@@ -1,6 +1,6 @@
 import React,{ Component } from "react";
 import 'antd/dist/antd.css';
-import {Menu, Icon,Popover} from 'antd';
+import {Menu, Icon,Layout} from 'antd';
 import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
 import QRCode from 'qrcode.react';
@@ -9,8 +9,12 @@ import store from 'store';
 import style from './Menus.less';
 import Top from './top'
 import moment from 'moment';
+const {
+	Header, Footer, Sider, Content,
+  } = Layout;
 const SubMenu = Menu.SubMenu;
 const userNews = store.get('wrongBookNews')
+const MenuItemGroup = Menu.ItemGroup;
 //主界面内容
 class HomePageLeft extends Component {
 	constructor(props) {
@@ -101,6 +105,13 @@ class HomePageLeft extends Component {
 						<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
 						<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
 					</Menu.Item>)
+					// menus.push(
+					// 	<SubMenu key="sub" title={<span><Icon type="mail" /><span>错题报告</span></span>}>
+					// 			<Menu.Item key="1">班级错题</Menu.Item>
+					// 			<Menu.Item key="2">学生错题</Menu.Item>
+					// 			<Menu.Item key="3">作业报告</Menu.Item>
+					// 	</SubMenu>
+					// )
 				}
 				// 用户管理
 				// if(item === 400){
@@ -142,14 +153,55 @@ class HomePageLeft extends Component {
 		}
 
 		return (
-			<div className={style.homePageContaier}>
+			// <div className={style.homePageContaier}>
 				
-				{
-					!store.get('wrongBookNews')?
-					'':<Top/>
-				}
-				<div className={style.HomePageCent}>
+				// {
+				// 	!store.get('wrongBookNews')?
+				// 	'':<Top/>
+				// }
+			// 	<div className={style.HomePageCent}>
 
+					// <div className='pageLeftCont'>
+					// 	<div className='homePageLeft' >
+					// 	<Menu
+					// 		mode="inline"
+					// 		defaultSelectedKeys={[defaultKey]}
+					// 		style={{ width: 200 }}
+					// 		onClick={this.menuClick}
+					// 		// defaultSelectedKeys={['sub']}
+					// 		defaultOpenKeys={['sub']}
+					// 		// inlineCollapsed={col}
+					// 	>
+					// 		{
+					// 			!store.get('wrongBookNews')?
+					// 			'':this.Menus()
+					// 		}
+						
+					// 	</Menu>
+					// 		{
+					// 			rodeType === 10 ?'':
+					// 			<div className={style.qrcode}>
+					// 				<QRCode className='qrcode' value={value} />
+					// 				<p>加入班级</p>
+					// 			</div>
+					// 		}
+					// 		<p className={style.phoneNum}>400-889-1291</p>
+					// 	</div>
+			// 			<div className={style.homepageRight}>
+			// 				{this.props.children}
+			// 			</div>
+			// 		</div>
+			// 	</div>
+			// </div>
+			<Layout className={style.homePageContaier}>
+				<Header style={{background:"#fff"}}>
+					{
+						!store.get('wrongBookNews')?
+						'':<Top/>
+					}
+				</Header>
+				<Layout className={style.HomePageCent}>
+					<Sider style={{background:"#fff",marginRight:'1px'}}>
 					<div className='pageLeftCont'>
 						<div className='homePageLeft' >
 						<Menu
@@ -176,12 +228,15 @@ class HomePageLeft extends Component {
 							}
 							<p className={style.phoneNum}>400-889-1291</p>
 						</div>
-						<div className={style.homepageRight}>
-							{this.props.children}
-						</div>
 					</div>
-				</div>
-			</div>
+					</Sider>
+					<Content>
+					<div className={style.homepageRight}>
+			 				{this.props.children}
+			 			</div>
+					</Content>
+				</Layout>
+			</Layout>
 		)
 	}
 	componentDidMount () {
