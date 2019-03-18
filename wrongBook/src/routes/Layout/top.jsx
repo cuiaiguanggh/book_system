@@ -46,6 +46,7 @@ class HomePageLeft extends Component {
 				leftName = userNews.schoolName
 			}
 		}
+		console.log(userNews.avatarUrl!= null || userNews.avatarUrl != 'null')
 		return (
 				<div className="navClass">
 				{
@@ -62,9 +63,7 @@ class HomePageLeft extends Component {
 						{
 							this.props.type == 'findPsd' ?'' :
 							<div className={style.usinfo}>
-							
-								<img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/>
-								
+								<img  alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
 								<Popover
 									content={content} 
 									// trigger="click"

@@ -30,6 +30,7 @@ export default {
 		classInfoPayload:[],
 		schoolList:[],
 		schoolId:'',
+		classId:'',
 		workList:[],
 		yearList:[],
 		nowYear:'',
@@ -67,6 +68,9 @@ export default {
 		schoolId(state, {payload}) {
 			return { ...state, schoolId:payload };
 		},
+		classId(state, {payload}) {
+			return { ...state, classId:payload };
+		},
 		workList(state, {payload}) {
 			return { ...state, workList:payload };
 		},
@@ -83,6 +87,7 @@ export default {
 			return { ...state, infoSchool:payload}
 		},
 		infoClass(state, {payload}) {
+			console.log(payload)
 			return { ...state, infoClass:payload}
 		},
 	},
@@ -140,14 +145,15 @@ export default {
 		},
 		*teacherList({payload}, {put, select}) {
 			// 教师列表查询
-			let {infoClass,infoSchool} = yield select(state => state.homePage)
+			let {classId,schoolId} = yield select(state => state.classHome)
 			let data = {
 				type:payload.type,
-				classId:infoClass,
-				schoolId:infoSchool,
+				classId:classId,
+				schoolId:schoolId,
 				page:1,
 				pageSize:9999
 			}
+			console.log(data)
 			let res = yield teacherList(data);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))

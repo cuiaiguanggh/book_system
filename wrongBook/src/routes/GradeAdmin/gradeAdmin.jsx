@@ -147,6 +147,11 @@ class HomeworkCenter extends React.Component {
 							type: 'classHome/classInfo',
 							payload:data
 						});
+						
+						this.props.dispatch({
+							type: 'classHome/classId',
+							payload:record.key
+						});
 						let data1 = {
 							schoolId:store.get('wrongBookNews').schoolId,
 							type:1
