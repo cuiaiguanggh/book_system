@@ -82,9 +82,6 @@ export default {
 				payload:payload
 			})
 			let res = yield pageClass(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
 			if(res.data && res.data.result === 0){
 				
 				yield put ({
@@ -112,9 +109,6 @@ export default {
 		*getClassList({payload}, {put, select}) {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'queryHomeworkList',
@@ -183,9 +177,6 @@ export default {
 		*queryScoreDetail({payload}, {put, select}) {
 			// 导航栏信息
 			let res = yield queryScoreDetail(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'scoreList',
@@ -200,9 +191,6 @@ export default {
 		*queryQuestionDetail({payload}, {put, select}) {
 			// 导航栏信息
 			let res = yield queryQuestionDetail(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'QuestionDetail',

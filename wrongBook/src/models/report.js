@@ -1,17 +1,22 @@
 import {
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
+import moment from 'moment';
 import { message } from 'antd';
 export default {
 
 	namespace: 'report',
   
 	state: {
-        mouths:[9,10,11,12,1,2,3,4,5,6,7,8]
+		mouths:[9,10,11,12,1,2,3,4,5,6,7,8],
+		mouNow:moment().format('MM')
 	},
 	reducers: {
 		workDetail(state, {payload}) {
 			return { ...state, workDetail:payload };
+		},
+		changeMouth(state, {payload}) {
+			return { ...state, mouNow:payload };
 		},
 	},
 	subscriptions: {
@@ -20,7 +25,7 @@ export default {
 	},
   
 	effects: {
-		*pageClass({payload}, {put, select}) {
+		// *pageClass({payload}, {put, select}) {
 			// 班级列表
 			// yield put ({
 			// 	type: 'classInfoPayload',
@@ -53,7 +58,7 @@ export default {
 			// 	yield put(routerRedux.push('/login'))
 
 			// }
-		},
+		// },
 		
 
 	},

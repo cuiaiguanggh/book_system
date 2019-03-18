@@ -21,28 +21,28 @@ class ClassReport extends React.Component {
 		let classList =  rodeType == 20 ? this.props.state.classList :this.props.state.classList1
 		if(classList.data){
 			return(
-                <Select
-                    showSearch
-                    style={{ width: 150,margin:'0 20px'}}
-                    placeholder="班级"
-                    defaultValue={this.props.state.className}
-                    optionFilterProp="children"
-                    onChange={(value)=>{
-                        console.log(value)
-                    }}
-                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                    {
+				<Select
+						showSearch
+						style={{ width: 150,margin:'0 20px'}}
+						placeholder="班级"
+						defaultValue={this.props.state.className}
+						optionFilterProp="children"
+						onChange={(value)=>{
+								console.log(value)
+						}}
+						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+				>
+					{
 						rodeType == 20 ?
 							classList.data.list.map((item,i) =>(
-                                <Option key={i} value={item.classId}>{item.className}</Option>
+																<Option key={i} value={item.classId}>{item.className}</Option>
 							))
 						:
 						classList.data.map((item,i) =>(
-                            <Option key={i} value={item.classId}>{item.className}</Option>
+														<Option key={i} value={item.classId}>{item.className}</Option>
 						))
 					}
-                </Select>
+				</Select>
 			)
 		}
     }
@@ -51,18 +51,18 @@ class ClassReport extends React.Component {
 			let classList =  rodeType == 20 ? this.props.state.classList :this.props.state.classList1
 			if(classList.data){
 				return(
-									<Select
-											showSearch
-											style={{ width: 150,margin:'0 20px'}}
-											placeholder="班级"
-											defaultValue={this.props.state.className}
-											optionFilterProp="children"
-											onChange={(value)=>{
-													console.log(value)
-											}}
-											filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-									>
-											{
+					<Select
+							showSearch
+							style={{ width: 150,margin:'0 20px'}}
+							placeholder="班级"
+							defaultValue={this.props.state.className}
+							optionFilterProp="children"
+							onChange={(value)=>{
+									console.log(value)
+							}}
+							filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+					>
+						{
 							rodeType == 20 ?
 								classList.data.list.map((item,i) =>(
 																	<Option key={i} value={item.classId}>{item.className}</Option>
@@ -72,7 +72,7 @@ class ClassReport extends React.Component {
 															<Option key={i} value={item.classId}>{item.className}</Option>
 							))
 						}
-									</Select>
+				</Select>
 				)
 			}
 			}

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Tabs, Input,Modal,Select,Popover,Icon
+import { Button, message, Input,Modal,Select,Popover,Icon
 } from 'antd';
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 import store from 'store';
+import moment from 'moment';
 //作业中心界面内容
 const Option = Select.Option;
 
@@ -18,12 +19,22 @@ class wrongTop extends React.Component {
     }
    
 	render() {
+		let moun =moment().format('MM')
 		return (
 			<div style={{height:'50px',lineHeight:'50px'}}>
 				<div>
 					{
 						this.props.state.mouths.map((item,i)=>(
-							<span key={i} className='choseMonth'>{item}月</span>
+							<span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
+								if(item > moun) {
+									message.warning('无法选择此月份')
+								}else{
+									this.props.dispatch({
+										type: 'report/changeMouth',
+										payload:item
+									});
+								}
+							}}>{item}月</span>
 						))
 					}
 				</div>
@@ -45,7 +56,6 @@ class wrongTop extends React.Component {
 	  }
 
 	componentDidMount(){
-        console.log(this.props)
 	}
 }
 

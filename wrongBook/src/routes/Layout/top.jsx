@@ -36,7 +36,7 @@ class HomePageLeft extends Component {
 							})
 					)
 			  }}>退出</p>
-            </div>
+      </div>
 		  );
 		let  leftName = ''
 		if(this.props.type == 'findPsd'){
