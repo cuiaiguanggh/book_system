@@ -13,6 +13,7 @@ app.model(require('./models/homePage').default);
 app.model(require('./models/classHome').default);
 app.model(require('./models/userInfo').default);
 app.model(require('./models/temp').default);
+app.model(require('./models/report').default);
 
 // 4. Router
 app.router(require('./router').default);

@@ -1,13 +1,13 @@
 import React,{ Component } from "react";
 import 'antd/dist/antd.css';
-import {Menu, Icon,Layout} from 'antd';
+import {Menu, Icon,Layout,Popover} from 'antd';
 import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
 import QRCode from 'qrcode.react';
 import {Link} from "dva/router";
 import store from 'store';
 import style from './Menus.less';
-import Top from './top'
+import WrongTop from '../wrongReport/wrongTop/wrongTop'
 import moment from 'moment';
 const {
 	Header, Footer, Sider, Content,
@@ -20,7 +20,8 @@ class HomePageLeft extends Component {
 	constructor(props) {
 		super(props);
 		this.state={
-			current:'home'
+			current:'home',
+			collapsed: false,
 		}
 	}
 	menuClick = (e) =>{
@@ -56,7 +57,7 @@ class HomePageLeft extends Component {
 			else if(rodeType === 30 || rodeType === 20){
 				this.props.dispatch(
 					routerRedux.push({
-						pathname: '/workDetail',
+						pathname: '/classReport',
 					})
 				)
 			}
@@ -69,7 +70,7 @@ class HomePageLeft extends Component {
 					if(rodeType === 10){
 						menus.push(<Menu.Item key="school">
 							<Link to='school#page=1' replace>
-								<Icon type="bar-chart" />学校管理
+								<Icon type="bar-chart" /><span>学校管理</span>
 							</Link>
 						</Menu.Item>)
 					}else if(rodeType === 20){
@@ -83,46 +84,50 @@ class HomePageLeft extends Component {
 						// <SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
 								<Menu.Item key="grade">
 									<Link to='grade#page=1' replace>
-										<Icon type="bar-chart" />班级管理
+										<Icon type="bar-chart" /><span>班级管理</span>
 									</Link>
 							</Menu.Item>
 						// </SubMenu>
 						)
 						menus.push(
-							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" />批量导入</Link></Menu.Item>
+							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" /><span>批量导入</span></Link></Menu.Item>
 						)
 					}else{
 						menus.push(<Menu.Item key="grade">
 							<Link to='grade#page=1' replace>
-								<Icon type="bar-chart" />班级列表
+								<Icon type="bar-chart" /><span>班级列表</span>
 							</Link>
 						</Menu.Item>)
 					}
 				}
 				// 作业中心
 				if(item === 300 && rodeType != 10){
-					menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
-						<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
-						<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
+					// menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
+					// 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
+					// 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
+					// </Menu.Item>)
+					menus.push(<Menu.Item key="workDetail1" style={{cursor:'pointer'}}>
+						<Link to="/classReport"  style={{cursor:'pointer'}} replace >
+						<Icon type="file-text" /><span style={{cursor:'pointer'}}>班级错题</span></Link>
 					</Menu.Item>)
-					// menus.push(
-					// 	<SubMenu key="sub" title={<span><Icon type="mail" /><span>错题报告</span></span>}>
-					// 			<Menu.Item key="1">班级错题</Menu.Item>
-					// 			<Menu.Item key="2">学生错题</Menu.Item>
-					// 			<Menu.Item key="3">作业报告</Menu.Item>
-					// 	</SubMenu>
-					// )
+					menus.push(<Menu.Item key="workDetail2" style={{cursor:'pointer'}}>
+						<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
+						<Icon type="file-text" /><span style={{cursor:'pointer'}}>学生错题</span></Link>
+					</Menu.Item>)
+					menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
+						<Link to="/workReport"  style={{cursor:'pointer'}} replace >
+						<Icon type="file-text" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
+					</Menu.Item>)
 				}
-				// 用户管理
-				// if(item === 400){
-				// 	if(rodeType <= 20){
-				// 		menus.push(<Menu.Item key="user"><Link to="/user" replace><Icon type="bar-chart" />用户管理</Link></Menu.Item>)
-				// 	}
-				// }
 			})
 			return(menus)
 		}
 	}
+	toggle = () => {
+		this.setState({
+		  collapsed: !this.state.collapsed,
+		});
+	  }
 	render() {
 		let  value= ''
 		let userNews = store.get('wrongBookNews')
@@ -150,91 +155,123 @@ class HomePageLeft extends Component {
 			defaultKey = 'school'
 		}else if(defaultKey.indexOf('grade') ===0){
 			defaultKey = 'grade'
+		}else if(defaultKey.indexOf('classReport') ===0){
+			defaultKey = 'workDetail1'
+		} if(defaultKey.indexOf('stuReport') ===0){
+			defaultKey = 'workDetail2'
+		} if(defaultKey.indexOf('workReport') ===0){
+			defaultKey = 'workDetail3'
 		}
-
+		const content = (
+            <div className={style.userPover}>
+                <p onClick={()=>{
+				  	this.props.dispatch(
+						routerRedux.push({
+							pathname: '/userInfo',
+                        })
+					)
+			  }}>个人信息</p>
+              <p onClick={()=>{
+				  store.set('wrongBookNews','')
+				  	this.props.dispatch(
+						routerRedux.push({
+							pathname: '/login',
+							})
+					)
+			  }}>退出</p>
+            </div>
+		  );
+		let  leftName = ''
+		if(this.props.type == 'findPsd'){
+			leftName = '重置登录密码'
+		}else{
+			if(userNews.rodeType > 10){
+				leftName = userNews.schoolName
+			}
+		}
 		return (
-			// <div className={style.homePageContaier}>
-				
-				// {
-				// 	!store.get('wrongBookNews')?
-				// 	'':<Top/>
-				// }
-			// 	<div className={style.HomePageCent}>
-
-					// <div className='pageLeftCont'>
-					// 	<div className='homePageLeft' >
-					// 	<Menu
-					// 		mode="inline"
-					// 		defaultSelectedKeys={[defaultKey]}
-					// 		style={{ width: 200 }}
-					// 		onClick={this.menuClick}
-					// 		// defaultSelectedKeys={['sub']}
-					// 		defaultOpenKeys={['sub']}
-					// 		// inlineCollapsed={col}
-					// 	>
-					// 		{
-					// 			!store.get('wrongBookNews')?
-					// 			'':this.Menus()
-					// 		}
-						
-					// 	</Menu>
-					// 		{
-					// 			rodeType === 10 ?'':
-					// 			<div className={style.qrcode}>
-					// 				<QRCode className='qrcode' value={value} />
-					// 				<p>加入班级</p>
-					// 			</div>
-					// 		}
-					// 		<p className={style.phoneNum}>400-889-1291</p>
-					// 	</div>
-			// 			<div className={style.homepageRight}>
-			// 				{this.props.children}
-			// 			</div>
-			// 		</div>
-			// 	</div>
-			// </div>
 			<Layout className={style.homePageContaier}>
-				<Header style={{background:"#fff"}}>
-					{
-						!store.get('wrongBookNews')?
-						'':<Top/>
-					}
-				</Header>
-				<Layout className={style.HomePageCent}>
-					<Sider style={{background:"#fff",marginRight:'1px'}}>
-					<div className='pageLeftCont'>
-						<div className='homePageLeft' >
-						<Menu
-							mode="inline"
-							defaultSelectedKeys={[defaultKey]}
-							style={{ width: 200 }}
-							onClick={this.menuClick}
-							// defaultSelectedKeys={['sub']}
-							defaultOpenKeys={['sub']}
-							// inlineCollapsed={col}
-						>
+				<Sider
+				trigger={null}
+				collapsible
+				collapsed={this.state.collapsed}
+				>
+					<div className="logo" />
+					<Menu 
+						theme="dark" 
+						mode="inline" 
+						defaultSelectedKeys={[defaultKey]}
+						onClick={(e)=>{
+								this.setState({
+									current: e.key,
+								  });
+							}}
+					>
+						{this.Menus()}
+					</Menu>
+					{/* {
+						rodeType === 10 ?'':
+						<div className={style.qrcode}>
+							<QRCode className='qrcode' value={value} />
+							<p>加入班级</p>
+						</div>
+					} */}
+				</Sider>
+				<Layout>
+					<Header style={{ background: '#fff', padding: 0 }}>
+						<Icon
+						style={{cursor:'pointer'}}
+						className="trigger"
+						type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
+						onClick={this.toggle}
+						/>
+						<div className="navClass">
 							{
-								!store.get('wrongBookNews')?
-								'':this.Menus()
-							}
-						
-						</Menu>
-							{
-								rodeType === 10 ?'':
-								<div className={style.qrcode}>
-									<QRCode className='qrcode' value={value} />
-									<p>加入班级</p>
+								userNews ==undefined?'':
+								<div>
+									<span className={style.usinfo}>
+									{leftName}
+									</span>
+									{
+										this.props.type == 'findPsd' ?'' :
+										<div className={style.usinfo}>
+										
+											<img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/>
+											
+											<Popover
+												content={content} 
+												// trigger="click"
+												type="primary"
+												placement="bottom"
+											>
+												<div 
+												className="btnBack" 
+												type="primary">
+													<span>{userNews.userName}</span>
+												</div>
+											</Popover>
+										</div>
+									}
 								</div>
 							}
-							<p className={style.phoneNum}>400-889-1291</p>
-						</div>
-					</div>
-					</Sider>
-					<Content>
-					<div className={style.homepageRight}>
-			 				{this.props.children}
-			 			</div>
-					</Content>
+								
+							</div>
+					</Header>
+					{
+						defaultKey.indexOf('workDetail') != -1 ?
+						<Header style={{ background: '#a3b0c3',height:'50px', padding: 0 }}>
+							<WrongTop type={this.props.location}/>
+						</Header>:''
+					}
+				<Content style={{
+					background: '#fff', 
+					minHeight: 280,
+					overflow:'auto',
+					position:'relative'
+				}}
+				>
+					{this.props.children}
+				</Content>
 				</Layout>
 			</Layout>
 		)
@@ -243,7 +280,6 @@ class HomePageLeft extends Component {
 		let logTime = store.get('logTime');
 		if(!logTime && logTime == ''){
 			let nowTime = new Date() - 10800000;
-			console.log(moment().add('hours', 3)*1-moment()*1)
 		}
 
 		const {dispatch} = this.props;

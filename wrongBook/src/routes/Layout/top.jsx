@@ -46,7 +46,6 @@ class HomePageLeft extends Component {
 				leftName = userNews.schoolName
 			}
 		}
-		console.log()
 		return (
 				<div className="navClass">
 				{

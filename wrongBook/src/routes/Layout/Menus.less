@@ -5,77 +5,69 @@
     top:0;
     bottom:0;
 
-    .HomePageCent{
-        width: 100%;
-        position: absolute;
-        top: 66px;
-        bottom:0;
-        margin: 0 auto;
-        margin-top: 1px;
+    :global(.trigger ){
+        font-size: 18px;
+        line-height: 64px;
+        padding: 0 24px;
+        cursor: pointer;
+        transition: color .3s;
+      }
+      :global(.trigger ):hover{
+        color: #1890ff;
+      }
+    :global(.logo){
+        height: 32px;
+        background:url('../images/xc-jg-n.png') no-repeat 0 0;
+        margin: 16px 24px;
+    }
 
-        :global(.pageLeftCont){
-            height: 100%;
-            overflow: auto;
-            float: left;
-            width:100% ;
-            position: relative;
+    :global(.navClass){
+        background: #fff;
+        border-bottom: 1px solid #e8e8e8;
+        min-height:  65px;
+        line-height: 65px;
+        display: inline-block;
+        width: calc(~"100% - 66px");
+        text-align: right;
 
-            :global(.homePageLeft){
+        .usinfo{
+            display: inline-block;
+            // position: absolute;
+            // top: 0;
+            // right:10px;
+            margin:0 20px;
+
+            :global(.btnBack){
                 display: inline-block;
-                float: left;
-                position: fixed;
-                top:67px;
-                bottom:0;
-                background: #fff;
-                margin-right: 5px;
-                box-shadow: 0 1px 3px #1a1a1a1a;
-
-                .phoneNum{
-                    position: absolute;
-                    bottom: 0;
-                    left:10%;
-                    right:10%;
-                    height: 40px;
-                    line-height: 40px;
-                    background: #03A9F4;
-                    text-align: center;
-                    color: #fff;
-                }
-                .qrcode{
-                    position: absolute;
-                    bottom:50px;
-                    left:10%;
-                    right:10%;
-                    text-align: center;
-                }
-                
-                
-                // :global(.ant-menu-item-selected){
-                //     color:#03A9F4;
-                // }
-                // :global(.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected){
-                //     background-color:#fff;
-                // }
-                // :global( .ant-menu-item-selected::after){
-                //     display: none;
-                //     border-right:none!important;
-                //     font-family: "anticon" !important;
-                // }
+                cursor: pointer;
+                color: rgba(0, 0, 0, 0.65);
+                text-align: right;
             }
-            .homepageRight{
-                margin-left: 201px;
-                width: calc(~"100% - 205px");
+            :global(.btnBack:focus){
+                color: #03A9F4;
+            }
+            :global(.btnSchool){
                 display: inline-block;
-                // float: left;
-                position: absolute;
-                top: 0;
-                bottom:0;
-                // background:#fff
+                cursor: pointer;
+                color: rgba(0, 0, 0, 0.65);
+                text-align: right;
+                margin:0 20px;
             }
         }
+        .usinfo img{
+            width:40px;
+            height: 40px;
+            border-radius: 50px;
+            margin-right: 15px;
+        }
     }
-    
-    
+
+}
+
+:global(.ant-popover-inner-content){
+    padding: 0!important;
+    overflow: hidden;
+    border-radius: 4px;
 }
 .userPover{
     width:100px;
@@ -92,60 +84,7 @@
         
     }
 }
-:global(.ant-popover-inner-content){
-    padding: 0!important;
-    overflow: hidden;
-    border-radius: 4px;
-}
-:global(.ant-pagination ){
-    text-align: center;
-    margin-top: 10px;
-}
-:global(.navClass){
-    background: #fff;
-    border-bottom: 1px solid #e8e8e8;
-    position: relative;
-    min-height:  65px;
-    line-height: 65px;
 
-    .userImg{
-        display: inline-block;
-    }
-    .usinfo{
-        display: inline-block;
-        position: absolute;
-        top: 0;
-        right:10px;
-
-        :global(.btnBack){
-            display: inline-block;
-            cursor: pointer;
-            color: rgba(0, 0, 0, 0.65);
-            text-align: right;
-        }
-        :global(.btnBack:focus){
-            color: #03A9F4;
-        }
-        :global(.btnSchool){
-            display: inline-block;
-            cursor: pointer;
-            color: rgba(0, 0, 0, 0.65);
-            text-align: right;
-            margin:0 20px;
-        }
-    }
-    .usinfo img{
-        width:40px;
-        height: 40px;
-        border-radius: 50px;
-        margin-right: 15px;
-    }
-}
-
-
-:global(.ant-menu){
-    border-right:none!important;
-}
 /* 定义滚动条 */
 :global(.ant-layout-content)::-webkit-scrollbar
 {  
