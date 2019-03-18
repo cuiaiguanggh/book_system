@@ -171,9 +171,14 @@ class HomeworkCenter extends React.Component {
 		let testScoreInfo = this.props.state.scoreList;
 		let QuestionDetail = this.props.state.QuestionDetail;
 		let data = testScoreInfo.data;
-		var worstScoret = (data.worst.score * 100).toFixed(0);
-		let Num = data.worst.count.split('/')
-		let wost = Num[1]-Num[0]
+		var worstScoret = 0
+		let Num = []
+		let wost = 0;
+		if(data.worst != null){
+			worstScoret = (data.worst.score * 100).toFixed(0);
+			Num = data.worst.count.split('/')
+			wost = Num[1]-Num[0]
+		}
 		let key = 0;
 		for(let i =0;i<data.userScoreList.length;i++){
 			key = data.userScoreList[i].wrongScore+key
