@@ -64,12 +64,12 @@ export default {
 					}else 
 					// if(rodeType ===20){
 					// 	yield put(routerRedux.push({
-					// 		pathname: '/schoolNews',
+					// 		pathname: '/schoolNew s',
 					// 	}))
 					// }else 
 					if(rodeType ===30 || rodeType ===20){
 						yield put(routerRedux.push({
-							pathname: '/workDetail',
+							pathname: '/classReport',
 						}))
 					}
 				}else{

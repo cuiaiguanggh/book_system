@@ -1,6 +1,6 @@
 import React,{ Component } from "react";
 import 'antd/dist/antd.css';
-import {Menu, Icon,Layout,Popover} from 'antd';
+import {Menu, Icon,Layout,Popover,Select} from 'antd';
 import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
 import QRCode from 'qrcode.react';
@@ -9,6 +9,7 @@ import store from 'store';
 import style from './Menus.less';
 import WrongTop from '../wrongReport/wrongTop/wrongTop'
 import moment from 'moment';
+const Option = Select.Option;
 const {
 	Header, Footer, Sider, Content,
   } = Layout;
@@ -108,15 +109,15 @@ class HomePageLeft extends Component {
 					// </Menu.Item>)
 					menus.push(<Menu.Item key="workDetail1" style={{cursor:'pointer'}}>
 						<Link to="/classReport"  style={{cursor:'pointer'}} replace >
-						<Icon type="file-text" /><span style={{cursor:'pointer'}}>班级错题</span></Link>
+						<Icon type="file-text"  theme="filled"/><span style={{cursor:'pointer'}}>班级错题</span></Link>
 					</Menu.Item>)
 					menus.push(<Menu.Item key="workDetail2" style={{cursor:'pointer'}}>
 						<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
-						<Icon type="file-text" /><span style={{cursor:'pointer'}}>学生错题</span></Link>
+						<Icon type="appstore"  theme="filled"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
 					</Menu.Item>)
 					menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
 						<Link to="/workReport"  style={{cursor:'pointer'}} replace >
-						<Icon type="file-text" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
+						<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
 					</Menu.Item>)
 				}
 			})
@@ -127,7 +128,46 @@ class HomePageLeft extends Component {
 		this.setState({
 		  collapsed: !this.state.collapsed,
 		});
-	  }
+		}
+		
+	getyear() {
+		let yearList = this.props.state.yearList;
+		const content = (
+			<div>
+				{
+					yearList.data.map((item,i)=>(
+						<p className={style.yearList} key={i} onClick={()=>{
+							this.props.dispatch({
+								type: 'temp/years',
+								payload:item
+							});
+						}}>{item}</p>
+					))
+				}
+			</div>
+		);
+		return(
+			<div 
+				className={style.usinfo1}
+				type="primary">
+					<span>{this.props.state.years} </span>
+					{/* <Icon type="down" /> */}
+				</div>
+			// <Popover
+			// 	content={content} 
+			// 	trigger="click"
+			// 	type="primary"
+			// 	placement="bottom"
+			// >
+			// 	<div 
+			// 	className={style.usinfo1}
+			// 	type="primary">
+			// 		<span>{this.props.state.years} </span>
+			// 		<Icon type="down" />
+			// 	</div>
+			// </Popover>
+		)
+	}
 	render() {
 		let  value= ''
 		let userNews = store.get('wrongBookNews')
@@ -157,10 +197,12 @@ class HomePageLeft extends Component {
 			defaultKey = 'grade'
 		}else if(defaultKey.indexOf('classReport') ===0){
 			defaultKey = 'workDetail1'
-		} if(defaultKey.indexOf('stuReport') ===0){
+		}else if(defaultKey.indexOf('stuReport') ===0){
 			defaultKey = 'workDetail2'
-		} if(defaultKey.indexOf('workReport') ===0){
+		}else if(defaultKey.indexOf('workReport') ===0){
 			defaultKey = 'workDetail3'
+		}else if(defaultKey == ''){
+			defaultKey = 'workDetail1'
 		}
 		const content = (
             <div className={style.userPover}>
@@ -209,13 +251,13 @@ class HomePageLeft extends Component {
 					>
 						{this.Menus()}
 					</Menu>
-					{/* {
+					{
 						rodeType === 10 ?'':
 						<div className={style.qrcode}>
 							<QRCode className='qrcode' value={value} />
-							<p>加入班级</p>
+							<p style={{color:'#fff',textAlign:"center"}}>加入班级</p>
 						</div>
-					} */}
+					}
 				</Sider>
 				<Layout>
 					<Header style={{ background: '#fff', padding: 0 }}>
@@ -229,14 +271,20 @@ class HomePageLeft extends Component {
 							{
 								userNews ==undefined?'':
 								<div>
+									{
+										this.props.state.yearList.data?
+										this.getyear():''	
+									}
+
 									<span className={style.usinfo}>
 									{leftName}
 									</span>
 									{
 										this.props.type == 'findPsd' ?'' :
 										<div className={style.usinfo}>
-										
-											<img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/>
+
+											{/* <img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/> */}
+											<img  alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
 											
 											<Popover
 												content={content} 
@@ -248,6 +296,7 @@ class HomePageLeft extends Component {
 												className="btnBack" 
 												type="primary">
 													<span>{userNews.userName}</span>
+													<Icon type="caret-down" style={{color:"#e1e1e1"}} />
 												</div>
 											</Popover>
 										</div>
@@ -293,11 +342,24 @@ class HomePageLeft extends Component {
 		dispatch({
 			type: 'homePage/functionList'
 		});
+		dispatch({
+			type: 'report/getUserSubjectList'
+		});
+		dispatch({
+			type: 'report/getUserSubjectList'
+		});
+		dispatch({
+			type: 'homePage/getEnableYears',
+			payload:{
+				schoolId:store.get('wrongBookNews').schoolId
+			}
+		})
 	}
 }
 
 export default connect((state) => ({
 	state: {
 		...state.homePage,
+		...state.temp,
 	}
 }))(HomePageLeft);

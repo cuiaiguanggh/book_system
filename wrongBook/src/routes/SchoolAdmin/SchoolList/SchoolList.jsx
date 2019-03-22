@@ -538,7 +538,7 @@ class HomeworkCenter extends React.Component {
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}} >学校</span>
 									<Input 
-										defaultValue={this.props.state.schoolName}
+										defaultValue={schoolInfo.data.schoolName}
 										onChange={(e)=>{
 											this.props.dispatch({
 												type: 'homePage/changeSchoolName',

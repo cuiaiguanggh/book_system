@@ -28,18 +28,31 @@ class ClassReport extends React.Component {
 						defaultValue={this.props.state.className}
 						optionFilterProp="children"
 						onChange={(value)=>{
-								console.log(value)
+								this.props.dispatch({
+									type: 'temp/getUserSubjectList',
+									payload:value
+								});
+								this.props.dispatch({
+									type: 'report/queryHomeworkList',
+									payload:{
+										classId:value
+									}
+								});
+								this.props.dispatch({
+									type: 'report/classId',
+									payload:value
+								});
 						}}
 						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 				>
 					{
 						rodeType == 20 ?
 							classList.data.list.map((item,i) =>(
-																<Option key={i} value={item.classId}>{item.className}</Option>
+								<Option key={i} value={item.classId}>{item.className}</Option>
 							))
 						:
 						classList.data.map((item,i) =>(
-														<Option key={i} value={item.classId}>{item.className}</Option>
+							<Option key={i} value={item.classId}>{item.className}</Option>
 						))
 					}
 				</Select>
@@ -48,28 +61,35 @@ class ClassReport extends React.Component {
     }
     getSub() {
 			const rodeType = store.get('wrongBookNews').rodeType;
-			let classList =  rodeType == 20 ? this.props.state.classList :this.props.state.classList1
-			if(classList.data){
+			let subList =  this.props.state.subList ;
+			if(subList.data){
 				return(
 					<Select
 							showSearch
 							style={{ width: 150,margin:'0 20px'}}
-							placeholder="班级"
-							defaultValue={this.props.state.className}
+							placeholder="学科"
+							defaultValue={subList.data[0].k}
 							optionFilterProp="children"
 							onChange={(value)=>{
-									console.log(value)
+								this.props.dispatch({
+									type: 'temp/queryQrDetail',
+									payload:{
+										classId:this.props.state.classId,
+										year:this.props.state.years,
+										subjectId:value,
+										info:0
+									}
+								});
+								this.props.dispatch({
+									type: 'temp/subId',
+									payload:value
+								});
 							}}
 							filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 					>
 						{
-							rodeType == 20 ?
-								classList.data.list.map((item,i) =>(
-																	<Option key={i} value={item.classId}>{item.className}</Option>
-								))
-							:
-							classList.data.map((item,i) =>(
-															<Option key={i} value={item.classId}>{item.className}</Option>
+							subList.data.map((item,i) =>(
+								<Option key={i} value={item.v}>{item.k}</Option>
 							))
 						}
 				</Select>
@@ -122,11 +142,13 @@ class ClassReport extends React.Component {
 				type: 'temp/getClassList',
 			});
 		}
+		
 	}
 }
 
 export default connect((state) => ({
 	state: {
+		...state.report,
 		...state.temp,
 	}
 }))(ClassReport);

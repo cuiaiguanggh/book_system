@@ -58,10 +58,6 @@ const UserList = Loadable({
   loader: () => import('./routes/Userlist/UserList'),
   loading: () => <List/>,
 });
-const WorkDetail = Loadable({
-  loader: () => import('./routes/workDetail/homeworkDetail'),
-  loading: () => <List/>,
-});
 
 const StudentDetail = Loadable({
   loader: () => import('./routes/studentDetail/studentDetail'),
@@ -98,7 +94,6 @@ function RouterConfig({ history }) {
             <Route path="/school" component={SchoolAdmin} />
             <Route path="/schoolNews" component={SchoolNews} />
             <Route path="/user" component={UserList} />
-            <Route path="/workDetail" component={WorkDetail} />
             <Route path="/classReport" component={ClassReport} />
             <Route path="/stuReport" component={StuReport} />
             <Route path="/workReport" component={WorkReport} />

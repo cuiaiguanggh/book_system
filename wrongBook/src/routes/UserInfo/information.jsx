@@ -53,7 +53,7 @@ class HomeworkCenter extends React.Component {
 							<h3 style={{marginBottom:'30px'}}>修改信息</h3>
 							<div style={{marginBottom:'30px'}}>						
 								<span style={{width:"100px",display:'inline-block'}}>姓名</span>
-								<Input  value={this.state.name}  style={{width:'300px'}}
+								<Input maxLength={10} value={this.state.name}  style={{width:'300px'}}
 								onChange={(e)=>{
 									this.setState({name:e.target.value})
 								}}/>

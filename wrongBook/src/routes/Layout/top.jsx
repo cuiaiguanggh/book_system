@@ -51,7 +51,7 @@ class HomePageLeft extends Component {
 				<div className="navClass">
 				{
 					userNews ==undefined?'':
-					<div>
+					<div >
 						<Link to="/"  style={{cursor:'pointer'}} replace >
 							{/* <img alt='' style={{height:'40px'}} src={head}/> */}
 							<img alt='' style={{height:'40px'}} src={require('../images/t_nv_ig_n.png')}/>
@@ -62,8 +62,8 @@ class HomePageLeft extends Component {
 						</span>
 						{
 							this.props.type == 'findPsd' ?'' :
-							<div className={style.usinfo}>
-								<img  alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
+							<div style={{float:'right',display:"inline-block"}}>
+								<img style={{height:'40px'}} alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
 								<Popover
 									content={content} 
 									// trigger="click"
@@ -71,7 +71,7 @@ class HomePageLeft extends Component {
 									placement="bottom"
 								>
 									<div 
-									className="btnBack" 
+									style={{float:'right',margin:'0 10px'}}
 									type="primary">
 										<span>{userNews.userName}</span>
 									</div>

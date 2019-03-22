@@ -16,8 +16,21 @@ function homeworkDetail(payload){
         data:payload
     });
 }
+function getUserSubjectList(payload){
+    return request(dataCenter('/user/getUserSubjectList'),{
+        data:payload
+    });
+}
+function getQrMonthList(payload){
+    return request(dataCenter('/web/report/getQrMonthList'),{
+        data:payload
+    });
+}
+
 export {
     queryScoreDetail,
     queryQuestionDetail,
     homeworkDetail,
+    getUserSubjectList,
+    getQrMonthList,
 };

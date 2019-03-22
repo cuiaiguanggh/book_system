@@ -9,7 +9,8 @@ import {
 	administrativeDivision,
 	kickClass,
 	createSchoolUser,
-	subjectNodeList
+	subjectNodeList,
+	getEnableYears,
 } from '../services/homePageService';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
@@ -43,6 +44,7 @@ export default {
 		infoSchool:'',
 		memType:1,
 		sublist:[],
+		yearList:[],
 	},
 	reducers: {
 		classNews(state, {payload}) {
@@ -111,6 +113,9 @@ export default {
 		sublist(state, {payload}) {
 			return { ...state, sublist:payload };
 		},
+		yearList(state, {payload}) {
+			return { ...state, yearList:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -131,7 +136,7 @@ export default {
 			// 区域信息返回
 			let res = yield administrativeDivision(payload);
 			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
@@ -141,7 +146,7 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -153,7 +158,7 @@ export default {
 			let res = yield pageRelevantSchool(payload);
 			console.log(res.hasOwnProperty("err"))
 			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
@@ -162,7 +167,7 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -196,10 +201,10 @@ export default {
 				})
 			}
 			else if(res.err){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -225,10 +230,10 @@ export default {
 				})
 			}
 			else if(res.err){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -244,10 +249,10 @@ export default {
 				})
 			}
 			else if(res.err){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -273,10 +278,10 @@ export default {
 				})
 			}
 			else if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -301,7 +306,7 @@ export default {
 				yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -324,7 +329,7 @@ export default {
 				
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -340,7 +345,7 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},
@@ -362,10 +367,27 @@ export default {
 				})
 			}
 			else if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
+			}
+			
+		},
+		*getEnableYears({payload}, {put, select}) {
+			// 获取学年
+			let res = yield getEnableYears(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type:'yearList',
+					payload:res.data
+				})
+			}
+			else if(res.hasOwnProperty("err")){
+				// yield put(routerRedux.push('/login'))
+			}else{
+				message.error(res.data.msg)
+				// yield put(routerRedux.push('/login'))
 			}
 			
 		},

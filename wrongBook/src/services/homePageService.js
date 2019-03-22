@@ -59,6 +59,11 @@ function kickClass(payload){
         data:payload
     });
 }
+function getEnableYears(payload){
+    return request(dataCenter('/sys/config/getEnableYears'), {
+        data:payload
+    });
+}
 
 export {
     functionList,
@@ -72,4 +77,5 @@ export {
     createSchoolUser,
     subjectNodeList,
     administrativeDivision,
+    getEnableYears,
 };

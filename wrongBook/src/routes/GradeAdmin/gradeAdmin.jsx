@@ -319,7 +319,6 @@ class HomeworkCenter extends React.Component {
 				children.push(<Option key={data.userId}>{data.userName}</Option>);
 			}
 		}
-		console.log(rodeType)
 		return (
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>

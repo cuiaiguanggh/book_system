@@ -74,7 +74,7 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 		},
 		*teacherList({payload}, {put, select}) {
@@ -91,7 +91,7 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -102,7 +102,7 @@ export default {
 			})
 			let res = yield pageRelevantSchool(payload);
 			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
@@ -130,7 +130,7 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 		},
 		*updateInfo({payload}, {put, select}) {
@@ -149,7 +149,7 @@ export default {
 
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				// yield put(routerRedux.push('/login'))
 			}
 		},
 

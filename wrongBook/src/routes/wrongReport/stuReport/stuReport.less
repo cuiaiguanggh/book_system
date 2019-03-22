@@ -25,13 +25,16 @@
         background:#fff;
 
         .questionBody{
-            width:500px;
-            border:1px solid #f5f7fa;
+            width:450px;
+            border:1px solid #ebeef5;
             margin:10px;
+            float:left;
     
             .questionTop{
                 background:#f5f7fa;
-                padding:5px 10px;
+                padding:0px 10px;
+                height:40px;
+                line-height: 40px;
             }
         }
     }
@@ -42,7 +45,53 @@
     border-radius: 2px;
     cursor: pointer;
 }
+:global(.choseMonthOn){
+    padding:0 10px;
+    margin:5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    background:#1890ff;
+    color:#fff;
+}
 :global(.choseMonth):hover{
     background:#1890ff;
     color:#fff;
+}
+:global(.down){
+    float: right;
+    background:#1890ff;
+    line-height: 30px;
+    color:#ffff;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    height: 32px;
+}
+:global(.ndown){
+    float: right;
+    background:#b8c3d1;
+    line-height: 30px;
+    color:#ffff;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    height: 32px;
 }
