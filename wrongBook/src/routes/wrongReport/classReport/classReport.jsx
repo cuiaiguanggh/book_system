@@ -118,14 +118,20 @@ class wrongTop extends React.Component {
                                             type: 'down/classDown',
                                             payload:item.questionId
                                         });
+                                        this.props.dispatch({
+                                            type: 'down/classDownPic',
+                                            payload:item.picId
+                                        });
                                     }else{
                                         this.props.dispatch({
                                             type: 'down/delClassDown',
                                             payload:item.questionId
                                         });
+                                        this.props.dispatch({
+                                            type: 'down/delClassDownPic',
+                                            payload:item.picId
+                                        });
                                     }
-                                    
-                                    
                                 }}>{name}</span>
                             </div>
                         </div>
@@ -263,7 +269,7 @@ class wrongTop extends React.Component {
 						:''
                     }
                     <Button 
-                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
                         loading={this.state.loading} 
                         onClick={()=>{
                             if(this.props.state.classDown.length!= 0){
@@ -271,7 +277,7 @@ class wrongTop extends React.Component {
                                 this.setState({loading:load})
                                 let This = this;
                                 if(!this.state.loading){
-                                    let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.classDown.join(','))
+                                    let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.classDown.join(',')+ '&picIds='+this.props.state.classDownPic.join(','))
                                     // window.open(url,'_blank'); 
                                     this.setState({wordUrl:url})
                                     this.props.dispatch({

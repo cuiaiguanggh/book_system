@@ -124,7 +124,7 @@ class ClassReport extends React.Component {
 						>
 						</Select>
 						<Button 
-							style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+							style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
 							loading={this.state.loading} 
 							onClick={()=>{
 								if(this.props.state.workDown.length!= 0){
@@ -132,7 +132,7 @@ class ClassReport extends React.Component {
 									this.setState({loading:load})
 									let This = this;
 									if(!this.state.loading){
-										let url = dataCenter('/web/report/getQuestionDoxc?questionIds='+this.props.state.workDown.join(','))
+										let url = dataCenter('/web/report/getQuestionDoxc?questionIds='+this.props.state.workDown.join(',')+'&picIds='+this.props.state.workDownPic.join(','))
 										// window.open(url,'_blank'); 
 										this.setState({wordUrl:url})
 										this.props.dispatch({
@@ -224,10 +224,18 @@ class ClassReport extends React.Component {
 												type: 'down/workDown',
 												payload:item.questionId
 											});
+											this.props.dispatch({
+												type: 'down/workDownPic',
+												payload:item.picId
+											});
 										}else{
 											this.props.dispatch({
 												type: 'down/delWorkDown',
 												payload:item.questionId
+											});
+											this.props.dispatch({
+												type: 'down/delWorkDownPic',
+												payload:item.picId
 											});
 										}
 										
@@ -264,37 +272,7 @@ class ClassReport extends React.Component {
         let Num = trueNum.length+ wrongNum.length
         return(
             <div>
-                {/* <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
-                    <div style={{padding:'10px'}}>
-						{
-							question.question.split(',').map((item,i)=>(
-								<img key={i} src={item} style={{width:'500px'}}></img>
-							))
-						}
-                    </div>
-                    <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
-                        <span>班级错误率：{(wrongNum.length/Num *100).toFixed(0)}%</span>
-                    </div>
-                </div> */}
                 <div style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
-                    {/* <h3>答题统计</h3>
-                    <h3 style={{overflow:'hidden'}}>
-                        <span style={{
-                            float:'left',background:'#e7f4dd',borderRadius:'30px',
-                            padding:'0 10px',height:'30px',lineHeight:'30px',
-                        }}>
-                        答对（{trueNum.length}人）
-                        </span>
-                        <span style={{float:'right',color:"#88ca54"}}>
-                        {(trueNum.length/Num *100).toFixed(0)}%</span>
-                        </h3>
-                    <div style={{borderBottom:'1px solid #ccc',marginBottom:'10px',padding:'10px 0'}}>
-                        {
-                           trueNum.map((item,i) =>(
-                            <span key={i} style={{padding:'5px 10px',fontSize:"18px"}}>{item}</span>
-                           )) 
-                        }
-                    </div> */}
                     <h3 style={{overflow:'hidden'}}>
                     <span style={{
                             float:'left',background:'#ffe1e4',borderRadius:'30px',
@@ -323,9 +301,6 @@ class ClassReport extends React.Component {
                     </div> 
                 </div>
                  {
-                    // this.state.showAns.map((item,i)=>(
-                    //     <img width='500px' src={this.state.showAns}></img>
-                    // ))
 						showAns.map((item,i)=>(
 							<img key={i} width='650px' src={item}></img>
 						))
@@ -337,7 +312,7 @@ class ClassReport extends React.Component {
 	render() {
 		let columns = [
 			{
-				title: '姓名',
+				title: <div style={{textAlign:'center'}}>姓名</div>,
 				dataIndex: 'name',
 				key: 'name',
 				width: '100px',
@@ -351,7 +326,7 @@ class ClassReport extends React.Component {
 				}
 			},
 			{
-				title:'错误率',
+				title:<div style={{textAlign:'center'}}>错误率</div>,
 				dataIndex:'wrong',
 				key:'wrong',
 				width: '100px',
@@ -365,7 +340,7 @@ class ClassReport extends React.Component {
 				}
 			},
 			{
-				title:'提交时间',
+				title:<div style={{textAlign:'center'}}>提交时间</div>,
 				dataIndex:'time',
 				key:'time',
 				width: '150px',
@@ -384,8 +359,8 @@ class ClassReport extends React.Component {
 				title:<div style={{lineHeight:'17px'}}>
 						<span>题目详情</span>
 						<span  style={{float:'right',fontSize:'14px'}}>
-							<Icon style={{color:'#f56c6c',fontSize:'14px',verticalAlign:'inherit',marginRight:'5px'}} type="close-circle" theme="filled"/>
-							<span style={{color:'#909399',fontSize:'12px',marginRight:'10px',verticalAlign:'text-top'}}>错误</span>
+							<Icon style={{color:'#f56c6c',fontSize:'14px',marginRight:'5px'}} type="close-circle" theme="filled"/>
+							<span style={{color:'#909399',fontSize:'14px',marginRight:'10px',verticalAlign:'text-top',fontWeight:'bold'}}>错误</span>
 
 						</span>
 					</div>,

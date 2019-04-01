@@ -134,10 +134,18 @@ class StuReport extends React.Component {
 											type: 'down/stuDown',
 											payload:item.questionId
 										});
+										this.props.dispatch({
+											type: 'down/stuDownPic',
+											payload:item.picId
+										});
 									}else{
 										this.props.dispatch({
 											type: 'down/delstuDown',
 											payload:item.questionId
+										});
+										this.props.dispatch({
+											type: 'down/delstuDownPic',
+											payload:item.picId
 										});
 									}
 									}}>{name}</span>
@@ -209,7 +217,7 @@ class StuReport extends React.Component {
 								:''
 							}
 							<Button 
-								style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+								style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
 						
 								loading={this.state.loading} 
 								onClick={()=>{
@@ -218,7 +226,7 @@ class StuReport extends React.Component {
 										this.setState({loading:load})
 										let This = this;
 										if(!this.state.loading){
-											let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.stuDown.join(','))
+											let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.stuDown.join(',')+'&picIds='+this.props.state.stuDownPic.join(','))
 											// window.open(url,'_blank'); 
 											this.setState({wordUrl:url})
 											this.props.dispatch({
