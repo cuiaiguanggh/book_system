@@ -78,7 +78,7 @@ class wrongTop extends React.Component {
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
-                                if(item.wrongScore == 0 ) {
+                                if(item.wrongScore != 0 ) {
                                     this.setState({visible:true,key:i,showAns:ans[0]})
                                 }
                             }}>
@@ -90,7 +90,7 @@ class wrongTop extends React.Component {
                             </div>
                             <div style={{overflow:'hidden',padding:'10px'}}>
                                 <Button style={{float:'left'}} onClick={()=>{
-                                    if(item.wrongScore == 0 ) {
+                                    if(item.wrongScore != 0 ) {
                                         this.setState({visible:true,key:i,showAns:ans[0]})
                                     }
                                     // this.setState({visible:true,key:i,showAns:ans[0]})
