@@ -381,11 +381,12 @@ class ClassReport extends React.Component {
 				}
 			},
 			{
-				title:<div>
+				title:<div style={{lineHeight:'17px'}}>
 						<span>题目详情</span>
-						<span  style={{float:'right',fontSize:'20px'}}>
-							<span>错误</span>
-							<Icon type="close-circle" twoToneColor='#f56c6c' theme="twoTone" />
+						<span  style={{float:'right',fontSize:'14px'}}>
+							<Icon style={{color:'#f56c6c',fontSize:'14px',verticalAlign:'inherit',marginRight:'5px'}} type="close-circle" theme="filled"/>
+							<span style={{color:'#909399',fontSize:'12px',marginRight:'10px',verticalAlign:'text-top'}}>错误</span>
+
 						</span>
 					</div>,
 				dataIndex:'news',
