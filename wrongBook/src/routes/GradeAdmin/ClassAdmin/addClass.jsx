@@ -23,13 +23,14 @@ class HomeworkCenter extends React.Component {
 			 fileArr: [],
 			 file:[],
 			 schoolId:'',
-			 year:''
+			 year:'',
+			 uploadFile:{}
 			};
 	}
 	onImportExcel = file =>{
 		const { files } = file.target;
 		const fileReader = new FileReader();
-			this.setState({file:files})
+			this.setState({file:files,uploadFile:file.target.files[0]})
 			fileReader.onload = event => {
 				try {
 				this.setState({file:fileReader})
@@ -58,8 +59,7 @@ class HomeworkCenter extends React.Component {
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
-			this.setState({file:acceptedFiles})
-
+			this.setState({file:acceptedFiles,uploadFile:acceptedFiles[0]})
 			const fileReader = new FileReader();
 			fileReader.onload = event => {
 				try {
@@ -301,7 +301,9 @@ class HomeworkCenter extends React.Component {
 								type="primary"
 								style={{display:'block',margin:'0 auto'}}
 								 onClick={()=>{
-								let fileObj = document.getElementById('file').files[0];
+								// let fileObj = document.getElementById('file').files[0];
+								let fileObj = this.state.uploadFile;
+								// console.log(this.state.uploadFile)
 								let form = new FormData();
 								form.append('excelFile',fileObj);
 								let token = store.get('wrongBookToken');

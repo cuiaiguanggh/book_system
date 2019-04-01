@@ -34,7 +34,17 @@ class HomePageLeft extends Component {
 	Menus() {
 		let memuList = this.props.state.MenuList;
 		let menus = [];
-		const rodeType = store.get('wrongBookNews').rodeType
+		
+		let rodeType = 30
+		if(!store.get('wrongBookNews') || store.get('wrongBookNews') == undefined){
+			this.props.dispatch(
+				routerRedux.push({
+					pathname: '/login'
+				})
+			)
+		}else{
+			rodeType = store.get('wrongBookNews').rodeType
+		}
 		let pathname = this.props.location.pathname;
 		let hash = this.props.location.hash;
 		let key = hash.substr(hash.indexOf("page=")+5)*1;
@@ -172,7 +182,7 @@ class HomePageLeft extends Component {
 		let  value= ''
 		let userNews = store.get('wrongBookNews')
 		let rodeType = ''
-		if(!store.get('wrongBookNews')){
+		if(!store.get('wrongBookNews') || store.get('wrongBookNews') == undefined){
 			this.props.dispatch(
 				routerRedux.push({
 					pathname: '/login'
@@ -219,7 +229,24 @@ class HomePageLeft extends Component {
 						routerRedux.push({
 							pathname: '/login',
 							})
+						
 					)
+					this.props.dispatch({
+						type: 'temp/className',
+						payload:''
+					});
+					this.props.dispatch({
+						type: 'temp/classId',
+						payload:''
+					});
+					this.props.dispatch({
+						type: 'temp/subId',
+						payload:''
+					});
+					this.props.dispatch({
+						type: 'temp/subName',
+						payload:''
+					});
 			  }}>退出</p>
             </div>
 		  );
@@ -227,7 +254,7 @@ class HomePageLeft extends Component {
 		if(this.props.type == 'findPsd'){
 			leftName = '重置登录密码'
 		}else{
-			if(userNews.rodeType > 10){
+			if(userNews && userNews.rodeType > 10){
 				leftName = userNews.schoolName
 			}
 		}
@@ -255,7 +282,7 @@ class HomePageLeft extends Component {
 						rodeType === 10 ?'':
 						<div className={style.qrcode}>
 							<QRCode className='qrcode' value={value} />
-							<p style={{color:'#fff',textAlign:"center"}}>加入班级</p>
+							<p style={{color:'#fff',textAlign:"center"}}>班级邀请码</p>
 						</div>
 					}
 				</Sider>
@@ -312,15 +339,7 @@ class HomePageLeft extends Component {
 							<WrongTop type={this.props.location}/>
 						</Header>:''
 					}
-				<Content style={{
-					background: '#fff', 
-					minHeight: 280,
-					overflow:'auto',
-					position:'relative'
-				}}
-				>
 					{this.props.children}
-				</Content>
 				</Layout>
 			</Layout>
 		)
@@ -338,6 +357,13 @@ class HomePageLeft extends Component {
 					pathname: '/login'
 				})
 			)
+		}else{
+			dispatch({
+				type: 'homePage/getEnableYears',
+				payload:{
+					schoolId:store.get('wrongBookNews').schoolId
+				}
+			})
 		}
 		dispatch({
 			type: 'homePage/functionList'
@@ -348,12 +374,6 @@ class HomePageLeft extends Component {
 		dispatch({
 			type: 'report/getUserSubjectList'
 		});
-		dispatch({
-			type: 'homePage/getEnableYears',
-			payload:{
-				schoolId:store.get('wrongBookNews').schoolId
-			}
-		})
 	}
 }
 

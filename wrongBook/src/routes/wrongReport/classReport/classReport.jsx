@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, message, Input,Modal,Select,Popover,Icon
+import { Button, message, Layout,Modal,Select ,Icon
 } from 'antd';
 import {dataCenter} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
@@ -9,91 +9,121 @@ import style from './classReport.less';
 import { request } from 'http';
 //作业中心界面内容
 const Option = Select.Option;
+const {
+	Header, Footer, Sider, Content,
+  } = Layout;
 
+let hei = 200
 class wrongTop extends React.Component {
 	constructor(props) {
-		super(props);
+        super(props);
+        this.Ref = ref => {this.refDom = ref};
+        
 		this.state = {
 			visible:false,
 			key:0,
 			showAns:'',
 			wordUrl:'',
-			loading:false,
+            loading:false,
+            page:1,
+            hei:0,
 	    };
     }
-	
+	handleScroll(e){
+        const { clientHeight} = this.refDom;
+        hei = clientHeight;
+    }
+    
+    onScrollHandle(e) {
+        // let page = this.props.state.page;
+        if(hei == e.target.scrollTop,hei+e.target.clientHeight){
+			// this.props.dispatch({
+			// 	type: 'report/page',
+			// 	payload:page++
+			// });
+        }
+    }
 	quesList(){
 		let ques = this.props.state.qrdetailList.data;
         let num = ques.memberNum;
         
-        let dom = document.getElementsByClassName('down');
-        // console.log(dom)
 		return(
-			<div className={style.outBody}>
-			{
-				ques.questionList.map((item,i)=>{
-					let ans = []
-					for(let i=0;i< item.userAnswerList.length;i++){
-						if(item.userAnswerList[i].result == 0 ){
-							ans.push( item.userAnswerList[i].answer)
-						}
-                    }
-                    let downs = this.props.state.classDown;
-                    
-                    let cls = 'down',name = '加入错题篮'
-                    for(let j = 0 ; j < downs.length ; j ++) {
-                        if(downs[j] == item.questionId){
-                            cls = 'down ndown';
-                            name = '移出错题篮'
-                        }
-                    }
-					return(
-					<div key={i} className={style.questionBody}>
-						<div className={style.questionTop}>
-							<span style={{marginRight:'20px'}}>第{i+1}题</span>
-							<span>班级错误率：{(item.wrongNum/num*100).toFixed(0)}%（答错{item.wrongNum}人）</span>
-						</div>
-						<div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
-                            this.setState({visible:true,key:i,showAns:ans[0]})
-                        }}>
-                            {
-                                item.questionUrl.split(',').map((item,i)=>(
-                                    <img key={i} style={{width:'100%'}} src={item}></img>
-                                ))
+            <div className={style.outBody}
+                onWheel={(e) => this.handleScroll(e)}
+                ref={this.Ref}
+            >
+                <div style={{overflow:'auto'}}>
+                {
+                    ques.questionList.map((item,i)=>{
+                        let ans = []
+                        for(let i=0;i< item.userAnswerList.length;i++){
+                            if(item.userAnswerList[i].result == 0 ){
+                                ans.push( item.userAnswerList[i].answer)
                             }
-						</div>
-						<div style={{overflow:'hidden',padding:'10px'}}>
-							<Button style={{float:'left'}} onClick={()=>{
-								this.setState({visible:true,key:i,showAns:ans[0]})
-							}}>查看统计</Button>
-							<span className={cls}  onClick={()=>{
-                                let dom = document.getElementsByClassName('down');
-                                let downs = this.props.state.classDown;
-                                console.log(dom[i])
-                                if( dom[i].innerHTML == '加入错题篮' ){
-                                    console.log(dom[i])
-                                    this.props.dispatch({
-                                        type: 'down/classDown',
-                                        payload:item.questionId
-                                    });
-                                    // dom[i].className="down ndown"
-                                    // dom[i].innerHTML = '移出错题篮'
-                                }else{
-                                    console.log(222)
-                                    this.props.dispatch({
-                                        type: 'down/delClassDown',
-                                        payload:item.questionId
-                                    });
-                                    // dom[i].className="down"
-                                    // dom[i].innerHTML = '加入错题篮'
+                        }
+                        let downs = this.props.state.classDown;
+                        
+                        let cls = 'down',name = '加入错题篮'
+                        for(let j = 0 ; j < downs.length ; j ++) {
+                            if(downs[j] == item.questionId){
+                                cls = 'down ndown';
+                                name = '移出错题篮'
+                            }
+                        }
+                        return(
+                        <div key={i} className={style.questionBody}>
+                            <div className={style.questionTop}>
+                                <span style={{marginRight:'20px'}}>第{i+1}题</span>
+                                <span>班级错误率：{(item.wrongNum/num*100).toFixed(0)}%（答错{item.wrongNum}人）</span>
+                            </div>
+                            <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
+                                // this.setState({visible:true,key:i,showAns:ans[0]})
+                                if(item.wrongScore == 0 ) {
+                                    this.setState({visible:true,key:i,showAns:ans[0]})
                                 }
-                                
-                                
-                            }}>{name}</span>
-						</div>
-					</div>
-				)})
-			}
+                            }}>
+                                {
+                                    item.questionUrl.split(',').map((item,i)=>(
+                                        <img key={i} style={{width:'100%'}} src={item}></img>
+                                    ))
+                                }
+                            </div>
+                            <div style={{overflow:'hidden',padding:'10px'}}>
+                                <Button style={{float:'left'}} onClick={()=>{
+                                    if(item.wrongScore == 0 ) {
+                                        this.setState({visible:true,key:i,showAns:ans[0]})
+                                    }
+                                    // this.setState({visible:true,key:i,showAns:ans[0]})
+                                }}>查看统计</Button>
+                                <span className={cls}  onClick={()=>{
+                                    let dom = document.getElementsByClassName('down');
+                                    let downs = this.props.state.classDown;
+                                    console.log(dom[i])
+                                    if( dom[i].innerHTML == '加入错题篮' ){
+                                        console.log(dom[i])
+                                        this.props.dispatch({
+                                            type: 'down/classDown',
+                                            payload:item.questionId
+                                        });
+                                        // dom[i].className="down ndown"
+                                        // dom[i].innerHTML = '移出错题篮'
+                                    }else{
+                                        console.log(222)
+                                        this.props.dispatch({
+                                            type: 'down/delClassDown',
+                                            payload:item.questionId
+                                        });
+                                        // dom[i].className="down"
+                                        // dom[i].innerHTML = '加入错题篮'
+                                    }
+                                    
+                                    
+                                }}>{name}</span>
+                            </div>
+                        </div>
+                    )})
+                }
+                </div>
 			</div>
 		)
 	}
@@ -102,7 +132,6 @@ class wrongTop extends React.Component {
         let key = this.state.key;
         let question = QuestionDetail.data.questionList[key]
         let trueNum = [];
-
         let wrongNum = [];
         let wrongQues = [];
         if(QuestionDetail.data.questionList.length>0){
@@ -116,9 +145,14 @@ class wrongTop extends React.Component {
                 }
             }  
             let Num = trueNum.length+ wrongNum.length
+            
+            let showAns = []
+            if(this.state.showAns){
+                showAns = this.state.showAns.split(',')
+            }
             return(
                 <div>
-                    <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
+                    {/* <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
                         <div style={{padding:'10px'}}>
                             {
                                 question.questionUrl.split(',').map((item,i)=>(
@@ -129,9 +163,9 @@ class wrongTop extends React.Component {
                         <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
                             <span>班级错误率：{(question.wrongNum/question.userAnswerList.length *100).toFixed(0)}%</span>
                         </div>
-                    </div>
+                    </div> */}
                     <div style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
-                        <h3>答题统计</h3>
+                        {/* <h3>答题统计</h3>
                         <h3 style={{overflow:'hidden'}}>
                             <span style={{
                                 float:'left',background:'#e7f4dd',borderRadius:'30px',
@@ -141,14 +175,14 @@ class wrongTop extends React.Component {
                             </span>
                             <span style={{float:'right',color:"#88ca54"}}>
                             {(trueNum.length/Num *100).toFixed(0)}%</span>
-                            </h3>
-                        <div style={{borderBottom:'1px solid #ccc',marginBottom:'10px',padding:'10px 0'}}>
+                            </h3> */}
+                        {/* <div style={{borderBottom:'1px solid #ccc',marginBottom:'10px',padding:'10px 0'}}>
                             {
                                trueNum.map((item,i) =>(
                                 <span key={i} style={{padding:'5px 10px',fontSize:"18px"}}>{item}</span>
                                )) 
                             }
-                        </div>
+                        </div> */}
                         <h3 style={{overflow:'hidden'}}>
                         <span style={{
                                 float:'left',background:'#ffe1e4',borderRadius:'30px',
@@ -177,13 +211,19 @@ class wrongTop extends React.Component {
                         </div> 
                     </div>
                      {
-                        this.state.showAns.split(',').map((item,i)=>(
-                            <img key={i} width='500px' src={item}></img>
+                        showAns.map((item,i)=>(
+                            <img key={i} width='650px' src={item}></img>
                         ))
                     }
                 </div>
             )
-        } 
+        }else{
+
+            console.log('1111')
+            // return(
+            //     <Empty />
+            // )
+        }
 	}
 	render() {
 		let mounthList = this.props.state.mounthList;
@@ -194,6 +234,15 @@ class wrongTop extends React.Component {
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
 		return (
+            <Content style={{
+                background: '#fff', 
+                minHeight: 280,
+                overflow:'auto',
+                position:'relative'
+            }}
+            ref='warpper'
+            onScroll={this.onScrollHandle}
+            >
 			<div style={{height:'50px',lineHeight:'50px'}}>
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
 				<div style={{padding:'0 20px'}}>
@@ -246,7 +295,7 @@ class wrongTop extends React.Component {
                                 this.setState({loading:load})
                                 let This = this;
                                 if(!this.state.loading){
-                                    let url = dataCenter('/web/report/getQuestionDoxc?questionIds='+this.props.state.classDown.join(','))
+                                    let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.classDown.join(','))
                                     // window.open(url,'_blank'); 
                                     this.setState({wordUrl:url})
                                     this.props.dispatch({
@@ -326,13 +375,14 @@ class wrongTop extends React.Component {
                         type="right" />
                 </Modal>
 			</div>
+            </Content>
 		);
 	  }
-
 	componentDidMount(){
+        
 		let classId = this.props.state.classId;
 		let subId = this.props.state.subId;
-		let year = this.props.state.years;
+        let year = this.props.state.years;
 		if(classId!== '' && subId!='' && year!== ''){
 			let data ={
 					classId:classId,
@@ -344,7 +394,7 @@ class wrongTop extends React.Component {
 				type: 'report/queryQrDetail',
 				payload:data
 			});
-		}
+        }
 	}
 }
 

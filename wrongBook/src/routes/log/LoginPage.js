@@ -1,10 +1,31 @@
 import React, {Component} from 'react';
 import {Form, Icon, Input, Button} from 'antd';
+import {routerRedux} from 'dva/router';
 import {connect} from 'dva';
 import style from './LoginPage.css';
+import cookie from 'react-cookies'
 const FormItem = Form.Item;
 
 class LoginPage extends Component {
+	
+	constructor(props) {
+		super(props);
+		let name = '' ,pass = '' ;
+		if(cookie.load('catchyName')!=undefined){
+		  // this.setState({name:cookie.load('catchyName')})
+		  name = cookie.load('catchyName')
+		}
+		
+		if(cookie.load('catchyPass')!=undefined){
+		  // this.setState({name:cookie.load('catchyName')})
+		  pass = cookie.load('catchyPass')
+		}
+		this.state={
+		  name:name,
+		  pass:pass,
+		  checked:false,
+		}
+		}
 	render() {
 		const { state: {identity, certification}, dispatch } = this.props;
 		return(
@@ -16,12 +37,16 @@ class LoginPage extends Component {
 			 	<div className={style.loginCont}>
 					 <Form onSubmit={this.handleSubmit} className="login-form">
 						<FormItem>
-								<Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="用户名" value={identity} onChange={(e) => {
+								<Input 
+									value={this.state.name}
+								prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="用户名" onChange={(e) => {
 									this.setState({name:e.target.value})
 								}} />
 						</FormItem>
 						<FormItem>
-								<Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="密码" value={certification} onChange={(e) => {
+								<Input
+									value={this.state.pass}
+									prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="密码"  onChange={(e) => {
 									this.setState({pass:e.target.value})
 								}}/>
 						</FormItem>
@@ -52,7 +77,35 @@ class LoginPage extends Component {
 			</div>
 		);
 	}
-
+	componentDidMount(){
+		if(cookie.load('catchyName')!=undefined){
+		  this.setState({name:cookie.load('catchyName')})
+		}
+		var userAgentInfo = navigator.userAgent;
+	   var Agents = ["Android", "iPhone",
+		  "SymbianOS", "Windows Phone",
+		  "iPad", "iPod"];
+	   var flag = true;
+	   for (var v = 0; v < Agents.length; v++) {
+		  if (userAgentInfo.indexOf(Agents[v]) > 0) {
+			 flag = false;
+			 break;
+		  }
+	   }
+	   if(flag){
+		this.props.dispatch(
+		  routerRedux.push({
+			pathname: '/login',
+			})
+		)
+	   }else{
+		this.props.dispatch(
+		  routerRedux.push({
+			pathname: '/loginPhone',
+			})
+		)
+	   }
+		}
 }
 //const WrappedNormalLoginForm = Form.create()(LoginPage);
 //ReactDOM.render(<WrappedNormalLoginForm />, mountNode);

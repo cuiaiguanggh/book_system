@@ -32,6 +32,7 @@ export default {
 		mounthList:[],
 		years:moment().format('YYYY'),
 		subId:'',
+		subName:'',
 
 		scoreList:[],
 		QuestionDetail:[],
@@ -67,7 +68,9 @@ export default {
 		subId(state, {payload}) {
 			return { ...state, subId:payload };
 		},
-
+		subName(state, {payload}) {
+			return { ...state, subName:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -92,17 +95,13 @@ export default {
 					type: 'classId',
 					payload:res.data.data.list[0].classId
 				})
-				yield put ({
-					type: 'subId',
-					payload:res.data.data.list[0].classId
-				})
 
-				yield put ({
-					type: 'report/queryHomeworkList',
-					payload:{
-						classId:res.data.data.list[0].classId
-					}
-				})
+				// yield put ({
+				// 	type: 'report/queryHomeworkList',
+				// 	payload:{
+				// 		classId:res.data.data.list[0].classId,
+				// 	}
+				// })
 				
 				yield put ({
 					type: 'classList',
@@ -111,7 +110,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 
 			}
 		},
@@ -120,36 +121,35 @@ export default {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
 			if(res.data && res.data.result === 0){
-				yield put ({
-					type: 'className',
-					payload:res.data.data[0].className
-				})
-				yield put ({
-					type: 'classId',
-					payload:res.data.data[0].classId
-				})
-				yield put ({
-					type: 'classList1',
-					payload:res.data
-				})
-
-				yield put ({
-					type: 'report/queryHomeworkList',
-					payload:{
-						classId:res.data.data[0].classId
-					}
-				})
-				
-				yield put ({
-					type: 'getUserSubjectList',
-					payload:res.data.data[0].classId
-				})
+				if(res.data.data.length > 0 ){
+					yield put ({
+						type: 'className',
+						payload:res.data.data[0].className
+					})
+					yield put ({
+						type: 'classId',
+						payload:res.data.data[0].classId
+					})
+					yield put ({
+						type: 'classList1',
+						payload:res.data
+					})
+	
+					
+					
+					yield put ({
+						type: 'getUserSubjectList',
+						payload:res.data.data[0].classId
+					})
+				}
 
 				
 				
 			}else{
 				message.error(res.data.msg)
-				yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -166,35 +166,51 @@ export default {
 			}
 			let res = yield getUserSubjectList(data);
 			if(res.data && res.data.result === 0){
-				yield put ({
-					type: 'subList',
-					payload:res.data
-				})
-				yield put ({
-					type: 'subId',
-					payload:res.data.data[0].v
-				})
-				yield put ({
-					type: 'report/queryQrDetail',
-					payload:{
-						classId:payload,
-						year:years,
-						subjectId:res.data.data[0].v,
-						info:0
-					}
-				})
+				if(res.data.data.length> 0 ){
+					yield put ({
+						type: 'subId',
+						payload:res.data.data[0].v
+					})
+					yield put ({
+						type: 'subName',
+						payload:res.data.data[0].k
+					})
+					yield put ({
+						type: 'subList',
+						payload:res.data
+					})
+					yield put ({
+						type: 'report/queryQrDetail',
+						payload:{
+							classId:payload,
+							year:years,
+							subjectId:res.data.data[0].v,
+							info:0
+						}
+					})
+					
+					yield put ({
+						type: 'getQrMonthList',
+						payload:{
+							classId:payload,
+							year:years,
+							subjectId:res.data.data[0].v
+						}
+					})
+					yield put ({
+						type: 'report/queryHomeworkList',
+						payload:{
+							classId:payload,
+							subjectId:res.data.data[0].v
+						}
+					})
+				}
 				
-				yield put ({
-					type: 'getQrMonthList',
-					payload:{
-						classId:payload,
-						year:years,
-						subjectId:res.data.data[0].v
-					}
-				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -209,7 +225,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -225,7 +243,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 
@@ -244,7 +264,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 

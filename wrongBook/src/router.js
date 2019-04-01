@@ -21,10 +21,6 @@ const MyNews = Loadable({
   loader: () => import('./routes/Layout/userLeft'),
   loading: () => <List/>,
 });
-const WorkInfo = Loadable({
-  loader: () => import('./routes/homeworkDetail/workInfo'),
-  loading: () => <List/>,
-});
 const ClassInfo = Loadable({
   loader: () => import('./routes/GradeAdmin/ClassAdmin/classList'),
   loading: () => <List/>,
@@ -70,7 +66,8 @@ const ClassReport = Loadable({
 const StuReport = Loadable({
   loader: () => import('./routes/wrongReport/stuReport/stuReport'),
   loading: () => <List/>,
-});const WorkReport = Loadable({
+});
+const WorkReport = Loadable({
   loader: () => import('./routes/wrongReport/workReport/workReport'),
   loading: () => <List/>,
 });
@@ -83,11 +80,9 @@ function RouterConfig({ history }) {
         <Route path="/loginPhone"  component={LoginP} />
         <Route path="/fin_psd"  component={FindPsd} />
         <Route path="/UserInfo" component={MyNews} />
-        <Route path="/workInfo" component={WorkInfo} />
         <Route path="/classInfo" component={ClassInfo} />
         <Route path="/studentDetail" component={StudentDetail} />
           <Home>
-            {/* <Route path="/" component={IndexPage} /> */}
             <Route path="/grade" component={GradeAdmin} />
             <Route path="/class" component={ClassAdmin} />
             <Route path="/addclass" component={AddClass} />

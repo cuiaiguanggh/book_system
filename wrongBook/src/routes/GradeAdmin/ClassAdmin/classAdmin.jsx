@@ -249,10 +249,12 @@ class HomeworkCenter extends React.Component {
 		let state = this.props.state;
 		let rodeType = store.get('wrongBookNews').rodeType;
 		let pageHomeworkDetiles = state.tealist;
-		const dataSource = [];
-		console.log(this.state.current)
+		let dataSource = [];
 		if(pageHomeworkDetiles.data){
 			for(let i = 0;i < pageHomeworkDetiles.data.length; i ++){
+				if(i == 0 ){
+					dataSource = []
+				}
 				let p = {};
 				let det = pageHomeworkDetiles.data[i];
 				p["key"] = det.userId;
@@ -303,6 +305,10 @@ class HomeworkCenter extends React.Component {
 					<Menu
 						onClick={(e)=>{
 							this.setState({current:e.key})
+							this.props.dispatch({
+								type: 'homePage/tealist',
+								payload:[]
+							});
 							if(e.key === 'teacher'){
 								this.props.dispatch({
 									type: 'homePage/memType',
@@ -393,6 +399,7 @@ class HomeworkCenter extends React.Component {
 								type: 'homePage/createSchoolUser',
 								payload:data
 							});
+							this.setState({teacher:'',phone:''})
 						}}
 						onCancel={()=>{
 							this.setState({
@@ -405,6 +412,7 @@ class HomeworkCenter extends React.Component {
 							<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}}>教师名称</span>
 									<Input 
+										value={this.state.teacher}
 										onChange={(e)=>{
 											this.setState({teacher:e.target.value})
 										}}  style={{width:'200px'}}/>
@@ -413,6 +421,7 @@ class HomeworkCenter extends React.Component {
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}}>手机号</span>
 									<Input
+										value={this.state.phone}
 										onChange={(e)=>{
 											this.setState({phone:e.target.value})
 										}}  style={{width:'200px'}}/>
@@ -424,7 +433,6 @@ class HomeworkCenter extends React.Component {
 											style={{ width: 200 }}
 											optionFilterProp="children"
 											onChange={(value)=>{
-												console.log(value)
 												this.setState({sub:value})
 											}}
 											// defaultValue={classInfo.data.classAdmin}

@@ -66,27 +66,6 @@ class HomeworkCenter extends React.Component {
 				}
 			},
 			{
-				title:'评级',
-				dataIndex:'stars',
-				key:'stars',
-				width: '20%',
-				render: (text, record) => {
-					return (
-						<div style={{cursor:'pointer'}} onClick={()=>{
-							store.set('wrong_hash', this.props.location.hash)
-							this.props.dispatch(
-								routerRedux.push({
-									pathname: '/classInfo',
-									hash:`sId=${this.props.state.schoolId}&id=${record.key}`
-									})
-							)
-						}}>
-							{text}
-						</div>
-					);
-				}
-			},
-			{
 				title:'人数',
 				dataIndex:'stuNum',
 				key:'stuNum',
@@ -108,7 +87,7 @@ class HomeworkCenter extends React.Component {
 				}
 			},
 			{
-				title:'错题报告数量',
+				title:'作业数',
 				dataIndex:'workNum',
 				key:'workNum',
 				width: '15%',
@@ -133,57 +112,62 @@ class HomeworkCenter extends React.Component {
 			dataIndex: 'operation',
 			render: (text, record) => {
 				const editable = this.isEditing(record);
-				return (
-				<div>
-					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
-						this.setState({
-							visible:true,
-							classId:record.key
-						})
-						let data = {
-							classId:record.key
-						}
-						this.props.dispatch({
-							type: 'classHome/classInfo',
-							payload:data
-						});
+				const rodeType = store.get('wrongBookNews').rodeType
+				if(rodeType <= 20) {
+					return (
+					<div>
+						<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+							this.setState({
+								visible:true,
+								classId:record.key
+							})
+							let data = {
+								classId:record.key
+							}
+							this.props.dispatch({
+								type: 'classHome/classInfo',
+								payload:data
+							});
+							
+							this.props.dispatch({
+								type: 'classHome/classId',
+								payload:record.key
+							});
+							let data1 = {
+								schoolId:store.get('wrongBookNews').schoolId,
+								type:1
+							}
+							this.props.dispatch({
+								type: 'classHome/teacherList',
+								payload:data1
+							});
+						}}>编辑</span>
 						
-						this.props.dispatch({
-							type: 'classHome/classId',
-							payload:record.key
-						});
-						let data1 = {
-							schoolId:store.get('wrongBookNews').schoolId,
-							type:1
-						}
-						this.props.dispatch({
-							type: 'classHome/teacherList',
-							payload:data1
-						});
-					}}>编辑</span>
-					
-					<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
-							let This = this;
-							confirm({
-								title: `确定删除${record.name}么?`,
-								okText: '是',
-								cancelText: '否',
-								onOk() {
-									let data = {
-										classId:record.key
-									}
-									This.props.dispatch({
-										type: 'classHome/deleteClass',
-										payload:data
-									});
-								},
-								onCancel() {
-									console.log('Cancel');
-								},
-						  });
-					}}>删除</span>
-				</div>
-				);
+						<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+								let This = this;
+								confirm({
+									title: `确定删除${record.name}么?`,
+									okText: '是',
+									cancelText: '否',
+									onOk() {
+										let data = {
+											classId:record.key
+										}
+										This.props.dispatch({
+											type: 'classHome/deleteClass',
+											payload:data
+										});
+									},
+									onCancel() {
+										console.log('Cancel');
+									},
+							  });
+						}}>删除</span>
+					</div>
+					);
+				}else{
+					return ( <div></div>)
+				}
 			},
 			},
 		];
@@ -481,12 +465,24 @@ class HomeworkCenter extends React.Component {
 						title="添加班级"
 						visible={this.state.visible1}
 						onOk={()=>{
-							this.setState({
-								visible1: false,
-							});
-							this.props.dispatch({
-								type: 'classHome/addClass',
-							});
+							if(this.props.state.className.replace(/(^\s*)|(\s*$)/g, "") == '' ) {
+								message.warning('班级名称不能为空')
+							}else if( this.props.state.adminId.replace(/(^\s*)|(\s*$)/g, "") == '' ){
+								message.warning('请选择班主任')
+							}else{
+								this.setState({
+									visible1: false,
+								});
+								this.props.dispatch({
+									type: 'classHome/addClass',
+								});
+								this.props.dispatch({
+									type: 'classHome/className',
+									payload:''
+								});
+							}
+							
+							
 						}}
 						onCancel={()=>{
 							this.setState({
@@ -504,6 +500,7 @@ class HomeworkCenter extends React.Component {
 								<div style={{marginBottom:'10px'}}>
 									<span style={{width:"80px",display:'inline-block'}} >班级</span>
 									<Input 
+										value={this.props.state.className}
 										onChange={(e)=>{
 											this.props.dispatch({
 												type: 'classHome/className',

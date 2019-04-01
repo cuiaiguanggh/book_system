@@ -97,7 +97,9 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},

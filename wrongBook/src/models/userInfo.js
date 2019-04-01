@@ -74,7 +74,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*teacherList({payload}, {put, select}) {
@@ -91,48 +93,55 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
 			// 学校列表返回
-			yield put ({
-				type:'schoolPay',
-				payload:payload
-			})
-			let res = yield pageRelevantSchool(payload);
-			if(res.hasOwnProperty("err")){
-				// yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
 				yield put ({
-					type: 'schoolList',
-					payload:res.data
+					type:'schoolPay',
+					payload:payload
 				})
-			}else{
-				message.err(res.data.msg)
-			}
-        },
-        *pageUser({payload}, {put, select}) {
-			// 用户列表
-			yield put ({
-				type:'schoolPay',
-				payload:payload
-			})
-			let res = yield pageUser(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
+				let res = yield pageRelevantSchool(payload);
+				if(res.hasOwnProperty("err")){
+					// yield put(routerRedux.push('/login'))
+				}else
+				if(res.data && res.data.result === 0){
+					yield put ({
+						type: 'schoolList',
+						payload:res.data
+					})
+				}else{
+					message.err(res.data.msg)
+					if(res.data.msg == '无效TOKEN!'){
+						yield put(routerRedux.push('/login'))
+					}
+				}
+			},
+			*pageUser({payload}, {put, select}) {
+				// 用户列表
 				yield put ({
-					type: 'userList',
-					payload:res.data
+					type:'schoolPay',
+					payload:payload
 				})
-			}else{
-				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
-			}
-		},
+				let res = yield pageUser(payload);
+				if(res.hasOwnProperty("err")){
+					yield put(routerRedux.push('/login'))
+				}else
+				if(res.data && res.data.result === 0){
+					yield put ({
+						type: 'userList',
+						payload:res.data
+					})
+				}else{
+					message.error(res.data.msg)
+					if(res.data.msg == '无效TOKEN!'){
+						yield put(routerRedux.push('/login'))
+					}
+				}
+			},
 		*updateInfo({payload}, {put, select}) {
 			// 修改个人信息
 			let res = yield updateInfo(payload);
@@ -149,7 +158,9 @@ export default {
 
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 

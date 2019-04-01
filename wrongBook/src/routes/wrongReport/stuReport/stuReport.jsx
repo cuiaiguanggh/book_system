@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu, Button,message,Select,Popover,Icon
+import { Layout, Menu, Button,message,Select,Modal,Icon
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -14,15 +14,29 @@ const {
 	Header, Footer, Sider, Content,
   } = Layout;
 
+let hei = 0
+
 class StuReport extends React.Component {
 	constructor(props) {
 		super(props);
+        this.Ref = ref => {this.refDom = ref};
 		this.state={
 			current:'',
 			loading:false,
 			wordUrl:'',
+			visible:false,
+			Img:'',
 		}
 	}
+	
+	handleScroll(e){
+        const { clientHeight} = this.refDom;
+        hei = clientHeight;
+    }
+    
+    onScrollHandle(e) {
+        console.log(e.target.scrollTop,hei,e.target.clientHeight)
+    }
 	menulist() {
 		let  detail = this.props.state.qrdetailList.data.userCountList;
 		if(this.props.state.qrdetailList.data.userCountList.length > 0){
@@ -82,7 +96,9 @@ class StuReport extends React.Component {
 		
 		if(detail.length >0){
 			return(
-				<div className={style.outBody}>
+				<div className={style.outBody}
+                	ref={this.Ref}
+	                onWheel={(e) => this.handleScroll(e)}>
 					{
 						detail.map((item,i)=>{
 							let cls = 'down',name = '加入错题篮'
@@ -94,14 +110,14 @@ class StuReport extends React.Component {
 								}
 							}
 							return(
-							<div key={i} className={style.questionBody} onClick={()=>{
-								// this.setState({visible:true,key:i,showAns:ans[0]})
-							}}>
+							<div key={i} className={style.questionBody}>
 								<div className={style.questionTop}>
 									<span style={{marginRight:'20px'}}>第{i+1}题</span>
 									{/* <span>班级错误率：{}%（答错15人）</span> */}
 								</div>
-								<div style={{padding:'10px',height:'250px',overflow:"hidden"}}>
+								<div style={{padding:'10px',height:'250px',overflow:"hidden"}}  onClick={()=>{
+								this.setState({visible:true,Img:item.userAnswerList[0].answer})
+							}}>
 									{
 										item.userAnswerList[0].answer.split(',').map((item,i)=>(
 											<img key={i} style={{width:'100%'}} src={item}></img>
@@ -109,10 +125,10 @@ class StuReport extends React.Component {
 									}
 								</div>
 								<div style={{overflow:'hidden',padding:'10px'}}>
+								
 								<span className={cls}  onClick={()=>{
 									let dom = document.getElementsByClassName('down');
 									let downs = this.props.state.stuDown;
-									console.log(dom)
 									if( dom[i].innerHTML == '加入错题篮' ){
 										this.props.dispatch({
 											type: 'down/stuDown',
@@ -141,6 +157,15 @@ class StuReport extends React.Component {
 		let mounthList = this.props.state.mounthList;
 		let  detail = this.props.state.qrdetailList1;
 		return (
+            <Content style={{
+                background: '#fff', 
+                minHeight: 280,
+                overflow:'auto',
+                position:'relative'
+            }}
+            ref='warpper'
+            onScroll={this.onScrollHandle}
+            >
 				<div className={style.layout}>
 					<iframe style={{display:'none'}} src={this.state.wordUrl}/>
 					<div style={{height:'50px',lineHeight:'50px'}}>
@@ -193,7 +218,7 @@ class StuReport extends React.Component {
 										this.setState({loading:load})
 										let This = this;
 										if(!this.state.loading){
-											let url = dataCenter('/web/report/getQuestionDoxc?questionIds='+this.props.state.stuDown.join(','))
+											let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.stuDown.join(','))
 											// window.open(url,'_blank'); 
 											this.setState({wordUrl:url})
 											this.props.dispatch({
@@ -225,7 +250,26 @@ class StuReport extends React.Component {
 								}
 						</Content>
 					</Layout>
+					<Modal
+						visible={this.state.visible}
+						width='1000px'
+						className="showques"
+						footer={null}
+						onOk={()=>{
+							this.setState({visible:false})
+						}}
+						onCancel={()=>{
+							this.setState({visible:false})
+						}}
+					>
+						{
+							this.state.Img.split(',').map((item,i)=>(
+								<img key={i} style={{width:'100%'}} src={item}></img>
+							))
+						}
+					</Modal>
 				</div>
+			</Content>
 		)
 	}
 

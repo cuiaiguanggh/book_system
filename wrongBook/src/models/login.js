@@ -56,18 +56,24 @@ export default {
 					store.set('wrongBookNews',data.data)
 					store.set('wrongBookToken',data.data.token)
 					let rodeType = data.data.rodeType;
+					
+					yield put ({
+						type: 'temp/classList1',
+						payload:[]
+					})
+
 					if(rodeType === 10){
 						yield put(routerRedux.push({
 							pathname: '/school',
 							hash:'page=1'
 						}))
-					}else 
+					}else {
 					// if(rodeType ===20){
 					// 	yield put(routerRedux.push({
 					// 		pathname: '/schoolNew s',
 					// 	}))
 					// }else 
-					if(rodeType ===30 || rodeType ===20){
+					// if(rodeType ===30 || rodeType ===20){
 						yield put(routerRedux.push({
 							pathname: '/classReport',
 						}))

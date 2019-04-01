@@ -20,7 +20,9 @@ export default {
 		homeworkName:'',
 		scoreDetail:[],
 		questionDetail:[],
-		userId:''
+		userId:'',
+		page:1,
+		page1:1,
 	},
 	reducers: {
 		qrdetailList(state, {payload}) {
@@ -50,6 +52,13 @@ export default {
 		userId(state, {payload}) {
 			return { ...state, userId:payload };
 		},
+		page(state, {payload}) {
+			console.log(1)
+			return { ...state, page:payload };
+		},
+		page1(state, {payload}) {
+			return { ...state, page1:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -58,8 +67,9 @@ export default {
   
 	effects: {
 		*queryQrDetail({payload},{put,select}) {
+			let {userId} = yield select(state => state.report)
+
 			//账号科目列表
-			console.log(payload)
 			let res = yield queryQrDetail(payload);
 			if(res.data && res.data.result === 0){
 				yield put ({
@@ -67,17 +77,21 @@ export default {
 					payload:res.data
 				})
 				if(res.data.data.userCountList.length > 0) {
-					yield put ({
-						type: 'userId',
-						payload:res.data.data.userCountList[0].userId
-					})
+					let id = userId;
+					if(userId == ''){
+						yield put ({
+							type: 'userId',
+							payload:res.data.data.userCountList[0].userId
+						})
+						id = res.data.data.userCountList[0].userId
+					}
 					yield put ({
 						type: 'queryQrDetail1',
 						payload:{
 							classId:payload.classId,
 							year:payload.year,
 							subjectId:payload.subjectId,
-							userId:res.data.data.userCountList[0].userId,
+							userId:id,
 							info:0
 						}
 					})
@@ -91,12 +105,15 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 
 			}
 		},
 		*queryQrDetail1({payload},{put,select}) {
 			//账号科目列表
+			console.log(payload)
 			let res = yield queryQrDetail(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
@@ -110,7 +127,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 
 			}
 		},
@@ -171,7 +190,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 
 			}
 		},
@@ -192,7 +213,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 
 			}
 		},
@@ -213,7 +236,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 
 			}
 		},

@@ -17,8 +17,7 @@ class ClassReport extends React.Component {
 	    };
     }
     getGrade() {
-		const rodeType = store.get('wrongBookNews').rodeType;
-		let classList =  rodeType == 20 ? this.props.state.classList :this.props.state.classList1
+		let classList = this.props.state.classList1
 		if(classList.data){
 			return(
 				<Select
@@ -39,18 +38,13 @@ class ClassReport extends React.Component {
 									}
 								});
 								this.props.dispatch({
-									type: 'report/classId',
+									type: 'temp/classId',
 									payload:value
 								});
 						}}
 						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 				>
 					{
-						rodeType == 20 ?
-							classList.data.list.map((item,i) =>(
-								<Option key={i} value={item.classId}>{item.className}</Option>
-							))
-						:
 						classList.data.map((item,i) =>(
 							<Option key={i} value={item.classId}>{item.className}</Option>
 						))
@@ -60,19 +54,19 @@ class ClassReport extends React.Component {
 		}
     }
     getSub() {
-			const rodeType = store.get('wrongBookNews').rodeType;
 			let subList =  this.props.state.subList ;
-			if(subList.data){
+			let subName = this.props.state.subName
+			if(subList.data && subList.data.length> 0 && subName!= ''){
 				return(
 					<Select
 							showSearch
 							style={{ width: 150,margin:'0 20px'}}
 							placeholder="学科"
-							defaultValue={subList.data[0].k}
+							defaultValue={this.props.state.subName}
 							optionFilterProp="children"
 							onChange={(value)=>{
 								this.props.dispatch({
-									type: 'temp/queryQrDetail',
+									type: 'report/queryQrDetail',
 									payload:{
 										classId:this.props.state.classId,
 										year:this.props.state.years,
@@ -83,6 +77,14 @@ class ClassReport extends React.Component {
 								this.props.dispatch({
 									type: 'temp/subId',
 									payload:value
+								});
+
+								this.props.dispatch({
+									type: 'report/queryHomeworkList',
+									payload:{
+										classId:this.props.state.classId,
+										subjectId:value
+									}
 								});
 							}}
 							filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -112,7 +114,6 @@ class ClassReport extends React.Component {
 			page = 1
 		}
 		const {dispatch} = this.props;
-		const rodeType = store.get('wrongBookNews').rodeType
 		// if(rodeType === 10){
 		// 	let data1 = {
 		// 		pageNum:1,
@@ -123,25 +124,9 @@ class ClassReport extends React.Component {
 		// 		payload:data1
 		// 	});
 		// }else 
-		if(rodeType === 20){
-			let data ={
-				schoolId:store.get('wrongBookNews').schoolId,
-				pageNum:page,
-				pageSize:10
-			}
-			this.props.dispatch({
-				type: 'temp/schoolId',
-				payload:store.get('wrongBookNews').schoolId
-			});
-			dispatch({
-				type: 'temp/pageClass',
-				payload:data
-			});
-		}else if(rodeType >20){
 			dispatch({
 				type: 'temp/getClassList',
 			});
-		}
 		
 	}
 }

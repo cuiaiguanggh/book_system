@@ -114,7 +114,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*classInfo({payload}, {put, select}) {
@@ -139,7 +141,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*teacherList({payload}, {put, select}) {
@@ -164,7 +168,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*updateClass({payload}, {put, select}) {
@@ -182,6 +188,7 @@ export default {
 			if(res.data && res.data.result === 0){
 				const rodeType = store.get('wrongBookNews').rodeType
 				if(rodeType === 20 ){
+
 					yield put ({
 						type: 'pageClass',
 						payload:classInfoPayload
@@ -194,7 +201,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*addClass({payload}, {put, select}) {
@@ -225,7 +234,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*deleteClass({payload}, {put, select}) {
@@ -243,7 +254,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -263,7 +276,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -280,7 +295,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*getClassList({payload}, {put, select}) {
@@ -294,12 +311,12 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}
 			if(res.data && res.data.result === 0){
-				yield put ({
-					type: 'queryHomeworkList',
-					payload:{
-						classId:res.data.data[0].classId
-					}
-				})
+				// yield put ({
+				// 	type: 'queryHomeworkList',
+				// 	payload:{
+				// 		classId:res.data.data[0].classId
+				// 	}
+				// })
 
 				yield put ({
 					type: 'classList1',
@@ -307,7 +324,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -328,7 +347,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},

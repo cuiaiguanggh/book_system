@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button, message,Modal,Select,Popover,Icon
+import { Table, Button, message,Modal,Select,Layout,Icon
 } from 'antd';
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
@@ -12,11 +12,15 @@ import { format } from 'util';
 import { stringify } from 'querystring';
 //作业中心界面内容
 const Option = Select.Option;
-
+const {
+	Header, Footer, Sider, Content,
+  } = Layout;
+let hei = 0
 
 class ClassReport extends React.Component {
 	constructor(props) {
 		super(props);
+        this.Ref = ref => {this.refDom = ref};
 		this.state = {
 			visible:false,
 			key:0,
@@ -24,13 +28,21 @@ class ClassReport extends React.Component {
 			wordUrl:'',
 			loading:false,
 	    };
+	}
+	
+	handleScroll(e){
+        const { clientHeight} = this.refDom;
+        hei = clientHeight;
+    }
+    
+    onScrollHandle(e) {
+        console.log(e.target.scrollTop,hei,e.target.clientHeight)
     }
     getGrade() {
 			const rodeType = store.get('wrongBookNews').rodeType;
 			let homeworkList = this.props.state.homeworkList
 			if(homeworkList.data && homeworkList.data.length > 0){
 				let name = this.props.state.homeworkName
-				console.log(name)
 				return(
 					<div>
 						<span>选择作业：</span>
@@ -68,7 +80,7 @@ class ClassReport extends React.Component {
 							}
 						</Select>
 						<Button 
-							style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+							style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
 							loading={this.state.loading} 
 							onClick={()=>{
 								if(this.props.state.workDown.length!= 0){
@@ -76,7 +88,7 @@ class ClassReport extends React.Component {
 									this.setState({loading:load})
 									let This = this;
 									if(!this.state.loading){
-										let url = dataCenter('/web/report/getQuestionDoxc?questionIds='+this.props.state.workDown.join(','))
+										let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.workDown.join(','))
 										// window.open(url,'_blank'); 
 										this.setState({wordUrl:url})
 										this.props.dispatch({
@@ -90,8 +102,9 @@ class ClassReport extends React.Component {
 									message.warning('请选择题目到错题篮')
 								}
 							}}>
-                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
-							下载组卷({this.props.state.workDown.length})
+
+                        	<img style={{verticalAlign:"sub",marginLeft:'10px'}} src={require('../../images/xc-cl-n.png')}></img>
+							下载组卷（{this.props.state.workDown.length}）
 						</Button>
 					</div>
 				)
@@ -106,8 +119,6 @@ class ClassReport extends React.Component {
 							defaultValue='暂无作业'
 							optionFilterProp="children"
 							onChange={(value)=>{
-								
-							
 							}}
 							filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 						>
@@ -175,8 +186,11 @@ class ClassReport extends React.Component {
 									<span>班级错误率：{(item.wrongScore*100).toFixed(0)}%（答错{won}人）</span>
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}} onClick={()=>{
-								this.setState({visible:true,key:i,showAns:ans[0]})
-							}}>
+										// this.setState({visible:true,key:i,showAns:ans[0]})
+										if(item.wrongScore == 0 ) {
+											this.setState({visible:true,key:i,showAns:ans[0]})
+										}
+									}}>
 									{
 										item.question.split(',').map((item,i)=>(
 											<img key={i} style={{width:'100%'}} src={item}></img>
@@ -185,7 +199,9 @@ class ClassReport extends React.Component {
 								</div>
 								<div style={{overflow:'hidden',padding:'10px'}}>
 									<Button style={{float:'left'}} onClick={()=>{
-										this.setState({visible:true,key:i,showAns:ans[0]})
+										if(item.wrongScore == 0 ) {
+											this.setState({visible:true,key:i,showAns:ans[0]})
+										}
 									}}>查看统计</Button>
 									<span className={cls}  onClick={()=>{
 										let dom = document.getElementsByClassName('down');
@@ -226,12 +242,15 @@ class ClassReport extends React.Component {
                 wrongNum.push(question.userAnswerList[i].userName)
                 wrongQues.push(question.userAnswerList[i].answer)
             }
-		}   
-		let showAns = this.state.showAns.split(',')
+		}
+		let showAns = []
+		if(this.state.showAns){
+			showAns = this.state.showAns.split(',')
+		}
         let Num = trueNum.length+ wrongNum.length
         return(
             <div>
-                <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
+                {/* <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
                     <div style={{padding:'10px'}}>
 						{
 							question.question.split(',').map((item,i)=>(
@@ -242,9 +261,9 @@ class ClassReport extends React.Component {
                     <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
                         <span>班级错误率：{(wrongNum.length/Num *100).toFixed(0)}%</span>
                     </div>
-                </div>
+                </div> */}
                 <div style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
-                    <h3>答题统计</h3>
+                    {/* <h3>答题统计</h3>
                     <h3 style={{overflow:'hidden'}}>
                         <span style={{
                             float:'left',background:'#e7f4dd',borderRadius:'30px',
@@ -261,7 +280,7 @@ class ClassReport extends React.Component {
                             <span key={i} style={{padding:'5px 10px',fontSize:"18px"}}>{item}</span>
                            )) 
                         }
-                    </div>
+                    </div> */}
                     <h3 style={{overflow:'hidden'}}>
                     <span style={{
                             float:'left',background:'#ffe1e4',borderRadius:'30px',
@@ -294,7 +313,7 @@ class ClassReport extends React.Component {
                     //     <img width='500px' src={this.state.showAns}></img>
                     // ))
 						showAns.map((item,i)=>(
-							<img key={i} width='500px' src={item}></img>
+							<img key={i} width='650px' src={item}></img>
 						))
 					
                 }
@@ -350,7 +369,10 @@ class ClassReport extends React.Component {
 			{
 				title:<div>
 						<span>题目详情</span>
-						<Icon type="close-circle" style={{float:'right',fontSize:'20px'}} twoToneColor='#f56c6c' theme="twoTone" />
+						<span  style={{float:'right',fontSize:'20px'}}>
+							<span>错误</span>
+							<Icon type="close-circle" twoToneColor='#f56c6c' theme="twoTone" />
+						</span>
 					</div>,
 				dataIndex:'news',
 				key:'news',
@@ -389,7 +411,20 @@ class ClassReport extends React.Component {
 		}
 		let homeworkList = this.props.state.homeworkList
 		return (
-			<div style={{height:'50px',lineHeight:'50px',padding:'20px'}}>
+			
+            <Content style={{
+                background: '#fff', 
+                minHeight: 280,
+                overflow:'auto',
+                position:'relative'
+            }}
+            ref='warpper'
+            onScroll={this.onScrollHandle}
+            >
+			<div style={{height:'50px',lineHeight:'50px',padding:'20px'}}
+			ref={this.Ref}
+			onWheel={(e) => this.handleScroll(e)}
+			>
 				{homeworkList.data && homeworkList.data.length ?this.getGrade():''}
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
 				
@@ -412,7 +447,7 @@ class ClassReport extends React.Component {
                         this.setState({visible:false})
                     }}
                 >
-                    {this.props.state.questionDetail.data &&  QuestionDetail.data.qsList >0?this.showQuestion():''}
+                    {this.props.state.questionDetail.data &&  QuestionDetail.data.qsList.length >0?this.showQuestion():''}
                     <Icon 
                         className={style.icLeft}
                         onClick={()=>{
@@ -460,6 +495,7 @@ class ClassReport extends React.Component {
                         type="right" />
                 </Modal>
 			</div>
+			</Content>
 		);
 	  }
 
@@ -467,10 +503,30 @@ class ClassReport extends React.Component {
 		this.props.dispatch({
 			type: 'report/queryHomeworkList',
 			payload:{
-				classId:this.props.state.classId
+				classId:this.props.state.classId,
+				subjectId:this.props.state.subId
 			}
 		});
-	}
+
+		// 使用滚动时自动加载更多
+        const loadMoreFn = this.props.loadMoreFn
+        const wrapper = this.refs.wrapper
+        let timeoutId
+        function callback() {
+            const top = wrapper.getBoundingClientRect().top
+			const windowHeight = window.screen.height;
+			console.log(2222)
+            if (top && top < windowHeight) {
+                // 证明 wrapper 已经被滚动到暴露在页面可视范围之内了
+				// loadMoreFn()
+				console.log('1111')
+            }
+        }
+        window.addEventListener('scroll', function () {
+			console.log(111)
+        }.bind(this));
+    }
+
 }
 
 export default connect((state) => ({

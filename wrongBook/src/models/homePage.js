@@ -146,7 +146,9 @@ export default {
 			}
 			else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 		},
 		*pageRelevantSchool({payload}, {put, select}) {
@@ -167,7 +169,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -199,12 +203,11 @@ export default {
 					type: 'changedes',
 					payload:res.data.data.des
 				})
-			}
-			else if(res.err){
-				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -233,7 +236,9 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -252,7 +257,9 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -281,7 +288,9 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -306,7 +315,9 @@ export default {
 				yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -329,7 +340,9 @@ export default {
 				
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -345,7 +358,9 @@ export default {
 				})
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -370,7 +385,9 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},
@@ -387,7 +404,9 @@ export default {
 				// yield put(routerRedux.push('/login'))
 			}else{
 				message.error(res.data.msg)
-				// yield put(routerRedux.push('/login'))
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
 			}
 			
 		},

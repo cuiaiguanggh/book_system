@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import { routerRedux,  } from "dva/router";
 import {connect} from 'dva';
 import store from 'store';
-
+import 'antd/dist/antd.css';
 
 class HomePage extends Component {
 
