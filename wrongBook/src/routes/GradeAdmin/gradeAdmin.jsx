@@ -50,7 +50,7 @@ class EditableCell extends React.Component {
                   {getFieldDecorator(dataIndex, {
                     rules: [{
                       required: true,
-                      message: `Please Input ${title}!`,
+                      message: `请输入 ${title}!`,
                     }],
                     initialValue: record[dataIndex],
                   })(this.getInput())}
@@ -67,7 +67,7 @@ class EditableCell extends React.Component {
 class EditableTable extends React.Component {
   constructor(props) {
     super(props);
-	this.state = {  editingKey: '' };
+	this.state = {  editingKey: '',classId:'' };
 	this.columns = [
 		{
 			title: '班级名称',
@@ -159,11 +159,8 @@ class EditableTable extends React.Component {
 		title: '操作',
 		dataIndex: 'operation',
 		render: (text, record) => {
-			console.log(record)
 			const rodeType = store.get('wrongBookNews').rodeType
 			const editable = this.isEditing(record);
-			const { editingKey } = this.state;
-			console.log(editingKey)
 			if(rodeType <= 20) {
 				const { editingKey } = this.state;
 				const editable = this.isEditing(record);
@@ -173,24 +170,74 @@ class EditableTable extends React.Component {
 						<span>
 						<EditableContext.Consumer>
 							{form => (
-							<a
-								href="javascript:;"
-								onClick={() => this.save(form, record.key)}
-								style={{ marginRight: 8 }}
-							>
-								Save
-							</a>
+							<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} 
+							onClick={() => this.save(form, record.key)}
+							>保存</span>
 							)}
 						</EditableContext.Consumer>
 						<Popconfirm
 							title="Sure to cancel?"
 							onConfirm={() => this.cancel(record.key)}
 						>
-							<a>Cancel</a>
+						<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} >取消</span>
 						</Popconfirm>
 						</span>
 					) : (
-						<a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>Edit</a>
+						<div>
+							<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} 
+								onClick={() =>{
+									this.setState({classId:record.classId})
+									this.edit(record.key)}}
+							// onClick={()=>{
+							// 	this.setState({
+							// 		visible:true,
+							// 		classId:record.key
+							// 	})
+							// 	let data = {
+							// 		classId:record.key
+							// 	}
+							// 	this.props.dispatch({
+							// 		type: 'classHome/classInfo',
+							// 		payload:data
+							// 	});
+								
+							// 	this.props.dispatch({
+							// 		type: 'classHome/classId',
+							// 		payload:record.key
+							// 	});
+							// 	let data1 = {
+							// 		schoolId:store.get('wrongBookNews').schoolId,
+							// 		type:1
+							// 	}
+							// 	this.props.dispatch({
+							// 		type: 'classHome/teacherList',
+							// 		payload:data1
+							// 	});
+							// }}
+							>编辑</span>
+							
+							<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+									let This = this;
+									confirm({
+										title: `确定删除${record.name}么?`,
+										okText: '是',
+										cancelText: '否',
+										onOk() {
+											let data = {
+												classId:record.key
+											}
+											This.props.dispatch({
+												type: 'classHome/deleteClass',
+												payload:data
+											});
+										},
+										onCancel() {
+											console.log('Cancel');
+										},
+									});
+							}}>删除</span>
+						</div>
+						// <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>Edit</a>
 					)}
 					</div>
 				);
@@ -212,7 +259,8 @@ class EditableTable extends React.Component {
     form.validateFields((error, row) => {
       if (error) {
         return;
-      }
+			}
+			console.log(row)
       const newData = [...this.state.data];
       const index = newData.findIndex(item => key === item.key);
       if (index > -1) {
