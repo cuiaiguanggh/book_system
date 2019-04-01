@@ -194,6 +194,57 @@ class EditableTable extends React.Component {
 					)}
 					</div>
 				);
+				// return (
+				// <div>
+				// 	<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+				// 		this.setState({
+				// 			visible:true,
+				// 			classId:record.key
+				// 		})
+				// 		let data = {
+				// 			classId:record.key
+				// 		}
+				// 		this.props.dispatch({
+				// 			type: 'classHome/classInfo',
+				// 			payload:data
+				// 		});
+						
+				// 		this.props.dispatch({
+				// 			type: 'classHome/classId',
+				// 			payload:record.key
+				// 		});
+				// 		let data1 = {
+				// 			schoolId:store.get('wrongBookNews').schoolId,
+				// 			type:1
+				// 		}
+				// 		this.props.dispatch({
+				// 			type: 'classHome/teacherList',
+				// 			payload:data1
+				// 		});
+				// 	}}>编辑</span>
+					
+				// 	<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+				// 			let This = this;
+				// 			confirm({
+				// 				title: `确定删除${record.name}么?`,
+				// 				okText: '是',
+				// 				cancelText: '否',
+				// 				onOk() {
+				// 					let data = {
+				// 						classId:record.key
+				// 					}
+				// 					This.props.dispatch({
+				// 						type: 'classHome/deleteClass',
+				// 						payload:data
+				// 					});
+				// 				},
+				// 				onCancel() {
+				// 					console.log('Cancel');
+				// 				},
+				// 		  });
+				// 	}}>删除</span>
+				// </div>
+				// );
 			}else{
 				return ( <div></div>)
 			}
@@ -232,58 +283,6 @@ class EditableTable extends React.Component {
   edit(key) {
     this.setState({ editingKey: key });
   }
-	chooseSchool(){
-		const rodeType = store.get('wrongBookNews').rodeType
-		if(rodeType === 10){
-			let schoolList = this.props.state.schoolList;
-			const children = [];
-			if(schoolList.data){
-				for (let i = 0; i < schoolList.data.list.length; i++) {
-					let data = schoolList.data.list[i]
-					children.push(<Option key={data.schoolId}>{data.schoolName}</Option>);
-				}
-				return(
-					<Select
-						showSearch
-						style={{ width: 200,marginRight:'10px' }}
-						optionFilterProp="children"
-						placeholder='请选择学校'
-						onChange={(value,e)=>{
-							console.log(e.props.children)
-							this.props.dispatch(
-								routerRedux.push({
-									pathname: '/grade',
-									hash:'page=1'
-									})
-							)
-							let data ={
-								schoolId:value,
-								pageNum:1,
-								pageSize:10
-							}
-							this.props.dispatch({
-								type: 'classHome/schoolId',
-								payload:value
-							});
-							this.props.dispatch({
-								type: 'classHome/pageClass',
-								payload:data
-							});
-							this.setState({schoolId:value})
-						}}
-						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-					>
-						{children}
-					</Select>
-				)
-			}
-			
-		}else{
-			return(
-				<span style={{marginRight:'10px'}}>班级列表</span>
-			)
-		}		
-	}
 
   render() {
 	let state = this.props.state;
@@ -379,7 +378,7 @@ class EditableTable extends React.Component {
 	  <Content style={{ overflow: 'initial' }}>
 		  <div className={style.gradeboder} >
 			  <div className={style.gradeTop}>
-				  {this.chooseSchool()}
+				  {/* {this.chooseSchool()} */}
 				  <span>共{total}个班级</span>
 				  {
 					  rodeType <= 20 ?
