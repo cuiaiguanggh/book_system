@@ -190,6 +190,13 @@ class ClassReport extends React.Component {
 										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
 										}
+										let w = document.getElementsByClassName('wrongNum');
+										if(w.length >0 ) {
+											for(let j = 0;j<w.length;j++){
+												w[j].className='wrongNum'
+											}
+											w[0].className='wrongNum wrongNumOn'
+										}
 									}}>
 									{
 										item.question.split(',').map((item,i)=>(
@@ -201,6 +208,13 @@ class ClassReport extends React.Component {
 									<Button style={{float:'left'}} onClick={()=>{
 										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
+										}
+										let w = document.getElementsByClassName('wrongNum');
+										if(w.length >0 ) {
+											for(let j = 0;j<w.length;j++){
+												w[j].className='wrongNum'
+											}
+											w[0].className='wrongNum wrongNumOn'
 										}
 									}}>查看统计</Button>
 									<span className={cls}  onClick={()=>{
