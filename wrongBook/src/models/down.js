@@ -11,18 +11,33 @@ export default {
   
 	state: {
 		classDown:[],
+		classDownPic:[],
 		workDown:[],
+		workDownPic:[],
 		stuDown:[],
+		stuDownPic:[],
 		stuName:'',
 	},
 	reducers: {
 		classDown(state, {payload}) {
 			let classDown = state.classDown
 			classDown.push(payload)
-			console.log(classDown)
 			return { ...state, classDown:classDown };
 		},
-
+		classDownPic(state, {payload}) {
+			let classDownPic = state.classDownPic
+			classDownPic.push(payload)
+			return { ...state, classDownPic:classDownPic };
+		},
+		delClassDownPic(state, {payload}) {
+			let classDownPic = state.classDownPic
+				for(let i = 0 ; i < classDownPic.length ; i++){
+					if(classDownPic[i] == payload){
+						classDownPic.splice(i,1)
+					}
+				}
+			return { ...state, classDownPic:classDownPic};
+		},
 		delClassDown(state, {payload}) {
 			let classDown = state.classDown
 			for(let i = 0 ; i < classDown.length ; i++){
@@ -34,7 +49,24 @@ export default {
 			return { ...state, classDown:classDown};
 		},
 		delAllClass(state, {payload}) {
-			return { ...state, classDown:[]};
+			let classDown=[],classDownPic=[]
+			return { ...state, ...{classDown,classDownPic}};
+		},
+
+
+		workDownPic(state, {payload}) {
+			let workDownPic = state.workDownPic
+			workDownPic.push(payload)
+			return { ...state, workDownPic:workDownPic };
+		},
+		delWorkDownPic(state, {payload}) {
+			let workDownPic = state.workDownPic
+				for(let i = 0 ; i < workDownPic.length ; i++){
+					if(workDownPic[i] == payload){
+						workDownPic.splice(i,1)
+					}
+				}
+			return { ...state, workDownPic:workDownPic};
 		},
 		workDown(state, {payload}) {
 				let workDown = state.workDown
@@ -51,22 +83,35 @@ export default {
 			return { ...state, workDown:workDown};
 		},
 		delAllWork(state, {payload}) {
-			return { ...state, workDown:[]};
+			let workDown=[],workDownPic=[]
+			return { ...state, ...{workDown,workDownPic}};
 		},
 
-		
 		delAllStu(state, {payload}) {
-			return { ...state, stuDown:[]};
+			let stuDown=[],stuDownPic=[]
+			return { ...state, ...{stuDown,stuDownPic}};
 		},
-
+		stuDownPic(state, {payload}) {
+			let stuDownPic = state.stuDownPic
+			stuDownPic.push(payload)
+			return { ...state, stuDownPic:stuDownPic };
+		},
 		stuDown(state, {payload}) {
 			let stuDown = state.stuDown
 			stuDown.push(payload)
 		return { ...state, stuDown:stuDown };
 		},
+		delstuDownPic(state, {payload}) {
+			let stuDownPic = state.stuDownPic
+			for(let i = 0 ; i < stuDownPic.length ; i++){
+				if(stuDownPic[i] == payload){
+					stuDownPic.splice(i,1)
+				}
+			}
+			return { ...state, stuDownPic:stuDownPic};
+		},
 		delstuDown(state, {payload}) {
 			let stuDown = state.stuDown
-			console.log(stuDown,payload)
 			for(let i = 0 ; i < stuDown.length ; i++){
 				if(stuDown[i] == payload){
 					stuDown.splice(i,1)

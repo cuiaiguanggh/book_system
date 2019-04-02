@@ -88,7 +88,7 @@ class ClassReport extends React.Component {
 									this.setState({loading:load})
 									let This = this;
 									if(!this.state.loading){
-										let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.workDown.join(','))
+										let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.workDown.join(',')+'&picIds='+this.props.state.workDownPic.join(','))
 										// window.open(url,'_blank'); 
 										this.setState({wordUrl:url})
 										this.props.dispatch({
@@ -224,10 +224,18 @@ class ClassReport extends React.Component {
 												type: 'down/workDown',
 												payload:item.questionId
 											});
+											this.props.dispatch({
+												type: 'down/workDownPic',
+												payload:item.picId
+											});
 										}else{
 											this.props.dispatch({
 												type: 'down/delWorkDown',
 												payload:item.questionId
+											});
+											this.props.dispatch({
+												type: 'down/delWorkDownPic',
+												payload:item.picId
 											});
 										}
 										
