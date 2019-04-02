@@ -48,16 +48,7 @@ export default {
 			return { ...state, className:payload };
 		},
 		classId(state, {payload}) {
-			let classList = state.classList1;
-			let className= '';
-			let classId = payload;
-			for( let i = 0 ; i < classList.data.length ; i++ ) {
-				if( classList.data[i].classId == payload ) {
-					className = classList.data[i].className
-				}
-			}
-			console.log(className)
-			return { ...state, ...{classId,className} };
+			return { ...state, classId:payload };
 		},
 		classList(state, {payload}) {
 			return { ...state, classList:payload };
@@ -75,16 +66,7 @@ export default {
 			return { ...state, years:payload };
 		},
 		subId(state, {payload}) {
-			let subList = state.subList;
-			let subName= '';
-			let subId = payload;
-			for( let i = 0 ; i < subList.data.length ; i++ ) {
-				if( subList.data[i].v == payload ) {
-					subName = subList.data[i].k
-
-				}
-			}
-			return { ...state,...{ subId,subName} };
+			return { ...state, subId:payload };
 		},
 		subName(state, {payload}) {
 			return { ...state, subName:payload };
@@ -137,40 +119,28 @@ export default {
 
 		*getClassList({payload}, {put, select}) {
 			// 返回教师所在班级列表
-			let {classId} = yield select(state => state.temp)
 			let res = yield getClassList(payload);
 			if(res.data && res.data.result === 0){
 				if(res.data.data.length > 0 ){
-					if(classId == '') {
-						yield put ({
-							type: 'classList1',
-							payload:res.data
-						})
-						
-						yield put ({
-							type: 'classId',
-							payload:res.data.data[0].classId
-						})
-						yield put ({
-							type: 'getUserSubjectList',
-							payload:{
-								value:res.data.data[0].classId,
-								type:0
-							}
-						})
-					}else{
-						yield put ({
-							type: 'classList1',
-							payload:res.data
-						})
-						yield put ({
-							type: 'getUserSubjectList',
-							payload:{
-								value:classId,
-								type:0
-							}
-						})
-					}
+					yield put ({
+						type: 'className',
+						payload:res.data.data[0].className
+					})
+					yield put ({
+						type: 'classId',
+						payload:res.data.data[0].classId
+					})
+					yield put ({
+						type: 'classList1',
+						payload:res.data
+					})
+	
+					
+					
+					yield put ({
+						type: 'getUserSubjectList',
+						payload:res.data.data[0].classId
+					})
 				}
 
 				
@@ -184,82 +154,56 @@ export default {
 			
 		},
 
+
+
+
 		*getUserSubjectList({payload}, {put, select}) {
 			// 返回教师所在班级科目
-			let {years,subId,subName} = yield select(state => state.temp)
+			let {years} = yield select(state => state.temp)
 			let data={
-				classId:payload.value,
+				classId:payload,
 				year:years
 			}
 			let res = yield getUserSubjectList(data);
 			if(res.data && res.data.result === 0){
 				if(res.data.data.length> 0 ){
-					if(subId == '' || payload.type == 1){
-						yield put ({
-							type: 'subList',
-							payload:res.data
-						})
-						
-						yield put ({
-							type: 'subId',
-							payload:res.data.data[0].v
-						})
-						yield put ({
-							type: 'report/queryQrDetail',
-							payload:{
-								classId:payload.value,
-								year:years,
-								subjectId:res.data.data[0].v,
-								info:0
-							}
-						})
-						
-						yield put ({
-							type: 'getQrMonthList',
-							payload:{
-								classId:payload.value,
-								year:years,
-								subjectId:res.data.data[0].v
-							}
-						})
-						yield put ({
-							type: 'report/queryHomeworkList',
-							payload:{
-								classId:payload.value,
-								subjectId:res.data.data[0].v
-							}
-						})
-					}else{
-						yield put ({
-							type: 'subList',
-							payload:res.data
-						})
-						yield put ({
-							type: 'report/queryQrDetail',
-							payload:{
-								classId:payload.value,
-								year:years,
-								subjectId:subId,
-								info:0
-							}
-						})
-						
-						yield put ({
-							type: 'getQrMonthList',
-							payload:{
-								classId:payload.value,
-								year:years,
-								subjectId:subId
-							}
-						})
-						yield put ({
-							type: 'report/queryHomeworkList',
-							payload:{
-								classId:payload.value,
-								subjectId:subId
-							}
-						})
-					}
+					yield put ({
+						type: 'subId',
+						payload:res.data.data[0].v
+					})
+					yield put ({
+						type: 'subName',
+						payload:res.data.data[0].k
+					})
+					yield put ({
+						type: 'subList',
+						payload:res.data
+					})
+					yield put ({
+						type: 'report/queryQrDetail',
+						payload:{
+							classId:payload,
+							year:years,
+							subjectId:res.data.data[0].v,
+							info:0
+						}
+					})
+					
+					yield put ({
+						type: 'getQrMonthList',
+						payload:{
+							classId:payload,
+							year:years,
+							subjectId:res.data.data[0].v
+						}
+					})
+					yield put ({
+						type: 'report/queryHomeworkList',
+						payload:{
+							classId:payload,
+							subjectId:res.data.data[0].v
+						}
+					})
 				}
 				
 			}else{

@@ -74,7 +74,7 @@ class wrongTop extends React.Component {
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
-                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
+                                <span>班级错误率：{(item.wrongNum/num*100).toFixed(0)}%（答错{item.wrongNum}人）</span>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
@@ -271,7 +271,7 @@ class wrongTop extends React.Component {
 						:''
                     }
                     <Button 
-                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
+                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
                         loading={this.state.loading} 
                         onClick={()=>{
                             if(this.props.state.classDown.length!= 0){
@@ -293,7 +293,7 @@ class wrongTop extends React.Component {
                                 message.warning('请选择题目到错题篮')
                             }
                         }}>
-                    <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
+                        <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
                     下载组卷({this.props.state.classDown.length})
                     </Button>
 				</div>

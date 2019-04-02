@@ -103,7 +103,7 @@ class ClassReport extends React.Component {
 								}
 							}}>
 
-                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{verticalAlign:"sub",marginLeft:'10px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷（{this.props.state.workDown.length}）
 						</Button>
 					</div>
@@ -146,7 +146,7 @@ class ClassReport extends React.Component {
 									message.warning('请选择题目到错题篮')
 								}
 							}}>
-                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.workDown.length})
 						</Button>
 					</div>
@@ -183,7 +183,7 @@ class ClassReport extends React.Component {
 							<div key={i} className={style.questionBody}>
 								<div className={style.questionTop}>
 									<span style={{marginRight:"20px"}}>第{i+1}题</span>
-									<span>答错<span style={{color:"#1890ff"}}>{won}</span>人</span>
+									<span>班级错误率：{(item.wrongScore*100).toFixed(0)}%（答错{won}人）</span>
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}} onClick={()=>{
 										// this.setState({visible:true,key:i,showAns:ans[0]})
@@ -392,8 +392,8 @@ class ClassReport extends React.Component {
 				title:<div style={{lineHeight:'17px'}}>
 						<span>题目详情</span>
 						<span  style={{float:'right',fontSize:'14px'}}>
-							<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px',marginRight:'5px'}} src={require('../../images/zb-cw-n.png')}></img>
-							<span style={{color:'#909399',fontSize:'14px',marginRight:'10px',verticalAlign:'text-top',fontWeight:'bold'}}>错误</span>
+							<Icon style={{color:'#f56c6c',fontSize:'14px',verticalAlign:'inherit',marginRight:'5px'}} type="close-circle" theme="filled"/>
+							<span style={{color:'#909399',fontSize:'12px',marginRight:'10px',verticalAlign:'text-top'}}>错误</span>
 
 						</span>
 					</div>,
