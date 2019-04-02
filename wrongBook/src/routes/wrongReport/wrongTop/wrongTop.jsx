@@ -18,7 +18,8 @@ class ClassReport extends React.Component {
     }
     getGrade() {
 		let classList = this.props.state.classList1
-		if(classList.data){
+		let className = this.props.state.className;
+		if(classList.data && classList.data.length > 0 && className != ''){
 			return(
 				<Select
 						showSearch
@@ -29,7 +30,10 @@ class ClassReport extends React.Component {
 						onChange={(value)=>{
 								this.props.dispatch({
 									type: 'temp/getUserSubjectList',
-									payload:value
+									payload:{
+										value:value,
+										type:1
+									}
 								});
 								this.props.dispatch({
 									type: 'report/queryHomeworkList',
@@ -51,18 +55,20 @@ class ClassReport extends React.Component {
 					}
 				</Select>
 			)
+		}else{
+
 		}
     }
     getSub() {
 			let subList =  this.props.state.subList ;
 			let subName = this.props.state.subName
-			if(subList.data && subList.data.length> 0 && subName!= ''){
+			if(subList.data && subList.data.length> 0 && subName != ''){
 				return(
 					<Select
 							showSearch
 							style={{ width: 150,margin:'0 20px'}}
 							placeholder="学科"
-							defaultValue={this.props.state.subName}
+							value={this.props.state.subName}
 							optionFilterProp="children"
 							onChange={(value)=>{
 								this.props.dispatch({
@@ -96,14 +102,21 @@ class ClassReport extends React.Component {
 						}
 				</Select>
 				)
+			}else{
+				return (
+					<Input
+							style={{ width: 150,margin:'0 20px'}}
+					>
+				</Input>
+				)
 			}
 			}
 	render() {
 		return (
 			<div style={{height:'50px',lineHeight:'50px'}}>
-                {this.getGrade()}
-                {this.getSub()}
-            </div>
+					{this.getGrade()}
+					{this.getSub()}
+			</div>
 		);
 	  }
 
