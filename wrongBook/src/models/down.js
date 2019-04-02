@@ -22,6 +22,7 @@ export default {
 		classDown(state, {payload}) {
 			let classDown = state.classDown
 			classDown.push(payload)
+			console.log(classDown)
 			return { ...state, classDown:classDown };
 		},
 		classDownPic(state, {payload}) {
@@ -49,9 +50,9 @@ export default {
 			return { ...state, classDown:classDown};
 		},
 		delAllClass(state, {payload}) {
-			let classDown=[],classDownPic=[]
-			return { ...state, ...{classDown,classDownPic}};
+			return { ...state, classDown:[]};
 		},
+
 
 
 		workDownPic(state, {payload}) {
@@ -83,13 +84,14 @@ export default {
 			return { ...state, workDown:workDown};
 		},
 		delAllWork(state, {payload}) {
-			let workDown=[],workDownPic=[]
-			return { ...state, ...{workDown,workDownPic}};
+			return { ...state, workDown:[]};
 		},
 
+		
+
+
 		delAllStu(state, {payload}) {
-			let stuDown=[],stuDownPic=[]
-			return { ...state, ...{stuDown,stuDownPic}};
+			return { ...state, stuDown:[]};
 		},
 		stuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic

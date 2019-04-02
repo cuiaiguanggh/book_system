@@ -67,8 +67,10 @@ export default {
   
 	effects: {
 		*queryQrDetail({payload},{put,select}) {
-			let {userId} = yield select(state => state.report)
-
+			let {userId,mouNow} = yield select(state => state.report)
+			if(mouNow != 0){
+				payload.month = mouNow.v
+			}
 			//账号科目列表
 			let res = yield queryQrDetail(payload);
 			if(res.data && res.data.result === 0){
@@ -113,7 +115,11 @@ export default {
 		},
 		*queryQrDetail1({payload},{put,select}) {
 			//账号科目列表
-			console.log(payload)
+			let {mouNow} = yield select(state => state.report)
+			console.log(mouNow)
+			if(mouNow != 0){
+				payload.month = mouNow.v
+			}
 			let res = yield queryQrDetail(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
