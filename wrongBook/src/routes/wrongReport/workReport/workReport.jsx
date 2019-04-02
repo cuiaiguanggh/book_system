@@ -88,7 +88,7 @@ class ClassReport extends React.Component {
 									this.setState({loading:load})
 									let This = this;
 									if(!this.state.loading){
-										let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.workDown.join(','))
+										let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.workDownPic.join(','))
 										// window.open(url,'_blank'); 
 										this.setState({wordUrl:url})
 										this.props.dispatch({
