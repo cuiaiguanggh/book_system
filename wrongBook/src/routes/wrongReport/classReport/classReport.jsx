@@ -74,12 +74,19 @@ class wrongTop extends React.Component {
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
-                                <span>班级错误率：{(item.wrongNum/num*100).toFixed(0)}%（答错{item.wrongNum}人）</span>
+                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
-                                if(item.wrongScore == 0 ) {
+                                if(item.wrongScore != 0 ) {
                                     this.setState({visible:true,key:i,showAns:ans[0]})
+                                }
+                                let w = document.getElementsByClassName('wrongNum');
+                                if(w.length >0 ) {
+                                    for(let j = 0;j<w.length;j++){
+                                        w[j].className='wrongNum'
+                                    }
+                                    w[0].className='wrongNum wrongNumOn'
                                 }
                             }}>
                                 {
@@ -90,31 +97,32 @@ class wrongTop extends React.Component {
                             </div>
                             <div style={{overflow:'hidden',padding:'10px'}}>
                                 <Button style={{float:'left'}} onClick={()=>{
-                                    if(item.wrongScore == 0 ) {
+                                    if(item.wrongScore != 0 ) {
                                         this.setState({visible:true,key:i,showAns:ans[0]})
                                     }
-                                    // this.setState({visible:true,key:i,showAns:ans[0]})
+                                    let w = document.getElementsByClassName('wrongNum');
+                                    if(w.length >0 ) {
+                                        for(let j = 0;j<w.length;j++){
+                                            w[j].className='wrongNum'
+                                        }
+                                        w[0].className='wrongNum wrongNumOn'
+                                    }
+                                    
                                 }}>查看统计</Button>
                                 <span className={cls}  onClick={()=>{
                                     let dom = document.getElementsByClassName('down');
                                     let downs = this.props.state.classDown;
                                     console.log(dom[i])
                                     if( dom[i].innerHTML == '加入错题篮' ){
-                                        console.log(dom[i])
                                         this.props.dispatch({
                                             type: 'down/classDown',
                                             payload:item.questionId
                                         });
-                                        // dom[i].className="down ndown"
-                                        // dom[i].innerHTML = '移出错题篮'
                                     }else{
-                                        console.log(222)
                                         this.props.dispatch({
                                             type: 'down/delClassDown',
                                             payload:item.questionId
                                         });
-                                        // dom[i].className="down"
-                                        // dom[i].innerHTML = '加入错题篮'
                                     }
                                     
                                     
@@ -152,37 +160,7 @@ class wrongTop extends React.Component {
             }
             return(
                 <div>
-                    {/* <div style={{border:'1px solid #ccc',marginBottom:'10px'}}>
-                        <div style={{padding:'10px'}}>
-                            {
-                                question.questionUrl.split(',').map((item,i)=>(
-                                    <img key={i} src={item} style={{width:'500px'}}></img>
-                                ))
-                            }
-                        </div>
-                        <div style={{borderTop:'1px solid #e7e7e7',padding:'10px',background:'#fafafa',overflow:'hidden',lineHeight:'30px'}}>
-                            <span>班级错误率：{(question.wrongNum/question.userAnswerList.length *100).toFixed(0)}%</span>
-                        </div>
-                    </div> */}
                     <div style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
-                        {/* <h3>答题统计</h3>
-                        <h3 style={{overflow:'hidden'}}>
-                            <span style={{
-                                float:'left',background:'#e7f4dd',borderRadius:'30px',
-                                padding:'0 10px',height:'30px',lineHeight:'30px',
-                            }}>
-                            答对（{trueNum.length}人）
-                            </span>
-                            <span style={{float:'right',color:"#88ca54"}}>
-                            {(trueNum.length/Num *100).toFixed(0)}%</span>
-                            </h3> */}
-                        {/* <div style={{borderBottom:'1px solid #ccc',marginBottom:'10px',padding:'10px 0'}}>
-                            {
-                               trueNum.map((item,i) =>(
-                                <span key={i} style={{padding:'5px 10px',fontSize:"18px"}}>{item}</span>
-                               )) 
-                            }
-                        </div> */}
                         <h3 style={{overflow:'hidden'}}>
                         <span style={{
                                 float:'left',background:'#ffe1e4',borderRadius:'30px',
@@ -218,8 +196,6 @@ class wrongTop extends React.Component {
                 </div>
             )
         }else{
-
-            console.log('1111')
             // return(
             //     <Empty />
             // )
@@ -287,7 +263,7 @@ class wrongTop extends React.Component {
 						:''
                     }
                     <Button 
-                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
                         loading={this.state.loading} 
                         onClick={()=>{
                             if(this.props.state.classDown.length!= 0){
@@ -309,7 +285,7 @@ class wrongTop extends React.Component {
                                 message.warning('请选择题目到错题篮')
                             }
                         }}>
-                        <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                    <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
                     下载组卷({this.props.state.classDown.length})
                     </Button>
 				</div>

@@ -209,7 +209,7 @@ class StuReport extends React.Component {
 								:''
 							}
 							<Button 
-								style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+								style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
 						
 								loading={this.state.loading} 
 								onClick={()=>{
@@ -232,7 +232,7 @@ class StuReport extends React.Component {
 										message.warning('请选择题目到错题篮')
 									}
 								}}>
-                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
 						</div>

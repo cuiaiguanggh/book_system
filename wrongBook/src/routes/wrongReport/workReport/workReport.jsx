@@ -103,7 +103,7 @@ class ClassReport extends React.Component {
 								}
 							}}>
 
-                        	<img style={{verticalAlign:"sub",marginLeft:'10px'}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷（{this.props.state.workDown.length}）
 						</Button>
 					</div>
@@ -146,7 +146,7 @@ class ClassReport extends React.Component {
 									message.warning('请选择题目到错题篮')
 								}
 							}}>
-                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.workDown.length})
 						</Button>
 					</div>
@@ -183,12 +183,19 @@ class ClassReport extends React.Component {
 							<div key={i} className={style.questionBody}>
 								<div className={style.questionTop}>
 									<span style={{marginRight:"20px"}}>第{i+1}题</span>
-									<span>班级错误率：{(item.wrongScore*100).toFixed(0)}%（答错{won}人）</span>
+									<span>答错<span style={{color:"#1890ff"}}>{won}</span>人</span>
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}} onClick={()=>{
 										// this.setState({visible:true,key:i,showAns:ans[0]})
-										if(item.wrongScore == 0 ) {
+										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
+										}
+										let w = document.getElementsByClassName('wrongNum');
+										if(w.length >0 ) {
+											for(let j = 0;j<w.length;j++){
+												w[j].className='wrongNum'
+											}
+											w[0].className='wrongNum wrongNumOn'
 										}
 									}}>
 									{
@@ -199,8 +206,15 @@ class ClassReport extends React.Component {
 								</div>
 								<div style={{overflow:'hidden',padding:'10px'}}>
 									<Button style={{float:'left'}} onClick={()=>{
-										if(item.wrongScore == 0 ) {
+										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
+										}
+										let w = document.getElementsByClassName('wrongNum');
+										if(w.length >0 ) {
+											for(let j = 0;j<w.length;j++){
+												w[j].className='wrongNum'
+											}
+											w[0].className='wrongNum wrongNumOn'
 										}
 									}}>查看统计</Button>
 									<span className={cls}  onClick={()=>{
@@ -367,11 +381,12 @@ class ClassReport extends React.Component {
 				}
 			},
 			{
-				title:<div>
+				title:<div style={{lineHeight:'17px'}}>
 						<span>题目详情</span>
-						<span  style={{float:'right',fontSize:'20px'}}>
-							<span>错误</span>
-							<Icon type="close-circle" twoToneColor='#f56c6c' theme="twoTone" />
+						<span  style={{float:'right',fontSize:'14px'}}>
+							<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px',marginRight:'5px'}} src={require('../../images/zb-cw-n.png')}></img>
+							<span style={{color:'#909399',fontSize:'14px',marginRight:'10px',verticalAlign:'text-top',fontWeight:'bold'}}>错误</span>
+
 						</span>
 					</div>,
 				dataIndex:'news',
