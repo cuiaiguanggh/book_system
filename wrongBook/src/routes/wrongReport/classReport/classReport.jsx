@@ -279,7 +279,7 @@ class wrongTop extends React.Component {
                                 this.setState({loading:load})
                                 let This = this;
                                 if(!this.state.loading){
-                                    let url = dataCenter('/web/report/getQuestionPdf?questionIds='+this.props.state.classDown.join(',')+'&picIds='+this.props.state.classDownPic.join(','))
+                                    let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
                                     // window.open(url,'_blank'); 
                                     this.setState({wordUrl:url})
                                     this.props.dispatch({
