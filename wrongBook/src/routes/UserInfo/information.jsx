@@ -22,24 +22,12 @@ class HomeworkCenter extends React.Component {
 	}
 	render() {
 		let userNews = store.get('wrongBookNews')
-		console.log(userNews)
+		console.log()
 		return(
 			<Layout>
-				<Content style={{ overflow: 'initial',position:'relative'}} style={{background:'#fff',borderTop:'1px solid #eee'}}>
-					<div className={style.userBorder}>
-						<div className={style.userNews}>
-							<img className={style.userImg}  alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }></img>
-							<p className={style.userName}>{userNews.userName}</p>
-							<div>
-								
-							</div>
-						</div>
-						<div className={style.newsBorder}>
-							<p></p>
-							<p></p>
-						</div>
-					</div>
-					{/* <div className={style.layout} style={{ padding: 24, background: '#fff',height:735   }}>
+				<Content style={{ overflow: 'initial'}}>
+					<h3 style={{ background: '#fff',borderBottom:'1px solid #eee',margin:'0',padding:'10px 24px'}}>个人信息</h3>
+					<div className={style.layout} style={{ padding: 24, background: '#fff',height:735   }}>
 						<div className={style.headport}>
 							<img alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl :'http://images.mizholdings.com/face/default/02.gif'}/>
 							
@@ -124,7 +112,7 @@ class HomeworkCenter extends React.Component {
 								}}
 							>完成</Button>
 						</div>
-					</div> */}
+					</div>
 				</Content>
 			</Layout>
 		);

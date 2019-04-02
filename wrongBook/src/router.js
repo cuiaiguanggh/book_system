@@ -18,7 +18,7 @@ const FindPsd = Loadable({
   loading: () => <List/>,
 });
 const MyNews = Loadable({
-  loader: () => import('./routes/UserInfo/information'),
+  loader: () => import('./routes/Layout/userLeft'),
   loading: () => <List/>,
 });
 const ClassInfo = Loadable({
@@ -79,10 +79,10 @@ function RouterConfig({ history }) {
         <Route path="/login"  component={Login} />
         <Route path="/loginPhone"  component={LoginP} />
         <Route path="/fin_psd"  component={FindPsd} />
+        <Route path="/UserInfo" component={MyNews} />
         <Route path="/classInfo" component={ClassInfo} />
         <Route path="/studentDetail" component={StudentDetail} />
           <Home>
-            <Route path="/UserInfo" component={MyNews} />
             <Route path="/grade" component={GradeAdmin} />
             <Route path="/class" component={ClassAdmin} />
             <Route path="/addclass" component={AddClass} />
