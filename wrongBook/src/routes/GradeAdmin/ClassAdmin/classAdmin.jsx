@@ -252,9 +252,6 @@ class HomeworkCenter extends React.Component {
 		let dataSource = [];
 		if(pageHomeworkDetiles.data){
 			for(let i = 0;i < pageHomeworkDetiles.data.length; i ++){
-				if(i == 0 ){
-					dataSource = []
-				}
 				let p = {};
 				let det = pageHomeworkDetiles.data[i];
 				p["key"] = det.userId;

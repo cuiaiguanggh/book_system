@@ -68,6 +68,23 @@ export default {
 				}
 			return { ...state, workDownPic:workDownPic};
 		},
+
+
+
+		workDownPic(state, {payload}) {
+			let workDownPic = state.workDownPic
+			workDownPic.push(payload)
+			return { ...state, workDownPic:workDownPic };
+		},
+		delWorkDownPic(state, {payload}) {
+			let workDownPic = state.workDownPic
+				for(let i = 0 ; i < workDownPic.length ; i++){
+					if(workDownPic[i] == payload){
+						workDownPic.splice(i,1)
+					}
+				}
+			return { ...state, workDownPic:workDownPic};
+		},
 		workDown(state, {payload}) {
 				let workDown = state.workDown
 				workDown.push(payload)
@@ -90,6 +107,11 @@ export default {
 		delAllStu(state, {payload}) {
 			let stuDown=[],stuDownPic=[]
 			return { ...state, ...{stuDown,stuDownPic}};
+		},
+		stuDownPic(state, {payload}) {
+			let stuDownPic = state.stuDownPic
+			stuDownPic.push(payload)
+			return { ...state, stuDownPic:stuDownPic };
 		},
 		stuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic

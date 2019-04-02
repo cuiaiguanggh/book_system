@@ -73,7 +73,7 @@ class EditableTable extends React.Component {
 			title: '班级名称',
 			dataIndex: 'name',
 			key: 'name',
-			width: '20%',
+			// width: '20%',
 			editable: true,
 			render: (text, record) => {
 				return (
@@ -95,7 +95,7 @@ class EditableTable extends React.Component {
 			title:'班主任',
 			dataIndex:'teacherName',
 			key:'teacherName',
-			width: '15%',
+			// width: '15%',
 			editable: true,
 			render: (text, record) => {
 				return (
@@ -117,7 +117,7 @@ class EditableTable extends React.Component {
 			title:'人数',
 			dataIndex:'stuNum',
 			key:'stuNum',
-			width: '15%',
+			// width: '15%',
 			render: (text, record) => {
 				return (
 					<div style={{cursor:'pointer'}} onClick={()=>{
@@ -138,7 +138,7 @@ class EditableTable extends React.Component {
 			title:'作业数',
 			dataIndex:'workNum',
 			key:'workNum',
-			width: '15%',
+			// width: '15%',
 			render: (text, record) => {
 				return (
 					<div style={{cursor:'pointer'}} onClick={()=>{

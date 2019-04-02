@@ -132,8 +132,6 @@ class wrongTop extends React.Component {
                                             payload:item.picId
                                         });
                                     }
-                                    
-                                    
                                 }}>{name}</span>
                             </div>
                         </div>
