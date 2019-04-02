@@ -142,9 +142,6 @@ export default {
 		*queryHomeworkList({payload},{put,select}) {
 			//返回作业列表
 			let res = yield queryHomeworkList(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'homeworkList',

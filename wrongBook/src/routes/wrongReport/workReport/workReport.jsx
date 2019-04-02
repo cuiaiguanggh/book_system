@@ -416,13 +416,15 @@ class ClassReport extends React.Component {
 			>
 				{homeworkList.data && homeworkList.data.length ?this.getGrade():''}
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
-				
-				<Table
-					bordered
-					dataSource={dataSource}
-					columns={columns}
-					rowClassName="editable-row"
-				/>
+				{
+					dataSource != [] ?
+					<Table
+						bordered
+						dataSource={dataSource}
+						columns={columns}
+						rowClassName="editable-row"
+					/>:''
+				}
 				{this.questions()}
 				<Modal
                     visible={this.state.visible}
@@ -489,13 +491,16 @@ class ClassReport extends React.Component {
 	  }
 
 	componentDidMount(){
-		this.props.dispatch({
-			type: 'report/queryHomeworkList',
-			payload:{
-				classId:this.props.state.classId,
-				subjectId:this.props.state.subId
-			}
-		});
+		if(this.props.state.classId != '' && this.props.state.subId != ''){
+			this.props.dispatch({
+				type: 'report/queryHomeworkList',
+				payload:{
+					classId:this.props.state.classId,
+					subjectId:this.props.state.subId
+				}
+			});
+		}
+		
 
 		// 使用滚动时自动加载更多
         const loadMoreFn = this.props.loadMoreFn
@@ -504,7 +509,6 @@ class ClassReport extends React.Component {
         function callback() {
             const top = wrapper.getBoundingClientRect().top
 			const windowHeight = window.screen.height;
-			console.log(2222)
             if (top && top < windowHeight) {
                 // 证明 wrapper 已经被滚动到暴露在页面可视范围之内了
 				// loadMoreFn()

@@ -103,12 +103,6 @@ class ClassReport extends React.Component {
 				</Select>
 				)
 			}else{
-				return (
-					<Input
-							style={{ width: 150,margin:'0 20px'}}
-					>
-				</Input>
-				)
 			}
 			}
 	render() {
