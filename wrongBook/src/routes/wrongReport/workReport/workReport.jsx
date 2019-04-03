@@ -382,7 +382,8 @@ class ClassReport extends React.Component {
 			for(let i = 0;i < scoreDetail.data.userScoreList.length; i ++){
 				let p = {};
 				let det = scoreDetail.data.userScoreList[i];
-				p["key"] = det.userId;
+				p["key"] = i;
+				p["userId"] = det.userId;
 				p["name"] = det.userName;
 				p["wrong"] = det.wrongScore;
 				p["time"] = det.joinTime;
@@ -393,7 +394,7 @@ class ClassReport extends React.Component {
 		}
 
 		let key = this.state.key;
-		let MaxKey = 0
+		let MaxKey = 0;
 		let QuestionDetail = this.props.state.questionDetail
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.qsList.length-1;

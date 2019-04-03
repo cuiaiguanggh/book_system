@@ -211,7 +211,8 @@ class wrongTop extends React.Component {
 		let mounthList = this.props.state.mounthList;
 		let key = this.state.key;
 		let MaxKey = 0
-		let QuestionDetail = this.props.state.qrdetailList
+        let QuestionDetail = this.props.state.qrdetailList;
+        console.log(QuestionDetail)
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
@@ -269,7 +270,7 @@ class wrongTop extends React.Component {
 						:''
                     }
                     <Button 
-                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
                         loading={this.state.loading} 
                         onClick={()=>{
                             if(this.props.state.classDown.length!= 0){
@@ -295,7 +296,12 @@ class wrongTop extends React.Component {
                     下载组卷({this.props.state.classDown.length})
                     </Button>
 				</div>
-					{this.props.state.qrdetailList.data?this.quesList():''}
+                    {this.props.state.qrdetailList.data?this.quesList():
+                    <div>
+                        alsdkfja;sldkfja;sldfj
+                        <img src={require('../../images/wsj-n.png')}></img>
+                    </div>
+                    }
 				
 				<Modal
                     visible={this.state.visible}

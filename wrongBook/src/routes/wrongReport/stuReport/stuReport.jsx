@@ -217,7 +217,7 @@ class StuReport extends React.Component {
 								:''
 							}
 							<Button 
-								style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px"}}
+								style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
 						
 								loading={this.state.loading} 
 								onClick={()=>{
