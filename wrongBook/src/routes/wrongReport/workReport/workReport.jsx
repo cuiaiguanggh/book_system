@@ -157,12 +157,12 @@ class ClassReport extends React.Component {
 
 		}
 	questions(){
-		let questionDetail = this.props.state.questionDetail;
+		let questionDetail = this.props.state.scoreDetail;
 		if(questionDetail.data){
 			return(
 				<div style={{overflow:'hidden'}}>
 					{
-						questionDetail.data.qsList.map((item,i)=>{
+						questionDetail.data.questionScoreList.map((item,i)=>{
 							let ans = []
 							for(let i=0;i< item.userAnswerList.length;i++){
 								if(item.userAnswerList[i].result == 0 ){
@@ -386,13 +386,12 @@ class ClassReport extends React.Component {
 				p["userId"] = det.userId;
 				p["name"] = det.userName;
 				p["wrong"] = det.wrongScore;
-				p["time"] = det.joinTime;
+				p["time"] = det.joinTime != '' ?det.joinTime :"-------------"; 
 				p["news"] = det.resultList;
 				p["list"] = det;
 				dataSource[i]=p;
 			}
 		}
-
 		let key = this.state.key;
 		let MaxKey = 0;
 		let QuestionDetail = this.props.state.questionDetail
@@ -401,7 +400,6 @@ class ClassReport extends React.Component {
 		}
 		let homeworkList = this.props.state.homeworkList
 		return (
-			
             <Content style={{
                 background: '#fff', 
                 minHeight: 280,

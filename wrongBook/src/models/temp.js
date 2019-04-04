@@ -180,15 +180,24 @@ export default {
 						payload:res.data
 					})
 					yield put ({
+						type:'report/queryQrStudentCount',
+						payload:{
+							classId:payload,
+							year:years,
+							subjectId:res.data.data[0].v
+						}
+					})
+					yield put ({
 						type: 'report/queryQrDetail',
 						payload:{
 							classId:payload,
 							year:years,
 							subjectId:res.data.data[0].v,
-							info:0
+							info:0,
+							page:1,
+							pageSize:50
 						}
 					})
-					
 					yield put ({
 						type: 'getQrMonthList',
 						payload:{
