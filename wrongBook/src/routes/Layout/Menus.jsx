@@ -34,7 +34,7 @@ class HomePageLeft extends Component {
 	Menus() {
 		let memuList = this.props.state.MenuList;
 		let menus = [];
-		
+		let classList = this.props.state.classList1;
 		let rodeType = 30
 		if(!store.get('wrongBookNews') || store.get('wrongBookNews') == undefined){
 			this.props.dispatch(
@@ -48,6 +48,7 @@ class HomePageLeft extends Component {
 		let pathname = this.props.location.pathname;
 		let hash = this.props.location.hash;
 		let key = hash.substr(hash.indexOf("page=")+5)*1;
+		
 		if(key === 0){
 			key =1
 		}
@@ -59,12 +60,13 @@ class HomePageLeft extends Component {
 						hash:`page=1`
 					})
 				)
-			// else if(rodeType === 20)
-			// 	this.props.dispatch(
-			// 		routerRedux.push({
-			// 			pathname: '/schoolNews',
-			// 		})
-			// 	)
+			else if(rodeType === 20)
+				this.props.dispatch(
+					routerRedux.push({
+						pathname: '/grade',
+						hash:`page=1`
+					})
+				)
 			else if(rodeType === 30 || rodeType === 20){
 				this.props.dispatch(
 					routerRedux.push({
@@ -113,22 +115,24 @@ class HomePageLeft extends Component {
 				}
 				// 作业中心
 				if(item === 300 && rodeType != 10){
-					// menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
-					// 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
-					// 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
-					// </Menu.Item>)
-					menus.push(<Menu.Item key="workDetail1" style={{cursor:'pointer'}}>
-						<Link to="/classReport"  style={{cursor:'pointer'}} replace >
-						<Icon type="file-text"  theme="filled"/><span style={{cursor:'pointer'}}>班级错题</span></Link>
-					</Menu.Item>)
-					menus.push(<Menu.Item key="workDetail2" style={{cursor:'pointer'}}>
-						<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
-						<Icon type="appstore"  theme="filled"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
-					</Menu.Item>)
-					menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
-						<Link to="/workReport"  style={{cursor:'pointer'}} replace >
-						<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
-					</Menu.Item>)
+					if(classList.data && classList.data.length>0){
+						// menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
+						// 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
+						// 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
+						// </Menu.Item>)
+						menus.push(<Menu.Item key="workDetail1" style={{cursor:'pointer'}}>
+							<Link to="/classReport"  style={{cursor:'pointer'}} replace >
+							<Icon type="file-text"  theme="filled"/><span style={{cursor:'pointer'}}>班级错题</span></Link>
+						</Menu.Item>)
+						menus.push(<Menu.Item key="workDetail2" style={{cursor:'pointer'}}>
+							<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
+							<Icon type="appstore"  theme="filled"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
+						</Menu.Item>)
+						menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
+							<Link to="/workReport"  style={{cursor:'pointer'}} replace >
+							<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
+						</Menu.Item>)
+					}
 				}
 			})
 			return(menus)
@@ -365,6 +369,10 @@ class HomePageLeft extends Component {
 				}
 			})
 		}
+		
+		dispatch({
+			type: 'temp/getClassList',
+		});
 		dispatch({
 			type: 'homePage/functionList'
 		});

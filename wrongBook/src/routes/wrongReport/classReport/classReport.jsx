@@ -18,7 +18,6 @@ class wrongTop extends React.Component {
 	constructor(props) {
         super(props);
         this.Ref = ref => {this.refDom = ref};
-        
 		this.state = {
 			visible:false,
 			key:0,
@@ -27,6 +26,7 @@ class wrongTop extends React.Component {
             loading:false,
             page:1,
             hei:0,
+            next:true,
 	    };
     }
 	handleScroll(e){
@@ -34,15 +34,6 @@ class wrongTop extends React.Component {
         hei = clientHeight;
     }
     
-    onScrollHandle(e) {
-        // let page = this.props.state.page;
-        if(hei == e.target.scrollTop,hei+e.target.clientHeight){
-			// this.props.dispatch({
-			// 	type: 'report/page',
-			// 	payload:page++
-			// });
-        }
-    }
 	quesList(){
 		let ques = this.props.state.qrdetailList.data;
         let num = ques.memberNum;
@@ -74,7 +65,7 @@ class wrongTop extends React.Component {
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
-                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
+                                <span>班级错误率：{(item.wrongNum/num*100).toFixed(0)}%（答错{item.wrongNum}人）</span>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
@@ -112,7 +103,6 @@ class wrongTop extends React.Component {
                                 <span className={cls}  onClick={()=>{
                                     let dom = document.getElementsByClassName('down');
                                     let downs = this.props.state.classDown;
-                                    console.log(dom[i])
                                     if( dom[i].innerHTML == '加入错题篮' ){
                                         this.props.dispatch({
                                             type: 'down/classDown',
@@ -210,8 +200,8 @@ class wrongTop extends React.Component {
 	render() {
 		let mounthList = this.props.state.mounthList;
 		let key = this.state.key;
-		let MaxKey = 0
-		let QuestionDetail = this.props.state.qrdetailList
+        let MaxKey = 0
+        let QuestionDetail = this.props.state.qrdetailList;
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
@@ -223,7 +213,34 @@ class wrongTop extends React.Component {
                 position:'relative'
             }}
             ref='warpper'
-            onScroll={this.onScrollHandle}
+            onScroll={(e)=>{
+                if(hei-200 < e.target.scrollTop+e.target.clientHeight){
+                    if(this.state.next ){
+                        let page = this.state.page;
+                        let classId = this.props.state.classId;
+                        let subId = this.props.state.subId;
+                        let year = this.props.state.years;
+                        page++
+                        this.setState({next:false,page:page})
+                        let data ={
+                            classId:classId,
+                            year:year,
+                            subjectId:subId,
+                            info:0,
+                            pageNum:page,
+                            pageSize:50,
+                    }          
+                        this.props.dispatch({
+                            type: 'report/queryQrDetail1',
+                            payload:data
+                        });
+                        let This =this
+                        setTimeout(function (){
+                            This.setState({next:true})
+                        },1000)
+                    }
+                }
+            }}
             >
 			<div style={{height:'50px',lineHeight:'50px'}}>
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
@@ -291,11 +308,15 @@ class wrongTop extends React.Component {
                                 message.warning('请选择题目到错题篮')
                             }
                         }}>
-                    <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
+                        <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
                     下载组卷({this.props.state.classDown.length})
                     </Button>
 				</div>
-					{this.props.state.qrdetailList.data?this.quesList():''}
+                    {this.props.state.qrdetailList.data?this.quesList():
+                    <div>
+                        {/* <img src={require('../../images/wsj-n.png')}></img> */}
+                    </div>
+                    }
 				
 				<Modal
                     visible={this.state.visible}
@@ -370,7 +391,9 @@ class wrongTop extends React.Component {
 					classId:classId,
 					year:year,
 					subjectId:this.props.state.subId,
-					info:0,
+                    info:0,
+                    pageNum:1,
+                    pageSize:50,
 			}
 			this.props.dispatch({
 				type: 'report/queryQrDetail',

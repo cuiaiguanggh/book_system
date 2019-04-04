@@ -11,8 +11,8 @@ function queryHomeworkList(payload){
         data:payload
     });
 }
-function queryUserScoreDetail(payload){
-    return request(dataCenter('/web/report/queryUserScoreDetail'),{
+function queryHomeworkScoreDetail(payload){
+    return request(dataCenter('/web/report/queryHomeworkScoreDetail'),{
         data:payload
     });
 }
@@ -26,11 +26,17 @@ function getQuestionDoxc(payload){
         data:payload
     });
 }
+function queryQrStudentCount(payload){
+    return request(dataCenter('/web/report/queryQrStudentCount'),{
+        data:payload
+    });
+}
 
 export {
     queryQrDetail,
     queryHomeworkList,
-    queryUserScoreDetail,
+    queryHomeworkScoreDetail,
     queryQuestionDetail,
-    getQuestionDoxc
+    getQuestionDoxc,
+    queryQrStudentCount
 };

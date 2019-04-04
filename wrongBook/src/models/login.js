@@ -67,13 +67,12 @@ export default {
 							pathname: '/school',
 							hash:'page=1'
 						}))
-					}else {
-					// if(rodeType ===20){
-					// 	yield put(routerRedux.push({
-					// 		pathname: '/schoolNew s',
-					// 	}))
-					// }else 
-					// if(rodeType ===30 || rodeType ===20){
+					}else if(rodeType ===20){
+						yield put(routerRedux.push({
+							pathname: '/grade',
+							hash:'page=1'
+						}))
+					}else if(rodeType ===30 || rodeType ===20){
 						yield put(routerRedux.push({
 							pathname: '/classReport',
 						}))

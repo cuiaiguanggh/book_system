@@ -26,22 +26,19 @@ class StuReport extends React.Component {
 			wordUrl:'',
 			visible:false,
 			Img:'',
+			page:1,
+			next:true,
 		}
 	}
 	
 	handleScroll(e){
         const { clientHeight} = this.refDom;
-        hei = clientHeight;
-    }
-    
-    onScrollHandle(e) {
-        console.log(e.target.scrollTop,hei,e.target.clientHeight)
+		hei = clientHeight;
     }
 	menulist() {
-		let  detail = this.props.state.qrdetailList.data.userCountList;
-		if(this.props.state.qrdetailList.data.userCountList.length > 0){
-
-			let current = this.props.state.stuName== '' ? detail[0].userId:this.props.state.stuName
+		let  studentList = this.props.state.studentList;
+		if(studentList.data.length > 0){
+			let current = this.props.state.stuName== '' ? studentList.data[0].userId:this.props.state.stuName
 			return (
 				<Menu 
 				// theme="dark" 
@@ -60,7 +57,7 @@ class StuReport extends React.Component {
 						info:0
 					}
 					this.props.dispatch({
-						type: 'report/queryQrDetail1',
+						type: 'report/userQRdetail',
 						payload:data
 					});
 					this.props.dispatch({
@@ -78,7 +75,7 @@ class StuReport extends React.Component {
 				}}
 			>
 				{
-					detail.map((item,i)=>(
+					studentList.data.map((item,i)=>(
 						<Menu.Item key={item.userId}style={{cursor:'pointer'}}>
 							<div key={i} style={{overflow:'hidden'}}>
 								<span style={{float:'left'}}>{item.userName}</span>
@@ -93,7 +90,6 @@ class StuReport extends React.Component {
 	}
 	questions() {
 		let  detail = this.props.state.qrdetailList1.data.questionList;
-		
 		if(detail.length >0){
 			return(
 				<div className={style.outBody}
@@ -163,6 +159,7 @@ class StuReport extends React.Component {
 	}
 	render() {
 		let mounthList = this.props.state.mounthList;
+		let studentList = this.props.state.studentList;
 		let  detail = this.props.state.qrdetailList1;
 		return (
             <Content style={{
@@ -172,12 +169,11 @@ class StuReport extends React.Component {
                 position:'relative'
             }}
             ref='warpper'
-            onScroll={this.onScrollHandle}
             >
 				<div className={style.layout}>
 					<iframe style={{display:'none'}} src={this.state.wordUrl}/>
 					<div style={{height:'50px',lineHeight:'50px'}}>
-						<div style={{padding:'0 20px'}}>
+						<div style={{padding:'0 20px',background:"#fff",borderBottom:'1px solid #ccc'}}>
 							<span>时间：</span>
 								<span key={0} className={0 == this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
 									this.props.dispatch({
@@ -240,7 +236,7 @@ class StuReport extends React.Component {
 										message.warning('请选择题目到错题篮')
 									}
 								}}>
-                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
 						</div>
@@ -249,10 +245,40 @@ class StuReport extends React.Component {
 						<Sider  className={style.sider}>
 							
 								{
-									detail.data? this.menulist():''
+									studentList.data? this.menulist():''
 								}
 						</Sider>
-						<Content className={style.content}>
+						<Content className={style.content}
+						ref='warpper'
+						onScroll={(e)=>{
+							if(hei-200 < e.target.scrollTop+e.target.clientHeight){
+								if(this.state.next ){
+									let page = this.state.page;
+									let classId = this.props.state.classId;
+									let subId = this.props.state.subId;
+									let year = this.props.state.years;
+									page++
+									this.setState({next:false,page:page})
+									let data ={
+										classId:classId,
+										year:year,
+										subjectId:subId,
+										info:0,
+										pageNum:page,
+										pageSize:50,
+										userId:this.props.state.userId
+								}          
+									this.props.dispatch({
+										type: 'report/userQRdetail1',
+										payload:data
+									});
+									let This =this
+									setTimeout(function (){
+										This.setState({next:true})
+									},1000)
+								}
+							}
+						}}>
 							{
 									detail.data? this.questions():''
 								}
@@ -291,13 +317,12 @@ class StuReport extends React.Component {
 					classId:classId,
 					year:year,
 					subjectId:this.props.state.subId,
-					info:0,
-					userId:this.props.state.userId
 			}
 			this.props.dispatch({
-				type: 'report/queryQrDetail1',
+				type: 'report/queryQrStudentCount',
 				payload:data
 			});
+			
 		}
 	}
 }

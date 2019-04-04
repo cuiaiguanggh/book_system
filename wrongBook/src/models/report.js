@@ -1,8 +1,8 @@
 import {
 	queryQrDetail,
 	queryHomeworkList,
-	queryUserScoreDetail,
-	queryQuestionDetail,
+	queryHomeworkScoreDetail,
+	queryQrStudentCount,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -23,13 +23,22 @@ export default {
 		userId:'',
 		page:1,
 		page1:1,
+		classNext:0,
+		studentList:[],
+		
 	},
 	reducers: {
 		qrdetailList(state, {payload}) {
 			return { ...state, qrdetailList:payload };
 		},
 		qrdetailList1(state, {payload}) {
-			return { ...state, qrdetailList1:payload };
+			let list = state.qrdetailList;
+			if(payload.data.questionList.length > 0 ) {
+				for(let i = 0 ; i < payload.data.questionList.length ; i ++ ) {
+					list.data.questionList.push(payload.data.questionList[i])
+				}
+			}
+			return { ...state, qrdetailList:list };
 		},
 		changeMouth(state, {payload}) {
 			return { ...state, mouNow:payload };
@@ -59,15 +68,33 @@ export default {
 		page1(state, {payload}) {
 			return { ...state, page1:payload };
 		},
+		classNext(state, {payload}) {
+			return { ...state, classNext:payload };
+		},
+		studentList(state, {payload}) {
+			return { ...state, studentList:payload };
+		},
+		qrStudentDetailList(state, {payload}) {
+			return { ...state, qrdetailList1:payload };
+		},
+		qrStudentDetailList1(state, {payload}) {
+			let list = state.qrdetailList1;
+			if(payload.data.questionList.length > 0 ) {
+				for(let i = 0 ; i < payload.data.questionList.length ; i ++ ) {
+					list.data.questionList.push(payload.data.questionList[i])
+				}
+			}
+			return { ...state, qrdetailList1:list };
+		},
 	},
 	subscriptions: {
-	  setup({ dispatch, history }) {  // eslint-disable-line
+	  setup({ dispatch, history }) { 
 	  },
 	},
   
 	effects: {
 		*queryQrDetail({payload},{put,select}) {
-			let {userId,mouNow} = yield select(state => state.report)
+			let {mouNow} = yield select(state => state.report)
 			if(mouNow != 0){
 				payload.month = mouNow.v
 			}
@@ -78,32 +105,87 @@ export default {
 					type: 'qrdetailList',
 					payload:res.data
 				})
-				if(res.data.data.userCountList.length > 0) {
-					let id = userId;
-					if(userId == ''){
-						yield put ({
-							type: 'userId',
-							payload:res.data.data.userCountList[0].userId
-						})
-						id = res.data.data.userCountList[0].userId
-					}
-					yield put ({
-						type: 'queryQrDetail1',
-						payload:{
-							classId:payload.classId,
-							year:payload.year,
-							subjectId:payload.subjectId,
-							userId:id,
-							info:0
-						}
-					})
-				}else{
-					yield put ({
-						type: 'qrdetailList1',
-						payload:[]
-					})
-				}
 				
+				
+			}
+			else{
+				message.error(res.data.msg)
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
+
+			}
+		},
+		*queryQrStudentCount({payload},{put,select}) {
+			let {mouNow} = yield select(state => state.report)
+			if(mouNow != 0){
+				payload.month = mouNow.v
+			}
+			//查询班级学生列表
+			let res = yield queryQrStudentCount(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'studentList',
+					payload:res.data
+				})
+				let data = {
+					classId:payload.classId,
+					year:payload.year,
+					subjectId:payload.subjectId,
+					info:0,
+					page:1,
+					pageSize:50,
+					userId:res.data.data[0].userId
+				}
+				if(mouNow != 0){
+					data.month = mouNow.v
+				}
+				yield put ({
+					type: 'userId',
+					payload:res.data.data[0].userId
+				})
+				yield put ({
+					type: 'userQRdetail',
+					payload:data
+				})
+				
+			}
+			else{
+				message.error(res.data.msg)
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
+
+			}
+		},
+		*userQRdetail({payload},{put,select}) {
+			//查询学生作业列表
+			let res = yield queryQrDetail(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'qrStudentDetailList',
+					payload:res.data
+				})
+			}
+			else{
+				message.error(res.data.msg)
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}
+
+			}
+		},
+		*userQRdetail1({payload},{put,select}) {
+			//查询学生作业列表
+			let res = yield queryQrDetail(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'qrStudentDetailList1',
+					payload:res.data
+				})
 			}
 			else{
 				message.error(res.data.msg)
@@ -115,21 +197,12 @@ export default {
 		},
 		*queryQrDetail1({payload},{put,select}) {
 			//账号科目列表
-			let {mouNow} = yield select(state => state.report)
-			console.log(mouNow)
-			if(mouNow != 0){
-				payload.month = mouNow.v
-			}
 			let res = yield queryQrDetail(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'qrdetailList1',
 					payload:res.data
 				})
-				
 			}
 			else{
 				message.error(res.data.msg)
@@ -158,13 +231,7 @@ export default {
 					})
 	
 					yield put ({
-						type: 'queryUserScoreDetail',
-						payload:{
-							homeworkId:res.data.data[0].homeworkId
-						}
-					})
-					yield put ({
-						type: 'queryQuestionDetail',
+						type: 'queryHomeworkScoreDetail',
 						payload:{
 							homeworkId:res.data.data[0].homeworkId
 						}
@@ -199,9 +266,9 @@ export default {
 
 			}
 		},
-		*queryUserScoreDetail({payload},{put,select}) {
-			//作业信息详情1
-			let res = yield queryUserScoreDetail(payload);
+		*queryHomeworkScoreDetail({payload},{put,select}) {
+			//作业信息详情
+			let res = yield queryHomeworkScoreDetail(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else
@@ -209,29 +276,6 @@ export default {
 
 				yield put ({
 					type: 'scoreDetail',
-					payload:res.data
-				})
-				
-				
-			}
-			else{
-				message.error(res.data.msg)
-				if(res.data.msg == '无效TOKEN!'){
-					yield put(routerRedux.push('/login'))
-				}
-
-			}
-		},
-		*queryQuestionDetail({payload},{put,select}) {
-			//作业信息详情2
-			let res = yield queryQuestionDetail(payload);
-			if(res.hasOwnProperty("err")){
-				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
-
-				yield put ({
-					type: 'questionDetail',
 					payload:res.data
 				})
 				
