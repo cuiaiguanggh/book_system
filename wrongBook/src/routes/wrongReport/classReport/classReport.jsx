@@ -206,179 +206,120 @@ class wrongTop extends React.Component {
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
 		return (
-            <Content style={{
-                background: '#fff', 
-                minHeight: 280,
-                overflow:'auto',
-                position:'relative'
-            }}
-            ref='warpper'
-            onScroll={(e)=>{
-                if(hei-200 < e.target.scrollTop+e.target.clientHeight){
-                    if(this.state.next ){
-                        let page = this.state.page;
-                        let classId = this.props.state.classId;
-                        let subId = this.props.state.subId;
-                        let year = this.props.state.years;
-                        page++
-                        this.setState({next:false,page:page})
-                        let data ={
-                            classId:classId,
-                            year:year,
-                            subjectId:subId,
-                            info:0,
-                            pageNum:page,
-                            pageSize:50,
-                    }          
-                        this.props.dispatch({
-                            type: 'report/queryQrDetail1',
-                            payload:data
-                        });
-                        let This =this
-                        setTimeout(function (){
-                            This.setState({next:true})
-                        },1000)
-                    }
-                }
-            }}
-            >
-			<div style={{height:'50px',lineHeight:'50px'}}>
-				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
-				<div style={{padding:'0 20px'}}>
-					<span>时间：</span>
-						<span key={0} className={0 ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
-							this.props.dispatch({
-								type: 'report/changeMouth',
-								payload:0
-							});
-							this.props.dispatch({
-								type: 'report/queryQrDetail',
-								payload:{
-									classId:this.props.state.classId,
-									year:this.props.state.years,
-									subjectId:this.props.state.subId,
-									info:0,
-								}
-							});
-						}}>全部</span>
-					{
-						mounthList.data ?
-						mounthList.data.map((item,i)=>(
-							<span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
-								this.props.dispatch({
-									type: 'report/changeMouth',
-									payload:item
-								});
-
-								this.props.dispatch({
-									type: 'report/queryQrDetail',
-									payload:{
-										classId:this.props.state.classId,
-										year:this.props.state.years,
-										subjectId:this.props.state.subId,
-										info:0,
-										month:item.v
-									}
-								});
-
-							}}>{item.k}</span>
-						))
-						:''
-                    }
-                    <Button 
-                        style={{background:'#67c23a',color:'#fff',position:'fixed',right:'20px',top:"73px",border:'none'}}
-                        loading={this.state.loading} 
-                        onClick={()=>{
-                            if(this.props.state.classDown.length!= 0){
-                                let load = !this.state.loading
-                                this.setState({loading:load})
-                                let This = this;
-                                if(!this.state.loading){
-                                    let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
-                                    // window.open(url,'_blank'); 
-                                    this.setState({wordUrl:url})
+            <Content style={{position:'relative'}}>
+                <Layout className={style.layout}>
+                    <Header className={style.layoutHead} >
+                        <span>时间：</span>
+                            <span key={0} className={0 ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
+                                this.props.dispatch({
+                                    type: 'report/changeMouth',
+                                    payload:0
+                                });
+                                this.props.dispatch({
+                                    type: 'report/queryQrDetail',
+                                    payload:{
+                                        classId:this.props.state.classId,
+                                        year:this.props.state.years,
+                                        subjectId:this.props.state.subId,
+                                        info:0,
+                                    }
+                                });
+                            }}>全部</span>
+                        {
+                            mounthList.data ?
+                            mounthList.data.map((item,i)=>(
+                                <span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
                                     this.props.dispatch({
-                                        type: 'down/delAllClass',
+                                        type: 'report/changeMouth',
+                                        payload:item
                                     });
-                                }
-                                setTimeout(function(){
-                                    This.setState({loading:!load,wordUrl:''})
-                                },10000)
-                            }else{
-                                message.warning('请选择题目到错题篮')
-                            }
-                        }}>
-                        <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
-                    下载组卷({this.props.state.classDown.length})
-                    </Button>
-				</div>
-                    {this.props.state.qrdetailList.data?this.quesList():
-                    <div>
-                        {/* <img src={require('../../images/wsj-n.png')}></img> */}
-                    </div>
-                    }
-				
-				<Modal
-                    visible={this.state.visible}
-                    width='1000px'
-                    className="showques"
-                    footer={null}
-                    onOk={()=>{
-                        this.setState({visible:false})
-                    }}
-                    onCancel={()=>{
-                        this.setState({visible:false})
-                    }}
-                >
-                    {this.props.state.qrdetailList.data?this.showQuestion():''}
-                    <Icon 
-                        className={style.icLeft}
-                        onClick={()=>{
-                            if(key == 0){
-                                message.warning('已是第一题')
-                            }else{
-                                this.setState({showAns:''})
-                                let w = document.getElementsByClassName('wrongNum');
-                                for(let j = 0;j<w.length;j++){
-                                    w[j].className='wrongNum'
-                                }
-                                w[0].className='wrongNum wrongNumOn'
-                                for(let i=0;i< QuestionDetail.data.questionList[key-1].userAnswerList.length;i++){
-                                    if(QuestionDetail.data.questionList[key-1].userAnswerList[i].result !=1 ){
-                                        this.setState({key:key-1,
-                                            showAns:QuestionDetail.data.questionList[key-1].userAnswerList[i].answer})
-                                        
-                                        return
+
+                                    this.props.dispatch({
+                                        type: 'report/queryQrDetail',
+                                        payload:{
+                                            classId:this.props.state.classId,
+                                            year:this.props.state.years,
+                                            subjectId:this.props.state.subId,
+                                            info:0,
+                                            month:item.v
+                                        }
+                                    });
+
+                                }}>{item.k}</span>
+                            ))
+                            :''
+                        }
+                        <Button 
+                            style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
+                            loading={this.state.loading} 
+                            onClick={()=>{
+                                if(this.props.state.classDown.length!= 0){
+                                    let load = !this.state.loading
+                                    this.setState({loading:load})
+                                    let This = this;
+                                    if(!this.state.loading){
+                                        let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
+                                        // window.open(url,'_blank'); 
+                                        this.setState({wordUrl:url})
+                                        this.props.dispatch({
+                                            type: 'down/delAllClass',
+                                        });
                                     }
+                                    setTimeout(function(){
+                                        This.setState({loading:!load,wordUrl:''})
+                                    },10000)
+                                }else{
+                                    message.warning('请选择题目到错题篮')
+                                }
+                            }}>
+                            <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                        下载组卷({this.props.state.classDown.length})
+                        </Button>
+                    </Header>
+                    <Content style={{background:'#fff',overflow:'auto',position:'relative'}}
+                        ref='warpper'
+                        onScroll={(e)=>{
+                            if(hei-200 < e.target.scrollTop+e.target.clientHeight){
+                                if(this.state.next ){
+                                    let page = this.state.page;
+                                    let classId = this.props.state.classId;
+                                    let subId = this.props.state.subId;
+                                    let year = this.props.state.years;
+                                    page++
+                                    this.setState({next:false,page:page})
+                                    let data ={
+                                        classId:classId,
+                                        year:year,
+                                        subjectId:subId,
+                                        info:0,
+                                        pageNum:page,
+                                        pageSize:50,
+                                }          
+                                    this.props.dispatch({
+                                        type: 'report/queryQrDetail1',
+                                        payload:data
+                                    });
+                                    let This =this
+                                    setTimeout(function (){
+                                        This.setState({next:true})
+                                    },1000)
                                 }
                             }
                         }}
-                        type="left" />
-                    <Icon
-                        className={style.icRight}
-                        onClick={()=>{
-                            if(key == MaxKey){
-                                message.warning('已是最后一题')
-                            }else{
-                                let w = document.getElementsByClassName('wrongNum');
-                                for(let j = 0;j<w.length;j++){
-                                    w[j].className='wrongNum'
-                                }
-								w[0].className='wrongNum wrongNumOn'
-								
-                                for(let i=0;i< QuestionDetail.data.questionList[key+1].userAnswerList.length;i++){
-                                    if(QuestionDetail.data.questionList[key+1*1].userAnswerList[i].result !=1 ){
-                                        this.setState({key:key+1*1,
-                                            showAns:QuestionDetail.data.questionList[key+1].userAnswerList[i].answer})
-                                        return
-                                    }
-                                }
-                            }
-                        }}
-                        type="right" />
-                </Modal>
-			</div>
+                    >
+                        {
+                            this.props.state.qrdetailList.data && this.props.state.qrdetailList.data.questionList.length != 0?
+                            this.quesList():
+                            <div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)'}}>
+                                <img src={require('../../images/wsj-n.png')}></img>
+                                <span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
+                            </div>
+                        }
+                    </Content>
+                </Layout>
             </Content>
+
+            
 		);
 	  }
 	componentDidMount(){

@@ -82,7 +82,7 @@ class EditableTable extends React.Component {
 						this.props.dispatch(
 							routerRedux.push({
 								pathname: '/classInfo',
-								hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
 					}}>
@@ -104,7 +104,7 @@ class EditableTable extends React.Component {
 						this.props.dispatch(
 							routerRedux.push({
 								pathname: '/classInfo',
-								hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
 					}}>
@@ -119,13 +119,14 @@ class EditableTable extends React.Component {
 			key:'stuNum',
 			// width: '15%',
 			render: (text, record) => {
+				console.log(record)
 				return (
 					<div style={{cursor:'pointer'}} onClick={()=>{
 						store.set('wrong_hash', this.props.location.hash)
 						this.props.dispatch(
 							routerRedux.push({
 								pathname: '/classInfo',
-								hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
 					}}>
@@ -146,7 +147,7 @@ class EditableTable extends React.Component {
 						this.props.dispatch(
 							routerRedux.push({
 								pathname: '/classInfo',
-								hash:`sId=${this.props.state.schoolId}&id=${record.key}`
+								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
 					}}>

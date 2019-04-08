@@ -343,7 +343,7 @@ class HomePageLeft extends Component {
 							<WrongTop type={this.props.location}/>
 						</Header>:''
 					}
-					{this.props.children}
+						{this.props.children}
 				</Layout>
 			</Layout>
 		)
