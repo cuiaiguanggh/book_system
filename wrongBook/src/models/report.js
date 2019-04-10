@@ -62,7 +62,6 @@ export default {
 			return { ...state, userId:payload };
 		},
 		page(state, {payload}) {
-			console.log(1)
 			return { ...state, page:payload };
 		},
 		page1(state, {payload}) {

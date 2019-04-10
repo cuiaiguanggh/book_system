@@ -36,7 +36,6 @@ class ClassReport extends React.Component {
     }
     
     onScrollHandle(e) {
-        console.log(e.target.scrollTop,hei,e.target.clientHeight)
     }
     getGrade() {
 			const rodeType = store.get('wrongBookNews').rodeType;
@@ -184,7 +183,6 @@ class ClassReport extends React.Component {
 									<span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{won}</span>人</span>
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}} onClick={()=>{
-										// this.setState({visible:true,key:i,showAns:ans[0]})
 										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
 										}
@@ -248,9 +246,9 @@ class ClassReport extends React.Component {
 		}
 	}
 	showQuestion(){
-		let QuestionDetail = this.props.state.questionDetail;
+		let QuestionDetail = this.props.state.scoreDetail;
         let key = this.state.key;
-        let question = QuestionDetail.data.qsList[key]
+        let question = QuestionDetail.data.questionScoreList[key]
         let trueNum = [];
         let wrongNum = [];
 		let wrongQues = []
@@ -392,9 +390,9 @@ class ClassReport extends React.Component {
 		}
 		let key = this.state.key;
 		let MaxKey = 0;
-		let QuestionDetail = this.props.state.questionDetail
+		let QuestionDetail = this.props.state.scoreDetail
         if(QuestionDetail.data){
-            MaxKey = QuestionDetail.data.qsList.length-1;
+            MaxKey = QuestionDetail.data.questionScoreList.length-1;
 		}
 		let homeworkList = this.props.state.homeworkList
 		return (
@@ -425,71 +423,68 @@ class ClassReport extends React.Component {
 							}
 							{this.questions()}
 						</div>
-						<Modal
-							visible={this.state.visible}
-							width='1000px'
-							className="showques"
-							footer={null}
-							onOk={()=>{
-								this.setState({visible:false})
-							}}
-							onCancel={()=>{
-								this.setState({visible:false})
-							}}
-						>
-							{this.props.state.questionDetail.data &&  QuestionDetail.data.qsList.length >0?this.showQuestion():
-							<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)'}}>
-								<img src={require('../../images/wsj-n.png')}></img>
-								<span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
-							</div>}
-							<Icon 
-								className={style.icLeft}
-								onClick={()=>{
-									if(key == 0){
-										message.warning('已是第一题')
-									}else{
-										this.setState({showAns:''})
-										let w = document.getElementsByClassName('wrongNum');
-										for(let j = 0;j<w.length;j++){
-											w[j].className='wrongNum'
-										}
-										w[0].className='wrongNum wrongNumOn'
-										for(let i=0;i< QuestionDetail.data.qsList[key-1].userAnswerList.length;i++){
-											if(QuestionDetail.data.qsList[key-1].userAnswerList[i].result !=1 ){
-												this.setState({key:key-1,
-													showAns:QuestionDetail.data.qsList[key-1].userAnswerList[i].answer})
-												
-												return
-											}
-										}
-									}
-								}}
-								type="left" />
-							<Icon
-								className={style.icRight}
-								onClick={()=>{
-									if(key == MaxKey){
-										message.warning('已是最后一题')
-									}else{
-										let w = document.getElementsByClassName('wrongNum');
-										for(let j = 0;j<w.length;j++){
-											w[j].className='wrongNum'
-										}
-										w[0].className='wrongNum wrongNumOn'
-										
-										for(let i=0;i< QuestionDetail.data.qsList[key+1].userAnswerList.length;i++){
-											if(QuestionDetail.data.qsList[key+1*1].userAnswerList[i].result !=1 ){
-												this.setState({key:key+1*1,
-													showAns:QuestionDetail.data.qsList[key+1].userAnswerList[i].answer})
-												return
-											}
-										}
-									}
-								}}
-								type="right" />
-						</Modal>
 					</Content>
 				</Layout>
+				
+				<Modal
+                    visible={this.state.visible}
+                    width='1000px'
+                    className="showques"
+                    footer={null}
+                    onOk={()=>{
+                        this.setState({visible:false})
+                    }}
+                    onCancel={()=>{
+                        this.setState({visible:false})
+                    }}
+                >
+                    {this.props.state.scoreDetail.data &&  scoreDetail.data.questionScoreList.length >0?this.showQuestion():''}
+                    <Icon 
+                        className={style.icLeft}
+                        onClick={()=>{
+                            if(key == 0){
+                                message.warning('已是第一题')
+                            }else{
+                                this.setState({showAns:''})
+                                let w = document.getElementsByClassName('wrongNum');
+                                for(let j = 0;j<w.length;j++){
+                                    w[j].className='wrongNum'
+                                }
+                                w[0].className='wrongNum wrongNumOn'
+                                for(let i=0;i< QuestionDetail.data.questionScoreList[key-1].userAnswerList.length;i++){
+                                    if(QuestionDetail.data.qsList[key-1].userAnswerList[i].result !=1 ){
+                                        this.setState({key:key-1,
+                                            showAns:QuestionDetail.data.questionScoreList[key-1].userAnswerList[i].answer})
+                                        
+                                        return
+                                    }
+                                }
+                            }
+                        }}
+                        type="left" />
+                    <Icon
+                        className={style.icRight}
+                        onClick={()=>{
+                            if(key == MaxKey){
+                                message.warning('已是最后一题')
+                            }else{
+                                let w = document.getElementsByClassName('wrongNum');
+                                for(let j = 0;j<w.length;j++){
+                                    w[j].className='wrongNum'
+                                }
+								w[0].className='wrongNum wrongNumOn'
+								
+                                for(let i=0;i< QuestionDetail.data.qsList[key+1].userAnswerList.length;i++){
+                                    if(QuestionDetail.data.qsList[key+1*1].userAnswerList[i].result !=1 ){
+                                        this.setState({key:key+1*1,
+                                            showAns:QuestionDetail.data.qsList[key+1].userAnswerList[i].answer})
+                                        return
+                                    }
+                                }
+                            }
+                        }}
+                        type="right" />
+                </Modal>
 			</Content>
 		);
 	  }
@@ -516,11 +511,9 @@ class ClassReport extends React.Component {
             if (top && top < windowHeight) {
                 // 证明 wrapper 已经被滚动到暴露在页面可视范围之内了
 				// loadMoreFn()
-				console.log('1111')
             }
         }
         window.addEventListener('scroll', function () {
-			console.log(111)
         }.bind(this));
     }
 
