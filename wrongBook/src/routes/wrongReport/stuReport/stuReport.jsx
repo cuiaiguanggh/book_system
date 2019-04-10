@@ -78,7 +78,7 @@ class StuReport extends React.Component {
 					studentList.data.map((item,i)=>(
 						<Menu.Item key={item.userId} style={{cursor:'pointer'}} title={item.userName}>
 							<div key={i} style={{overflow:'hidden'}}>
-								<span style={{float:'left',width:"80%",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.userName}</span>
+								<span style={{float:'left',width:"70%",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.userName}</span>
 								<span style={{float:'right'}}>{item.wrongNum}道</span>
 							</div>
 						</Menu.Item>
@@ -238,21 +238,21 @@ class StuReport extends React.Component {
                         	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
-							<Button 
+							{/* <Button 
 								type="primary"
 								style={{float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
 								>
 							查看原图
-							</Button>
+							</Button> */}
 						</div>
 					</div>
 					<Layout className={style.innerOut}>
-						<Sider  className={style.sider}>
-							
-								{
-									studentList.data? this.menulist():''
-								}
-						</Sider>
+						{
+							studentList.data && studentList.data.length >0 ?
+							<Sider  className={style.sider}>
+								{this.menulist()}
+							</Sider>:''
+						}
 						<Content className={style.content}
 						ref='warpper'
 						onScroll={(e)=>{
@@ -286,7 +286,7 @@ class StuReport extends React.Component {
 						}}>
 							{
 									detail.data && detail.data.questionList.length != 0 ?  this.questions():
-									<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)'}}>
+									<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',width:'100%'}}>
 										<img src={require('../../images/wsj-n.png')}></img>
 										<span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
 									</div>

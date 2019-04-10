@@ -36,7 +36,6 @@ class ClassReport extends React.Component {
     }
     
     onScrollHandle(e) {
-        console.log(e.target.scrollTop,hei,e.target.clientHeight)
     }
     getGrade() {
 			const rodeType = store.get('wrongBookNews').rodeType;
@@ -53,19 +52,12 @@ class ClassReport extends React.Component {
 							value={name}
 							optionFilterProp="children"
 							onChange={(value)=>{
-								
 								this.props.dispatch({
 									type: 'report/homeworkName',
 									payload:value
 								});
 								this.props.dispatch({
-									type: 'report/queryUserScoreDetail',
-									payload:{
-										homeworkId:value
-									}
-								});
-								this.props.dispatch({
-									type: 'report/queryQuestionDetail',
+									type: 'report/queryHomeworkScoreDetail',
 									payload:{
 										homeworkId:value
 									}
@@ -184,7 +176,6 @@ class ClassReport extends React.Component {
 									<span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{won}</span>人</span>
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}} onClick={()=>{
-										// this.setState({visible:true,key:i,showAns:ans[0]})
 										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
 										}
@@ -308,6 +299,7 @@ class ClassReport extends React.Component {
 		)
 	}
 	render() {
+		console.log(this.state.visible)
 		let columns = [
 			{
 				title: <div style={{textAlign:'center'}}>姓名</div>,
@@ -438,7 +430,7 @@ class ClassReport extends React.Component {
 							}}
 						>
 							{this.props.state.questionDetail.data &&  QuestionDetail.data.qsList.length >0?this.showQuestion():
-							<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)'}}>
+							<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',width:'100%'}}>
 								<img src={require('../../images/wsj-n.png')}></img>
 								<span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
 							</div>}
@@ -516,11 +508,9 @@ class ClassReport extends React.Component {
             if (top && top < windowHeight) {
                 // 证明 wrapper 已经被滚动到暴露在页面可视范围之内了
 				// loadMoreFn()
-				console.log('1111')
             }
         }
         window.addEventListener('scroll', function () {
-			console.log(111)
         }.bind(this));
     }
 

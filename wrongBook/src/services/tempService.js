@@ -26,6 +26,11 @@ function getQrMonthList(payload){
         data:payload
     });
 }
+function systemTime(payload){
+    return request(dataCenter('/sys/config/systemTime'),{
+        data:payload
+    });
+}
 
 export {
     queryScoreDetail,
@@ -33,4 +38,5 @@ export {
     homeworkDetail,
     getUserSubjectList,
     getQrMonthList,
+    systemTime
 };

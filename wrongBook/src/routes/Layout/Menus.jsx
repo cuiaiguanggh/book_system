@@ -355,6 +355,10 @@ class HomePageLeft extends Component {
 		}
 
 		const {dispatch} = this.props;
+		
+		dispatch({
+			type: 'homePage/getYears',
+		})
 		if(!store.get('wrongBookNews')){
 			this.props.dispatch(
 				routerRedux.push({
@@ -375,9 +379,6 @@ class HomePageLeft extends Component {
 		});
 		dispatch({
 			type: 'homePage/functionList'
-		});
-		dispatch({
-			type: 'report/getUserSubjectList'
 		});
 		dispatch({
 			type: 'report/getUserSubjectList'

@@ -96,7 +96,6 @@ class EditableTable extends React.Component {
 			dataIndex:'teacherName',
 			key:'teacherName',
 			// width: '15%',
-			editable: true,
 			render: (text, record) => {
 				return (
 					<div style={{cursor:'pointer'}} onClick={()=>{
@@ -119,7 +118,6 @@ class EditableTable extends React.Component {
 			key:'stuNum',
 			// width: '15%',
 			render: (text, record) => {
-				console.log(record)
 				return (
 					<div style={{cursor:'pointer'}} onClick={()=>{
 						store.set('wrong_hash', this.props.location.hash)
@@ -159,6 +157,7 @@ class EditableTable extends React.Component {
 		{
 		title: '操作',
 		dataIndex: 'operation',
+		width: '200px',
 		render: (text, record) => {
 			const rodeType = store.get('wrongBookNews').rodeType
 			const editable = this.isEditing(record);
@@ -171,23 +170,23 @@ class EditableTable extends React.Component {
 						<span>
 						<EditableContext.Consumer>
 							{form => (
-							<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} 
+							<span style={{color:'#fff',cursor:'pointer',margin:'0 10px',padding:'5px 15px',background:'#85ce61',borderRadius:'5px'}} 
 							onClick={() => this.save(form, record.key)}
 							>保存</span>
 							)}
 						</EditableContext.Consumer>
-						<Popconfirm
-							title="Sure to cancel?"
-							onConfirm={() => this.cancel(record.key)}
-						>
-						<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} >取消</span>
-						</Popconfirm>
+						<span style={{color:'#fff',cursor:'pointer',margin:'0 10px',padding:'5px 15px',background:'#f56c6c',borderRadius:'5px'}} onClick={()=>{
+							this.cancel(record.key)
+						}} >取消</span>
 						</span>
 					) : (
 						<div>
-							<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} 
+							<span style={{color:'#fff',cursor:'pointer',margin:'0 10px',padding:'5px 15px',background:'#1890ff',borderRadius:'5px'}} 
 								onClick={() =>{
-									this.setState({classId:record.classId})
+									this.props.dispatch({
+										type: 'classHome/classId',
+										payload:record.classId
+									});
 									this.edit(record.key)}}
 							// onClick={()=>{
 							// 	this.setState({
@@ -202,10 +201,7 @@ class EditableTable extends React.Component {
 							// 		payload:data
 							// 	});
 								
-							// 	this.props.dispatch({
-							// 		type: 'classHome/classId',
-							// 		payload:record.key
-							// 	});
+								
 							// 	let data1 = {
 							// 		schoolId:store.get('wrongBookNews').schoolId,
 							// 		type:1
@@ -217,7 +213,7 @@ class EditableTable extends React.Component {
 							// }}
 							>编辑</span>
 							
-							<span style={{color:'#1890ff',cursor:'pointer',margin:'0 10px'}} onClick={()=>{
+							<span style={{color:'#fff',cursor:'pointer',margin:'0 10px',padding:'5px 15px',background:'#f56c6c',borderRadius:'5px'}} onClick={()=>{
 									let This = this;
 									confirm({
 										title: `确定删除${record.name}么?`,
@@ -261,20 +257,14 @@ class EditableTable extends React.Component {
       if (error) {
         return;
 			}
-			console.log(row)
-      const newData = [...this.state.data];
-      const index = newData.findIndex(item => key === item.key);
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        this.setState({ data: newData, editingKey: '' });
-      } else {
-        newData.push(row);
-        this.setState({ data: newData, editingKey: '' });
-      }
+			this.props.dispatch({
+				type: 'classHome/className',
+				payload:row.name
+			});
+			this.props.dispatch({
+				type: 'classHome/updateClass',
+			});
+			this.setState({ editingKey: '' });
     });
   }
 
@@ -298,7 +288,6 @@ class EditableTable extends React.Component {
 						optionFilterProp="children"
 						placeholder='请选择学校'
 						onChange={(value,e)=>{
-							console.log(e.props.children)
 							this.props.dispatch(
 								routerRedux.push({
 									pathname: '/grade',
@@ -329,7 +318,7 @@ class EditableTable extends React.Component {
 			
 		}else{
 			return(
-				<span style={{marginRight:'10px'}}>班级列表</span>
+				<span style={{marginRight:'10px',fontWeight:'bold'}}>搜索班级</span>
 			)
 		}		
 	}
@@ -429,7 +418,6 @@ class EditableTable extends React.Component {
 		  <div className={style.gradeboder} >
 			  <div className={style.gradeTop}>
 				  {this.chooseSchool()}
-				  <span>共{total}个班级</span>
 				  {
 					  rodeType <= 20 ?
 					  <div className={style.addGrade} onClick={()=>{
@@ -451,7 +439,7 @@ class EditableTable extends React.Component {
 				  }
 					  
 				  <Search
-					  style={{float:'right',width:'300px',marginRight:'10px'}}
+					  style={{width:'300px',marginRight:'10px'}}
 					  placeholder="班级名称"
 					  enterButton="搜索"
 					  onSearch={value => {

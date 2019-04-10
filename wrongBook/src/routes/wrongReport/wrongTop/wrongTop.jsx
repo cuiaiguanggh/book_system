@@ -29,21 +29,15 @@ class ClassReport extends React.Component {
 						optionFilterProp="children"
 						onChange={(value)=>{
 								this.props.dispatch({
+									type: 'temp/classId',
+									payload:value
+								});
+								this.props.dispatch({
 									type: 'temp/getUserSubjectList',
 									payload:{
 										value:value,
 										type:1
 									}
-								});
-								this.props.dispatch({
-									type: 'report/queryHomeworkList',
-									payload:{
-										classId:value
-									}
-								});
-								this.props.dispatch({
-									type: 'temp/classId',
-									payload:value
 								});
 						}}
 						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -84,7 +78,16 @@ class ClassReport extends React.Component {
 									type: 'temp/subId',
 									payload:value
 								});
-
+								
+								this.props.dispatch({
+									type: 'report/queryQrStudentCount',
+									payload:{
+										classId:this.props.state.classId,
+										year:this.props.state.years,
+										subjectId:value
+									}
+								});
+								
 								this.props.dispatch({
 									type: 'report/queryHomeworkList',
 									payload:{
@@ -103,6 +106,7 @@ class ClassReport extends React.Component {
 				</Select>
 				)
 			}else{
+
 			}
 			}
 	render() {

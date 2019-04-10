@@ -109,9 +109,12 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
@@ -131,32 +134,46 @@ export default {
 					type: 'studentList',
 					payload:res.data
 				})
-				let data = {
-					classId:payload.classId,
-					year:payload.year,
-					subjectId:payload.subjectId,
-					info:0,
-					page:1,
-					pageSize:50,
-					userId:res.data.data[0].userId
+				if(res.data.data.length > 0 ) {
+					let data = {
+						classId:payload.classId,
+						year:payload.year,
+						subjectId:payload.subjectId,
+						info:0,
+						page:1,
+						pageSize:50,
+						userId:res.data.data[0].userId
+					}
+					if(mouNow != 0){
+						data.month = mouNow.v
+					}
+					yield put ({
+						type: 'userId',
+						payload:res.data.data[0].userId
+					})
+					yield put ({
+						type: 'userQRdetail',
+						payload:data
+					})
+				}else{
+					yield put ({
+						type: 'userId',
+						payload:''
+					})
+					yield put ({
+						type: 'qrStudentDetailList',
+						payload:[]
+					})
 				}
-				if(mouNow != 0){
-					data.month = mouNow.v
-				}
-				yield put ({
-					type: 'userId',
-					payload:res.data.data[0].userId
-				})
-				yield put ({
-					type: 'userQRdetail',
-					payload:data
-				})
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
@@ -171,9 +188,12 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
@@ -188,9 +208,12 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
@@ -205,9 +228,12 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
@@ -259,9 +285,12 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
@@ -282,9 +311,12 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}

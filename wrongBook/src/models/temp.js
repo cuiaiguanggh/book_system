@@ -4,17 +4,11 @@ import {
 	homeworkDetail,
 	getUserSubjectList,
 	getQrMonthList,
+	systemTime
 } from '../services/tempService';
 import {
 	pageClass,
-	classInfo,
-	teacherList,
-	updateClass,
-	deleteClass,
-	addClass,
-	queryHomeworkList,
 	getClassList,
-	getYears,
 } from '../services/classHomeService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -78,6 +72,18 @@ export default {
 	},
   
 	effects: {
+		*getYears({payload}, {put, select}) {
+			// 班级列表
+			let res = yield systemTime(payload);
+			if(res.data && res.data.result === 0){
+				
+				console.log(res.data)
+				// yield put ({
+				// 	type: 'years',
+				// 	payload:res.data
+				// })
+			}
+		},
 		*pageClass({payload}, {put, select}) {
 			// 班级列表
 			yield put ({
@@ -109,14 +115,16 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
-
+		
 		*getClassList({payload}, {put, select}) {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
@@ -135,20 +143,24 @@ export default {
 						payload:res.data
 					})
 	
-					
-					
+					yield put ({
+						type: 'subId',
+						payload:res.data.data[0].classId
+					})
 					yield put ({
 						type: 'getUserSubjectList',
-						payload:res.data.data[0].classId
 					})
 				}
 
 				
 				
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -159,9 +171,9 @@ export default {
 
 		*getUserSubjectList({payload}, {put, select}) {
 			// 返回教师所在班级科目
-			let {years} = yield select(state => state.temp)
+			let {years,classId} = yield select(state => state.temp)
 			let data={
-				classId:payload,
+				classId:classId,
 				year:years
 			}
 			let res = yield getUserSubjectList(data);
@@ -182,7 +194,7 @@ export default {
 					yield put ({
 						type:'report/queryQrStudentCount',
 						payload:{
-							classId:payload,
+							classId:classId,
 							year:years,
 							subjectId:res.data.data[0].v
 						}
@@ -190,7 +202,7 @@ export default {
 					yield put ({
 						type: 'report/queryQrDetail',
 						payload:{
-							classId:payload,
+							classId:classId,
 							year:years,
 							subjectId:res.data.data[0].v,
 							info:0,
@@ -201,7 +213,7 @@ export default {
 					yield put ({
 						type: 'getQrMonthList',
 						payload:{
-							classId:payload,
+							classId:classId,
 							year:years,
 							subjectId:res.data.data[0].v
 						}
@@ -209,16 +221,19 @@ export default {
 					yield put ({
 						type: 'report/queryHomeworkList',
 						payload:{
-							classId:payload,
+							classId:classId,
 							subjectId:res.data.data[0].v
 						}
 					})
 				}
 				
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -233,9 +248,12 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -251,9 +269,12 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 		},
@@ -272,9 +293,12 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 		},

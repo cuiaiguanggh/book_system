@@ -1,0 +1,158 @@
+.layout{
+    background:#fff;
+    overflow: hidden;
+    position: absolute;
+    top:0;
+    bottom:0px;
+    width: 100%;
+    padding:20px;
+
+    .innerOut{
+        background:#fff;
+        position: absolute;
+        top:20px;
+        bottom:20px;
+        // width: 100%;
+        left:20px;
+        right:20px;
+        border:1px solid #ebeef5;
+    }
+    .sider{
+        background:#fff;
+        box-shadow: 0 1px 3px #1a1a1a1a;
+        overflow: hidden;
+        position: relative;
+
+        .leftInfo{
+            position: absolute;
+            top:0;
+            bottom:0;
+            width:100%;
+        }
+        .menu{
+            position: absolute;
+            top:50px;
+            bottom:0;
+            width:200px;
+            overflow: auto;
+            overflow-x: hidden;
+        }
+    }
+    .content{
+        width:100%;
+        background:#fff;
+
+        .questionBody{
+            width:450px;
+            border:1px solid #ebeef5;
+            margin:10px;
+            float:left;
+    
+            .questionTop{
+                background:#f5f7fa;
+                padding:0px 10px;
+                height:40px;
+                line-height: 40px;
+            }
+        }
+    }
+}
+.outBody{
+    overflow: hidden;
+}
+:global(.choseMonth){
+    padding:1px 10px;
+    margin:5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+:global(.choseMonthOn){
+    padding:1px 10px;
+    margin:5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    background:#1890ff;
+    color:#fff;
+}
+:global(.choseMonth):hover{
+    background:#1890ff;
+    color:#fff;
+}
+:global(.down){
+    float: right;
+    background:#1890ff;
+    line-height: 30px;
+    color:#ffff;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    height: 32px;
+}
+:global(.ndown){
+    float: right;
+    background:#b8c3d1;
+    line-height: 30px;
+    color:#ffff;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    height: 32px;
+}
+/* 定义滚动条 */
+.menu::-webkit-scrollbar
+{  
+    width: 30px;  
+    height: 16px;  
+    /* background-color: rgb(98,98,98); */ 
+    background-color: rgba(0,0,0,0.2);
+} 
+.menu::-webkit-scrollbar{
+    width: 10px;
+    height: 11px;
+    background-color: rgba(0,0,0,0.2);  
+}
+.menu::-webkit-scrollbar:hover{
+    background-color: rgb(0,0,0);
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+.menu::-webkit-scrollbar-track
+{
+    border-radius: 0;
+    background-color: #FFF;
+}
+    
+/*定义滑块 内阴影+圆角*/
+.menu::-webkit-scrollbar-thumb
+{
+    border-radius: 8px;
+    background-color: rgba(0,0,0,0.2);
+}
+
+:global(.ant-modal-close){
+    right:-66px;
+    top:-50px;
+
+    :global(.ant-modal-close-icon){
+        color:#fff;
+        font-size:40px
+    }
+}

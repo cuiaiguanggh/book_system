@@ -72,7 +72,7 @@ export default {
 							pathname: '/grade',
 							hash:'page=1'
 						}))
-					}else if(rodeType ===30 || rodeType ===20){
+					}else if(rodeType ===30 || rodeType ===40){
 						yield put(routerRedux.push({
 							pathname: '/classReport',
 						}))

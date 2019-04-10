@@ -62,7 +62,6 @@ export default {
 			return { ...state, classInfoPayload:payload };
 		},
 		schoolList(state, {payload}) {
-			console.log(payload)
 			return { ...state, schoolList:payload };
 		},
 		schoolId(state, {payload}) {
@@ -184,9 +183,9 @@ export default {
 		},
 		*updateClass({payload}, {put, select}) {
 			// 修改班级信息
-			let {adminId,className,classNews,classInfoPayload,classListPayload} = yield select(state => state.classHome)
+			let {adminId,className,classNews,classInfoPayload,classId} = yield select(state => state.classHome)
 			let data = {
-				classId:classNews.data.classId,
+				classId:classId,
 				className:className,
 				adminId:adminId,
 			}

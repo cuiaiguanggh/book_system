@@ -299,55 +299,55 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
 					<div className={style.gradeboder} >
-					<Menu
-						onClick={(e)=>{
-							this.setState({current:e.key})
-							this.props.dispatch({
-								type: 'homePage/tealist',
-								payload:[]
-							});
-							if(e.key === 'teacher'){
+						<Menu
+							className={style.menu}
+							onClick={(e)=>{
+								this.setState({current:e.key})
 								this.props.dispatch({
-									type: 'homePage/memType',
-									payload:{
-										type:1
-									}
+									type: 'homePage/tealist',
+									payload:[]
 								});
-								this.props.dispatch({
-									type: 'homePage/teacherList',
-									payload:{
-										type:1
-									}
-								});
+								if(e.key === 'teacher'){
+									this.props.dispatch({
+										type: 'homePage/memType',
+										payload:{
+											type:1
+										}
+									});
+									this.props.dispatch({
+										type: 'homePage/teacherList',
+										payload:{
+											type:1
+										}
+									});
+									
+								}else {
+									this.props.dispatch({
+										type: 'homePage/memType',
+										payload:{
+											type:3
+										}
+									});
+									this.props.dispatch({
+										type: 'homePage/teacherList',
+										payload:{
+											type:3
+										}
+									});
+								}
 								
-							}else {
-								this.props.dispatch({
-									type: 'homePage/memType',
-									payload:{
-										type:3
-									}
-								});
-								this.props.dispatch({
-									type: 'homePage/teacherList',
-									payload:{
-										type:3
-									}
-								});
-							}
-							
-						}}
-						selectedKeys={[this.state.current]}
-						mode="horizontal"
-					>
-						<Menu.Item key="teacher">
-						教师
-						</Menu.Item>
-						<Menu.Item key="student" >
-						学生
-						</Menu.Item>
-					</Menu>
-					<div style={{overflow:'hidden',marginBottom:"5px",textAlign:'right'}}>
-							
+							}}
+							selectedKeys={[this.state.current]}
+							mode="horizontal"
+						>
+							<Menu.Item key="teacher" style={{width:'120px',textAlign:'center'}}>
+							教师
+							</Menu.Item>
+							<Menu.Item key="student" style={{width:'120px',textAlign:'center'}} >
+							学生
+							</Menu.Item>
+						</Menu>
+						<div style={{overflow:'hidden',marginBottom:"5px",textAlign:'left ',padding:'10px'}}>
 							<Search
 
 								placeholder="教师名称"
@@ -357,24 +357,26 @@ class HomeworkCenter extends React.Component {
 							/>
 							{
 								rodeType <= 20 && this.state.current === 'teacher' ?
-								<div className={style.addGrade} onClick={()=>{
+								<span className={style.addGrade} onClick={()=>{
 										this.setState({visible:true})
 										// Modal.warning({
 										// 	title: '添加教师功能暂未开放',
 										// });
-								}}>添加</div>:''
+								}}>添加</span>:''
 							}
 						</div>
-					<Table 
-						className={style.scoreDetTable}
-						dataSource={dataSource}
-						columns={columns}
-						pagination={true}
-						bordered={true}
-						components={components}
-						rowClassName="editable-row"
-					/>
-				</div>
+						<div className={style.table}>
+							<Table 
+								className={style.scoreDetTable}
+								dataSource={dataSource}
+								columns={columns}
+								pagination={true}
+								bordered={true}
+								components={components}
+								rowClassName="editable-row"
+							/>
+						</div>
+					</div>
 				</Content>
 				<Modal
 						title="添加教师"

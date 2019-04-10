@@ -34,6 +34,10 @@ const GradeAdmin = Loadable({
   loader: () => import('./routes/GradeAdmin/gradeAdmin'),
   loading: () => <List/>,
 });
+const ClassUser = Loadable({
+  loader: () => import('./routes/GradeAdmin/ClassUser/classUser'),
+  loading: () => <List/>,
+});
 const ClassAdmin = Loadable({
   loader: () => import('./routes/GradeAdmin/ClassAdmin/classAdmin'),
   loading: () => <List/>,
@@ -84,6 +88,7 @@ function RouterConfig({ history }) {
         <Route path="/studentDetail" component={StudentDetail} />
           <Home>
             <Route path="/grade" component={GradeAdmin} />
+            <Route path="/classUser" component={ClassUser} />
             <Route path="/class" component={ClassAdmin} />
             <Route path="/addclass" component={AddClass} />
             <Route path="/school" component={SchoolAdmin} />
