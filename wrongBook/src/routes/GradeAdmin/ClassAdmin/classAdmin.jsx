@@ -91,7 +91,6 @@ class HomeworkCenter extends React.Component {
 				</div>
 			)
 		},
-
 		{
 			title:'手机号',
 			dataIndex:'phone',
@@ -107,9 +106,23 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'班主任',
-			dataIndex:'OnwerTeacher',
-			key:'OnwerTeacher',
+			title:'学科',
+			dataIndex:'subJec',
+			key:'subJec',
+			editable: true,
+			render: (text, record) => (
+				<div
+				className='space'
+					onClick={() =>{
+					}}>
+					{text}
+				</div>
+			)
+		},
+		{
+			title:'错题量',
+			dataIndex:'wrongNum',
+			key:'wrongNum',
 			editable: true,
 			render: (text, record) => (
 				<div
@@ -137,24 +150,10 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'作业数量',
-			dataIndex:'workNum',
-			key:'workNum',
+			title:'错题量',
+			dataIndex:'wrongNum',
+			key:'wrongNum',
 			editable: false,
-			render: (text, record) => (
-				<div
-				className='space'
-					onClick={() =>{
-					}}>
-					{text}
-				</div>
-			)
-		},
-		{
-			title:'学号',
-			dataIndex:'stuNum',
-			key:'stuNum',
-			editable: true,
 			render: (text, record) => (
 				<div
 				className='space'
@@ -254,12 +253,23 @@ class HomeworkCenter extends React.Component {
 			for(let i = 0;i < pageHomeworkDetiles.data.length; i ++){
 				let p = {};
 				let det = pageHomeworkDetiles.data[i];
-				p["key"] = det.userId;
-				p["head"] = det.avatarUrl ? det.avatarUrl:'http://images.mizholdings.com/face/default/02.gif'
-				p["name"] = det.userName;
-				p['phone'] = det.phone
-				p['OnwerTeacher'] = det.admin ===1 ?'是':''
-				dataSource[i]=p;
+				if(state.showMen != '') {
+					if(det.userName.indexOf(state.showMen)>=0) {
+						p["key"] = det.userId;
+						p["head"] = det.avatarUrl ? det.avatarUrl:'http://images.mizholdings.com/face/default/02.gif'
+						p["name"] = det.userName;
+						p['phone'] = det.phone
+						p['OnwerTeacher'] = det.admin ===1 ?'是':''
+						dataSource[i]=p;
+					}
+				}else{
+					p["key"] = det.userId;
+					p["head"] = det.avatarUrl ? det.avatarUrl:'http://images.mizholdings.com/face/default/02.gif'
+					p["name"] = det.userName;
+					p['phone'] = det.phone
+					p['OnwerTeacher'] = det.admin ===1 ?'是':''
+					dataSource[i]=p;
+				}
 			}
 		}
 		
@@ -303,6 +313,11 @@ class HomeworkCenter extends React.Component {
 							className={style.menu}
 							onClick={(e)=>{
 								this.setState({current:e.key})
+								
+								this.props.dispatch({
+									type: 'homePage/showMen',
+									payload:''
+								});
 								this.props.dispatch({
 									type: 'homePage/tealist',
 									payload:[]
@@ -349,11 +364,16 @@ class HomeworkCenter extends React.Component {
 						</Menu>
 						<div style={{overflow:'hidden',marginBottom:"5px",textAlign:'left ',padding:'10px'}}>
 							<Search
-
-								placeholder="教师名称"
+								// value={this.props.state.showMen}
+								placeholder="姓名"
 								style={{width:'300px',marginRight:'10px'}}
 								enterButton="搜索"
-								onSearch={value => console.log(value)}
+								onSearch={value => {
+									this.props.dispatch({
+										type: 'homePage/showMen',
+										payload:value
+									});
+								}}
 							/>
 							{
 								rodeType <= 20 && this.state.current === 'teacher' ?

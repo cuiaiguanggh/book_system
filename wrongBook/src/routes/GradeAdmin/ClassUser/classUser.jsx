@@ -35,7 +35,45 @@ class StuReport extends React.Component {
 	handleScroll(e){
         const { clientHeight} = this.refDom;
 		hei = clientHeight;
-    }
+	}
+	
+	menuClick = (e) =>{
+        const {dispatch} = this.props;
+		let location = this.props.location.hash;
+		let hash = location.substr(location.indexOf("sId=")+4);
+		let id = location.substr(location.indexOf("&id=")+4);
+		let head = hash.split('&id=');
+		let link = `classUser#${head[0]}&id=`
+		let userNews = store.get('wrongBookNews')
+		if(e.key !== id){
+			if(userNews.rodeType === 10){
+
+				dispatch({
+					type: 'homePage/infoClass',
+					payload:e.key
+				});
+			}else{
+				let id = hash.substr(hash.indexOf("&id=")+4);
+				dispatch({
+					type: 'homePage/infoClass',
+					payload:e.key
+				});
+				
+			}
+			dispatch(
+				routerRedux.push({
+					pathname: '/classUser',
+					hash:`sId=${head[0]}&id=${e.key}`
+				})
+			)
+			dispatch({
+				type: 'homePage/teacherList',
+				payload:this.props.state.memType
+			});
+			
+		}
+		
+	}
 	menulist() {
         let userNews = store.get('wrongBookNews')
         let location = this.props.location.hash;
@@ -96,60 +134,6 @@ class StuReport extends React.Component {
                 </div>
             )
         }
-
-
-
-		// let  studentList = this.props.state.studentList;
-		// if(studentList.data.length > 0){
-		// 	let current = this.props.state.stuName== '' ? studentList.data[0].userId:this.props.state.stuName
-		// 	return (
-		// 		<Menu 
-		// 		// theme="dark" 
-		// 		mode="inline" 
-		// 		defaultSelectedKeys={[current]}
-		// 		onClick={(e)=>{
-		// 			this.props.dispatch({
-		// 				type: 'down/stuName',
-		// 				payload:e.key
-		// 			});
-		// 			let data ={
-		// 				classId:this.props.state.classId,
-		// 				year:this.props.state.years,
-		// 				subjectId:this.props.state.subId,
-		// 				userId:e.key,
-		// 				info:0
-		// 			}
-		// 			this.props.dispatch({
-		// 				type: 'report/userQRdetail',
-		// 				payload:data
-		// 			});
-		// 			this.props.dispatch({
-		// 				type: 'report/userId',
-		// 				payload:e.key
-		// 			});
-		// 			let dom = document.getElementsByClassName('down');
-		// 			for(let i = 0 ; i < dom.length ; i ++ ) {
-		// 				dom[i].innerHTML="加入错题篮";
-		// 				dom[i].className= 'down'
-		// 			}
-		// 			this.props.dispatch({
-		// 				type: 'down/delAllStu',
-		// 			});
-		// 		}}
-		// 	>
-		// 		{
-		// 			studentList.data.map((item,i)=>(
-		// 				<Menu.Item key={item.userId} style={{cursor:'pointer'}} title={item.userName}>
-		// 					<div key={i} style={{overflow:'hidden'}}>
-		// 						<span style={{float:'left',width:"70%",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.userName}</span>
-		// 						<span style={{float:'right'}}>{item.wrongNum}道</span>
-		// 					</div>
-		// 				</Menu.Item>
-		// 			))
-		// 		}
-		// 	</Menu>
-		// 	)
-		// }
 	}
 	questions() {
 		let  detail = this.props.state.qrdetailList1.data.questionList;

@@ -81,7 +81,7 @@ class EditableTable extends React.Component {
 						store.set('wrong_hash', this.props.location.hash)
 						this.props.dispatch(
 							routerRedux.push({
-								pathname: '/classInfo',
+								pathname: '/classUser',
 								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
@@ -102,7 +102,7 @@ class EditableTable extends React.Component {
 						store.set('wrong_hash', this.props.location.hash)
 						this.props.dispatch(
 							routerRedux.push({
-								pathname: '/classInfo',
+								pathname: '/classUser',
 								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
@@ -123,7 +123,7 @@ class EditableTable extends React.Component {
 						store.set('wrong_hash', this.props.location.hash)
 						this.props.dispatch(
 							routerRedux.push({
-								pathname: '/classInfo',
+								pathname: '/classUser',
 								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
@@ -144,7 +144,7 @@ class EditableTable extends React.Component {
 						store.set('wrong_hash', this.props.location.hash)
 						this.props.dispatch(
 							routerRedux.push({
-								pathname: '/classInfo',
+								pathname: '/classUser',
 								hash:`sId=${this.props.state.schoolId}&id=${record.classId}`
 								})
 						)
@@ -448,7 +448,7 @@ class EditableTable extends React.Component {
 							  pageSize:10,
 							  className:value,
 							  schoolId:this.props.state.schoolId
-						  }
+							}
 						  this.props.dispatch({
 							  type: 'classHome/pageClass',
 							  payload:data

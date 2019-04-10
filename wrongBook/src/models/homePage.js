@@ -45,6 +45,7 @@ export default {
 		memType:1,
 		sublist:[],
 		yearList:[],
+		showMen:'',
 	},
 	reducers: {
 		classNews(state, {payload}) {
@@ -115,6 +116,9 @@ export default {
 		},
 		yearList(state, {payload}) {
 			return { ...state, yearList:payload };
+		},
+		showMen(state, {payload}) {
+			return { ...state, showMen:payload}
 		},
 	},
 	subscriptions: {
