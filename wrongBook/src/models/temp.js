@@ -4,11 +4,17 @@ import {
 	homeworkDetail,
 	getUserSubjectList,
 	getQrMonthList,
-	systemTime
 } from '../services/tempService';
 import {
 	pageClass,
+	classInfo,
+	teacherList,
+	updateClass,
+	deleteClass,
+	addClass,
+	queryHomeworkList,
 	getClassList,
+	getYears,
 } from '../services/classHomeService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -60,7 +66,15 @@ export default {
 			return { ...state, years:payload };
 		},
 		subId(state, {payload}) {
-			return { ...state, subId:payload };
+			let subList = state.subList;
+			let subId = payload;
+			let subName = '';
+			for(let i = 0 ; i < subList.data.length ; i ++ ) {
+				if( subList.data[i].v == payload ){
+					subName = subList.data[i].k
+				}
+			}
+			return { ...state, ...{subId,subName} };
 		},
 		subName(state, {payload}) {
 			return { ...state, subName:payload };
@@ -72,18 +86,6 @@ export default {
 	},
   
 	effects: {
-		*getYears({payload}, {put, select}) {
-			// 班级列表
-			let res = yield systemTime(payload);
-			if(res.data && res.data.result === 0){
-				
-				console.log(res.data)
-				// yield put ({
-				// 	type: 'years',
-				// 	payload:res.data
-				// })
-			}
-		},
 		*pageClass({payload}, {put, select}) {
 			// 班级列表
 			yield put ({
@@ -122,9 +124,10 @@ export default {
 				}else{
 					message.error(res.data.msg)
 				}
+
 			}
 		},
-		
+
 		*getClassList({payload}, {put, select}) {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
@@ -143,12 +146,11 @@ export default {
 						payload:res.data
 					})
 	
-					yield put ({
-						type: 'subId',
-						payload:res.data.data[0].classId
-					})
+					
+					
 					yield put ({
 						type: 'getUserSubjectList',
+						payload:res.data.data[0].classId
 					})
 				}
 
@@ -171,9 +173,9 @@ export default {
 
 		*getUserSubjectList({payload}, {put, select}) {
 			// 返回教师所在班级科目
-			let {years,classId} = yield select(state => state.temp)
+			let {years} = yield select(state => state.temp)
 			let data={
-				classId:classId,
+				classId:payload,
 				year:years
 			}
 			let res = yield getUserSubjectList(data);
@@ -194,7 +196,7 @@ export default {
 					yield put ({
 						type:'report/queryQrStudentCount',
 						payload:{
-							classId:classId,
+							classId:payload,
 							year:years,
 							subjectId:res.data.data[0].v
 						}
@@ -202,7 +204,7 @@ export default {
 					yield put ({
 						type: 'report/queryQrDetail',
 						payload:{
-							classId:classId,
+							classId:payload,
 							year:years,
 							subjectId:res.data.data[0].v,
 							info:0,
@@ -213,7 +215,7 @@ export default {
 					yield put ({
 						type: 'getQrMonthList',
 						payload:{
-							classId:classId,
+							classId:payload,
 							year:years,
 							subjectId:res.data.data[0].v
 						}
@@ -221,7 +223,7 @@ export default {
 					yield put ({
 						type: 'report/queryHomeworkList',
 						payload:{
-							classId:classId,
+							classId:payload,
 							subjectId:res.data.data[0].v
 						}
 					})
