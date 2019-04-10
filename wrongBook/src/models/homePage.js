@@ -287,9 +287,12 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				// yield put(routerRedux.push('/login'))
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -314,9 +317,12 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -339,9 +345,12 @@ export default {
 				})
 				
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -357,9 +366,12 @@ export default {
 					payload:res.data
 				})
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -384,9 +396,12 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				// yield put(routerRedux.push('/login'))
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			
@@ -403,9 +418,12 @@ export default {
 			else if(res.hasOwnProperty("err")){
 				// yield put(routerRedux.push('/login'))
 			}else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 			}
 			

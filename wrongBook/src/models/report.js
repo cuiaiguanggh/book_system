@@ -109,11 +109,13 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
 		*queryQrStudentCount({payload},{put,select}) {
@@ -154,11 +156,13 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
 		*userQRdetail({payload},{put,select}) {
@@ -171,11 +175,13 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
 		*userQRdetail1({payload},{put,select}) {
@@ -188,11 +194,13 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
 		*queryQrDetail1({payload},{put,select}) {
@@ -205,11 +213,13 @@ export default {
 				})
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
 		*queryHomeworkList({payload},{put,select}) {
@@ -259,11 +269,13 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
-				}
+				}else if(res.data.msg == '服务器异常'){
 
+				}else{
+					message.error(res.data.msg)
+				}
 			}
 		},
 		*queryHomeworkScoreDetail({payload},{put,select}) {
@@ -282,9 +294,12 @@ export default {
 				
 			}
 			else{
-				message.error(res.data.msg)
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
 				}
 
 			}
