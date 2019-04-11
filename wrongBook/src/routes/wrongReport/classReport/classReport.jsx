@@ -65,7 +65,8 @@ class wrongTop extends React.Component {
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
-                                <span>班级错误率：{(item.wrongNum/num*100).toFixed(0)}%（答错{item.wrongNum}人）</span>
+                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
+                                <span>{item.picId}</span>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
@@ -209,7 +210,6 @@ class wrongTop extends React.Component {
             <Content style={{position:'relative'}}>
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
                 <Layout className={style.layout}>
-                <iframe style={{display:'none'}} src={this.state.wordUrl}/>
                     <Header className={style.layoutHead} >
                         <span>时间：</span>
                             <span key={0} className={0 ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
@@ -320,65 +320,6 @@ class wrongTop extends React.Component {
                             </div>
                         }
                     </Content>
-                    <Modal
-                    visible={this.state.visible}
-                    width='1000px'
-                    className="showques"
-                    footer={null}
-                    onOk={()=>{
-                        this.setState({visible:false})
-                    }}
-                    onCancel={()=>{
-                        this.setState({visible:false})
-                    }}
-                >
-                    {this.props.state.qrdetailList.data?this.showQuestion():''}
-                    <Icon 
-                        className={style.icLeft}
-                        onClick={()=>{
-                            if(key == 0){
-                                message.warning('已是第一题')
-                            }else{
-                                this.setState({showAns:''})
-                                let w = document.getElementsByClassName('wrongNum');
-                                for(let j = 0;j<w.length;j++){
-                                    w[j].className='wrongNum'
-                                }
-                                w[0].className='wrongNum wrongNumOn'
-                                for(let i=0;i< QuestionDetail.data.questionList[key-1].userAnswerList.length;i++){
-                                    if(QuestionDetail.data.questionList[key-1].userAnswerList[i].result !=1 ){
-                                        this.setState({key:key-1,
-                                            showAns:QuestionDetail.data.questionList[key-1].userAnswerList[i].answer})
-                                        
-                                        return
-                                    }
-                                }
-                            }
-                        }}
-                        type="left" />
-                    <Icon
-                        className={style.icRight}
-                        onClick={()=>{
-                            if(key == MaxKey){
-                                message.warning('已是最后一题')
-                            }else{
-                                let w = document.getElementsByClassName('wrongNum');
-                                for(let j = 0;j<w.length;j++){
-                                    w[j].className='wrongNum'
-                                }
-								w[0].className='wrongNum wrongNumOn'
-								
-                                for(let i=0;i< QuestionDetail.data.questionList[key+1].userAnswerList.length;i++){
-                                    if(QuestionDetail.data.questionList[key+1*1].userAnswerList[i].result !=1 ){
-                                        this.setState({key:key+1*1,
-                                            showAns:QuestionDetail.data.questionList[key+1].userAnswerList[i].answer})
-                                        return
-                                    }
-                                }
-                            }
-                        }}
-                        type="right" />
-                </Modal>
                 </Layout>
                 <Modal
                     visible={this.state.visible}
@@ -440,8 +381,6 @@ class wrongTop extends React.Component {
                         type="right" />
                 </Modal>
             </Content>
-
-            
 		);
 	  }
 	componentDidMount(){
