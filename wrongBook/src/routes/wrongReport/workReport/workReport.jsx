@@ -58,13 +58,7 @@ class ClassReport extends React.Component {
 									payload:value
 								});
 								this.props.dispatch({
-									type: 'report/queryUserScoreDetail',
-									payload:{
-										homeworkId:value
-									}
-								});
-								this.props.dispatch({
-									type: 'report/queryQuestionDetail',
+									type: 'report/queryHomeworkScoreDetail',
 									payload:{
 										homeworkId:value
 									}
@@ -452,7 +446,7 @@ class ClassReport extends React.Component {
                                 }
                                 w[0].className='wrongNum wrongNumOn'
                                 for(let i=0;i< QuestionDetail.data.questionScoreList[key-1].userAnswerList.length;i++){
-                                    if(QuestionDetail.data.qsList[key-1].userAnswerList[i].result !=1 ){
+                                    if(QuestionDetail.data.questionScoreList[key-1].userAnswerList[i].result !=1 ){
                                         this.setState({key:key-1,
                                             showAns:QuestionDetail.data.questionScoreList[key-1].userAnswerList[i].answer})
                                         
@@ -474,10 +468,10 @@ class ClassReport extends React.Component {
                                 }
 								w[0].className='wrongNum wrongNumOn'
 								
-                                for(let i=0;i< QuestionDetail.data.qsList[key+1].userAnswerList.length;i++){
-                                    if(QuestionDetail.data.qsList[key+1*1].userAnswerList[i].result !=1 ){
+                                for(let i=0;i< QuestionDetail.data.questionScoreList[key+1].userAnswerList.length;i++){
+                                    if(QuestionDetail.data.questionScoreList[key+1*1].userAnswerList[i].result !=1 ){
                                         this.setState({key:key+1*1,
-                                            showAns:QuestionDetail.data.qsList[key+1].userAnswerList[i].answer})
+                                            showAns:QuestionDetail.data.questionScoreList[key+1].userAnswerList[i].answer})
                                         return
                                     }
                                 }

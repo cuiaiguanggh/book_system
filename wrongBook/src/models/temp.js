@@ -69,9 +69,11 @@ export default {
 			let subList = state.subList;
 			let subId = payload;
 			let subName = '';
-			for(let i = 0 ; i < subList.data.length ; i ++ ) {
-				if( subList.data[i].v == payload ){
-					subName = subList.data[i].k
+			if(subList.data){
+				for(let i = 0 ; i < subList.data.length ; i ++ ) {
+					if( subList.data[i].v == payload ){
+						subName = subList.data[i].k
+					}
 				}
 			}
 			return { ...state, ...{subId,subName} };
