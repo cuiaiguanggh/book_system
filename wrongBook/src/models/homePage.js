@@ -46,6 +46,10 @@ export default {
 		sublist:[],
 		yearList:[],
 		showMen:'',
+		schoolTeacherList:[],
+		teacherName:'',
+		phone:'',
+		subjectId:'',
 	},
 	reducers: {
 		classNews(state, {payload}) {
@@ -99,6 +103,9 @@ export default {
 		schoolPay(state, {payload}) {
 			return { ...state, schoolPay:payload}
 		},
+		schoolTeacherList(state, {payload}) {
+			return { ...state, schoolTeacherList:payload}
+		},
 		tealist(state, {payload}) {
 			return { ...state, tealist:payload}
 		},
@@ -119,6 +126,15 @@ export default {
 		},
 		showMen(state, {payload}) {
 			return { ...state, showMen:payload}
+		},
+		teacherName(state, {payload}) {
+			return { ...state, teacherName:payload}
+		},
+		phone(state, {payload}) {
+			return { ...state, phone:payload}
+		},
+		subjectId(state, {payload}) {
+			return { ...state, subjectId:payload}
 		},
 	},
 	subscriptions: {
@@ -305,6 +321,36 @@ export default {
 			}
 			else if(res.hasOwnProperty("err")){
 				// yield put(routerRedux.push('/login'))
+			}else{
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
+				}
+			}
+			
+		},
+		*schoolTeacher({payload}, {put, select}) {
+			// 获取教师列表
+			let {infoClass,infoSchool} = yield select(state => state.homePage)
+			let data = {
+				type:1,
+				schoolId:infoSchool,
+				page:1,
+				pageSize:9999
+			}
+			let res = yield teacherList(data);
+			if(res.data && res.data.result === 0){
+				
+				yield put ({
+					type: 'schoolTeacherList',
+					payload:res.data
+				})
+			}
+			else if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
 			}else{
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))

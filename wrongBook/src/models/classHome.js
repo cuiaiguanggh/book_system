@@ -195,8 +195,8 @@ export default {
 			}else
 			if(res.data && res.data.result === 0){
 				const rodeType = store.get('wrongBookNews').rodeType
+				
 				if(rodeType === 20 ){
-
 					yield put ({
 						type: 'pageClass',
 						payload:classInfoPayload
@@ -206,6 +206,43 @@ export default {
 						type: 'getClassList',
 					})
 				}
+			}
+			else{
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
+				}
+			}
+		},
+		*updateClassAdmin({payload}, {put, select}) {
+			// 修改班主任
+			let {classInfoPayload} = yield select(state => state.classHome)
+			let res = yield updateClass(payload);
+			if(res.hasOwnProperty("err")){
+				// yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				const rodeType = store.get('wrongBookNews').rodeType
+				message.success("修改成功")
+				if(rodeType === 20 ){
+					yield put ({
+						type: 'pageClass',
+						payload:classInfoPayload
+					})
+				}else{
+					yield put ({
+						type: 'getClassList',
+					})
+				}
+				yield put ({
+					type: 'homePage/teacherList',
+					payload:{
+						type:1
+					}
+				})
 			}
 			else{
 				if(res.data.msg == '无效TOKEN!'){

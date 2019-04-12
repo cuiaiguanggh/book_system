@@ -293,7 +293,11 @@ class StuReport extends React.Component {
             dispatch({
                 type: 'classHome/getClassList',
 			});
-        }
+		}
+		
+		this.props.dispatch({
+			type: 'homePage/schoolTeacher',
+		});
 		this.props.dispatch({
 			type: 'homePage/teacherList',
 			payload:{

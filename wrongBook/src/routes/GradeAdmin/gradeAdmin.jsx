@@ -414,243 +414,244 @@ class EditableTable extends React.Component {
     return (
 	  
 	  <Layout>
-	  <Content style={{ overflow: 'initial' }}>
-		  <div className={style.gradeboder} >
-			  <div className={style.gradeTop}>
-				  {this.chooseSchool()}
-				  {
-					  rodeType <= 20 ?
-					  <div className={style.addGrade} onClick={()=>{
-						  if(this.state.schoolId === '' && rodeType === 10){
-							  message.warning("请先选择学校")
-						  }else{
-							  this.setState({visible1:true})
-							  let data1 = {
-								  schoolId:this.props.state.schoolId,
-								  type:1
-							  }
-							  this.props.dispatch({
-								  type: 'classHome/teacherList',
-								  payload:data1
-							  });
-						  }
-						  
-					  }}>添加</div>:''
-				  }
-					  
-				  <Search
-					  style={{width:'300px',marginRight:'10px'}}
-					  placeholder="班级名称"
-					  enterButton="搜索"
-					  onSearch={value => {
-						  let data ={
-							  pageNum:1,
-							  pageSize:10,
-							  className:value,
-							  schoolId:this.props.state.schoolId
-							}
-						  this.props.dispatch({
-							  type: 'classHome/pageClass',
-							  payload:data
-						  });
-						  this.props.dispatch(
-							  routerRedux.push({
-								  pathname: '/grade',
-								  hash:'page=1'
-							  })
-						  )
-					  }}
-				  />
-			  </div>
-			  {/* <Table
-				  bordered
-				  dataSource={dataSource}
-				  columns={this.columns}
-				  rowClassName="editable-row"
-			  />
-			   */}
-			  	<EditableContext.Provider value={this.props.form}>
-					<Table
-					components={components}
-					bordered
-					dataSource={dataSource}
-					columns={columns}
-					rowClassName="editable-row"
-					pagination={{
-						onChange: this.cancel,
-					}}
+			<Content style={{ overflow: 'initial',background:'#fff' }}>
+				<div className={style.gradeboder} >
+					<div className={style.gradeTop}>
+						{this.chooseSchool()}
+						{
+							rodeType <= 20 ?
+							<div className={style.addGrade} onClick={()=>{
+								if(this.state.schoolId === '' && rodeType === 10){
+									message.warning("请先选择学校")
+								}else{
+									this.setState({visible1:true})
+									let data1 = {
+										schoolId:this.props.state.schoolId,
+										type:1
+									}
+									this.props.dispatch({
+										type: 'classHome/teacherList',
+										payload:data1
+									});
+								}
+								
+							}}>添加</div>:''
+						}
+							
+						<Search
+							style={{width:'300px',marginRight:'10px'}}
+							placeholder="班级名称"
+							enterButton="搜索"
+							onSearch={value => {
+								let data ={
+									pageNum:1,
+									pageSize:10,
+									className:value,
+									schoolId:this.props.state.schoolId
+								}
+								this.props.dispatch({
+									type: 'classHome/pageClass',
+									payload:data
+								});
+								this.props.dispatch(
+									routerRedux.push({
+										pathname: '/grade',
+										hash:'page=1'
+									})
+								)
+							}}
+						/>
+					</div>
+					{/* <Table
+						bordered
+						dataSource={dataSource}
+						columns={this.columns}
+						rowClassName="editable-row"
 					/>
-				</EditableContext.Provider>
-			  {
-				   pages>1?
-				   <Pagination defaultCurrent={cur} 
-					   onChange={(pageNumber)=>{
-						  this.props.dispatch(
-							  routerRedux.push({
-								  pathname: '/grade',
-								  hash:`page=${pageNumber}`
-								  })
-						  )
-						  let data ={
-							  schoolId:this.props.state.schoolId,
-							  pageNum:pageNumber,
-							  pageSize:10
-						  }
-						  this.props.dispatch({
-							  type: 'classHome/pageClass',
-							  payload:data
-						  });
-					   }}
-					   pageSize={10} defaultPageSize={10}  total={total} />:
-				   ''
-			  }
-		  </div>
-	  </Content>
-	  <Modal
-			  title="编辑"
-			  visible={this.state.visible}
-			  onOk={()=>{
-				  this.setState({
-					  visible: false,
-				  });
-				  this.props.dispatch({
-					  type: 'classHome/updateClass',
-				  });
-			  }}
-			  onCancel={()=>{
-				  this.setState({
-					  visible: false,
-				  });
-				  this.props.dispatch({
-					  type: 'classHome/teachers',
-					  payload:[]
-				  });
-			  }}
-			  okText='确定'
-			  cancelText='取消'
-			  >
-			  {
-				  classInfo.data?
-				  <div>
-					  <div style={{marginBottom:'10px'}}>
-						  <span style={{width:"80px",display:'inline-block'}} >班级</span>
-						  <Input 
-							  defaultValue={classInfo.data.className}
-							  onChange={(e)=>{
-								  this.props.dispatch({
-									  type: 'classHome/className',
-									  payload:e.target.value
-								  });
-							  }}
-						   style={{width:'200px'}}/>
-					  </div>
-					  <div style={{marginBottom:'10px'}}>
-						  <span style={{width:"80px",display:'inline-block'}}>班主任</span>
-						  {
-							  teachers.data?
-							  <Select
-								  showSearch
-								  style={{ width: 200 }}
-								  optionFilterProp="children"
-								  onChange={(value)=>{
-									  this.props.dispatch({
-										  type: 'classHome/adminId',
-										  payload:value
-									  });
-								  }}
-								  defaultValue={classInfo.data.classAdmin}
-								  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-							  >
-								  {children}
-							  </Select>:''
-						  }
-						  
-					  </div>
-				  </div>
-				  :
-				  <div>
-					  <div style={{marginBottom:'10px'}}>
-						  <span style={{width:"80px",display:'inline-block'}} >班级</span>
-						  <Input 
-						   style={{width:'200px'}}/>
-					  </div>
-					  <div style={{marginBottom:'10px'}}>
-						  <span style={{width:"80px",display:'inline-block'}}>班主任</span>
-						  <Input  style={{width:'200px'}}/>
-					  </div>
-				  </div>
-			  }
-				  
-		  </Modal>
-		  <Modal
-			  title="添加班级"
-			  visible={this.state.visible1}
-			  onOk={()=>{
-				  if(this.props.state.className.replace(/(^\s*)|(\s*$)/g, "") == '' ) {
-					  message.warning('班级名称不能为空')
-				  }else if( this.props.state.adminId.replace(/(^\s*)|(\s*$)/g, "") == '' ){
-					  message.warning('请选择班主任')
-				  }else{
-					  this.setState({
-						  visible1: false,
-					  });
-					  this.props.dispatch({
-						  type: 'classHome/addClass',
-					  });
-					  this.props.dispatch({
-						  type: 'classHome/className',
-						  payload:''
-					  });
-				  }
-				  
-				  
-			  }}
-			  onCancel={()=>{
-				  this.setState({
-					  visible1: false,
-				  });
-				  this.props.dispatch({
-					  type: 'classHome/teachers',
-					  payload:[]
-				  });
-			  }}
-			  okText='确定'
-			  cancelText='取消'
-			  >
-				  <div>
-					  <div style={{marginBottom:'10px'}}>
-						  <span style={{width:"80px",display:'inline-block'}} >班级</span>
-						  <Input 
-							  value={this.props.state.className}
-							  onChange={(e)=>{
-								  this.props.dispatch({
-									  type: 'classHome/className',
-									  payload:e.target.value
-								  });
-							  }}
-						   style={{width:'200px'}}/>
-					  </div>
-					  <div style={{marginBottom:'10px'}}>
-						  <span style={{width:"80px",display:'inline-block'}}>班主任</span>
-							  <Select
-								  showSearch
-								  style={{ width: 200 }}
-								  optionFilterProp="children"
-								  onChange={(value)=>{
-									  this.props.dispatch({
-										  type: 'classHome/adminId',
-										  payload:value
-									  });
-								  }}
-								  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-							  >
-								  {children}
-							  </Select>
-						  
-					  </div>
-				  </div>
-		  </Modal>
-  </Layout>
+					*/}
+						<EditableContext.Provider value={this.props.form}>
+						<Table
+						components={components}
+						bordered
+						dataSource={dataSource}
+						columns={columns}
+						rowClassName="editable-row"
+						pagination={{
+							onChange: this.cancel,
+						}}
+						/>
+					</EditableContext.Provider>
+					{
+						pages>1?
+						<Pagination defaultCurrent={cur} 
+						style={{marginTop:'10px',textAlign:'center'}}
+							onChange={(pageNumber)=>{
+								this.props.dispatch(
+									routerRedux.push({
+										pathname: '/grade',
+										hash:`page=${pageNumber}`
+										})
+								)
+								let data ={
+									schoolId:this.props.state.schoolId,
+									pageNum:pageNumber,
+									pageSize:10
+								}
+								this.props.dispatch({
+									type: 'classHome/pageClass',
+									payload:data
+								});
+							}}
+							pageSize={10} defaultPageSize={10}  total={total} />:
+						''
+					}
+				</div>
+			</Content>
+			<Modal
+					title="编辑"
+					visible={this.state.visible}
+					onOk={()=>{
+						this.setState({
+							visible: false,
+						});
+						this.props.dispatch({
+							type: 'classHome/updateClass',
+						});
+					}}
+					onCancel={()=>{
+						this.setState({
+							visible: false,
+						});
+						this.props.dispatch({
+							type: 'classHome/teachers',
+							payload:[]
+						});
+					}}
+					okText='确定'
+					cancelText='取消'
+					>
+					{
+						classInfo.data?
+						<div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}} >班级</span>
+								<Input 
+									defaultValue={classInfo.data.className}
+									onChange={(e)=>{
+										this.props.dispatch({
+											type: 'classHome/className',
+											payload:e.target.value
+										});
+									}}
+								style={{width:'200px'}}/>
+							</div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}}>班主任</span>
+								{
+									teachers.data?
+									<Select
+										showSearch
+										style={{ width: 200 }}
+										optionFilterProp="children"
+										onChange={(value)=>{
+											this.props.dispatch({
+												type: 'classHome/adminId',
+												payload:value
+											});
+										}}
+										defaultValue={classInfo.data.classAdmin}
+										filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+									>
+										{children}
+									</Select>:''
+								}
+								
+							</div>
+						</div>
+						:
+						<div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}} >班级</span>
+								<Input 
+								style={{width:'200px'}}/>
+							</div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}}>班主任</span>
+								<Input  style={{width:'200px'}}/>
+							</div>
+						</div>
+					}
+						
+				</Modal>
+				<Modal
+					title="添加班级"
+					visible={this.state.visible1}
+					onOk={()=>{
+						if(this.props.state.className.replace(/(^\s*)|(\s*$)/g, "") == '' ) {
+							message.warning('班级名称不能为空')
+						}else if( this.props.state.adminId.replace(/(^\s*)|(\s*$)/g, "") == '' ){
+							message.warning('请选择班主任')
+						}else{
+							this.setState({
+								visible1: false,
+							});
+							this.props.dispatch({
+								type: 'classHome/addClass',
+							});
+							this.props.dispatch({
+								type: 'classHome/className',
+								payload:''
+							});
+						}
+						
+						
+					}}
+					onCancel={()=>{
+						this.setState({
+							visible1: false,
+						});
+						this.props.dispatch({
+							type: 'classHome/teachers',
+							payload:[]
+						});
+					}}
+					okText='确定'
+					cancelText='取消'
+					>
+						<div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}} >班级</span>
+								<Input 
+									value={this.props.state.className}
+									onChange={(e)=>{
+										this.props.dispatch({
+											type: 'classHome/className',
+											payload:e.target.value
+										});
+									}}
+								style={{width:'200px'}}/>
+							</div>
+							<div style={{marginBottom:'10px'}}>
+								<span style={{width:"80px",display:'inline-block'}}>班主任</span>
+									<Select
+										showSearch
+										style={{ width: 200 }}
+										optionFilterProp="children"
+										onChange={(value)=>{
+											this.props.dispatch({
+												type: 'classHome/adminId',
+												payload:value
+											});
+										}}
+										filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+									>
+										{children}
+									</Select>
+								
+							</div>
+						</div>
+				</Modal>
+		</Layout>
     );
   }
 	componentDidMount(){
