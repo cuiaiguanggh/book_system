@@ -266,40 +266,11 @@ class HomeworkCenter extends React.Component {
 						<Button onClick={()=>{
 						window.open("http://homework.mizholdings.com/qiniu/31000/7511/D0539650-0039-4CAF-9CE5-7845AFD8ABED/教师信息采集模板.XLSX",'_blank');    
 						}}>下载模板</Button>
-					</div>
-						<Dropzone onDrop={this.onDrop}>
-							{({getRootProps, getInputProps, isDragActive}) => {
-								return (
-									<label htmlFor="file">
-										<div className={style.addGrade} 
-										{...getRootProps()}
-										>
-											<span className={style.addSpan}>将Excel文件拖至此处或点击此处上传</span>
-										</div>
-									</label> 
-								)
-							}}
-						</Dropzone>
-						<input
-								type='file' 
-								id='file' 
-								accept='.xlsx, .xls'  
-								style={{display:'none'}}
-								onChange={this.onImportExcel} 
-							/>
-						
-						<Table
-							style={{marginTop:'20px'}}
-							bordered
-							dataSource={dataSource}
-							columns={columns}
-							rowClassName="editable-row"
-						/>
 						{
 							dataSource != ''?
 							<Button
 								type="primary"
-								style={{display:'block',margin:'0 auto'}}
+								style={{marginLeft:'10px'}}
 								 onClick={()=>{
 								// let fileObj = document.getElementById('file').files[0];
 								let fileObj = this.state.uploadFile;
@@ -347,6 +318,40 @@ class HomeworkCenter extends React.Component {
 								
 							}}>确认添加</Button>:''
 						}
+					</div>
+						<Dropzone onDrop={this.onDrop}>
+							{({getRootProps, getInputProps, isDragActive}) => {
+								return (
+										<div className={style.addGrade} 
+										{...getRootProps()}
+										>
+											<span className={style.addSpan}>将Excel文件拖至此处或
+											<label htmlFor="file">
+													<span
+														className={style.addButon}
+													>上传</span>
+											</label> 
+											</span>
+										</div>
+								)
+							}}
+						</Dropzone>
+						<input
+								type='file' 
+								id='file' 
+								accept='.xlsx, .xls'  
+								style={{display:'none'}}
+								onChange={this.onImportExcel} 
+							/>
+						
+						<Table
+							style={{marginTop:'20px'}}
+							bordered
+							dataSource={dataSource}
+							columns={columns}
+							rowClassName="editable-row"
+						/>
+						
 					</div>
 				</Content>
 			</Layout>

@@ -55,7 +55,7 @@ class ClassReport extends React.Component {
     }
     getSub() {
 			let subList =  this.props.state.subList ;
-			let subName = this.props.state.subName
+			let subName = this.props.state.subName;
 			if(subList.data && subList.data.length> 0 && subName != ''){
 				return(
 					<Select
@@ -71,14 +71,31 @@ class ClassReport extends React.Component {
 										classId:this.props.state.classId,
 										year:this.props.state.years,
 										subjectId:value,
-										info:0
+										info:0,
+										pageSize:50,
+										pageNume:1
 									}
 								});
 								this.props.dispatch({
 									type: 'temp/subId',
 									payload:value
 								});
-								
+								this.props.dispatch({
+									type: 'report/userId',
+									payload:''
+								})
+								this.props.dispatch({
+									type: 'report/studentList',
+									payload:[]
+								});
+								this.props.dispatch({
+									type:'report/qrdetailList',
+									payload:[]
+								})
+								this.props.dispatch({
+									type:'report/qrStudentDetailList',
+									payload:[]
+								})
 								this.props.dispatch({
 									type: 'report/queryQrStudentCount',
 									payload:{
@@ -87,7 +104,6 @@ class ClassReport extends React.Component {
 										subjectId:value
 									}
 								});
-								
 								this.props.dispatch({
 									type: 'report/queryHomeworkList',
 									payload:{
@@ -108,7 +124,7 @@ class ClassReport extends React.Component {
 			}else{
 
 			}
-			}
+			} 
 	render() {
 		return (
 			<div style={{height:'50px',lineHeight:'50px'}}>

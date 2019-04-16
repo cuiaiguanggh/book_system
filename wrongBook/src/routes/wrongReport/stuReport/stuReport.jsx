@@ -45,24 +45,34 @@ class StuReport extends React.Component {
 				mode="inline" 
 				defaultSelectedKeys={[current]}
 				onClick={(e)=>{
+					this.setState({page:1})
 					this.props.dispatch({
 						type: 'down/stuName',
 						payload:e.key
 					});
+					this.props.dispatch({
+						type: 'report/userId',
+						payload:e.key
+					});
+					this.props.dispatch({
+						type:'report/qrStudentDetailList',
+						payload:[]
+					})
 					let data ={
 						classId:this.props.state.classId,
 						year:this.props.state.years,
 						subjectId:this.props.state.subId,
 						userId:e.key,
-						info:0
+						info:0,
+						pageSize:50,
+						pageNume:1
+					}
+					if(this.props.state.mouNow != 0){
+						data.month = this.props.state.mouNow.v
 					}
 					this.props.dispatch({
 						type: 'report/userQRdetail',
 						payload:data
-					});
-					this.props.dispatch({
-						type: 'report/userId',
-						payload:e.key
 					});
 					let dom = document.getElementsByClassName('down');
 					for(let i = 0 ; i < dom.length ; i ++ ) {
@@ -180,15 +190,43 @@ class StuReport extends React.Component {
 										type: 'report/changeMouth',
 										payload:0
 									});
+									this.setState({page:1})
 									this.props.dispatch({
-										type: 'report/queryQrDetail',
-										payload:{
-											classId:this.props.state.classId,
-											year:this.props.state.years,
-											subjectId:this.props.state.subId,
-											info:0,
-										}
+										type:'report/qrStudentDetailList',
+										payload:[]
+									})
+									let data ={
+										classId:this.props.state.classId,
+										year:this.props.state.years,
+										subjectId:this.props.state.subId,
+										info:0,
+										pageSize:50,
+										pageNume:1
+										// month:item.v,
+									}
+									this.props.dispatch({
+										type: 'report/queryQrStudentCount',
+										payload:data
 									});
+									// this.props.dispatch({
+									// 	type: 'report/queryQrDetail',
+									// 	payload:{
+									// 		classId:this.props.state.classId,
+									// 		year:this.props.state.years,
+									// 		subjectId:this.props.state.subId,
+									// 		info:0,
+									// 	}
+									// });
+									// this.props.dispatch({
+                                    //     type: 'report/userQRdetail',
+                                    //     payload:{
+                                    //         classId:this.props.state.classId,
+                                    //         year:this.props.state.years,
+                                    //         subjectId:this.props.state.subId,
+                                    //         info:0,
+                                    //         userId:this.props.state.userId
+                                    //     }
+                                    // });
 								}}>全部</span>
 							{
 								mounthList.data ?
@@ -198,16 +236,44 @@ class StuReport extends React.Component {
 											type: 'report/changeMouth',
 											payload:item
 										});
-										
-									this.props.dispatch({
-											type: 'report/queryQrDetail',
-											payload:{
-												classId:this.props.state.classId,
-												year:this.props.state.years,
-												subjectId:this.props.state.subId,
-												info:0,
-											}
+										this.setState({page:1})
+										this.props.dispatch({
+											type:'report/qrStudentDetailList',
+											payload:[]
+										})
+										let data ={
+											classId:this.props.state.classId,
+											year:this.props.state.years,
+											subjectId:this.props.state.subId,
+											info:0,
+											month:item.v,
+											pageSize:50,
+											pageNume:1
+										}
+										this.props.dispatch({
+											type: 'report/queryQrStudentCount',
+											payload:data
 										});
+										// this.props.dispatch({
+										// 	type: 'report/queryQrDetail',
+										// 	payload:{
+										// 		classId:this.props.state.classId,
+										// 		year:this.props.state.years,
+										// 		subjectId:this.props.state.subId,
+										// 		info:0,
+										// 	}
+										// });
+										// this.props.dispatch({
+										// 	type: 'report/userQRdetail',
+										// 	payload:{
+										// 		classId:this.props.state.classId,
+										// 		year:this.props.state.years,
+										// 		subjectId:this.props.state.subId,
+										// 		info:0,
+										// 		month:item.v,
+										// 		userId:this.props.state.userId
+										// 	}
+										// });
 									}}>{item.k}</span>
 								))
 								:''
@@ -272,7 +338,10 @@ class StuReport extends React.Component {
 										pageNum:page,
 										pageSize:50,
 										userId:this.props.state.userId
-								}          
+									}   
+									if(this.props.state.mouNow != 0){
+										data.month = this.props.state.mouNow.v
+									}      
 									this.props.dispatch({
 										type: 'report/userQRdetail1',
 										payload:data

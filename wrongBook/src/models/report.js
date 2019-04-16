@@ -33,7 +33,7 @@ export default {
 		},
 		qrdetailList1(state, {payload}) {
 			let list = state.qrdetailList;
-			if(payload.data.questionList.length > 0 ) {
+			if(payload.data && payload.data.questionList.length > 0 ) {
 				for(let i = 0 ; i < payload.data.questionList.length ; i ++ ) {
 					list.data.questionList.push(payload.data.questionList[i])
 				}
@@ -120,7 +120,8 @@ export default {
 			}
 		},
 		*queryQrStudentCount({payload},{put,select}) {
-			let {mouNow} = yield select(state => state.report)
+			let {mouNow,userId} = yield select(state => state.report)
+			let {stuName} = yield select(state => state.down)
 			if(mouNow != 0){
 				payload.month = mouNow.v
 			}
@@ -135,22 +136,39 @@ export default {
 					payload:res.data
 				})
 				if(res.data.data.length > 0 ) {
-					let data = {
-						classId:payload.classId,
-						year:payload.year,
-						subjectId:payload.subjectId,
-						info:0,
-						page:1,
-						pageSize:50,
-						userId:res.data.data[0].userId
+					let data = {}
+					if(userId == ''){
+						data = {
+							classId:payload.classId,
+							year:payload.year,
+							subjectId:payload.subjectId,
+							info:0,
+							pageNum:1,
+							pageSize:50,
+							userId:res.data.data[0].userId
+						}
+						yield put ({
+							type: 'userId',
+							payload:res.data.data[0].userId
+						})
+					}else{
+						data = {
+							classId:payload.classId,
+							year:payload.year,
+							subjectId:payload.subjectId,
+							info:0,
+							pageNum:1,
+							pageSize:50,
+							userId:userId
+						}
+						yield put ({
+							type: 'userId',
+							payload:userId
+						})
 					}
 					if(mouNow != 0){
 						data.month = mouNow.v
 					}
-					yield put ({
-						type: 'userId',
-						payload:res.data.data[0].userId
-					})
 					yield put ({
 						type: 'userQRdetail',
 						payload:data

@@ -17,7 +17,11 @@ const Search = Input.Search;
 
 
 
-
+function Trim(){
+	String.prototype.trim = function(){
+					return this.replace(/(^\s*) | (\s*$)/g,'');
+	}
+}
 const FormItem = Form.Item;
 const EditableContext = React.createContext();
 
@@ -221,7 +225,7 @@ class EditableTable extends React.Component {
 										cancelText: '否',
 										onOk() {
 											let data = {
-												classId:record.key
+												classId:record.classId
 											}
 											This.props.dispatch({
 												type: 'classHome/deleteClass',
@@ -257,14 +261,19 @@ class EditableTable extends React.Component {
       if (error) {
         return;
 			}
-			this.props.dispatch({
-				type: 'classHome/className',
-				payload:row.name
-			});
-			this.props.dispatch({
-				type: 'classHome/updateClass',
-			});
-			this.setState({ editingKey: '' });
+			Trim()
+			if( row.name.trim() == ''){
+				message.warning('班级名称不能为空')
+			}else{
+				this.props.dispatch({
+					type: 'classHome/className',
+					payload:row.name
+				});
+				this.props.dispatch({
+					type: 'classHome/updateClass',
+				});
+				this.setState({ editingKey: '' });
+			}
     });
   }
 
@@ -418,25 +427,7 @@ class EditableTable extends React.Component {
 				<div className={style.gradeboder} >
 					<div className={style.gradeTop}>
 						{this.chooseSchool()}
-						{
-							rodeType <= 20 ?
-							<div className={style.addGrade} onClick={()=>{
-								if(this.state.schoolId === '' && rodeType === 10){
-									message.warning("请先选择学校")
-								}else{
-									this.setState({visible1:true})
-									let data1 = {
-										schoolId:this.props.state.schoolId,
-										type:1
-									}
-									this.props.dispatch({
-										type: 'classHome/teacherList',
-										payload:data1
-									});
-								}
-								
-							}}>添加</div>:''
-						}
+						
 							
 						<Search
 							style={{width:'300px',marginRight:'10px'}}
@@ -461,6 +452,25 @@ class EditableTable extends React.Component {
 								)
 							}}
 						/>
+						{
+							rodeType <= 20 ?
+							<div className={style.addGrade} onClick={()=>{
+								if(this.state.schoolId === '' && rodeType === 10){
+									message.warning("请先选择学校")
+								}else{
+									this.setState({visible1:true})
+									let data1 = {
+										schoolId:this.props.state.schoolId,
+										type:1
+									}
+									this.props.dispatch({
+										type: 'classHome/teacherList',
+										payload:data1
+									});
+								}
+								
+							}}>添加</div>:''
+						}
 					</div>
 					{/* <Table
 						bordered

@@ -61,7 +61,11 @@ export default {
 						type: 'temp/classList1',
 						payload:[]
 					})
-
+					yield put ({
+						type: 'report/changeMouth',
+						payload:0
+					})
+					
 					if(rodeType === 10){
 						yield put(routerRedux.push({
 							pathname: '/school',

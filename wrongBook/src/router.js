@@ -12,20 +12,10 @@ const LoginP = Loadable({
   loader: () => import('./routes/log/LoginPage'),
   loading: () => <List/>,
 });
-
 const FindPsd = Loadable({
   loader: () => import('./routes/log/finPsd'),
   loading: () => <List/>,
 });
-const MyNews = Loadable({
-  loader: () => import('./routes/Layout/userLeft'),
-  loading: () => <List/>,
-});
-const ClassInfo = Loadable({
-  loader: () => import('./routes/GradeAdmin/ClassAdmin/classList'),
-  loading: () => <List/>,
-});
-
 const Home = Loadable({
   loader: () => import('./routes/Layout/Menus'),
   loading: () => <List/>,
@@ -83,8 +73,7 @@ function RouterConfig({ history }) {
         <Route path="/login"  component={Login} />
         <Route path="/loginPhone"  component={LoginP} />
         <Route path="/fin_psd"  component={FindPsd} />
-        <Route path="/UserInfo" component={MyNews} />
-        <Route path="/classInfo" component={ClassInfo} />
+        {/* <Route path="/classInfo" component={ClassInfo} /> */}
         <Route path="/studentDetail" component={StudentDetail} />
           <Home>
             <Route path="/grade" component={GradeAdmin} />

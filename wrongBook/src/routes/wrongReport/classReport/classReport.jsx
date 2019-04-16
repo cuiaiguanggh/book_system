@@ -217,6 +217,11 @@ class wrongTop extends React.Component {
                                     type: 'report/changeMouth',
                                     payload:0
                                 });
+                                this.setState({page:1})
+                                this.props.dispatch({
+                                    type: 'report/qrdetailList',
+                                    payload:[]
+                                });
                                 this.props.dispatch({
                                     type: 'report/queryQrDetail',
                                     payload:{
@@ -224,8 +229,12 @@ class wrongTop extends React.Component {
                                         year:this.props.state.years,
                                         subjectId:this.props.state.subId,
                                         info:0,
+                                        pageSize:50,
+                                        pageNume:1
                                     }
                                 });
+                                
+                                   
                             }}>全部</span>
                         {
                             mounthList.data ?
@@ -235,7 +244,11 @@ class wrongTop extends React.Component {
                                         type: 'report/changeMouth',
                                         payload:item
                                     });
-
+                                    this.setState({page:1})
+                                    this.props.dispatch({
+                                        type: 'report/qrdetailList',
+                                        payload:[]
+                                    });
                                     this.props.dispatch({
                                         type: 'report/queryQrDetail',
                                         payload:{
@@ -243,9 +256,13 @@ class wrongTop extends React.Component {
                                             year:this.props.state.years,
                                             subjectId:this.props.state.subId,
                                             info:0,
-                                            month:item.v
+                                            month:item.v,
+                                            pageSize:50,
+                                            pageNume:1
                                         }
                                     });
+
+                                    
 
                                 }}>{item.k}</span>
                             ))
@@ -298,7 +315,10 @@ class wrongTop extends React.Component {
                                         info:0,
                                         pageNum:page,
                                         pageSize:50,
-                                }          
+                                    }  
+                                    if(this.props.state.mouNow != 0){
+                                        data.month = this.props.state.mouNow.v
+                                    }      
                                     this.props.dispatch({
                                         type: 'report/queryQrDetail1',
                                         payload:data

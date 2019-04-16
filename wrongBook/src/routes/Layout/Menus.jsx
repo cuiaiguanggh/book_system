@@ -216,17 +216,23 @@ class HomePageLeft extends Component {
 		}else if(defaultKey.indexOf('workReport') ===0){
 			defaultKey = 'workDetail3'
 		}else if(defaultKey == ''){
-			defaultKey = 'workDetail1'
+			if(userNews.rodeType == 10){
+				defaultKey = 'school'
+			}else if(userNews.rodeType == 20) {
+				defaultKey = 'grade'
+			}else{
+				defaultKey = 'workDetail1'
+			}
 		}
 		const content = (
             <div className={style.userPover}>
-                <p onClick={()=>{
+                {/* <p onClick={()=>{
 				  	this.props.dispatch(
 						routerRedux.push({
 							pathname: '/userInfo',
                         })
 					)
-			  }}>个人信息</p>
+			  }}>个人信息</p> */}
               <p onClick={()=>{
 				  store.set('wrongBookNews','')
 				  	this.props.dispatch(
@@ -253,7 +259,13 @@ class HomePageLeft extends Component {
 					});
 			  }}>退出</p>
             </div>
-		  );
+			);
+		let code = (
+			<div className={style.qrcode}>
+				<QRCode className='qrcode' value={value} />
+				<p style={{textAlign:"center",margin:0}}>邀请学生加入班级</p>
+			</div>
+		)
 		let  leftName = ''
 		if(this.props.type == 'findPsd'){
 			leftName = '重置登录密码'
@@ -282,13 +294,7 @@ class HomePageLeft extends Component {
 					>
 						{this.Menus()}
 					</Menu>
-					{
-						rodeType === 10 ?'':
-						<div className={style.qrcode}>
-							<QRCode className='qrcode' value={value} />
-							<p style={{color:'#fff',textAlign:"center"}}>班级邀请码</p>
-						</div>
-					}
+					
 				</Sider>
 				<Layout>
 					<Header style={{ background: '#fff', padding: 0 }}>
@@ -299,9 +305,29 @@ class HomePageLeft extends Component {
 						onClick={this.toggle}
 						/>
 						<div className="navClass">
+							
 							{
 								userNews ==undefined?'':
 								<div>
+									{
+										rodeType === 10 ?'':
+											<Popover
+												content={code} 
+												trigger="click"
+												type="primary"
+												placement="bottom"
+											>
+												<div 
+													className={style.classcode}
+													type="primary">
+													<img src = {require('../images/ma-sj-n.png')}></img>
+													<span>
+														班级邀请码
+														</span>
+												</div>
+											</Popover>
+									
+									}
 									{
 										this.props.state.yearList.data?
 										this.getyear():''	

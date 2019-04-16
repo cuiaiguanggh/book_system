@@ -134,10 +134,10 @@ class HomeworkCenter extends React.Component {
 										cancelText: '否',
 										onOk() {
 											let data = {
-												classId:record.key
+												userId:record.userId
 											}
 											This.props.dispatch({
-												type: 'classHome/deleteClass',
+												type: 'homePage/kickClass',
 												payload:data
 											});
 										},
@@ -152,7 +152,6 @@ class HomeworkCenter extends React.Component {
 			}
 		}
 	];
-		
 		this.stu = [{
 			title: '姓名',
 			dataIndex: 'name',
@@ -181,6 +180,39 @@ class HomeworkCenter extends React.Component {
 				</div>
 			)
 		},
+		{
+			title:'操作',
+			editable: true,
+			render: (text, record) => {
+				const rodeType = store.get('wrongBookNews').rodeType
+				if(rodeType <= 20) {
+					return(
+						<div>
+							<span style={{color:'#fff',display:"inline-block",width:'60px',cursor:'pointer',margin:'0 10px',padding:'5px 0px',background:'#f56c6c',borderRadius:'5px',textAlign:'center'}} onClick={()=>{
+									let This = this;
+									confirm({
+										title: `确定删除${record.name}么?`,
+										okText: '是',
+										cancelText: '否',
+										onOk() {
+											let data = {
+												userId:record.userId
+											}
+											This.props.dispatch({
+												type: 'homePage/kickClass',
+												payload:data
+											});
+										},
+										onCancel() {
+											console.log('Cancel');
+										},
+									});
+							}}>删除</span>
+						</div>
+					)
+				}
+			}
+		}
 		];
 		
 		if(store.get('wrongBookNews').rodeType === 10){
@@ -279,7 +311,7 @@ class HomeworkCenter extends React.Component {
 						p["name"] = det.userName;
 						p['phone'] = det.phone
 						p['OnwerTeacher'] = det.admin 
-						dataSource[i]=p;
+						dataSource.push(p);
 					}
 				}else{
 					p["key"] = i;
@@ -288,7 +320,7 @@ class HomeworkCenter extends React.Component {
 					p["name"] = det.userName;
 					p['phone'] = det.phone
 					p['OnwerTeacher'] = det.admin 
-					dataSource[i]=p;
+					dataSource.push(p);
 				}
 			}
 		}else{
@@ -316,7 +348,6 @@ class HomeworkCenter extends React.Component {
 							className={style.menu}
 							onClick={(e)=>{
 								this.setState({current:e.key})
-								
 								this.props.dispatch({
 									type: 'homePage/showMen',
 									payload:''
@@ -328,9 +359,7 @@ class HomeworkCenter extends React.Component {
 								if(e.key === 'teacher'){
 									this.props.dispatch({
 										type: 'homePage/memType',
-										payload:{
-											type:1
-										}
+										payload:1
 									});
 									this.props.dispatch({
 										type: 'homePage/teacherList',
@@ -342,9 +371,7 @@ class HomeworkCenter extends React.Component {
 								}else {
 									this.props.dispatch({
 										type: 'homePage/memType',
-										payload:{
-											type:3
-										}
+										payload:3
 									});
 									this.props.dispatch({
 										type: 'homePage/teacherList',
@@ -373,6 +400,7 @@ class HomeworkCenter extends React.Component {
 									style={{width:'300px',marginRight:'10px'}}
 									enterButton="搜索"
 									onSearch={value => {
+										console.log(value)
 										if(value.trim() != ''){
 											this.props.dispatch({
 												type: 'homePage/showMen',
@@ -380,6 +408,14 @@ class HomeworkCenter extends React.Component {
 											});
 										}else {
 											message.warning('请输入教师或学生名称')
+										}
+									}}
+									onChange = {e =>{
+										if(e.target.value.trim() == ''){
+											this.props.dispatch({
+												type: 'homePage/showMen',
+												payload:''
+											});
 										}
 									}}
 								/>
