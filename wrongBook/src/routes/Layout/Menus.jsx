@@ -226,13 +226,13 @@ class HomePageLeft extends Component {
 		}
 		const content = (
             <div className={style.userPover}>
-                {/* <p onClick={()=>{
+                <p onClick={()=>{
 				  	this.props.dispatch(
 						routerRedux.push({
-							pathname: '/userInfo',
+							pathname: '/UserInfo',
                         })
 					)
-			  }}>个人信息</p> */}
+			  }}>个人信息</p>
               <p onClick={()=>{
 				  store.set('wrongBookNews','')
 				  	this.props.dispatch(

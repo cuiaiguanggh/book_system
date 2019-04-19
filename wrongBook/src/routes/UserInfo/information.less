@@ -11,18 +11,112 @@
         padding: 10px 15px;
         border-radius: 5px;
     }
-    .headport{
+    .headport_container{
         width:100%;
-        background:#fafafa;
-        border-radius: 5px;
-        padding:20px;
-        margin-bottom:10px ;
-
-        img{
-            width:90px;
-            height:90px;
-            border-radius:100%;
-            margin-right: 20px;
+        min-height:397px;
+        max-height: 497px;
+        background:#fff;
+        padding-top:13px;
+        .headport{
+            width:567px;
+            height:100%;
+            background:#fff;
+            border-radius: 4px;
+            box-shadow: 0 0 9px 0 rgba(162, 162, 162, 0.24);
+            border: solid 1px #ebeef5;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding:35px 0;
+            box-sizing: border-box;
+            .avater_box{
+                width:104px;
+                height:104px;
+                border-radius: 100%;
+               
+                img{
+                    width:100%;
+                    height:100%;
+                    border-radius:100%;
+                }
+            }
+            .namebox{
+                margin-top: 30px;
+                margin-bottom: 20px;
+                text-align: center;
+                p:nth-of-type(1){
+                    font-family: MicrosoftYaHei;
+                    font-size: 18px;
+                    font-weight: bold;
+                    font-style: normal;
+                    line-height: 1.44;
+                    color: #303133;
+                }
+                .banzhuren_icon{
+                    width:18px;
+                    height: 18px;
+                    position: relative;
+                    img{
+                        width:18px;
+                        height: 18px;
+                    }
+                    &:after{
+                        content: '班主任';
+                        width: 57px;
+                        height: 35px;
+                        border-radius: 5px;
+                        background-color: #7F7F7F;
+                        line-height: 35px;
+                        text-align: center;
+                        display: block;
+                        left: -20px;
+                        position: absolute;
+                        color:#fff;
+                        top:-45px;
+                    }
+                    &:before{
+                        content: '';
+                        width: 0;
+                        height: 0;
+                        border-width: 7px 8px 0;
+                        border-style: solid;
+                        border-color: #7F7F7F transparent transparent;
+                        margin: 40px auto;
+                        position: relative;
+                        display: block;
+                        left: 0px;
+                        position: absolute;
+                        color: #fff;
+                        top: -50px;
+                    
+                    }
+                }
+            }
+            .schoolbox{
+                width: 507px;
+                height: 103px;
+                border: solid 1px #ebeef5;
+                background-color: #eef1f6;
+                padding:15px 20px;
+                box-sizing: border-box;
+                display: flex;
+                justify-content:space-around;
+                flex-direction: column;
+                p{  
+                    display: flex;
+                    align-items: center;
+                    font-size: 16px;
+                    color:#333;
+                    margin-bottom: 0;
+                    img{
+                        width: 18px;
+                        height: 18px;
+                        margin-right: 18px;
+                    }
+                }
+            }
         }
     }
+    
 }

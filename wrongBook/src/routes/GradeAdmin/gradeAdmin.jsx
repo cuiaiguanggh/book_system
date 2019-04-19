@@ -672,6 +672,7 @@ class EditableTable extends React.Component {
 		}
 		const {dispatch} = this.props;
 		const rodeType = store.get('wrongBookNews').rodeType
+		console.log(rodeType,this.state)
 		if(rodeType === 10){
 			let data1 = {
 				pageNum:1,

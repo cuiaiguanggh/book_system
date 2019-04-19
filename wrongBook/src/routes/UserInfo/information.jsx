@@ -22,18 +22,45 @@ class HomeworkCenter extends React.Component {
 	}
 	render() {
 		let userNews = store.get('wrongBookNews')
-		console.log()
+		let classArray = this.props.state.classList1.data
+		console.log('userNews',userNews,classArray,	userNews.classes)
 		return(
 			<Layout>
-				<Content style={{ overflow: 'initial'}}>
+				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
 					<h3 style={{ background: '#fff',borderBottom:'1px solid #eee',margin:'0',padding:'10px 24px'}}>个人信息</h3>
 					<div className={style.layout} style={{ padding: 24, background: '#fff',height:735   }}>
-						<div className={style.headport}>
-							<img alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl :'http://images.mizholdings.com/face/default/02.gif'}/>
+						<div className={style.headport_container}>
+							<div className={style.headport}>
+								<div className={style.avater_box}>
+									<img  alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
+								</div>
+								
+								<div className={style.namebox} style={{display:'inline-block',verticalAlign:"bottom"}}>
+									<p>{userNews.userName}</p>
+									{
+										classArray !== undefined&&userNews.rodeType==30 ?
+										<div style={{padding:'0 10px'}}>
+										{
+											classArray.map((item,i) =>(
+												<span key={i} style={{}}>{item.className}{i===0?<span className={style.banzhuren_icon}>
+													<img  src={require('../images/banzhuren@2x.png')} alt=""/>
+												</span>:''}{i===classArray.length-1?'':'，'}</span>
+											))
+											
+										}
+										
+									</div>:''
+									}
+								
+								</div>
+								<div className={style.schoolbox}>
+								{
+									userNews.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span></span></p>:''
+								}
 							
-							<div style={{display:'inline-block',verticalAlign:"bottom"}}>
-								<p>{userNews.userName}</p>
-								<p>{userNews.schoolName}</p>
+										
+										<p><img src={require('../images/school@2x.png')} alt=""/><span>{userNews.schoolName}</span></p>	
+								</div>
 							</div>
 						</div>
 						{
@@ -50,16 +77,16 @@ class HomeworkCenter extends React.Component {
 							</div>:''
 						}
 						<div style={{margin:'20px 10px'}}>
-							<h3 style={{marginBottom:'30px'}}>修改信息</h3>
+							<h3 style={{marginBottom:'30px',marginTop:'76px'}}>修改信息</h3>
 							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>姓名</span>
+								<span style={{width:"100px",display:'inline-block'}}>姓名：</span>
 								<Input maxLength={10} value={this.state.name}  style={{width:'300px'}}
 								onChange={(e)=>{
 									this.setState({name:e.target.value})
 								}}/>
 							</div>
 							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>电话</span>
+								<span style={{width:"100px",display:'inline-block'}}>电话：</span>
 								<Input  value={this.state.phone}
 									onFocus={()=>{
 										if(this.state.changePhone == 0){
@@ -94,11 +121,18 @@ class HomeworkCenter extends React.Component {
 										if(this.state.changePhone == 1){
 											this.setState({
 												phone:e.target.value
-											})
+											})   
 										}
 									}}/>
 							</div>
-							<Button style={{margin:'50px 150px'}} type="primary"
+							<div style={{marginBottom:'30px'}}>						
+								<span style={{width:"100px",display:'inline-block'}}>学科：</span>
+								<Input maxLength={10} value={this.state.name}  style={{width:'300px'}}
+								onChange={(e)=>{
+									this.setState({name:e.target.value})
+								}}/>
+							</div>
+							<Button style={{margin:'10px 100px'}} type="primary"
 								onClick={()=>{
 									let data ={
 										name:this.state.name,
@@ -110,24 +144,29 @@ class HomeworkCenter extends React.Component {
 										payload:data
 									})
 								}}
-							>完成</Button>
+							>确认修改</Button>
 						</div>
 					</div>
 				</Content>
 			</Layout>
 		);
 	}
+
 	componentDidMount(){
 		let schoolId = store.get('wrongBookNews').schoolId
 		let data ={
 			schoolId:schoolId
 		}
 		const {dispatch} = this.props;
+		dispatch({
+			type: 'classHome/getClassList',
+		});
 	}
 }
 
 export default connect((state) => ({
 	state: {
 		...state.userInfo,
+		...state.classHome,
 	}
 }))(HomeworkCenter);
