@@ -3,6 +3,8 @@ import {
 	queryHomeworkList,
 	queryHomeworkScoreDetail,
 	queryQrStudentCount,
+	deleteTeachVideo,
+	queryTeachVideo,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -25,7 +27,7 @@ export default {
 		page1:1,
 		classNext:0,
 		studentList:[],
-		
+		visible:false,
 	},
 	reducers: {
 		qrdetailList(state, {payload}) {
@@ -62,7 +64,6 @@ export default {
 			return { ...state, userId:payload };
 		},
 		page(state, {payload}) {
-			console.log(1)
 			return { ...state, page:payload };
 		},
 		page1(state, {payload}) {
@@ -85,6 +86,20 @@ export default {
 				}
 			}
 			return { ...state, qrdetailList1:list };
+		},
+		deleteVidio(state, {payload}) {
+			let list = state.qrdetailList;
+			delete list.data.questionList[payload].teachVideo; 
+			return { ...state, qrdetailList:list };
+		},
+		updataVideo(state, {payload}) {
+			let qrdetailList = state.qrdetailList;
+			let visible = false;
+			qrdetailList.data.questionList[payload.key].teachVideo = payload.video
+			return { ...state, ...{qrdetailList,visible} };
+		},
+		visible(state, {payload}) {
+			return { ...state, visible:payload };
 		},
 	},
 	subscriptions: {
@@ -339,7 +354,67 @@ export default {
 
 			}
 		},
-		
+		*deleteTeachVideo({payload},{put,select}) {
+			//删除讲解视频
+			let data = {
+				videoId:payload.videoId
+			}
+			let res = yield deleteTeachVideo(data);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				message.success('删除成功')
+				yield put ({
+					type: 'deleteVidio',
+					payload:payload.key
+				})
+			}
+			else{
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
+				}
+
+			}
+		},
+		*queryTeachVideo({payload},{put,select}) {
+			//刷新查看是否上传成功
+			let data = {
+				questionId:payload.questionId
+			}
+			let res = yield queryTeachVideo(data);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				if( res.data.data ) {
+					message.success('视频已上传')
+					yield put ({
+						type: 'updataVideo',
+						payload:{
+							key:payload.key,
+							video:res.data.data
+						}
+					})
+				}else{
+					message.success('视频已上传')
+				}
+			}
+			else{
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
+				}
+
+			}
+		},
 	},
 
   

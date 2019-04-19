@@ -3,8 +3,28 @@ export default {
 
   namespace: 'example',
 
-  state: {},
+  state: {
+		uqId:'',
+    userId:'',
+    questionId:'',
+    num:'',
+  },
 
+  reducers: {
+    
+		uqId(state, {payload}) {
+			return { ...state, uqId:payload };
+    },
+    userId(state, {payload}) {
+			return { ...state, userId:payload };
+    },
+    questionId(state, {payload}) {
+			return { ...state, questionId:payload };
+    },
+    num(state, {payload}) {
+			return { ...state, num:payload };
+    },
+  },
   subscriptions: {
     setup({ dispatch, history }) {  // eslint-disable-line
     },
@@ -16,10 +36,6 @@ export default {
     },
   },
 
-  reducers: {
-    save(state, action) {
-      return { ...state, ...action.payload };
-    },
-  },
+  
 
 };

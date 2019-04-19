@@ -31,6 +31,16 @@ function queryQrStudentCount(payload){
         data:payload
     });
 }
+function deleteTeachVideo(payload){
+    return request(dataCenter('/web/report/deleteTeachVideo'),{
+        data:payload
+    });
+}
+function queryTeachVideo(payload){
+    return request(dataCenter('/web/report/queryTeachVideo'),{
+        data:payload
+    });
+}
 
 export {
     queryQrDetail,
@@ -38,5 +48,7 @@ export {
     queryHomeworkScoreDetail,
     queryQuestionDetail,
     getQuestionDoxc,
-    queryQrStudentCount
+    queryQrStudentCount,
+    deleteTeachVideo,
+    queryTeachVideo,
 };

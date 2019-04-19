@@ -4,9 +4,13 @@ import { Button, message, Layout,Modal,Select ,Icon
 import {dataCenter} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
+import QRCode from 'qrcode.react';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 import { request } from 'http';
+import TracksVideo from '../TracksVideo/TracksVideo';
+import store from 'store';
+
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -27,6 +31,9 @@ class wrongTop extends React.Component {
             page:1,
             hei:0,
             next:true,
+            visible1:false,
+            userId:'',
+            uqId:''
 	    };
     }
 	handleScroll(e){
@@ -61,12 +68,15 @@ class wrongTop extends React.Component {
                                 name = '移出错题篮'
                             }
                         }
+                        let j = i;
                         return(
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
                                 <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
                                 {/* <span>{item.picId}</span> */}
+                                
+                                <TracksVideo type={item} num={j}></TracksVideo>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
@@ -131,7 +141,25 @@ class wrongTop extends React.Component {
                 </div>
 			</div>
 		)
-	}
+    }
+    addVie() {
+		const userId = store.get('wrongBookNews').userId
+        let value = 'http://hw-test.mizholdings.com/wx/video?uqId='+this.props.state.uqId+'&authorId='+ userId
+        return(
+            <div style={{textAlign:'center'}}>
+                <QRCode className='qrcode' size='200' value={value} />
+                <span className={style.updataCode} onClick={() =>{
+                    this.props.dispatch({
+                        type: 'report/queryTeachVideo',
+                        payload:{
+                            questionId:this.props.state.questionId,
+                            key:this.props.state.num
+                        }
+                    });
+                }}>视频已上传</span>
+            </div>
+        )
+    }
 	showQuestion(){
 		let QuestionDetail = this.props.state.qrdetailList;
         let key = this.state.key;
@@ -197,7 +225,8 @@ class wrongTop extends React.Component {
             //     <Empty />
             // )
         }
-	}
+    }
+    
 	render() {
 		let mounthList = this.props.state.mounthList;
 		let key = this.state.key;
@@ -400,6 +429,26 @@ class wrongTop extends React.Component {
                         }}
                         type="right" />
                 </Modal>
+                
+                <Modal
+                    visible={this.props.state.visible}
+                    footer={null}
+                    width= '253px'
+                    className={style.vidioCode}
+                    onOk={()=>{
+                        this.props.dispatch({
+                            type: 'report/visible',
+                            payload:false
+                        });
+                    }}
+                    onCancel={()=>{
+                        this.props.dispatch({
+                            type: 'report/visible',
+                            payload:false
+                        });
+                    }}>
+                        {this.addVie()}
+                </Modal>
             </Content>
 		);
 	  }
@@ -429,6 +478,7 @@ export default connect((state) => ({
 	state: {
 		...state.report,
 		...state.temp,
-		...state.down,
+        ...state.down,
+        ...state.example,
 	}
 }))(wrongTop);
