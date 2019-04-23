@@ -28,6 +28,8 @@ export default {
 		classNext:0,
 		studentList:[],
 		visible:false,
+		visible1:false,
+		videlUrl:''
 	},
 	reducers: {
 		qrdetailList(state, {payload}) {
@@ -100,6 +102,12 @@ export default {
 		},
 		visible(state, {payload}) {
 			return { ...state, visible:payload };
+		},
+		visible1(state, {payload}) {
+			return { ...state, visible1:payload };
+		},
+		videlUrl(state, {payload}) {
+			return { ...state, videlUrl:payload };
 		},
 	},
 	subscriptions: {
@@ -400,8 +408,16 @@ export default {
 							video:res.data.data
 						}
 					})
+					yield put ({
+						type:  'videlUrl',
+						payload:res.data.data.url
+					})
+					yield put ({
+						type: 'visible1',
+						payload:true
+					})
 				}else{
-					message.success('视频已上传')
+					message.warning('未检测到上传视频')
 				}
 			}
 			else{

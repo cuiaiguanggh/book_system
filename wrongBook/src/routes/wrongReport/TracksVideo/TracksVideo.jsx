@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button, Modal,Select,Layout,Icon
+import { Table, Button, Modal,Select,Layout,Icon,Tooltip
 } from 'antd';
 import { connect } from 'dva';
 import style from './TracksVideo.less';
@@ -28,49 +28,45 @@ class ClassReport extends React.Component {
 	    };
 	}
 	
-	addVie() {
-        let value = 'http://hw-test.mizholdings.com/wx/video?uqId='+this.state.uqId+'&authorId='+ this.state.userId
-        return(
-            <div style={{textAlign:'center'}}>
-                <QRCode className='qrcode' size='200' value={value} />
-                <span className={style.updataCode} onClick={() =>{
-                    this.props.dispatch({
-                        type: 'report/queryTeachVideo',
-                        payload:{
-                            questionId:this.props.type.questionId,
-                            key:this.props.num
-                        }
-                    });
-                }}>视频已上传</span>
-            </div>
-        )
-    }
 	render() {
 
 		return (
             <div style={{float:'right'}}>
                 {this.props.type.teachVideo != null ?
                 <span>
-                    <Icon type="play-circle" style={{padding:'0 10px'}} onClick={()=>{
-                        this.setState({visible1:true,videlUrl:this.props.type.teachVideo.url})
-                    }}/>
-                    <Icon type="delete"  style={{padding:'0 10px'}} onClick={()=>{
-                        let This = this;
-                        confirm({
-                            title: '确认删除讲解视频？',
-                            onOk() {
-                                This.props.dispatch({
-                                    type: 'report/deleteTeachVideo',
-                                    payload:{
-                                        videoId:This.props.type.teachVideo.videoId,
-                                        key:This.props.num
-                                    }
-                                });
-                            },
-                            onCancel() {
-                            },
-                          });
-                    }}/>
+                    <Tooltip placement="bottom" title="讲解视频">
+                        <Icon type="play-circle" style={{margin:'0 10px',cursor:"pointer"}} title=""  onClick={()=>{
+                            this.props.dispatch({
+                                type: 'report/visible1',
+                                payload:true
+                            });
+                            this.props.dispatch({
+                                type: 'report/videlUrl',
+                                payload:this.props.type.teachVideo.url
+                            });
+                        }}/>
+                    </Tooltip>
+                    <Tooltip placement="bottom" title="删除">
+                        <Icon type="delete"  style={{margin:'0 10px',cursor:"pointer"}} onClick={()=>{
+                            let This = this;
+                            confirm({
+                                title: '确认删除讲解视频？',
+                                okText: '是',
+                                cancelText: '否',
+                                onOk() {
+                                    This.props.dispatch({
+                                        type: 'report/deleteTeachVideo',
+                                        payload:{
+                                            videoId:This.props.type.teachVideo.videoId,
+                                            key:This.props.num
+                                        }
+                                    });
+                                },
+                                onCancel() {
+                                },
+                            });
+                        }}/>
+                    </Tooltip>
                 </span>:
                     <span style={{float:'right',cursor:'pointer'}} onClick={()=>{
                         this.props.dispatch({
@@ -93,38 +89,10 @@ class ClassReport extends React.Component {
                             type: 'example/num',
                             payload:this.props.num
                         });
-                        
                     }}>添加讲解</span>
                 }
                 
-                <Modal
-                    visible={this.state.visible1}
-                    footer={null}
-                    // style={{padding:0}}
-                    className={style.vidioCode1}
-                    onOk={()=>{
-                        this.setState({visible1:false,videlUrl:''})
-                    }}
-                    onCancel={()=>{
-                        this.setState({visible1:false,videlUrl:''})
-                    }}>
-                        <div>
-                            <video 
-                                id="video" 
-                                controls="controls"
-                                 width="100%" 
-                                 src={this.state.videlUrl}
-                                 controls  >
-                            </video>
-                            {/* <Player
-                                style={{width:'400px'}}
-                                width = '400px'
-                                playsInline
-                                poster="/assets/poster.png"
-                                src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
-                            /> */}
-                        </div>
-                </Modal>
+                
             </div>
             
             // <span>

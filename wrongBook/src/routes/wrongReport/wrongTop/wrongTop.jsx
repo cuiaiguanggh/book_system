@@ -34,10 +34,7 @@ class ClassReport extends React.Component {
 								});
 								this.props.dispatch({
 									type: 'temp/getUserSubjectList',
-									payload:{
-										value:value,
-										type:1
-									}
+									payload:value,
 								});
 						}}
 						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
