@@ -42,7 +42,7 @@ class HomeworkCenter extends React.Component {
 										<div style={{padding:'0 10px'}}>
 										{
 											classArray.map((item,i) =>(
-												<span key={i} style={{}}>{item.className}{i===0?<span className={style.banzhuren_icon}>
+												<span key={i} style={{}}>{item.className}{item.adminId==userNews.userId?<span className={style.banzhuren_icon}>
 													<img  src={require('../images/banzhuren@2x.png')} alt=""/>
 												</span>:''}{i===classArray.length-1?'':'，'}</span>
 											))
