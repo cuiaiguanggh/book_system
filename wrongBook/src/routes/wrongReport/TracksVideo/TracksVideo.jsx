@@ -68,7 +68,7 @@ class ClassReport extends React.Component {
                         }}/>
                     </Tooltip>
                 </span>:
-                    <span style={{float:'right',cursor:'pointer'}} onClick={()=>{
+                    <span style={{float:'right',cursor:'pointer',color:'#52a5fa'}} onClick={()=>{
                         this.props.dispatch({
                             type: 'report/visible',
                             payload:true
@@ -89,15 +89,10 @@ class ClassReport extends React.Component {
                             type: 'example/num',
                             payload:this.props.num
                         });
-                    }}>添加讲解</span>
+                    }}><img style={{margin:'0 5px 3px 0'}} src={require('../../images/sp-lj-n.png')} />录讲解</span>
                 }
-                
-                
             </div>
             
-            // <span>
-            //     添加视频
-            // </span>
 		);
 	  }
 

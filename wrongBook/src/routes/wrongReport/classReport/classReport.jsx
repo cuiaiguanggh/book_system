@@ -187,14 +187,14 @@ class wrongTop extends React.Component {
                     }
                 });
                 
-                This.props.dispatch({
-                    type: 'report/videlUrl',
-                    payload:json.url
-                });
-                This.props.dispatch({
-                    type: 'report/visible1',
-                    payload:true
-                });
+                // This.props.dispatch({
+                //     type: 'report/videlUrl',
+                //     payload:json.url
+                // });
+                // This.props.dispatch({
+                //     type: 'report/visible1',
+                //     payload:true
+                // });
             }
             console.log(event.data)
         }
