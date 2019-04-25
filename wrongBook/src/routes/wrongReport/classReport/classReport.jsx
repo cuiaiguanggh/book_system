@@ -73,7 +73,7 @@ class wrongTop extends React.Component {
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
-                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
+                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.wrongNum}</span>人</span>
                                 {/* <span>{item.picId}</span> */}
                                 
                                 <TracksVideo type={item} num={j}></TracksVideo>
@@ -150,7 +150,7 @@ class wrongTop extends React.Component {
         timestamp = timestamp.substring(0, timestamp.length-3);  
         var websocket = null;
         //判断当前浏览器是否支持WebSocket
-        let url = 'wss://'+ dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
+        let url = 'ws://'+ dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
         if ('WebSocket' in window) {
             websocket = new WebSocket(url);
         }
@@ -371,8 +371,6 @@ class wrongTop extends React.Component {
                             style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
                             loading={this.state.loading} 
                             onClick={()=>{
-                                console.log(this.props.state.classDownPic)
-                                console.log(this.props.state.classDownPic.join(','))
                                 if(this.props.state.classDown.length!= 0){
                                     let load = !this.state.loading
                                     this.setState({loading:load})

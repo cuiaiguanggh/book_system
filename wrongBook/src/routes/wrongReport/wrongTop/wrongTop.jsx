@@ -77,10 +77,10 @@ class ClassReport extends React.Component {
 									type: 'temp/subId',
 									payload:value
 								});
-								this.props.dispatch({
-									type: 'report/userId',
-									payload:''
-								})
+								// this.props.dispatch({
+								// 	type: 'report/userId',
+								// 	payload:''
+								// })
 								this.props.dispatch({
 									type: 'report/studentList',
 									payload:[]

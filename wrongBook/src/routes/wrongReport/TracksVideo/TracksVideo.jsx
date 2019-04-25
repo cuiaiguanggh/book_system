@@ -29,14 +29,30 @@ class ClassReport extends React.Component {
 	}
 	
 	render() {
-
+        let teachVideo = this.props.type.teachVideo;
+        let duration = '';
+        let time = '';
+        if( teachVideo != null ) {
+            duration = teachVideo.duration;
+            let num0 = parseInt(duration/60)
+            let num1 = duration%60
+            let mm = num0;
+            let ss = num1;
+            if( num0 < 10 ) {
+                mm = '0' + num0
+            }
+            if ( num1 < 10 ) {
+                ss = '0' + num1
+            }
+            time = mm + "'" + ss + '"'
+        }
 		return (
             <div style={{float:'right'}}>
                 {this.props.type.teachVideo != null ?
-                <span>
+                <span >
                     <Tooltip placement="bottom" title="讲解视频">
-                        <Icon type="play-circle" style={{margin:'0 10px',cursor:"pointer"}} title=""  onClick={()=>{
-                            this.props.dispatch({
+                        <span style={{padding:'0 10px',background:"#52a5fa",color:'#fff',borderRadius:'3px',cursor:'pointer'}} onClick={()=>{
+                             this.props.dispatch({
                                 type: 'report/visible1',
                                 payload:true
                             });
@@ -44,7 +60,12 @@ class ClassReport extends React.Component {
                                 type: 'report/videlUrl',
                                 payload:this.props.type.teachVideo.url
                             });
-                        }}/>
+                        }}>
+                            <Icon type="play-circle"  theme="filled" style={{marginRight:'10px',cursor:"pointer"}} title=""  onClick={()=>{
+                               
+                            }}/>
+                                {time}
+                        </span>
                     </Tooltip>
                     <Tooltip placement="bottom" title="删除">
                         <Icon type="delete"  style={{margin:'0 10px',cursor:"pointer"}} onClick={()=>{
