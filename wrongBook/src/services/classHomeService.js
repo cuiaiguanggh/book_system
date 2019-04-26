@@ -74,7 +74,16 @@ function kickClass(payload){
         data:payload
     });
 }
-
+function getSubjectList(payload){
+    return request(dataCenter('/user/getSubjectList'), {
+        data:payload
+    });
+}
+function getUserInfo(payload){
+    return request(dataCenter('/user/getUserInfo'), {
+        data:payload
+    });
+}
 export {
     pageClass,
     classInfo,
@@ -91,4 +100,6 @@ export {
     subjectNodeList,
     administrativeDivision,
     kickClass,
+    getSubjectList,
+    getUserInfo,
 };

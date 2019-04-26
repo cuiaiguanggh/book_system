@@ -2,7 +2,9 @@ import {
 	pageClass,
     teacherList,
 	pageUser,
-	updateInfo
+	updateInfo,
+	getSubjectList,
+	getUserInfo,
 } from '../services/classHomeService';
 import {
 	pageRelevantSchool
@@ -40,6 +42,12 @@ export default {
 		schoolList(state, {payload}) {
 			return { ...state, schoolList:payload };
 		},
+		allSubList(state,{payload}){
+			return { ...state, allSubList:payload };
+		},
+		userData(state,{payload}){
+			return { ...state, userData:payload };
+		},	
 		schoolId(state, {payload}) {
 			return { ...state, schoolId:payload };
         },
@@ -56,6 +64,31 @@ export default {
 	},
   
 	effects: {
+		*getSubjectList({}, {put, select}) {
+			// 返回教师所在班级科目
+			let res = yield getSubjectList();		
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'allSubList',
+					payload:res.data.data
+				})			
+			}else{
+				message.error(res.data.msg)
+			}
+			
+		},
+		*getUserInfo({}, {put}) {
+			// 返回教师所在班级科目
+			let res = yield getUserInfo();			
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'userData',
+					payload:res.data.data
+				})			
+			}else{
+				message.error(res.data.msg)
+			}		
+		},
 		*pageClass({payload}, {put, select}) {
 			// 班级列表
 			yield put ({

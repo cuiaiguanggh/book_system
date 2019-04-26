@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Input,Modal,Radio,Button } from 'antd';
+import { Layout, Input,Modal,Radio,Button,Select } from 'antd';
 import {  Link, } from "dva/router";
 import { connect } from 'dva';
 import style from './information.less';
@@ -9,6 +9,7 @@ const { Content } = Layout;
 const RadioGroup = Radio.Group;
 const confirm = Modal.confirm;
 const { TextArea } = Input;
+const Option = Select.Option;
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
 	constructor(props) {
@@ -17,13 +18,58 @@ class HomeworkCenter extends React.Component {
 			changePhone:0,
 			phone:store.get('wrongBookNews').phone,
 			name:store.get('wrongBookNews').userName,
-			headUrl:store.get('wrongBookNews').avatarUrl  
+			headUrl:store.get('wrongBookNews').avatarUrl,
+			subjectId:100  
 		}
+
 	}
+	getGradeName(){
+		let userData=this.props.state.userData
+		let str=''
+		if(userData.subjectName!=null){
+			str+=userData.subjectName
+		}
+		if(userData.gradeName!=null){
+			str+='—'+userData.gradeName
+		}
+		return str
+		
+	}
+	getSub() {
+		//return
+		let subList =  this.props.state.allSubList ;
+
+		let subName=this.props.state.userData!==undefined?this.props.state.userData.subjectName:''
+		this.props.state.userData!==undefined?this.state.subjectId=this.props.state.userData.subjectId:100
+
+		if(subList && subList.length> 0 && subName != ''){
+			return(
+				<Select
+						
+						style={{ width: 300}}
+						placeholder="学科"
+						defaultValue={subName}
+						optionFilterProp="children"
+						onChange={(value)=>{
+							this.state.subjectId=value
+						}}
+						
+				>
+					{
+						subList.map((item,i) =>(
+							<Option key={i} value={item.v}>{item.k}</Option>
+						))
+					}
+			</Select>
+			)
+		}else{
+
+		}
+		} 
 	render() {
 		let userNews = store.get('wrongBookNews')
 		let classArray = this.props.state.classList1.data
-		console.log('userNews',userNews,classArray,	userNews.classes)
+		let userData=this.props.state.userData
 		return(
 			<Layout>
 				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
@@ -55,7 +101,10 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div className={style.schoolbox}>
 								{
-									userNews.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span></span></p>:''
+									userNews.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span>
+										{userData!=undefined? this.getGradeName():''}
+									
+									</span></p>:''
 								}
 							
 										
@@ -127,17 +176,20 @@ class HomeworkCenter extends React.Component {
 							</div>
 							<div style={{marginBottom:'30px'}}>						
 								<span style={{width:"100px",display:'inline-block'}}>学科：</span>
-								<Input maxLength={10} value={this.state.name}  style={{width:'300px'}}
-								onChange={(e)=>{
-									this.setState({name:e.target.value})
-								}}/>
+								{
+									this.getSub()
+								}
 							</div>
 							<Button style={{margin:'10px 100px'}} type="primary"
 								onClick={()=>{
 									let data ={
 										name:this.state.name,
 										phone:this.state.phone,
-										headUrl:this.state.headUrl
+										headUrl:this.state.headUrl,
+										
+									}
+									if(this.state.subjectId!==100){
+										data.subId=this.state.subjectId
 									}
 									this.props.dispatch({
 										type: 'userInfo/updateInfo',
@@ -160,6 +212,12 @@ class HomeworkCenter extends React.Component {
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'classHome/getClassList',
+		});
+		dispatch({
+			type: 'userInfo/getSubjectList',
+		});
+		dispatch({
+			type: 'userInfo/getUserInfo',
 		});
 	}
 }
