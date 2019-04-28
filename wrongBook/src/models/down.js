@@ -4,7 +4,6 @@ import {
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
 import { message } from 'antd';
-import { parseGeoJSON } from 'echarts/lib/export';
 export default {
 
 	namespace: 'down',

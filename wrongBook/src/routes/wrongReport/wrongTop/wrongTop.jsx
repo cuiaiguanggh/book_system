@@ -33,6 +33,15 @@ class ClassReport extends React.Component {
 									payload:value
 								});
 								this.props.dispatch({
+									type: 'report/changeMouth',
+									payload:0,
+								});
+								this.props.dispatch({
+									type: 'report/userId',
+									payload:'',
+								});
+								
+								this.props.dispatch({
 									type: 'temp/getUserSubjectList',
 									payload:value,
 								});

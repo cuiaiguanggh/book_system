@@ -13,8 +13,8 @@
   "dependencies": {
     "antd": "^3.11.6",
     "babel-plugin-import": "^1.11.0",
+    "console-polyfill": "^0.3.0",
     "dva": "^2.4.1",
-    "echarts": "^4.1.0",
     "moment": "^2.24.0",
     "qrcode.react": "^0.9.2",
     "react": "^16.8.6",
