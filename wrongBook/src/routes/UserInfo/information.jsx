@@ -184,9 +184,7 @@ class HomeworkCenter extends React.Component {
 								onClick={()=>{
 									let data ={
 										name:this.state.name,
-										phone:this.state.phone,
-										headUrl:this.state.headUrl,
-										
+										phone:this.state.phone,									
 									}
 									if(this.state.subjectId!==100){
 										data.subjectId=this.state.subjectId
