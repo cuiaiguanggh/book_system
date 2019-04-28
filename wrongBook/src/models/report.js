@@ -144,7 +144,6 @@ export default {
 		},
 		*queryQrStudentCount({payload},{put,select}) {
 			let {mouNow,userId} = yield select(state => state.report)
-			let {stuName} = yield select(state => state.down)
 			if(mouNow != 0){
 				payload.month = mouNow.v
 			}
