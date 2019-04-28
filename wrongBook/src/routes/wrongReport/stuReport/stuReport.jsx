@@ -37,65 +37,77 @@ class StuReport extends React.Component {
     }
 	menulist() {
 		let  studentList = this.props.state.studentList;
-		if(studentList.data.length > 0){
-			let current = this.props.state.stuName== '' ? studentList.data[0].userId:this.props.state.stuName
-			return (
-				<Menu 
-				// theme="dark" 
-				mode="inline" 
-				defaultSelectedKeys={[current]}
-				onClick={(e)=>{
-					this.setState({page:1})
-					this.props.dispatch({
-						type: 'down/stuName',
-						payload:e.key
-					});
-					this.props.dispatch({
-						type: 'report/userId',
-						payload:e.key
-					});
-					this.props.dispatch({
-						type:'report/qrStudentDetailList',
-						payload:[]
-					})
-					let data ={
-						classId:this.props.state.classId,
-						year:this.props.state.years,
-						subjectId:this.props.state.subId,
-						userId:e.key,
-						info:0,
-						pageSize:50,
-						pageNume:1
+		let current = this.props.state.userId ;
+		if(studentList.data.length > 0 ){
+			if(  current !== '' ){
+				return (
+					<Menu 
+					// theme="dark" 
+					mode="inline" 
+					defaultSelectedKeys={[current]}
+					onClick={(e)=>{
+						this.setState({page:1})
+						this.props.dispatch({
+							type: 'down/stuName',
+							payload:e.key
+						});
+						this.props.dispatch({
+							type: 'report/userId',
+							payload:e.key
+						});
+						this.props.dispatch({
+							type:'report/qrStudentDetailList',
+							payload:[]
+						})
+						let data ={
+							classId:this.props.state.classId,
+							year:this.props.state.years,
+							subjectId:this.props.state.subId,
+							userId:e.key,
+							info:0,
+							pageSize:50,
+							pageNume:1
+						}
+						if(this.props.state.mouNow != 0){
+							data.month = this.props.state.mouNow.v
+						}
+						this.props.dispatch({
+							type: 'report/userQRdetail',
+							payload:data
+						});
+						let dom = document.getElementsByClassName('down');
+						for(let i = 0 ; i < dom.length ; i ++ ) {
+							dom[i].innerHTML="加入错题篮";
+							dom[i].className= 'down'
+						}
+						this.props.dispatch({
+							type: 'down/delAllStu',
+						});
+					}}
+				>
+					{
+						studentList.data.map((item,i)=>(
+							<Menu.Item key={item.userId} style={{cursor:'pointer'}} title={item.userName}>
+								<div key={i} style={{overflow:'hidden'}}>
+									<span style={{float:'left',width:"70%",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.userName}</span>
+									<span style={{float:'right'}}>{item.wrongNum}道</span>
+								</div>
+							</Menu.Item>
+						))
 					}
-					if(this.props.state.mouNow != 0){
-						data.month = this.props.state.mouNow.v
-					}
-					this.props.dispatch({
-						type: 'report/userQRdetail',
-						payload:data
-					});
-					let dom = document.getElementsByClassName('down');
-					for(let i = 0 ; i < dom.length ; i ++ ) {
-						dom[i].innerHTML="加入错题篮";
-						dom[i].className= 'down'
-					}
-					this.props.dispatch({
-						type: 'down/delAllStu',
-					});
-				}}
-			>
-				{
-					studentList.data.map((item,i)=>(
-						<Menu.Item key={item.userId} style={{cursor:'pointer'}} title={item.userName}>
-							<div key={i} style={{overflow:'hidden'}}>
-								<span style={{float:'left',width:"70%",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{item.userName}</span>
-								<span style={{float:'right'}}>{item.wrongNum}道</span>
-							</div>
-						</Menu.Item>
-					))
-				}
-			</Menu>
-			)
+				</Menu>
+				)
+			}else{
+				return (
+					<Menu 
+					// theme="dark" 
+					mode="inline" 
+				>
+				</Menu>
+				)
+			}
+		}else{
+
 		}
 	}
 	questions() {

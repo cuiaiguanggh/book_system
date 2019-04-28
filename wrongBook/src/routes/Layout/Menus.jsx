@@ -1,3 +1,4 @@
+
 import React,{ Component } from "react";
 import 'antd/dist/antd.css';
 import {Menu, Icon,Layout,Popover,Select} from 'antd';
@@ -9,6 +10,8 @@ import store from 'store';
 import style from './Menus.less';
 import WrongTop from '../wrongReport/wrongTop/wrongTop'
 import moment from 'moment';
+
+
 const Option = Select.Option;
 const {
 	Header, Footer, Sider, Content,
@@ -186,6 +189,7 @@ class HomePageLeft extends Component {
 		let  value= ''
 		let userNews = store.get('wrongBookNews')
 		let rodeType = ''
+
 		if(!store.get('wrongBookNews') || store.get('wrongBookNews') == undefined){
 			this.props.dispatch(
 				routerRedux.push({
@@ -216,12 +220,20 @@ class HomePageLeft extends Component {
 		}else if(defaultKey.indexOf('workReport') ===0){
 			defaultKey = 'workDetail3'
 		}else if(defaultKey == ''){
-			if(userNews.rodeType == 10){
-				defaultKey = 'school'
-			}else if(userNews.rodeType == 20) {
-				defaultKey = 'grade'
+			if(userNews) {
+				if(userNews.rodeType == 10){
+					defaultKey = 'school'
+				}else if(userNews.rodeType == 20) {
+					defaultKey = 'grade'
+				}else{
+					defaultKey = 'workDetail1'
+				}
 			}else{
-				defaultKey = 'workDetail1'
+				this.props.dispatch(
+					routerRedux.push({
+						pathname: '/login'
+					})
+				)
 			}
 		}
 		const content = (

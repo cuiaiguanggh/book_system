@@ -127,7 +127,7 @@ class wrongTop extends React.Component {
                                         this.props.dispatch({
                                             type: 'down/delClassDown',
                                             payload:item.questionId
-                                        });
+                                        }); 
                                         this.props.dispatch({
                                             type: 'down/delClassDownPic',
                                             payload:item.picId
@@ -150,7 +150,7 @@ class wrongTop extends React.Component {
         timestamp = timestamp.substring(0, timestamp.length-3);  
         var websocket = null;
         //判断当前浏览器是否支持WebSocket
-        let url = 'ws://'+ dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
+        let url =  dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
         if ('WebSocket' in window) {
             websocket = new WebSocket(url);
         }

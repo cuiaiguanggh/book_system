@@ -11,7 +11,7 @@ const TabPane = Tabs.TabPane;
 const SubMenu = Menu.SubMenu;
 const userNews = store.get('wrongBookNews')
 //主界面内容
-class HomePageLeft extends Component {
+class StudentDetail extends Component {
 	constructor(props) {
 		super(props);
 		this.state={
@@ -249,4 +249,4 @@ export default connect((state) => ({
 		...state.classHome,
 		...state.temp,
 	}
-}))(HomePageLeft);
+}))(StudentDetail);

@@ -10,7 +10,7 @@ import style from './Menus.less';
 const SubMenu = Menu.SubMenu;
 const userNews = store.get('wrongBookNews')
 //主界面内容
-class HomePageLeft extends Component {
+class Top extends Component {
 	constructor(props) {
 		super(props);
 		this.state={
@@ -100,4 +100,4 @@ export default connect((state) => ({
 	state: {
 		...state.homePage,
 	}
-}))(HomePageLeft);
+}))(Top);
