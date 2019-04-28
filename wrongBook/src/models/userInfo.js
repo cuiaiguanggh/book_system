@@ -199,7 +199,10 @@ export default {
 				news.userName = payload.name
 				news.avatarUrl = payload.headUrl
 				store.set('wrongBookNews',news);
-				yield put(routerRedux.push('/userInfo'))
+				yield put ({
+					type:'getUserInfo'
+				})
+				message.success('修改成功')
 
 			}else{
 				if(res.data.msg == '无效TOKEN!'){

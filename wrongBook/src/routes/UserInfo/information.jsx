@@ -189,7 +189,7 @@ class HomeworkCenter extends React.Component {
 										
 									}
 									if(this.state.subjectId!==100){
-										data.subId=this.state.subjectId
+										data.subjectId=this.state.subjectId
 									}
 									this.props.dispatch({
 										type: 'userInfo/updateInfo',
