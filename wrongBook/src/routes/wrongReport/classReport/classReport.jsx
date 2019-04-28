@@ -1,12 +1,16 @@
 import React from 'react';
 import { Button, message, Layout,Modal,Select ,Icon
 } from 'antd';
-import {dataCenter} from '../../../config/dataCenter'
+import {dataCenter , dataCen} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
+import QRCode from 'qrcode.react';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 import { request } from 'http';
+import TracksVideo from '../TracksVideo/TracksVideo';
+import store from 'store';
+
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -27,6 +31,9 @@ class wrongTop extends React.Component {
             page:1,
             hei:0,
             next:true,
+            visible1:false,
+            userId:'',
+            uqId:''
 	    };
     }
 	handleScroll(e){
@@ -61,12 +68,15 @@ class wrongTop extends React.Component {
                                 name = '移出错题篮'
                             }
                         }
+                        let j = i;
                         return(
                         <div key={i} className={style.questionBody}>
                             <div className={style.questionTop}>
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
-                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{item.wrongNum}</span>人</span>
+                                <span>答错<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.wrongNum}</span>人</span>
                                 {/* <span>{item.picId}</span> */}
+                                
+                                <TracksVideo type={item} num={j}></TracksVideo>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
                                 // this.setState({visible:true,key:i,showAns:ans[0]})
@@ -131,7 +141,95 @@ class wrongTop extends React.Component {
                 </div>
 			</div>
 		)
-	}
+    }
+    addVie() {
+		const userId = store.get('wrongBookNews').userId
+        let value = 'http://hw-test.mizholdings.com/wx/video?uqId='+this.props.state.uqId+'&authorId='+ userId
+        let This = this;
+        var timestamp = new Date().getTime() + "";
+        timestamp = timestamp.substring(0, timestamp.length-3);  
+        var websocket = null;
+        //判断当前浏览器是否支持WebSocket
+        let url = 'ws://'+ dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
+        if ('WebSocket' in window) {
+            websocket = new WebSocket(url);
+        }
+        else {
+            alert('当前浏览器  Not support websocket');
+        }
+        //连接发生错误的回调方法
+        websocket.onerror = function () {
+            console.log("WebSocket连接发生错误");
+        };
+        //连接成功建立的回调方法
+        websocket.onopen = function () {
+            console.log("WebSocket连接成功");
+        }
+        //接收到消息的回调方法
+        websocket.onmessage = function (event) {
+            let data = JSON.parse(event.data);
+            let json ;
+            if ( data.url ) {
+                json = JSON.parse(data.url)
+                message.success('视频上传成功')
+                This.props.dispatch({
+                    type: 'report/updataVideo',
+                    payload:{
+                        video:json,
+                        key:This.props.state.num
+                    }
+                });
+                This.props.dispatch({
+                    type: 'report/updataVideo',
+                    payload:{
+                        video:json,
+                        key:This.props.state.num
+                    }
+                });
+                
+                // This.props.dispatch({
+                //     type: 'report/videlUrl',
+                //     payload:json.url
+                // });
+                // This.props.dispatch({
+                //     type: 'report/visible1',
+                //     payload:true
+                // });
+            }
+            console.log(event.data)
+        }
+        //连接关闭的回调方法
+        websocket.onclose = function () {
+            console.log("WebSocket连接关闭");
+        }
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
+        //防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            closeWebSocket();
+        }
+        //关闭WebSocket连接
+        function closeWebSocket() {
+            websocket.close();
+        }
+
+
+
+        return(
+            <div style={{textAlign:'center',marginTop:20}}>
+                <QRCode className='qrcode' size={200} value={value} />
+                <h2 style={{marginTop:20}}>手机微信扫码，录制视频讲解</h2>
+                {/* <span className={style.updataCode} onClick={() =>{
+                    this.props.dispatch({
+                        type: 'report/queryTeachVideo',
+                        payload:{
+                            questionId:this.props.state.questionId,
+                            key:this.props.state.num
+                        }
+                    });
+                }}>确认</span> */}
+            </div>
+        )
+    }
 	showQuestion(){
 		let QuestionDetail = this.props.state.qrdetailList;
         let key = this.state.key;
@@ -197,7 +295,8 @@ class wrongTop extends React.Component {
             //     <Empty />
             // )
         }
-	}
+    }
+    
 	render() {
 		let mounthList = this.props.state.mounthList;
 		let key = this.state.key;
@@ -272,8 +371,6 @@ class wrongTop extends React.Component {
                             style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
                             loading={this.state.loading} 
                             onClick={()=>{
-                                console.log(this.props.state.classDownPic)
-                                console.log(this.props.state.classDownPic.join(','))
                                 if(this.props.state.classDown.length!= 0){
                                     let load = !this.state.loading
                                     this.setState({loading:load})
@@ -400,6 +497,70 @@ class wrongTop extends React.Component {
                         }}
                         type="right" />
                 </Modal>
+                <Modal
+                    visible={this.props.state.visible}
+                    footer={null}
+                    width= '600px'
+                    className={style.vidioCode}
+                    onOk={()=>{
+                        this.props.dispatch({
+                            type: 'report/visible',
+                            payload:false
+                        });
+                    }}
+                    onCancel={()=>{
+                        this.props.dispatch({
+                            type: 'report/visible',
+                            payload:false
+                        });
+                    }}>
+                        {
+                            this.props.state.visible ? this.addVie() : ''
+                        }
+                </Modal>
+
+                <Modal
+                    visible={this.props.state.visible1}
+                    footer={null}
+                    // style={{padding:0}}
+                    className={style.vidioCode1}
+                    onOk={()=>{
+                        this.props.dispatch({
+                            type: 'report/visible1',
+                            payload:false
+                        });
+                        this.props.dispatch({
+                            type: 'report/videlUrl',
+                            payload:''
+                        });
+                    }}
+                    onCancel={()=>{
+                        this.props.dispatch({
+                            type: 'report/visible1',
+                            payload:false
+                        });
+                        this.props.dispatch({
+                            type: 'report/videlUrl',
+                            payload:''
+                        });
+                    }}>
+                        <div>
+                            <video 
+                                id="video" 
+                                controls="controls"
+                                 width="100%" 
+                                 src={this.props.state.videlUrl}
+                                 controls  >
+                            </video>
+                            {/* <Player
+                                style={{width:'400px'}}
+                                width = '400px'
+                                playsInline
+                                poster="/assets/poster.png"
+                                src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
+                            /> */}
+                        </div>
+                </Modal>
             </Content>
 		);
 	  }
@@ -429,6 +590,7 @@ export default connect((state) => ({
 	state: {
 		...state.report,
 		...state.temp,
-		...state.down,
+        ...state.down,
+        ...state.example,
 	}
 }))(wrongTop);

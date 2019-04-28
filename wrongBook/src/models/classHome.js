@@ -292,7 +292,7 @@ export default {
 		},
 		*deleteClass({payload}, {put, select}) {
 			// 删除班级
-			let classInfoPayload  = yield select(state => state.classHome)
+			let {classInfoPayload}  = yield select(state => state.classHome)
 			let res = yield deleteClass(payload);
 			if(res.hasOwnProperty("err")){
 				// yield put(routerRedux.push('/login'))

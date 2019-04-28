@@ -231,6 +231,10 @@ class EditableTable extends React.Component {
 												type: 'classHome/deleteClass',
 												payload:data
 											});
+											This.props.dispatch({
+												type: 'classHome/classList',
+												payload:[]
+											});
 										},
 										onCancel() {
 											console.log('Cancel');

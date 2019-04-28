@@ -15,6 +15,7 @@ app.model(require('./models/userInfo').default);
 app.model(require('./models/temp').default);
 app.model(require('./models/report').default);
 app.model(require('./models/down').default);
+app.model(require('./models/example').default);
 
 // 4. Router
 app.router(require('./router').default);

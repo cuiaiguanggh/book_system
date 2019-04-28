@@ -174,7 +174,7 @@ class ClassReport extends React.Component {
 							<div key={i} className={style.questionBody}>
 								<div className={style.questionTop}>
 									<span style={{marginRight:"20px"}}>第{i+1}题</span>
-									<span>答错<span style={{color:"#1890ff",fontWeight:'bold'}}>{won}</span>人</span>
+									<span>答错<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{won}</span>人</span>
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}} onClick={()=>{
 										if(item.wrongScore != 0 ) {

@@ -148,8 +148,6 @@ export default {
 						payload:res.data
 					})
 	
-					
-					
 					yield put ({
 						type: 'getUserSubjectList',
 						payload:res.data.data[0].classId
@@ -169,9 +167,6 @@ export default {
 			}
 			
 		},
-
-
-
 
 		*getUserSubjectList({payload}, {put, select}) {
 			// 返回教师所在班级科目

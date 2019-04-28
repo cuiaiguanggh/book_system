@@ -45,7 +45,7 @@ class HomeworkCenter extends React.Component {
 			editable: true,
 			render: (text, record) => (
 				<div
-				className='space'
+				// className='space'
 					onClick={() =>{
 					}}>
 					{text}
@@ -61,7 +61,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'手机号',
+			title:<div className='space'>手机号</div>,
 			dataIndex:'phone',
 			key:'phone',
 			editable: true,
@@ -75,7 +75,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'学科',
+			title:<div className='space'>学科</div>,
 			dataIndex:'subJec',
 			key:'subJec',
 			editable: true,
@@ -90,7 +90,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'错题量',
+			title:<div className='space'>错题量</div>,
 			dataIndex:'wrongNum',
 			key:'wrongNum',
 			editable: true,
@@ -104,7 +104,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'操作',
+			title:<div className='space'>操作</div>,
 			editable: true,
 			render: (text, record) => {
 				const rodeType = store.get('wrongBookNews').rodeType
@@ -112,6 +112,7 @@ class HomeworkCenter extends React.Component {
 					return(
 						<div>
 							{
+								
 								record.OnwerTeacher == 1 ?
 								<span style={{color:'#fff',display:"inline-block",width:'60px',cursor:'pointer',margin:'0 10px',padding:'5px 0px',background:'#b6bac2',borderRadius:'5px',textAlign:'center'}} 
 								>已任命</span>:
@@ -168,7 +169,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'错题量',
+			title:<div className='space'>错题量</div>,
 			dataIndex:'wrongNum',
 			key:'wrongNum',
 			editable: false,
@@ -182,7 +183,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title:'操作',
+			title:<div className='space'>操作</div>,
 			editable: true,
 			render: (text, record) => {
 				const rodeType = store.get('wrongBookNews').rodeType
@@ -310,7 +311,9 @@ class HomeworkCenter extends React.Component {
 						p["userId"] = det.userId;
 						p["head"] = det.avatarUrl ? det.avatarUrl:'http://images.mizholdings.com/face/default/02.gif'
 						p["name"] = det.userName;
+						p['subJec'] = det.subject;
 						p['phone'] = det.phone
+						p['wrongNum'] = det.questionNum;
 						p['OnwerTeacher'] = det.admin 
 						dataSource.push(p);
 					}
@@ -319,6 +322,8 @@ class HomeworkCenter extends React.Component {
 					p["userId"] = det.userId;
 					p["head"] = det.avatarUrl ? det.avatarUrl:'http://images.mizholdings.com/face/default/02.gif'
 					p["name"] = det.userName;
+					p['wrongNum'] = det.questionNum;
+					p['subJec'] = det.subject;
 					p['phone'] = det.phone
 					p['OnwerTeacher'] = det.admin 
 					dataSource.push(p);

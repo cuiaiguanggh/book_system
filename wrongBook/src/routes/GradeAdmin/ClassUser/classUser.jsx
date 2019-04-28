@@ -45,7 +45,6 @@ class StuReport extends React.Component {
 		let head = hash.split('&id=');
 		let link = `classUser#${head[0]}&id=`
 		let userNews = store.get('wrongBookNews')
-		console.log(this.props.state.memType)
 		if(e.key !== id){
 			if(userNews.rodeType === 10){
 
