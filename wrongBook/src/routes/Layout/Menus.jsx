@@ -237,17 +237,24 @@ class HomePageLeft extends Component {
 			}
 		}
 		const content = (
-            <div className={style.userPover}>
-                <p onClick={()=>{
-				  	this.props.dispatch(
+			<div className={style.userPover}>
+				<p onClick={()=>{
+					this.props.dispatch(
 						routerRedux.push({
 							pathname: '/UserInfo',
-                        })
+						})
 					)
-			  }}>个人信息</p>
-              <p onClick={()=>{
-				  store.set('wrongBookNews','')
-				  	this.props.dispatch(
+				}}>个人信息</p>
+				<p onClick={()=>{
+					this.props.dispatch(
+						routerRedux.push({
+							pathname: '/fin_psd',
+						})
+					)
+				}}>个人信息</p>
+				<p onClick={()=>{
+					store.set('wrongBookNews','')
+						this.props.dispatch(
 						routerRedux.push({
 							pathname: '/login',
 							})
@@ -269,8 +276,8 @@ class HomePageLeft extends Component {
 						type: 'temp/subName',
 						payload:''
 					});
-			  }}>退出</p>
-            </div>
+				}}>退出</p>
+			</div>
 			);
 		let code = (
 			<div className={style.qrcode}>
@@ -421,6 +428,7 @@ class HomePageLeft extends Component {
 		dispatch({
 			type: 'report/getUserSubjectList'
 		});
+
 	}
 }
 
