@@ -25,6 +25,7 @@
             box-shadow: 0 0 9px 0 rgba(162, 162, 162, 0.24);
             border: solid 1px #ebeef5;
             // float: right;
+            margin:auto;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -75,6 +76,7 @@
                         position: absolute;
                         color:#fff;
                         top:-45px;
+                        transform: scale(0);
                     }
                     &:before{
                         content: '';
@@ -90,7 +92,10 @@
                         position: absolute;
                         color: #fff;
                         top: -50px;
-                    
+                        transform: scale(0);
+                    }
+                    &:hover:after,&:hover::before{
+                        transform: scale(1);
                     }
                 }
             }
