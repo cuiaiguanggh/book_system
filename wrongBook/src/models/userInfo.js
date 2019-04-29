@@ -25,9 +25,10 @@ export default {
 		adminId:'',
 		classInfoPayload:[],
 		schoolList:[],
-        schoolId:'',
-        userList:[],
-        classId:'',
+		schoolId:'',
+		userList:[],
+		classId:'',
+		userData:[]
 	},
 	reducers: {
 		classList(state, {payload}) {

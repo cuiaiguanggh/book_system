@@ -48,8 +48,11 @@ class HomePage extends Component {
                     {/* <img src={require('../../images/dl-sj-n@3x.png')} /> */}
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
-                      <Input maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
-                        this.setState({phone:e.target.value})
+                      <Input value = {this.props.state.phone} maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
+                        this.props.dispatch({
+                          type : 'login/phone',
+                          payload:e.target.value
+                        });
                       }}/>
                     </div>
                   </div>
@@ -139,8 +142,13 @@ class HomePage extends Component {
               </p>
               <p className= { style.toLogin} onClick={()=>{
                 this.props.dispatch({
-                  type : 'login/reduceTime',
+                  type : 'login/vcOk',
                 });
+                this.props.dispatch(
+                  routerRedux.push({
+                    pathname: '/loginPhone',
+                    })
+                )
               }
               }>
                 3秒后自动跳转

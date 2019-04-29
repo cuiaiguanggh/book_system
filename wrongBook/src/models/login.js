@@ -24,6 +24,7 @@ export default {
 		certification: '',
 		vc:0,
 		upd:0,
+		phone:''
 	},
 	reducers: {
 		changeUsername(state, {payload}) {
@@ -42,6 +43,9 @@ export default {
 			let vc = 0;
 			let upd = 0;
 			return {...state, ...{vc,upd}};
+		},
+		phone(state, {payload}) {
+			return {...state, phone: payload};
 		},
 	},
 	subscriptions: {
@@ -129,6 +133,10 @@ export default {
 			let res = yield updateInfo(payload);
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
+					yield put ({
+						type: 'phone',
+						payload:''
+					})
 					yield put ({
 						type: 'upd',
 						payload:1

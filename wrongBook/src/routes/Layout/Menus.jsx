@@ -189,7 +189,7 @@ class HomePageLeft extends Component {
 		let  value= ''
 		let userNews = store.get('wrongBookNews')
 		let rodeType = ''
-
+		let user = this.props.state.userData;
 		if(!store.get('wrongBookNews') || store.get('wrongBookNews') == undefined){
 			this.props.dispatch(
 				routerRedux.push({
@@ -246,12 +246,16 @@ class HomePageLeft extends Component {
 					)
 				}}>个人信息</p>
 				<p onClick={()=>{
+					this.props.dispatch({
+						type: 'login/phone',
+						payload:user.phone
+					});
 					this.props.dispatch(
 						routerRedux.push({
 							pathname: '/fin_psd',
 						})
 					)
-				}}>个人信息</p>
+				}}>修改密码</p>
 				<p onClick={()=>{
 					store.set('wrongBookNews','')
 						this.props.dispatch(
@@ -371,7 +375,7 @@ class HomePageLeft extends Component {
 												<div 
 												className="btnBack" 
 												type="primary">
-													<span>{userNews.userName}</span>
+													<span>{user != '' ? user.name : ''}</span>
 													<Icon type="caret-down" style={{color:"#e1e1e1"}} />
 												</div>
 											</Popover>
@@ -418,7 +422,9 @@ class HomePageLeft extends Component {
 				}
 			})
 		}
-		
+		dispatch({
+			type: 'userInfo/getUserInfo',
+		});
 		dispatch({
 			type: 'temp/getClassList',
 		});
@@ -436,5 +442,6 @@ export default connect((state) => ({
 	state: {
 		...state.homePage,
 		...state.temp,
+		...state.userInfo,
 	}
 }))(HomePageLeft);
