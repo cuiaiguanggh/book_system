@@ -332,10 +332,6 @@ class HomeworkCenter extends React.Component {
 		}else{
 			dataSource = []
 		}
-		
-		
-			
-			
 		  let columns = this.state.current === 'teacher' ?this.tea:this.stu
 		  
 			let sublist = this.props.state.sublist;

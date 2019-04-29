@@ -90,7 +90,7 @@ class HomePage extends Component {
                     {/* <img src={require('../../images/dl-sj-n@3x.png')} /> */}
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>新密码</p>
-                      <Input value={this.state.pass} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
+                      <Input type="password" value={this.state.pass} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
                         this.setState({pass:e.target.value})
                       }}/>
                     </div>
@@ -98,7 +98,7 @@ class HomePage extends Component {
                   <div className={style.loginPass}>
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}></p>
-                      <Input value={this.state.passa}  placeholder="再次输入新密码" style={{border:'none',padding:'0 10px',height:'42px'}} onChange={(e)=>{
+                      <Input type="password" value={this.state.passa}  placeholder="再次输入新密码" style={{border:'none',padding:'0 10px',height:'42px'}} onChange={(e)=>{
                         this.setState({passa:e.target.value})
                       }} />
                     </div>
@@ -128,13 +128,23 @@ class HomePage extends Component {
                 }else{
                   message.warning('两次密码必须一致')
                 }
-                // this.props.
               }}>提交</div>
             }
            
         </div>:
           <div className={style.loginInner}>
+              <img src= {require('../images/dl-cg-n.png')}></img>
+              <p className={style.uploadSucc}>
               修改密码成功
+              </p>
+              <p className= { style.toLogin} onClick={()=>{
+                this.props.dispatch({
+                  type : 'login/reduceTime',
+                });
+              }
+              }>
+                3秒后自动跳转
+              </p>
           </div>
         }
         

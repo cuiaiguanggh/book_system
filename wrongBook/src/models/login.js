@@ -9,6 +9,12 @@ import {routerRedux} from 'dva/router';
 import store from 'store';
 import { message } from 'antd';
 
+const delay = (ms) => new Promise((resolve) => {
+	console.log(ms)
+	setTimeout(resolve, ms);
+  
+  });
+
 export default {
 
 	namespace: 'login',
@@ -31,6 +37,11 @@ export default {
 		},
 		upd(state, {payload}) {
 			return {...state, upd: payload};
+		},
+		vcOk(state, {payload}) {
+			let vc = 0;
+			let upd = 0;
+			return {...state, ...{vc,upd}};
 		},
 	},
 	subscriptions: {
@@ -113,6 +124,8 @@ export default {
 		},
 		*updateInfo({payload}, {put, select}) {
 			// 校验验证码
+			let {time} = yield select(state => state.login);
+
 			let res = yield updateInfo(payload);
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
@@ -120,10 +133,31 @@ export default {
 						type: 'upd',
 						payload:1
 					})
+					yield put ({
+						type: 'reduceTime',
+					})
 				}else{
 					message.warning(res.data.msg)
 					yield put(routerRedux.push('/login'))
 				}
+		},
+		*reduceTime({payload}, {put, call}) {
+			// 校验验证码
+			yield call(delay, 3000);
+			yield put ({
+				type: 'vcOk',
+			})
+			yield put(routerRedux.push('/login'))
+			// yield put({ })
+			// setTimeout(
+			// 	console.log(1111)
+			// 		// yield put(routerRedux.push('/login'))
+			// ,30000)
+			// setTimeout(
+			// 	yield put ({
+			// 		type: 'vcOk',
+			// 	})
+			// ,30000)
 		},
 	},
   };
