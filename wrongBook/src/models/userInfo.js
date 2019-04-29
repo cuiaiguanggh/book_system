@@ -208,7 +208,7 @@ export default {
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
 				}else if(res.data.msg == '服务器异常'){
-
+					message.error('信息修改失败:'+res.data.msg)
 				}else{
 					message.error(res.data.msg)
 				}
