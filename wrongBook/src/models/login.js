@@ -24,7 +24,8 @@ export default {
 		certification: '',
 		vc:0,
 		upd:0,
-		phone:''
+		time:0,
+		phone:'',
 	},
 	reducers: {
 		changeUsername(state, {payload}) {
@@ -46,6 +47,9 @@ export default {
 		},
 		phone(state, {payload}) {
 			return {...state, phone: payload};
+		},
+		time(state, {payload}) {
+			return {...state, time: payload};
 		},
 	},
 	subscriptions: {
@@ -97,8 +101,13 @@ export default {
 						}))
 					}
 				}else{
-					message.warning(res.data.msg)
-					yield put(routerRedux.push('/login'))
+					if(res.data.msg == '无效TOKEN!'){
+						yield put(routerRedux.push('/login'))
+					}else if(res.data.msg == '服务器异常'){
+	
+					}else{
+						message.error(res.data.msg)
+					}
 				}
 		},
 		*getVC({payload}, {put, select}) {
@@ -108,8 +117,13 @@ export default {
 				if(res.data.result === 0 ){
 					
 				}else{
-					message.warning(res.data.msg)
-					yield put(routerRedux.push('/login'))
+					if(res.data.msg == '无效TOKEN!'){
+						yield put(routerRedux.push('/login'))
+					}else if(res.data.msg == '服务器异常'){
+	
+					}else{
+						message.error(res.data.msg)
+					}
 				}
 		},
 		*checkVC({payload}, {put, select}) {
@@ -122,8 +136,13 @@ export default {
 						payload:1
 					})
 				}else{
-					message.warning(res.data.msg)
-					yield put(routerRedux.push('/login'))
+					if(res.data.msg == '无效TOKEN!'){
+						yield put(routerRedux.push('/login'))
+					}else if(res.data.msg == '服务器异常'){
+	
+					}else{
+						message.error(res.data.msg)
+					}
 				}
 		},
 		*updateInfo({payload}, {put, select}) {
@@ -145,8 +164,13 @@ export default {
 						type: 'reduceTime',
 					})
 				}else{
-					message.warning(res.data.msg)
-					yield put(routerRedux.push('/login'))
+					if(res.data.msg == '无效TOKEN!'){
+						yield put(routerRedux.push('/login'))
+					}else if(res.data.msg == '服务器异常'){
+	
+					}else{
+						message.error(res.data.msg)
+					}
 				}
 		},
 		*reduceTime({payload}, {put, call}) {
@@ -156,16 +180,6 @@ export default {
 				type: 'vcOk',
 			})
 			yield put(routerRedux.push('/login'))
-			// yield put({ })
-			// setTimeout(
-			// 	console.log(1111)
-			// 		// yield put(routerRedux.push('/login'))
-			// ,30000)
-			// setTimeout(
-			// 	yield put ({
-			// 		type: 'vcOk',
-			// 	})
-			// ,30000)
 		},
 	},
   };
