@@ -37,12 +37,20 @@ class HomePage extends Component {
             {
               this.props.state.vc == 0?
               <div className ={style.findMenu}>
-                <span style={{color:'#00b1ff'}}>1.验证手机号</span> 
+                <span style={{color:'#00b1ff',cursor:'pointer'}} onClick={()=>{
+                  this.props.dispatch({
+                    type : 'login/vcOk',
+                  });
+                }}>1.验证手机号</span> 
                 <span>></span>
                 <span>2.设置新密码</span> 
               </div>:
               <div className ={style.findMenu}>
-                <span style={{color:'#00b1ff'}}>1.验证手机号</span> 
+                <span style={{color:'#00b1ff',cursor:'pointer'}} onClick={()=>{
+                  this.props.dispatch({
+                    type : 'login/vcOk',
+                  });
+                }}>1.验证手机号</span> 
                 <span>></span>
                 <span style={{color:'#00b1ff',fontWeight:'bold'}}>2.设置新密码</span> 
               </div>
@@ -132,7 +140,7 @@ class HomePage extends Component {
                   message.warning('手机号或验证码不能为空')
                 }else{
                   let data ={
-                    phone:this.state.phone,
+                    phone:this.props.state.phone,
                     vc:this.state.code,
                   }
                   this.props.dispatch({

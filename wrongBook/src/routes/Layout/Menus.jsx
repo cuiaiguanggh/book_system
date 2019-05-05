@@ -375,7 +375,7 @@ class HomePageLeft extends Component {
 												<div 
 												className="btnBack" 
 												type="primary">
-													<span>{user != '' ? user.userName : ''}</span>
+													<span>{user != '' ? user.name : ''}</span>
 													<Icon type="caret-down" style={{color:"#e1e1e1"}} />
 												</div>
 											</Popover>
@@ -422,9 +422,9 @@ class HomePageLeft extends Component {
 				}
 			})
 		}
-		// dispatch({
-		// 	type: 'userInfo/getUserInfo',
-		// });
+		dispatch({
+			type: 'userInfo/getUserInfo',
+		});
 		dispatch({
 			type: 'temp/getClassList',
 		});
