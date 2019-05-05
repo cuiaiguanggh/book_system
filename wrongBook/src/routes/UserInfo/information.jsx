@@ -80,7 +80,7 @@ class HomeworkCenter extends React.Component {
 						<div className={style.headport_container}>
 							<div className={style.headport}>
 								<div className={style.avater_box}>
-									<img  alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
+									<img  alt='' src={userData.avatarUrl!= null || userData.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userData.avatarUrl  }/>
 								</div>
 								
 								<div className={style.namebox} style={{display:'inline-block',verticalAlign:"bottom"}}>
