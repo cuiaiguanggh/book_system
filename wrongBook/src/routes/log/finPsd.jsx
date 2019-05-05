@@ -99,7 +99,6 @@ class HomePage extends Component {
                           
                       }} type="primary">获取验证码</Button>:
                       <Button className={style.codeButton} type="primary" >
-                        {/* 获取验证码 */}
                         重新发送( {Time}s )
                       </Button>
                     }

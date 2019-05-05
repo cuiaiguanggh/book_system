@@ -19,7 +19,7 @@ class HomeworkCenter extends React.Component {
 			phone:store.get('wrongBookNews').phone,
 			name:store.get('wrongBookNews').userName,
 			headUrl:store.get('wrongBookNews').avatarUrl,
-			subjectId:100  
+			subjectId:100
 		}
 
 	}
@@ -41,17 +41,20 @@ class HomeworkCenter extends React.Component {
 
 		let subName=this.props.state.userData!==undefined?this.props.state.userData.subjectName:''
 		this.props.state.userData!==undefined?this.state.subjectId=this.props.state.userData.subjectId:100
-
-		if(subList && subList.length> 0 && subName != ''){
+		let subjectId = this.props.state.subjectId;
+		if(subList && subList.length> 0 && subjectId != ''){
 			return(
 				<Select
 						
 						style={{ width: 300}}
 						placeholder="学科"
-						defaultValue={subName}
+						value={subjectId}
 						optionFilterProp="children"
 						onChange={(value)=>{
-							this.state.subjectId=value
+							this.props.dispatch({
+								type: 'userInfo/subjectId',
+								payload:value
+							});
 						}}
 						
 				>
@@ -70,6 +73,7 @@ class HomeworkCenter extends React.Component {
 		let userNews = store.get('wrongBookNews')
 		let classArray = this.props.state.classList1.data
 		let userData=this.props.state.userData
+		console.log(userNews,userData)
 		return(
 			<Layout>
 				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
@@ -187,7 +191,7 @@ class HomeworkCenter extends React.Component {
 										phone:this.state.phone,									
 									}
 									if(this.state.subjectId!==100){
-										data.subjectId=this.state.subjectId
+										data.subjectId=this.props.state.subjectId
 									}
 									this.props.dispatch({
 										type: 'userInfo/updateInfo',

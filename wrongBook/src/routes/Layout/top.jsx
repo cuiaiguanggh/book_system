@@ -46,52 +46,53 @@ class Top extends Component {
 				leftName = userNews.schoolName
 			}
 		}
-		console.log(userNews.avatarUrl!= null || userNews.avatarUrl != 'null')
 		return (
 				<div className="navClass">
-				{
-					userNews ==undefined?'':
-					<div >
-						<Link to="/"  style={{cursor:'pointer'}} replace >
-							{/* <img alt='' style={{height:'40px'}} src={head}/> */}
-							<img alt='' style={{height:'40px'}} src={require('../images/t_nv_ig_n.png')}/>
-						</Link>
+					<div  style={{height:'89px',background:'#fff',borderBottom:"1px solid #e3e9f3",lineHeight:"90px"}}>
+						<div style ={{width:"1200px",margin:'0 auto'}}>
+							<Link to="/"  style={{cursor:'pointer'}} replace >
+								{/* <img alt='' style={{height:'40px'}} src={head}/> */}
+								<img alt='' style={{height:'40px'}} src={require('../images/t_nv_ig_n.png')}/>
+							</Link>
 
-						<span style={{marginLeft:50,fontSize:16}}>
-						{leftName}
-						</span>
-						{
-							this.props.type == 'findPsd' ?'' :
-							<div style={{float:'right',display:"inline-block"}}>
-								<img style={{height:'40px'}} alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
-								<Popover
-									content={content} 
-									// trigger="click"
-									type="primary"
-									placement="bottom"
-								>
-									<div 
-									style={{float:'right',margin:'0 10px'}}
-									type="primary">
-										<span>{userNews.userName}</span>
-									</div>
-								</Popover>
-							</div>
-						}
+							<span style={{marginLeft:50,fontSize:16}}>
+							{leftName}
+							</span>
+							{
+								this.props.type == 'findPsd' ?'' :
+								<div style={{float:'right',display:"inline-block"}}>
+									<img style={{height:'40px'}} alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
+									<Popover
+										content={content} 
+										// trigger="click"
+										type="primary"
+										placement="bottom"
+									>
+										<div 
+										style={{float:'right',margin:'0 10px'}}
+										type="primary">
+											<span>{userNews.userName}</span>
+										</div>
+									</Popover>
+								</div>
+							}
+						</div>
 					</div>
-				}
 					
 				</div>
 		)
 	}
 	componentDidMount () {
 		let userNews = store.get('wrongBookNews')
+		
 		if(userNews == undefined){
-			this.props.dispatch(
-				routerRedux.push({
-					pathname: '/login',
-					})
-			)
+			if(this.props.type !== 'findPsd'){
+				this.props.dispatch(
+					routerRedux.push({
+						pathname: '/login',
+						})
+				)
+			}
 		}
 	}
 }
