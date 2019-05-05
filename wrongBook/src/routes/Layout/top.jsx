@@ -54,7 +54,6 @@ class Top extends Component {
 								{/* <img alt='' style={{height:'40px'}} src={head}/> */}
 								<img alt='' style={{height:'40px'}} src={require('../images/t_nv_ig_n.png')}/>
 							</Link>
-
 							<span style={{marginLeft:50,fontSize:16}}>
 							{leftName}
 							</span>
