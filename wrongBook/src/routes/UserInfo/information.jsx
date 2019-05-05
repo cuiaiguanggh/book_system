@@ -38,8 +38,6 @@ class HomeworkCenter extends React.Component {
 	getSub() {
 		//return
 		let subList =  this.props.state.allSubList ;
-
-		let subName=this.props.state.userData!==undefined?this.props.state.userData.subjectName:''
 		this.props.state.userData!==undefined?this.state.subjectId=this.props.state.userData.subjectId:100
 		let subjectId = this.props.state.subjectId;
 		if(subList && subList.length> 0 && subjectId != ''){
@@ -73,7 +71,7 @@ class HomeworkCenter extends React.Component {
 		let userNews = store.get('wrongBookNews')
 		let classArray = this.props.state.classList1.data
 		let userData=this.props.state.userData
-		console.log(userNews,userData)
+		// console.log(userNews,userData)
 		return(
 			<Layout>
 				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
@@ -86,9 +84,9 @@ class HomeworkCenter extends React.Component {
 								</div>
 								
 								<div className={style.namebox} style={{display:'inline-block',verticalAlign:"bottom"}}>
-									<p>{userNews.userName}</p>
+									<p>{userData.name}</p>
 									{
-										classArray !== undefined&&userNews.rodeType==30 ?
+										classArray !== undefined&&userData.rodeType==30 ?
 										<div style={{padding:'0 10px'}}>
 										{
 											classArray.map((item,i) =>(
@@ -105,30 +103,18 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div className={style.schoolbox}>
 								{
-									userNews.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span>
+									userData.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span>
 										{userData!=undefined? this.getGradeName():''}
 									
 									</span></p>:''
 								}
 							
 										
-										<p><img src={require('../images/school@2x.png')} alt=""/><span>{userNews.schoolName}</span></p>	
+										<p><img src={require('../images/school@2x.png')} alt=""/><span>{userData.schoolName}</span></p>	
 								</div>
 							</div>
 						</div>
-						{
-							userNews.classes !== null ?
-							<div style={{margin:'20px 10px'}}>
-								<h3 style={{marginBottom:'30px'}}>班级</h3>
-								<div>
-									{
-										userNews.classes.map((item,i) =>(
-											<span key={i} style={{margin:'0 10px'}}>{item}</span>
-										))
-									}
-								</div>
-							</div>:''
-						}
+						
 						<div style={{margin:'20px 10px'}}>
 							<h3 style={{marginBottom:'30px',marginTop:'76px'}}>修改信息</h3>
 							<div style={{marginBottom:'30px'}}>						
