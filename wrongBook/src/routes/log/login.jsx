@@ -44,7 +44,7 @@ class HomePage extends Component {
                   <div className={style.inputOut}>
                     <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
                     <Input type='text' value={this.state.name} style={{border:'none',padding:'0 10px',height:'42px'}}
-                      onKeyUp ={(e)=>{
+                      onKeyUp ={ (e) =>{
                         if(e.keyCode === 13) {
                           cookie.save('catchyName', this.state.name, { path: '/' })
                           if(this.state.checked){
@@ -65,8 +65,9 @@ class HomePage extends Component {
                               payload:data
                             });
                           }
-                        }}
+                        }
                       }
+                    }
                     onChange={(e)=>{
                       this.setState({name:e.target.value})
                     }}/>

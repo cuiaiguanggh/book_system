@@ -28,7 +28,8 @@ export default {
 		schoolId:'',
 		userList:[],
 		classId:'',
-		userData:[]
+		userData:[],
+		subjectId:''
 	},
 	reducers: {
 		classList(state, {payload}) {
@@ -51,13 +52,16 @@ export default {
 		},	
 		schoolId(state, {payload}) {
 			return { ...state, schoolId:payload };
-        },
-        classId(state, {payload}) {
+    },
+    classId(state, {payload}) {
 			return { ...state, classId:payload };
-        },
-        userList(state, {payload}) {
-			return { ...state, userList:payload };
-        },
+    },
+    userList(state, {payload}) {
+			return { ...state, userLisgetUserInfot:payload };
+		},
+		subjectId(state, {payload}) {
+			return { ...state, subjectId:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -85,7 +89,13 @@ export default {
 				yield put ({
 					type: 'userData',
 					payload:res.data.data
-				})			
+				})		
+				if( res.data.data.subjectId  !== '')	 {
+					yield put ({
+						type: 'subjectId',
+						payload:res.data.data.subjectId
+					})		
+				}
 			}else{
 				message.error(res.data.msg)
 			}		

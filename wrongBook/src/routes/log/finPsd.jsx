@@ -6,6 +6,13 @@ import style from './findPsd.less';
 import {routerRedux} from 'dva/router';
 import Top from '../Layout/top';
 
+
+function Trim(){
+	String.prototype.trim = function(){
+					return this.replace(/(^\s*) | (\s*$)/g,'');
+	}
+}
+
 class HomePage extends Component {
 	constructor(props) {
 		super(props);
@@ -15,12 +22,11 @@ class HomePage extends Component {
       checked:false,
       verification:'',
       pc:0,
+      time:59
 		}
 	}
-  handleChange(value) {
-    console.log(`selected ${value}`);
-  }
   render() {
+    let Time = this.state.time;
     return (
       <div className={style.normal}>
         <Top type='findPsd'></Top>
@@ -48,11 +54,14 @@ class HomePage extends Component {
                     {/* <img src={require('../../images/dl-sj-n@3x.png')} /> */}
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
-                      <Input value = {this.props.state.phone} maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
-                        this.props.dispatch({
-                          type : 'login/phone',
-                          payload:e.target.value
-                        });
+                      <Input value={this.props.state.phone} maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
+                        console.log(/^[0-9]+$/.test(e.target.value))
+                        if(/^[0-9]+$/.test(e.target.value) ){
+                          this.props.dispatch({
+                            type : 'login/phone',
+                            payload:e.target.value
+                          });
+                        }
                       }}/>
                     </div>
                   </div>
@@ -66,24 +75,31 @@ class HomePage extends Component {
                     {
                       this.state.pc == 0?
                       <Button className={style.codeButton} onClick={()=>{
-                          if(this.state.phone!= '' &&this.state.phone.length == 11){
+                          Trim();
+                          if(this.props.state.phone.trim()!= '' &&this.props.state.phone.length == 11){
                             this.setState({pc:1})
                             this.props.dispatch({
                               type : 'login/getVC',
                               payload:{
-                                phone:this.state.phone
+                                phone:this.props.state.phone
                               }
                             });
-                            setTimeout(() => {
-                              this.setState({pc:0})
-                            }, 60000);
+                            let time = this.state.time;
+                            let This = this;
+                            let t = setInterval(function (){
+                              if(time == -1){
+                                clearInterval(t)
+                                This.setState({time:59,pc:0})
+                              }
+                              This.setState({time:time--})
+                            },1000)
                           }else{
                             message.warning("请输入正确的手机格式")
                           }
                           
                       }} type="primary">获取验证码</Button>:
-                      <Button className={style.codeButton} type="primary" loading>
-                        获取验证码
+                      <Button className={style.codeButton} type="primary" >
+                        重新发送( {Time}s )
                       </Button>
                     }
                   </div>
@@ -111,17 +127,24 @@ class HomePage extends Component {
             {
               this.props.state.vc == 0 ?
               <div className={style.login} onClick={()=>{
-                let data ={
-                  phone:this.state.phone,
-                  vc:this.state.code,
+                Trim();
+                if(this.props.state.phone.trim() == '' || this.state.code.trim() == ''){
+                  message.warning('手机号或验证码不能为空')
+                }else{
+                  let data ={
+                    phone:this.state.phone,
+                    vc:this.state.code,
+                  }
+                  this.props.dispatch({
+                    type : 'login/checkVC',
+                    payload:data
+                  });
                 }
-                this.props.dispatch({
-                  type : 'login/checkVC',
-                  payload:data
-                });
               }}>下一步</div>:
               <div className={style.login} onClick={()=>{
-                if(this.state.pass == this.state.passa){
+                if(this.state.pass == '' || this.state.passa == ''){
+                  message.warning('密码不能为空')
+                }else if(this.state.pass == this.state.passa){
                 this.props.dispatch({
                   type : 'login/updateInfo',
                   payload:{
