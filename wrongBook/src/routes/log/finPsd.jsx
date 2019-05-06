@@ -22,7 +22,9 @@ class HomePage extends Component {
       checked:false,
       verification:'',
       pc:0,
-      time:59
+      time:59,
+      passa:'',
+      pass:'',
 		}
 	}
   render() {
@@ -63,7 +65,6 @@ class HomePage extends Component {
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
                       <Input value={this.props.state.phone} maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
-                        console.log(/^[0-9]+$/.test(e.target.value))
                         if(/^[0-9]+$/.test(e.target.value) ){
                           this.props.dispatch({
                             type : 'login/phone',
@@ -76,8 +77,10 @@ class HomePage extends Component {
                   <div className={style.loginPass}>
                     <div className={style.inputOutP}>
                       <p style={{color:'#00b1ff',margin:0}}>验证码</p>
-                      <Input  style={{border:'none',padding:'0 10px',height:'42px'}} onChange={(e)=>{
-                        this.setState({code:e.target.value})
+                      <Input value={this.state.code} style={{border:'none',padding:'0 10px',height:'42px'}} maxLength={6} onChange={(e)=>{
+                        if(/^[0-9]+$/.test(e.target.value)){
+                          this.setState({code:e.target.value})
+                        }
                       }} />
                     </div>
                     {
@@ -150,6 +153,7 @@ class HomePage extends Component {
                 }
               }}>下一步</div>:
               <div className={style.login} onClick={()=>{
+                console.log(this.state.pass,this.state.passa,this.state.pass == '' || this.state.passa == '')
                 if(this.state.pass == '' || this.state.passa == ''){
                   message.warning('密码不能为空')
                 }else if(this.state.pass == this.state.passa){
