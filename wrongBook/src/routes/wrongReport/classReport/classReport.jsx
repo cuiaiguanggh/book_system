@@ -78,7 +78,7 @@ class wrongTop extends React.Component {
                                 {
                                     item.num != 0 ? 
 
-                                    <span style={{marginLeft:'20px',borderLeft:'1px solid #ccc',paddingLeft:'10px'}}>已出卷<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.num}</span>次</span>
+                                    <span style={{marginLeft:'10px',borderLeft:'1px solid #ccc',paddingLeft:'10px'}}>已出卷<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.num}</span>次</span>
                                     :''
                                 }
                                 <TracksVideo type={item} num={j}></TracksVideo>
