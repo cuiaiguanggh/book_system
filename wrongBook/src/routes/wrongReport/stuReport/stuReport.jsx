@@ -132,6 +132,12 @@ class StuReport extends React.Component {
 								<div className={style.questionTop}>
 									<span style={{marginRight:'20px'}}>第{i+1}题</span>
 									{/* <span>班级错误率：{}%（答错15人）</span> */}
+									{
+										item.num != 0 ? 
+
+										<span style={{marginLeft:'20px',borderLeft:'1px solid #ccc',paddingLeft:'10px'}}>已出卷<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.num}</span>次</span>
+										:''
+									}
 								</div>
 								<div style={{padding:'10px',height:'250px',overflow:"hidden"}}  onClick={()=>{
 								this.setState({visible:true,Img:item.userAnswerList[0].answer})
