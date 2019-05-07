@@ -274,9 +274,10 @@ class HomeworkCenter extends React.Component {
 								 onClick={()=>{
 								// let fileObj = document.getElementById('file').files[0];
 								let fileObj = this.state.uploadFile;
-								// console.log(this.state.uploadFile)
+								console.log(fileObj)
 								let form = new FormData();
 								form.append('excelFile',fileObj);
+
 								let token = store.get('wrongBookToken');
 
 								let schoolId ='';
@@ -296,7 +297,6 @@ class HomeworkCenter extends React.Component {
 									}else{
 										form.append('schoolId',schoolId)
 										form.append('year',this.props.state.nowYear)
-										
 										fetch(dataCenter('/user/importTeacherExcel?token=' + token), {
 											method: "POST",
 											body: form

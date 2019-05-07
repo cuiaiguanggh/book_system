@@ -75,7 +75,12 @@ class wrongTop extends React.Component {
                                 <span style={{marginRight:'20px'}}>第{i+1}题</span>
                                 <span>答错<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.wrongNum}</span>人</span>
                                 {/* <span>{item.picId}</span> */}
-                                
+                                {
+                                    item.num != 0 ? 
+
+                                    <span style={{marginLeft:'20px',borderLeft:'1px solid #ccc',paddingLeft:'10px'}}>已出卷<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{item.num}</span>次</span>
+                                    :''
+                                }
                                 <TracksVideo type={item} num={j}></TracksVideo>
                             </div>
                             <div style={{padding:'10px',height:'250px',overflow:'hidden'}} onClick={()=>{
