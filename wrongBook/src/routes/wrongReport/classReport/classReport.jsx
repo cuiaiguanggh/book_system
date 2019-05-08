@@ -33,7 +33,8 @@ class wrongTop extends React.Component {
             next:true,
             visible1:false,
             userId:'',
-            uqId:''
+            uqId:'',
+            allPdf:false
 	    };
     }
 	handleScroll(e){
@@ -60,12 +61,15 @@ class wrongTop extends React.Component {
                             }
                         }
                         let downs = this.props.state.classDown;
-                        
-                        let cls = 'down',name = '加入错题篮'
+                            let cls = 'down',name = '选题';
+                        if(this.state.allPdf) {
+                            cls = 'down ndown';
+                            name = '移除';
+                        }
                         for(let j = 0 ; j < downs.length ; j ++) {
                             if(downs[j] == item.questionId){
                                 cls = 'down ndown';
-                                name = '移出错题篮'
+                                name = '移除'
                             }
                         }
                         let j = i;
@@ -102,8 +106,8 @@ class wrongTop extends React.Component {
                                     ))
                                 }
                             </div>
-                            <div style={{overflow:'hidden',padding:'10px'}}>
-                                <Button style={{float:'left'}} onClick={()=>{
+                            <div style={{overflow:'hidden',paddingLeft:'10px',paddingTop:'20px'}}>
+                                <span style={{float:'left',color:'#409eff',cursor:'pointer'}} onClick={()=>{
                                     if(item.wrongScore != 0 ) {
                                         this.setState({visible:true,key:i,showAns:ans[0]})
                                     }
@@ -115,11 +119,13 @@ class wrongTop extends React.Component {
                                         w[0].className='wrongNum wrongNumOn'
                                     }
                                     
-                                }}>查看统计</Button>
+                                }}>查看统计</span>
                                 <span className={cls}  onClick={()=>{
                                     let dom = document.getElementsByClassName('down');
                                     let downs = this.props.state.classDown;
-                                    if( dom[i].innerHTML == '加入错题篮' ){
+                                    if( dom[i].innerText == '选题' ){
+                                        cls = 'down ndown';
+                                        name = '移除'
                                         this.props.dispatch({
                                             type: 'down/classDown',
                                             payload:item.questionId
@@ -129,6 +135,8 @@ class wrongTop extends React.Component {
                                             payload:item.picId
                                         });
                                     }else{
+                                        cls = 'down';
+                                        name = '选题'
                                         this.props.dispatch({
                                             type: 'down/delClassDown',
                                             payload:item.questionId
@@ -138,7 +146,14 @@ class wrongTop extends React.Component {
                                             payload:item.picId
                                         });
                                     }
-                                }}>{name}</span>
+                                }}>
+                                {
+                                    name == '选题' ?
+                                    <img style={{marginTop:'-4px',marginRight:'4px'}} src={require('../../images/sp-xt-n.png')}/>:
+                                    <img style={{marginTop:'-4px',marginRight:'4px'}} src={require('../../images/sp-yc-n.png')}/>
+            
+                                }
+                                {name}</span>
                             </div>
                         </div>
                     )})
@@ -197,11 +212,11 @@ class wrongTop extends React.Component {
                 //     payload:json.url
                 // });
                 // This.props.dispatch({
-                //     type: 'report/visible1',
+                //     type: 'report/visi ble1',
                 //     payload:true
                 // });
             }
-            console.log(event.data)
+            
         }
         //连接关闭的回调方法
         websocket.onclose = function () {
@@ -223,15 +238,6 @@ class wrongTop extends React.Component {
             <div style={{textAlign:'center',marginTop:20}}>
                 <QRCode className='qrcode' size={200} value={value} />
                 <h2 style={{marginTop:20}}>手机微信扫码，录制视频讲解</h2>
-                {/* <span className={style.updataCode} onClick={() =>{
-                    this.props.dispatch({
-                        type: 'report/queryTeachVideo',
-                        payload:{
-                            questionId:this.props.state.questionId,
-                            key:this.props.state.num
-                        }
-                    });
-                }}>确认</span> */}
             </div>
         )
     }
@@ -334,11 +340,14 @@ class wrongTop extends React.Component {
                                         subjectId:this.props.state.subId,
                                         info:0,
                                         pageSize:50,
-                                        pageNume:1
+                                        pageNum:1
                                     }
                                 });
                                 
-                                   
+                                this.props.dispatch({
+                                    type: 'down/AllPdf',
+                                    payload:false
+                                });
                             }}>全部</span>
                         {
                             mounthList.data ?
@@ -362,11 +371,14 @@ class wrongTop extends React.Component {
                                             info:0,
                                             month:item.v,
                                             pageSize:50,
-                                            pageNume:1
+                                            pageNum:1
                                         }
                                     });
-
-                                    
+                                    this.props.dispatch({
+                                        type: 'down/AllPdf',
+                                        payload:true
+                                    });
+                                    // w[i].className='wrongNum wrongNumOn'
 
                                 }}>{item.k}</span>
                             ))
@@ -382,8 +394,13 @@ class wrongTop extends React.Component {
                                     let This = this;
                                     if(!this.state.loading){
                                         let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
-                                        // window.open(url,'_blank'); 
                                         this.setState({wordUrl:url})
+                                        // 添加导出次数
+                                        this.props.dispatch({
+                                            type: 'report/addClassup',
+                                            payload:this.props.state.classDownPic
+                                        })
+                                        // 下载清空选题
                                         this.props.dispatch({
                                             type: 'down/delAllClass',
                                         });
@@ -398,6 +415,21 @@ class wrongTop extends React.Component {
                             <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
                         下载组卷({this.props.state.classDown.length})
                         </Button>
+                        {/* {
+                            this.props.state.AllPdf ?
+                            <Button 
+                                style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
+                                loading={this.state.loading} 
+                                onClick={()=>{
+                                    this.setState({allPdf:true})
+                                    let w = document.getElementsByClassName('down')
+                                    for(let j = 0;j<w.length;j++){
+                                        w[j].className='down ndown'
+                                    }
+                                }}>
+                                一件全选
+                            </Button>:''
+                        } */}
                     </Header>
                     <Content style={{background:'#fff',overflow:'auto',position:'relative'}}
                         ref='warpper'

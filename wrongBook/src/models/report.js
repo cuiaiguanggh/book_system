@@ -109,6 +109,20 @@ export default {
 		videlUrl(state, {payload}) {
 			return { ...state, videlUrl:payload };
 		},
+		addClassup(state, {payload}) {
+			let list = state.qrdetailList;
+			if( payload.length > 0 ) {
+				for(let i = 0 ; i < list.data.questionList.length ; i ++ ) {
+					for( let j = 0 ; j < payload.length ; j ++ ) {
+						if(list.data.questionList[i].picId == payload[j]){
+							list.data.questionList[i].num ++
+						}
+					}
+				}
+			}
+
+			return { ...state, qrdetailList:list };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) { 

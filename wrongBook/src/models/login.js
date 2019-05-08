@@ -10,9 +10,7 @@ import store from 'store';
 import { message } from 'antd';
 
 const delay = (ms) => new Promise((resolve) => {
-	console.log(ms)
 	setTimeout(resolve, ms);
-  
   });
 
 export default {
@@ -26,6 +24,8 @@ export default {
 		upd:0,
 		time:0,
 		phone:'',
+		token:'',
+		pc:0,
 	},
 	reducers: {
 		changeUsername(state, {payload}) {
@@ -50,6 +50,12 @@ export default {
 		},
 		time(state, {payload}) {
 			return {...state, time: payload};
+		},
+		token(state, {payload}) {
+			return {...state, token: payload};
+		},
+		pc(state, {payload}) {
+			return {...state, pc: payload};
 		},
 	},
 	subscriptions: {
@@ -115,15 +121,16 @@ export default {
 			let res = yield getVC(payload);
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
-					
+					yield put ({
+						type: 'pc',
+						payload:1
+					})
 				}else{
-					if(res.data.msg == '无效TOKEN!'){
-						yield put(routerRedux.push('/login'))
-					}else if(res.data.msg == '服务器异常'){
-	
-					}else{
-						message.error(res.data.msg)
-					}
+					yield put ({
+						type: 'pc',
+						payload:0
+					})
+					message.error(res.data.msg)
 				}
 		},
 		*checkVC({payload}, {put, select}) {
@@ -134,6 +141,10 @@ export default {
 					yield put ({
 						type: 'vc',
 						payload:1
+					})
+					yield put ({
+						type:'token',
+						payload:res.data.data
 					})
 				}else{
 					if(res.data.msg == '无效TOKEN!'){
@@ -165,6 +176,7 @@ export default {
 					})
 				}else{
 					if(res.data.msg == '无效TOKEN!'){
+						message.error('修改失败，请稍后再试')
 						yield put(routerRedux.push('/login'))
 					}else if(res.data.msg == '服务器异常'){
 	

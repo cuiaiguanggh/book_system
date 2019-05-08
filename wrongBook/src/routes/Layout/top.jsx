@@ -50,7 +50,7 @@ class Top extends Component {
 				<div className="navClass">
 					<div  style={{height:'89px',background:'#fff',borderBottom:"1px solid #e3e9f3",lineHeight:"90px"}}>
 						<div style ={{width:"1200px",margin:'0 auto'}}>
-							<Link to="/"  style={{cursor:'pointer'}} replace >
+							<Link to="/login"  style={{cursor:'pointer'}} replace >
 								{/* <img alt='' style={{height:'40px'}} src={head}/> */}
 								<img alt='' style={{height:'40px'}} src={require('../images/t_nv_ig_n.png')}/>
 							</Link>

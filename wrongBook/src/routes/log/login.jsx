@@ -158,32 +158,36 @@ class HomePage extends Component {
     if(cookie.load('catchyName')!=undefined){
       this.setState({name:cookie.load('catchyName')})
     }
+    console.log(111)
     var userAgentInfo = navigator.userAgent;
-   var Agents = ["Android", "iPhone",
-      "SymbianOS", "Windows Phone",
-      "iPad", "iPod"];
-   var flag = true;
-   for (var v = 0; v < Agents.length; v++) {
-      if (userAgentInfo.indexOf(Agents[v]) > 0) {
-         flag = false;
-         break;
-      }
-   }
-   if(flag){
-    this.props.dispatch(
-      routerRedux.push({
-        pathname: '/login',
-        })
-    )
-   }else{
-    this.props.dispatch(
-      routerRedux.push({
-        pathname: '/loginPhone',
-        })
-    )
-   }
-	}
-}
+    var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+    var flag = true;
+    for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+    }
+    this.props.dispatch({
+      type : 'login/vcOk',
+    });
+    if(flag){
+      this.props.dispatch(
+        routerRedux.push({
+          pathname: '/login',
+          })
+      )
+    }else{
+      this.props.dispatch(
+        routerRedux.push({
+          pathname: '/loginPhone',
+          })
+      )
+    }
+    }
+  }
 export default connect((state) => ({
 	state: {
 			...state.userManage,

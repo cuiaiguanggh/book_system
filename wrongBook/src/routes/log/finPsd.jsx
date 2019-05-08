@@ -65,7 +65,7 @@ class HomePage extends Component {
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
                       <Input value={this.props.state.phone} maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
-                        if(/^[0-9]+$/.test(e.target.value) ){
+                        if(/^[0-9]+$/.test(e.target.value) || e.target.value == '' ){
                           this.props.dispatch({
                             type : 'login/phone',
                             payload:e.target.value
@@ -78,17 +78,21 @@ class HomePage extends Component {
                     <div className={style.inputOutP}>
                       <p style={{color:'#00b1ff',margin:0}}>验证码</p>
                       <Input value={this.state.code} style={{border:'none',padding:'0 10px',height:'42px'}} maxLength={6} onChange={(e)=>{
-                        if(/^[0-9]+$/.test(e.target.value)){
+                        if(/^[0-9]+$/.test(e.target.value)  || e.target.value == ''){
                           this.setState({code:e.target.value})
                         }
                       }} />
                     </div>
                     {
-                      this.state.pc == 0?
+                      this.props.state.pc == 0?
                       <Button className={style.codeButton} onClick={()=>{
                           Trim();
                           if(this.props.state.phone.trim()!= '' &&this.props.state.phone.length == 11){
                             this.setState({pc:1})
+                            this.props.dispatch({
+                              type : 'login/pc',
+                              payload:1
+                            });
                             this.props.dispatch({
                               type : 'login/getVC',
                               payload:{
@@ -101,6 +105,10 @@ class HomePage extends Component {
                               if(time == -1){
                                 clearInterval(t)
                                 This.setState({time:59,pc:0})
+                                This.props.dispatch({
+                                  type : 'login/pc',
+                                  payload:0
+                                });
                               }
                               This.setState({time:time--})
                             },1000)
@@ -157,12 +165,17 @@ class HomePage extends Component {
                 if(this.state.pass == '' || this.state.passa == ''){
                   message.warning('密码不能为空')
                 }else if(this.state.pass == this.state.passa){
-                this.props.dispatch({
-                  type : 'login/updateInfo',
-                  payload:{
-                    password:this.state.pass
+                  if(this.state.pass.length >= 6 && this.state.pass.length <= 20){
+                    this.props.dispatch({
+                      type : 'login/updateInfo',
+                      payload:{
+                        password:this.state.pass,
+                        token:this.props.state.token,
+                      }
+                    });
+                  }else{
+                    message.warning('密码长度需在6-20之间')
                   }
-                });
                 }else{
                   message.warning('两次密码必须一致')
                 }

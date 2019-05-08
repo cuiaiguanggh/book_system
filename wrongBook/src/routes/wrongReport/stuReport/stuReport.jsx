@@ -66,7 +66,7 @@ class StuReport extends React.Component {
 							userId:e.key,
 							info:0,
 							pageSize:50,
-							pageNume:1
+							pageNum:1
 						}
 						if(this.props.state.mouNow != 0){
 							data.month = this.props.state.mouNow.v
@@ -119,12 +119,12 @@ class StuReport extends React.Component {
 	                onWheel={(e) => this.handleScroll(e)}>
 					{
 						detail.map((item,i)=>{
-							let cls = 'down',name = '加入错题篮'
 							let downs = this.props.state.stuDown;
+							let cls = 'down',name = '选题';
 							for(let j = 0 ; j < downs.length ; j ++) {
 								if(downs[j] == item.questionId){
 									cls = 'down ndown';
-									name = '移出错题篮'
+									name = '移除'
 								}
 							}
 							return(
@@ -148,31 +148,38 @@ class StuReport extends React.Component {
 										))
 									}
 								</div>
-								<div style={{overflow:'hidden',padding:'10px'}}>
+								<div style={{overflow:'hidden',paddingLeft:'10px',paddingTop:'20px'}}>
 								
-								<span className={cls}  onClick={()=>{
-									let dom = document.getElementsByClassName('down');
-									let downs = this.props.state.stuDown;
-									if( dom[i].innerHTML == '加入错题篮' ){
-										this.props.dispatch({
-											type: 'down/stuDown',
-											payload:item.questionId
-										});
-										this.props.dispatch({
-											type: 'down/stuDownPic',
-											payload:item.picId
-										});
-									}else{
-										this.props.dispatch({
-											type: 'down/delstuDown',
-											payload:item.questionId
-										});
-										this.props.dispatch({
-											type: 'down/delstuDownPic',
-											payload:item.picId
-										});
-									}
-									}}>{name}</span>
+									<span className={cls}  onClick={()=>{
+										let dom = document.getElementsByClassName('down');
+										let downs = this.props.state.stuDown;
+										if( dom[i].innerText == '选题' ){
+											this.props.dispatch({
+												type: 'down/stuDown',
+												payload:item.questionId
+											});
+											this.props.dispatch({
+												type: 'down/stuDownPic',
+												payload:item.picId
+											});
+										}else{
+											this.props.dispatch({
+												type: 'down/delstuDown',
+												payload:item.questionId
+											});
+											this.props.dispatch({
+												type: 'down/delstuDownPic',
+												payload:item.picId
+											});
+										}
+										}}>
+										{
+											name == '选题' ?
+											<img style={{marginTop:'-4px',marginRight:'4px'}} src={require('../../images/sp-xt-n.png')}/>:
+											<img style={{marginTop:'-4px',marginRight:'4px'}} src={require('../../images/sp-yc-n.png')}/>
+					
+										}
+										{name}</span>
 								</div>
 							</div>
 						)})
@@ -219,32 +226,18 @@ class StuReport extends React.Component {
 										subjectId:this.props.state.subId,
 										info:0,
 										pageSize:50,
-										pageNume:1
+										pageNum:1
 										// month:item.v,
 									}
 									this.props.dispatch({
 										type: 'report/queryQrStudentCount',
 										payload:data
 									});
-									// this.props.dispatch({
-									// 	type: 'report/queryQrDetail',
-									// 	payload:{
-									// 		classId:this.props.state.classId,
-									// 		year:this.props.state.years,
-									// 		subjectId:this.props.state.subId,
-									// 		info:0,
-									// 	}
-									// });
-									// this.props.dispatch({
-                                    //     type: 'report/userQRdetail',
-                                    //     payload:{
-                                    //         classId:this.props.state.classId,
-                                    //         year:this.props.state.years,
-                                    //         subjectId:this.props.state.subId,
-                                    //         info:0,
-                                    //         userId:this.props.state.userId
-                                    //     }
-                                    // });
+									
+                                    this.props.dispatch({
+                                        type: 'down/AllPdf',
+                                        payload:false
+                                    });
 								}}>全部</span>
 							{
 								mounthList.data ?
@@ -266,32 +259,17 @@ class StuReport extends React.Component {
 											info:0,
 											month:item.v,
 											pageSize:50,
-											pageNume:1
+											pageNum:1
 										}
 										this.props.dispatch({
 											type: 'report/queryQrStudentCount',
 											payload:data
 										});
-										// this.props.dispatch({
-										// 	type: 'report/queryQrDetail',
-										// 	payload:{
-										// 		classId:this.props.state.classId,
-										// 		year:this.props.state.years,
-										// 		subjectId:this.props.state.subId,
-										// 		info:0,
-										// 	}
-										// });
-										// this.props.dispatch({
-										// 	type: 'report/userQRdetail',
-										// 	payload:{
-										// 		classId:this.props.state.classId,
-										// 		year:this.props.state.years,
-										// 		subjectId:this.props.state.subId,
-										// 		info:0,
-										// 		month:item.v,
-										// 		userId:this.props.state.userId
-										// 	}
-										// });
+										
+										this.props.dispatch({
+											type: 'down/AllPdf',
+											payload:true
+										});
 									}}>{item.k}</span>
 								))
 								:''

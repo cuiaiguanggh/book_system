@@ -79,7 +79,7 @@ class ClassReport extends React.Component {
 										subjectId:value,
 										info:0,
 										pageSize:50,
-										pageNume:1
+										pageNum:1
 									}
 								});
 								this.props.dispatch({

@@ -145,6 +145,7 @@ class HomePageLeft extends Component {
 		this.setState({
 		  collapsed: !this.state.collapsed,
 		});
+		
 		}
 		
 	getyear() {

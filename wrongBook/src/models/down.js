@@ -16,6 +16,7 @@ export default {
 		stuDown:[],
 		stuDownPic:[],
 		stuName:'',
+		AllPdf:false,
 	},
 	reducers: {
 		classDown(state, {payload}) {
@@ -47,6 +48,7 @@ export default {
 			return { ...state, classDown:classDown};
 		},
 		delAllClass(state, {payload}) {
+			
 			let classDown=[],classDownPic=[]
 			return { ...state, ...{classDown,classDownPic}};
 		},
@@ -143,7 +145,9 @@ export default {
 			return { ...state, stuName:payload};
 		},
 
-
+		AllPdf(state, {payload}) {
+			return { ...state, AllPdf:payload};
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line

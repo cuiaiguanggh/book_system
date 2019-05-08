@@ -140,7 +140,7 @@ class ClassReport extends React.Component {
 								}
 							}}>
                         	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
-							下载组卷({this.props.state.workDown.length})
+							下载组卷({this.props.dwstate.workDown.length})
 						</Button>
 					</div>
 				)
@@ -163,11 +163,11 @@ class ClassReport extends React.Component {
 							let n = item.count.split('/');
 							let won = n[1] - n[0];
 							let downs = this.props.state.workDown;
-							let cls = 'down',name = '加入错题篮'
+							let cls = 'down',name = '选题';
 							for(let j = 0 ; j < downs.length ; j ++) {
 								if(downs[j] == item.questionId){
-                                    cls = 'down ndown';
-									name = '移出错题篮'
+									cls = 'down ndown';
+									name = '移除'
 								}
 							}
 							return (
@@ -194,8 +194,8 @@ class ClassReport extends React.Component {
 										))
 									}
 								</div>
-								<div style={{overflow:'hidden',padding:'10px'}}>
-									<Button style={{float:'left'}} onClick={()=>{
+								<div style={{overflow:'hidden',paddingLeft:'10px',paddingTop:'20px'}}>
+									<span style={{float:'left',color:'#409eff',cursor:'pointer'}} onClick={()=>{
 										if(item.wrongScore != 0 ) {
 											this.setState({visible:true,key:i,showAns:ans[0]})
 										}
@@ -206,10 +206,11 @@ class ClassReport extends React.Component {
 											}
 											w[0].className='wrongNum wrongNumOn'
 										}
-									}}>查看统计</Button>
+										
+									}}>查看统计</span>
 									<span className={cls}  onClick={()=>{
 										let dom = document.getElementsByClassName('down');
-										if( dom[i].innerHTML == '加入错题篮' ){
+										if( dom[i].innerText == '选题' ){
 											this.props.dispatch({
 												type: 'down/workDown',
 												payload:item.questionId
@@ -230,7 +231,14 @@ class ClassReport extends React.Component {
 										}
 										
 										
-									}}>{name}</span>
+									}}>
+									{
+										name == '选题' ?
+										<img style={{marginTop:'-4px',marginRight:'4px'}} src={require('../../images/sp-xt-n.png')}/>:
+										<img style={{marginTop:'-4px',marginRight:'4px'}} src={require('../../images/sp-yc-n.png')}/>
+				
+									}
+									{name}</span>
 								</div>
 							</div>
 						)})
