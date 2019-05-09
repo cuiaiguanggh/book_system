@@ -1,5 +1,6 @@
 import {
-	getQuestionDoxc
+	getQuestionDoxc,
+	getQuestionPdf,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -17,8 +18,12 @@ export default {
 		stuDownPic:[],
 		stuName:'',
 		AllPdf:false,
+		pdfUrl:[],
 	},
 	reducers: {
+		pdfUrl(state, {payload}) {
+			return { ...state, pdfUrl:payload };
+		},
 		classDown(state, {payload}) {
 			let classDown = state.classDown
 			classDown.push(payload)
@@ -172,6 +177,24 @@ export default {
 				}else{
 					message.error(res.data.msg)
 				}
+			}
+			
+		},
+		*getQuestionPdf({payload}, {put, select}) {
+			// 下载pdf
+			
+			let res = yield getQuestionPdf(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'pdfUrl',
+					payload:res.data
+				})
+				window.location.href=res.data.data.downloadLink
+			}
+			else if(res.err){
+				// yield put(routerRedux.push('/login'))
+			}else{
+				message.error(res.data.msg)
 			}
 			
 		},

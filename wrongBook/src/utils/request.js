@@ -46,10 +46,10 @@ export default function request(url, options) {
   let data = options.data || {};
   let dataBody;
   let loginSession = store.get('wrongBookToken');
-  if(loginSession !== ''){
+  
+  if(loginSession !== '' && data.token == undefined ){
       data.token = loginSession;
   }
-  //  data.token = 'B73689EB-A142-4FB7-B20F-1F515F472E15'
   dataBody = formatOpt(data);
   if(options.body && dataBody) {
     dataBody = options.body + '&' + dataBody;

@@ -81,9 +81,15 @@ class ClassReport extends React.Component {
 									this.setState({loading:load})
 									let This = this;
 									if(!this.state.loading){
-										let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.workDownPic.join(','))
-										// window.open(url,'_blank'); 
-										this.setState({wordUrl:url})
+										// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.workDownPic.join(','))
+										// // window.open(url,'_blank'); 
+										// this.setState({wordUrl:url})
+										this.props.dispatch({
+                                            type: 'down/getQuestionPdf',
+                                            payload:{
+                                                picIds:this.props.state.workDownPic.join(',')
+                                            }
+                                        })
 										this.props.dispatch({
 											type: 'down/delAllWork',
 										});
@@ -270,7 +276,7 @@ class ClassReport extends React.Component {
         let Num = trueNum.length+ wrongNum.length
         return(
             <div>
-                <div style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
+                <div  style={{border:'1px solid #ccc',marginBottom:'10px',padding:'10px'}}>
                     <h3 style={{overflow:'hidden'}}>
                     <span style={{
                             float:'left',background:'#ffe1e4',borderRadius:'30px',

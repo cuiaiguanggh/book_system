@@ -393,8 +393,15 @@ class wrongTop extends React.Component {
                                     this.setState({loading:load})
                                     let This = this;
                                     if(!this.state.loading){
-                                        let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
-                                        this.setState({wordUrl:url})
+                                        this.props.dispatch({
+                                            type: 'down/getQuestionPdf',
+                                            payload:{
+                                                picIds:this.props.state.classDownPic.join(',')
+                                            }
+                                        })
+                                        
+                                        // let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
+                                        // this.setState({wordUrl:url})
                                         // 添加导出次数
                                         this.props.dispatch({
                                             type: 'report/addClassup',

@@ -283,9 +283,15 @@ class StuReport extends React.Component {
 										this.setState({loading:load})
 										let This = this;
 										if(!this.state.loading){
-											let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
-											// window.open(url,'_blank'); 
-											this.setState({wordUrl:url})
+											this.props.dispatch({
+												type: 'down/getQuestionPdf',
+												payload:{
+													picIds:this.props.state.stuDownPic.join(',')
+												}
+											})
+											// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
+											// // window.open(url,'_blank'); 
+											// this.setState({wordUrl:url})
 											this.props.dispatch({
 												type: 'down/delAllStu',
 											});

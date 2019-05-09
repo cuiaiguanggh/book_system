@@ -41,6 +41,11 @@ function queryTeachVideo(payload){
         data:payload
     });
 }
+function getQuestionPdf(payload){
+    return request(dataCenter('/web/report/getQuestionPdf'),{
+        data:payload
+    });
+}
 
 export {
     queryQrDetail,
@@ -51,4 +56,5 @@ export {
     queryQrStudentCount,
     deleteTeachVideo,
     queryTeachVideo,
+    getQuestionPdf,
 };

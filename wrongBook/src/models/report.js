@@ -142,8 +142,6 @@ export default {
 					type: 'qrdetailList',
 					payload:res.data
 				})
-				
-				
 			}
 			else{
 				if(res.data.msg == '无效TOKEN!'){
