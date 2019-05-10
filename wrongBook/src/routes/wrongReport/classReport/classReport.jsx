@@ -386,35 +386,33 @@ class wrongTop extends React.Component {
                         }
                         <Button 
                             style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
-                            loading={this.state.loading} 
+                            loading={this.props.state.downQue} 
                             onClick={()=>{
                                 if(this.props.state.classDown.length!= 0){
-                                    let load = !this.state.loading
-                                    this.setState({loading:load})
-                                    let This = this;
-                                    if(!this.state.loading){
-                                        this.props.dispatch({
-                                            type: 'down/getQuestionPdf',
-                                            payload:{
-                                                picIds:this.props.state.classDownPic.join(',')
-                                            }
-                                        })
-                                        
-                                        // let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
-                                        // this.setState({wordUrl:url})
-                                        // 添加导出次数
-                                        this.props.dispatch({
-                                            type: 'report/addClassup',
-                                            payload:this.props.state.classDownPic
-                                        })
-                                        // 下载清空选题
-                                        this.props.dispatch({
-                                            type: 'down/delAllClass',
-                                        });
-                                    }
-                                    setTimeout(function(){
-                                        This.setState({loading:!load,wordUrl:''})
-                                    },10000)
+                                    
+                                    this.props.dispatch({
+                                        type: 'down/downQue',
+                                        payload:true
+                                    })
+                                    this.props.dispatch({
+                                        type: 'down/getQuestionPdf',
+                                        payload:{
+                                            picIds:this.props.state.classDownPic.join(',')
+                                        }
+                                    })
+                                    
+                                    // let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.classDownPic.join(','))
+                                    // this.setState({wordUrl:url})
+                                    // 添加导出次数
+                                    this.props.dispatch({
+                                        type: 'report/addClassup',
+                                        payload:this.props.state.classDownPic
+                                    })
+                                    // 下载清空选题
+                                    this.props.dispatch({
+                                        type: 'down/delAllClass',
+                                    });
+                                    
                                 }else{
                                     message.warning('请选择题目到错题篮')
                                 }
@@ -422,21 +420,33 @@ class wrongTop extends React.Component {
                             <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
                         下载组卷({this.props.state.classDown.length})
                         </Button>
-                        {/* {
+                        {
                             this.props.state.AllPdf ?
+                            
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
-                                loading={this.state.loading} 
+                                loading={this.props.state.toDown} 
                                 onClick={()=>{
-                                    this.setState({allPdf:true})
-                                    let w = document.getElementsByClassName('down')
-                                    for(let j = 0;j<w.length;j++){
-                                        w[j].className='down ndown'
-                                    }
+                                    this.props.dispatch({
+                                        type: 'down/getAllPdfV2ForQrc',
+                                        payload:{
+                                            classId:this.props.state.classId,
+                                            subjectId:this.props.state.subId,
+                                            year:this.props.state.years,
+                                            month:this.props.state.mouNow.v,
+                                        }
+                                    });
+                                    this.props.dispatch({
+                                        type: 'down/toDown',
+                                        payload:true
+                                    });
                                 }}>
-                                一件全选
+                                {
+                                    this.props.state.toDown?
+                                    '组卷中':'下载全部'
+                                }
                             </Button>:''
-                        } */}
+                        }
                     </Header>
                     <Content style={{background:'#fff',overflow:'auto',position:'relative'}}
                         ref='warpper'

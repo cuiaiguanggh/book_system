@@ -1,6 +1,8 @@
 import {
 	getQuestionDoxc,
 	getQuestionPdf,
+	getAllPdfV2ForQrc,
+	getAllPdfV2ForQrs,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -19,6 +21,8 @@ export default {
 		stuName:'',
 		AllPdf:false,
 		pdfUrl:[],
+		toDown:false,
+		downQue:false,
 	},
 	reducers: {
 		pdfUrl(state, {payload}) {
@@ -153,6 +157,12 @@ export default {
 		AllPdf(state, {payload}) {
 			return { ...state, AllPdf:payload};
 		},
+		toDown(state, {payload}) {
+			return { ...state, toDown:payload};
+		},
+		downQue(state, {payload}) {
+			return { ...state, downQue:payload};
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -185,6 +195,54 @@ export default {
 			
 			let res = yield getQuestionPdf(payload);
 			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'pdfUrl',
+					payload:res.data
+				})
+				yield put ({
+					type: 'downQue',
+					payload:false
+				})
+				window.location.href=res.data.data.downloadLink
+			}
+			else if(res.err){
+				// yield put(routerRedux.push('/login'))
+			}else{
+				message.error(res.data.msg)
+			}
+			
+		},
+		*getAllPdfV2ForQrc({payload}, {put, select}) {
+			// 下载班级所有pdf
+			
+			let res = yield getAllPdfV2ForQrc(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'toDown',
+					payload:false
+				})
+				yield put ({
+					type: 'pdfUrl',
+					payload:res.data
+				})
+				window.location.href=res.data.data.downloadLink
+			}
+			else if(res.err){
+				// yield put(routerRedux.push('/login'))
+			}else{
+				message.error(res.data.msg)
+			}
+			
+		},
+		*getAllPdfV2ForQrs({payload}, {put, select}) {
+			// 下载学生所有pdf
+			
+			let res = yield getAllPdfV2ForQrs(payload);
+			if(res.data && res.data.result === 0){
+				yield put ({
+					type: 'toDown',
+					payload:false
+				})
 				yield put ({
 					type: 'pdfUrl',
 					payload:res.data

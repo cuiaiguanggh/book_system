@@ -276,29 +276,25 @@ class StuReport extends React.Component {
 							}
 							<Button 
 								style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
-								loading={this.state.loading} 
+								loading={this.props.state.downQue} 
 								onClick={()=>{
 									if(this.props.state.stuDown.length!= 0){
-										let load = !this.state.loading
-										this.setState({loading:load})
-										let This = this;
-										if(!this.state.loading){
-											this.props.dispatch({
-												type: 'down/getQuestionPdf',
-												payload:{
-													picIds:this.props.state.stuDownPic.join(',')
-												}
-											})
-											// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
-											// // window.open(url,'_blank'); 
-											// this.setState({wordUrl:url})
-											this.props.dispatch({
-												type: 'down/delAllStu',
-											});
-										}
-										setTimeout(function(){
-											This.setState({loading:!load,wordUrl:''})
-										},10000)
+										this.props.dispatch({
+											type: 'down/downQue',
+											payload:true
+										})
+										this.props.dispatch({
+											type: 'down/getQuestionPdf',
+											payload:{
+												picIds:this.props.state.stuDownPic.join(',')
+											}
+										})
+										// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
+										// // window.open(url,'_blank'); 
+										// this.setState({wordUrl:url})
+										this.props.dispatch({
+											type: 'down/delAllStu',
+										});
 									}else{
 										message.warning('请选择题目到错题篮')
 									}
@@ -306,6 +302,34 @@ class StuReport extends React.Component {
                         	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
+							{
+                            this.props.state.AllPdf ?
+                            <Button 
+                                style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
+                                loading={this.props.state.toDown} 
+                                onClick={()=>{
+                                    this.props.dispatch({
+                                        type: 'down/getAllPdfV2ForQrs',
+                                        payload:{
+                                            classId:this.props.state.classId,
+                                            subjectId:this.props.state.subId,
+                                            year:this.props.state.years,
+                                            month:this.props.state.mouNow.v,
+                                            userId:this.props.state.userId
+                                        }
+									});
+                                    this.props.dispatch({
+                                        type: 'down/toDown',
+                                        payload:true
+                                    });
+                                }}>
+								
+                                {
+                                    this.props.state.toDown?
+                                    '组卷中':'下载全部'
+                                }
+                            </Button>:''
+                        }
 							{/* <Button 
 								type="primary"
 								style={{float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}

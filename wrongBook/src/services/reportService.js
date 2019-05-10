@@ -46,6 +46,16 @@ function getQuestionPdf(payload){
         data:payload
     });
 }
+function getAllPdfV2ForQrc(payload){
+    return request(dataCenter('/web/report/getAllPdfV2ForQrc'),{
+        data:payload
+    });
+}
+function getAllPdfV2ForQrs(payload){
+    return request(dataCenter('/web/report/getAllPdfV2ForQrs'),{
+        data:payload
+    });
+}
 
 export {
     queryQrDetail,
@@ -57,4 +67,6 @@ export {
     deleteTeachVideo,
     queryTeachVideo,
     getQuestionPdf,
+    getAllPdfV2ForQrc,
+    getAllPdfV2ForQrs,
 };
