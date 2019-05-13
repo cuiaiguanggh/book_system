@@ -20,13 +20,20 @@ export default {
 		stuDownPic:[],
 		stuName:'',
 		AllPdf:false,
-		pdfUrl:[],
+		pdfUrl:{
+			fileLink:'',
+			downloadLink:''
+		},
 		toDown:false,
 		downQue:false,
+		showPdfModal:false
 	},
 	reducers: {
 		pdfUrl(state, {payload}) {
 			return { ...state, pdfUrl:payload };
+		},
+		showPdfModal(state, {payload}) {
+			return { ...state, showPdfModal:payload };
 		},
 		classDown(state, {payload}) {
 			let classDown = state.classDown
@@ -222,10 +229,14 @@ export default {
 					payload:false
 				})
 				yield put ({
+					type: 'showPdfModal',
+					payload:true
+				})		
+				yield put ({
 					type: 'pdfUrl',
-					payload:res.data
+					payload:res.data.data
 				})
-				window.location.href=res.data.data.downloadLink
+				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
 				// yield put(routerRedux.push('/login'))

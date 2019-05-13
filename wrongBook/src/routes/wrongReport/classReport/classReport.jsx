@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, message, Layout,Modal,Select ,Icon
 } from 'antd';
+import PDF from 'react-pdf-js';
 import {dataCenter , dataCen} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
@@ -41,7 +42,6 @@ class wrongTop extends React.Component {
         const { clientHeight} = this.refDom;
         hei = clientHeight;
     }
-    
 	quesList(){
 		let ques = this.props.state.qrdetailList.data;
         let num = ques.memberNum;
@@ -313,10 +313,13 @@ class wrongTop extends React.Component {
 		let key = this.state.key;
         let MaxKey = 0
         let QuestionDetail = this.props.state.qrdetailList;
+        let fileLink=this.props.state.pdfUrl.fileLink;
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
+        
 		return (
+
             <Content style={{position:'relative'}}>
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
                 <Layout className={style.layout}>
@@ -492,6 +495,7 @@ class wrongTop extends React.Component {
                         }
                     </Content>
                 </Layout>
+               
                 <Modal
                     visible={this.state.visible}
                     width='1000px'
@@ -614,6 +618,32 @@ class wrongTop extends React.Component {
                                 src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
                             /> */}
                         </div>
+                </Modal>
+
+                <Modal
+                    visible={this.props.state.showPdfModal}
+                    onOk={()=>{
+                        window.location.href=this.props.state.pdfUrl.downloadLink
+                    }}
+                    onCancel={()=>{
+                        this.props.dispatch({
+                            type: 'down/showPdfModal',
+                            payload:false
+                        });
+                    }}
+                    closable={false}
+                    cancelText='取消'  
+                    okText='下载'  
+                    width='600px'    
+                >
+                    <div style={{height:'700px'}}>
+                        {/* <PDF
+                            file="http://homework.mizholdings.com/pdf/240CA1A5-E7A9-4CF3-8CE2-5CD48B1FADB4.pdf"
+                        /> */}
+                        {/* <embed src={fileLink} type="application/pdf" width="100%" height="100%"></embed> */}
+                        <iframe  src={fileLink} title='下载预览' style={{width:'100%',height:'100%',border:0}}></iframe>
+                    </div>
+                    
                 </Modal>
             </Content>
 		);
