@@ -196,6 +196,7 @@ class StuReport extends React.Component {
 		let mounthList = this.props.state.mounthList;
 		let studentList = this.props.state.studentList;
 		let  detail = this.props.state.qrdetailList1;
+		let fileLink=this.props.state.pdfUrl.fileLink;
 		return (
             <Content style={{
                 background: '#fff', 
@@ -406,6 +407,28 @@ class StuReport extends React.Component {
 							))
 						}
 					</Modal>
+
+					<Modal
+							visible={this.props.state.showPdfModal}
+							onOk={()=>{
+									window.location.href=this.props.state.pdfUrl.downloadLink
+							}}
+							onCancel={()=>{
+									this.props.dispatch({
+											type: 'down/showPdfModal',
+											payload:false
+									});
+							}}
+							closable={false}
+							cancelText='取消'  
+							okText='下载'  
+							width='800px'    
+					>
+							<div style={{height:'700px'}}>
+									<iframe  src={fileLink} title='下载预览' style={{width:'100%',height:'100%',border:0}}></iframe>
+							</div>
+							
+					</Modal>
 				</div>
 			</Content>
 		)
@@ -416,6 +439,11 @@ class StuReport extends React.Component {
 		let subId = this.props.state.subId;
 		let year = this.props.state.years;
 		let userId = this.props.state.userId;
+		//this.props.state.showPdfModal=false
+		this.props.dispatch({
+			type: 'down/showPdfModal',
+			payload:false
+		});
 		if(classId!== '' && subId!='' && year!== '' && userId!= ''){
 			let data ={
 					classId:classId,

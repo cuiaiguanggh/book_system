@@ -46,6 +46,11 @@ function getQuestionPdf(payload){
         data:payload
     });
 }
+function getQuestionPdf2(payload){
+    return request(dataCenter('/web/report/getQuestionPdfV2'),{
+        data:payload
+    });
+}
 function getAllPdfV2ForQrc(payload){
     return request(dataCenter('/web/report/getAllPdfV2ForQrc'),{
         data:payload
@@ -69,4 +74,5 @@ export {
     getQuestionPdf,
     getAllPdfV2ForQrc,
     getAllPdfV2ForQrs,
+    getQuestionPdf2,
 };

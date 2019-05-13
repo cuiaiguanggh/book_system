@@ -1,6 +1,6 @@
 import {
 	getQuestionDoxc,
-	getQuestionPdf,
+	getQuestionPdf2,
 	getAllPdfV2ForQrc,
 	getAllPdfV2ForQrs,
 } from '../services/reportService';
@@ -200,17 +200,22 @@ export default {
 		*getQuestionPdf({payload}, {put, select}) {
 			// 下载pdf
 			
-			let res = yield getQuestionPdf(payload);
+			let res = yield getQuestionPdf2(payload);
 			if(res.data && res.data.result === 0){
+				console.log(res.data.data)
 				yield put ({
 					type: 'pdfUrl',
-					payload:res.data
+					payload:res.data.data
 				})
 				yield put ({
 					type: 'downQue',
 					payload:false
 				})
-				window.location.href=res.data.data.downloadLink
+				yield put ({
+					type: 'showPdfModal',
+					payload:true
+				})
+				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
 				// yield put(routerRedux.push('/login'))
@@ -256,9 +261,13 @@ export default {
 				})
 				yield put ({
 					type: 'pdfUrl',
-					payload:res.data
+					payload:res.data.data
 				})
-				window.location.href=res.data.data.downloadLink
+				yield put ({
+					type: 'showPdfModal',
+					payload:true
+				})	
+				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
 				// yield put(routerRedux.push('/login'))

@@ -634,7 +634,7 @@ class wrongTop extends React.Component {
                     closable={false}
                     cancelText='取消'  
                     okText='下载'  
-                    width='600px'    
+                    width='800px'    
                 >
                     <div style={{height:'700px'}}>
                         {/* <PDF
