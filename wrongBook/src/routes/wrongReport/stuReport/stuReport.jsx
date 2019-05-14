@@ -8,6 +8,7 @@ import style from './stuReport.less';
 import moment from 'moment';
 import {dataCenter} from '../../../config/dataCenter'
 import store from 'store';
+import commonCss from '../../css/commonCss.css'
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -300,7 +301,7 @@ class StuReport extends React.Component {
 										message.warning('请选择题目到错题篮')
 									}
 								}}>
-                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
 							{
@@ -422,7 +423,7 @@ class StuReport extends React.Component {
 							closable={false}
 							cancelText='取消'  
 							okText='下载'  
-							width='800px'    
+							className={commonCss.pdfModal}    
 					>
 							<div style={{height:'700px'}}>
 									<iframe  src={fileLink} title='下载预览' style={{width:'100%',height:'100%',border:0}}></iframe>
@@ -439,7 +440,6 @@ class StuReport extends React.Component {
 		let subId = this.props.state.subId;
 		let year = this.props.state.years;
 		let userId = this.props.state.userId;
-		//this.props.state.showPdfModal=false
 		this.props.dispatch({
 			type: 'down/showPdfModal',
 			payload:false

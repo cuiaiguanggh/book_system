@@ -8,6 +8,7 @@ import style from './workReport.less';
 import store from 'store';
 import moment from 'moment';
 import {dataCenter} from '../../../config/dataCenter'
+import commonCss from '../../css/commonCss.css'
 import { format } from 'util';
 import { stringify } from 'querystring';
 //作业中心界面内容
@@ -403,6 +404,7 @@ class ClassReport extends React.Component {
             MaxKey = QuestionDetail.data.questionScoreList.length-1;
 		}
 		let homeworkList = this.props.state.homeworkList
+		let fileLink=this.props.state.pdfUrl.fileLink;
 		return (
             <Content style={{
                 background: '#fff', 
@@ -493,6 +495,27 @@ class ClassReport extends React.Component {
                         }}
                         type="right" />
                 </Modal>
+				<Modal
+                    visible={this.props.state.showPdfModal}
+                    onOk={()=>{
+                        window.location.href=this.props.state.pdfUrl.downloadLink
+                    }}
+                    onCancel={()=>{
+                        this.props.dispatch({
+                            type: 'down/showPdfModal',
+                            payload:false
+                        });
+                    }}
+                    closable={false}
+                    cancelText='取消'  
+                    okText='下载'  
+                    className={commonCss.pdfModal}   
+                >
+                    <div style={{height:'700px'}}>
+                        <iframe  src={fileLink} title='下载预览' style={{width:'100%',height:'100%',border:0}}></iframe>
+                    </div>
+                    
+                </Modal>
 			</Content>
 		);
 	  }
@@ -508,7 +531,10 @@ class ClassReport extends React.Component {
 			});
 		}
 		
-
+		this.props.dispatch({
+			type: 'down/showPdfModal',
+			payload:false
+		});
 		// 使用滚动时自动加载更多
         const loadMoreFn = this.props.loadMoreFn
         const wrapper = this.refs.wrapper
@@ -522,7 +548,7 @@ class ClassReport extends React.Component {
             }
         }
         window.addEventListener('scroll', function () {
-        }.bind(this));
+        });
     }
 
 }

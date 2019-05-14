@@ -11,7 +11,7 @@ import style from './classReport.less';
 import { request } from 'http';
 import TracksVideo from '../TracksVideo/TracksVideo';
 import store from 'store';
-
+import commonCss from '../../css/commonCss.css';
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -420,7 +420,7 @@ class wrongTop extends React.Component {
                                     message.warning('请选择题目到错题篮')
                                 }
                             }}>
-                            <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                            <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}}  src={require('../../images/xc-cl-n.png')}></img>
                         下载组卷({this.props.state.classDown.length})
                         </Button>
                         {
@@ -631,10 +631,10 @@ class wrongTop extends React.Component {
                             payload:false
                         });
                     }}
+                    className={commonCss.pdfModal}   
                     closable={false}
                     cancelText='取消'  
-                    okText='下载'  
-                    width='800px'    
+                    okText='下载'     
                 >
                     <div style={{height:'700px'}}>
                         {/* <PDF
@@ -653,6 +653,10 @@ class wrongTop extends React.Component {
 		let classId = this.props.state.classId;
 		let subId = this.props.state.subId;
         let year = this.props.state.years;
+        this.props.dispatch({
+			type: 'down/showPdfModal',
+			payload:false
+		});
 		if(classId!== '' && subId!='' && year!== ''){
 			let data ={
 					classId:classId,
