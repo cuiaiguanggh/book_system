@@ -6,7 +6,7 @@ import { Input,Checkbox, message } from 'antd';
 import style from './login.css';
 import cookie from 'react-cookies'
 
-class HomePage extends Component {
+class Login extends Component {
 	constructor(props) {
     super(props);
     let name = '' ,pass = '' ;
@@ -29,8 +29,6 @@ class HomePage extends Component {
     console.log(`selected ${value}`);
   }
   render() {
-  
-   
     return (
       <div className={style.normal}>
         <div className={style.loginInner}>
@@ -192,4 +190,4 @@ export default connect((state) => ({
 	state: {
 			...state.userManage,
 	}
-}))(HomePage);
+}))(Login);

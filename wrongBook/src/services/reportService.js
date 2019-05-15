@@ -42,7 +42,7 @@ function queryTeachVideo(payload){
     });
 }
 function getQuestionPdf(payload){
-    return request(dataCenter('/web/report/getQuestionPdf'),{
+    return request(dataCenter('/web/report/getQuestionPdfV2'),{
         data:payload
     });
 }

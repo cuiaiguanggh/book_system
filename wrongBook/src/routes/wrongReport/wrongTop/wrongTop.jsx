@@ -71,6 +71,11 @@ class ClassReport extends React.Component {
 							value={this.props.state.subName}
 							optionFilterProp="children"
 							onChange={(value)=>{
+								
+								this.props.dispatch({
+									type: 'report/changeMouth',
+									payload:0
+							});
 								this.props.dispatch({
 									type: 'report/queryQrDetail',
 									payload:{
@@ -104,6 +109,14 @@ class ClassReport extends React.Component {
 								})
 								this.props.dispatch({
 									type: 'report/queryQrStudentCount',
+									payload:{
+										classId:this.props.state.classId,
+										year:this.props.state.years,
+										subjectId:value
+									}
+								});
+								this.props.dispatch({
+									type: 'temp/getQrMonthList',
 									payload:{
 										classId:this.props.state.classId,
 										year:this.props.state.years,
