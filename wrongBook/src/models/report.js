@@ -123,6 +123,20 @@ export default {
 
 			return { ...state, qrdetailList:list };
 		},
+		addStudentUp(state, {payload}) {
+			let list = state.qrdetailList1;
+			if( payload.length > 0 ) {
+				for(let i = 0 ; i < list.data.questionList.length ; i ++ ) {
+					for( let j = 0 ; j < payload.length ; j ++ ) {
+						if(list.data.questionList[i].picId == payload[j]){
+							list.data.questionList[i].num ++
+						}
+					}
+				}
+			}
+
+			return { ...state, qrdetailList1:list };
+		}
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) { 

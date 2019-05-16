@@ -6,7 +6,7 @@ const host = "hw-mz-test.mizholdings.com";
 const host1 = "wss://hw-mz-test.mizholdings.com";
 
 // 正式服务器
-// const host = 'hw-pre.mizholdings.com';
+ //const host = 'hw-pre.mizholdings.com';
 // const host1 = "ws://hw-pre.mizholdings.com";
 
 const url = 'http://'+host+'/wrongManage';// test

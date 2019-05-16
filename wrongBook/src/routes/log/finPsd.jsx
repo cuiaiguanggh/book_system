@@ -64,7 +64,7 @@ class HomePage extends Component {
                     {/* <img src={require('../../images/dl-sj-n@3x.png')} /> */}
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>手机号码（11位）</p>
-                      <Input value={this.props.state.phone} maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
+                      <Input value={this.props.state.phone} disabled maxLength={11} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} onChange={(e)=>{
                         if(/^[0-9]+$/.test(e.target.value) || e.target.value == '' ){
                           this.props.dispatch({
                             type : 'login/phone',
