@@ -218,8 +218,16 @@ export default {
 				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
+				yield put ({
+					type: 'downQue',
+					payload:false
+				})
 				// yield put(routerRedux.push('/login'))
 			}else{
+				yield put ({
+					type: 'downQue',
+					payload:false
+				})
 				message.error(res.data.msg)
 			}
 			
@@ -244,8 +252,16 @@ export default {
 				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
+				yield put ({
+					type: 'toDown',
+					payload:false
+				})
 				// yield put(routerRedux.push('/login'))
 			}else{
+				yield put ({
+					type: 'toDown',
+					payload:false
+				})
 				message.error(res.data.msg)
 			}
 			
@@ -270,8 +286,16 @@ export default {
 				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
+				yield put ({
+					type: 'toDown',
+					payload:false
+				})
 				// yield put(routerRedux.push('/login'))
 			}else{
+				yield put ({
+					type: 'toDown',
+					payload:false
+				})
 				message.error(res.data.msg)
 			}
 			
