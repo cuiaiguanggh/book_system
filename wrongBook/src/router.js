@@ -68,6 +68,10 @@ const UserInfo = Loadable({
   loader: () => import('./routes/UserInfo/information'),
   loading: () => <List/>,
 });
+const Chart = Loadable({
+  loader: () => import('./routes/reportChart/chart'),
+  loading: () => <List/>,
+});
 function RouterConfig({ history }) {
   
   return (
@@ -90,6 +94,7 @@ function RouterConfig({ history }) {
             <Route path="/stuReport" component={StuReport} />
             <Route path="/workReport" component={WorkReport} />
             <Route path="/userInfo" component={UserInfo} />
+            <Route path="/reportChart" component={Chart} />
           </Home>
       </Switch>
     </Router>
