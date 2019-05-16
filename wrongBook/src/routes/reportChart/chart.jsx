@@ -1,15 +1,13 @@
 import React from 'react';
-import { Layout, Input,Modal,Radio,Button,Select } from 'antd';
-import {  Link, } from "dva/router";
+import { Layout, Input,Modal,Button,Select,Row, Col } from 'antd';
 import { connect } from 'dva';
 import style from './chart.less';
 import store from 'store';
+
 const { Content } = Layout;
-// const Search = Input.Search;
-const RadioGroup = Radio.Group;
 const confirm = Modal.confirm;
-const { TextArea } = Input;
 const Option = Select.Option;
+const echarts = require('echarts');
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
 	constructor(props) {
@@ -74,119 +72,23 @@ class HomeworkCenter extends React.Component {
 		// console.log(userNews,userData)
 		return(
 			<Layout>
-				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
+				<Content  style={{ overflow: 'initial'}} >
 					<h3 style={{ background: '#fff',borderBottom:'1px solid #eee',margin:'0',padding:'10px 24px'}}>个人信息</h3>
-					<div className={style.layout} style={{ padding: 24, background: '#fff',height:735   }}>
-						<div className={style.headport_container}>
-							<div className={style.headport}>
-								<div className={style.avater_box}>
-									<img  alt='' src={userData.avatarUrl!= null || userData.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userData.avatarUrl  }/>
-								</div>
-								
-								<div className={style.namebox} style={{display:'inline-block',verticalAlign:"bottom"}}>
-									<p>{userData.name}</p>
-									{
-										classArray !== undefined&&userData.rodeType==30 ?
-										<div style={{padding:'0 10px'}}>
-										{
-											classArray.map((item,i) =>(
-												<span key={i} style={{}}>{item.className}{item.adminId==userNews.userId?<span className={style.banzhuren_icon}>
-													<img  src={require('../images/banzhuren@2x.png')} alt=""/>
-												</span>:''}{i===classArray.length-1?'':'，'}</span>
-											))
-											
-										}
-										
-									</div>:''
-									}
-								
-								</div>
-								<div className={style.schoolbox}>
-								{
-									userData.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span>
-										{userData!=undefined? this.getGradeName():''}
-									
-									</span></p>:''
-								}
-							
-										
-										<p><img src={require('../images/school@2x.png')} alt=""/><span>{userData.schoolName}</span></p>	
-								</div>
-							</div>
-						</div>
-						
-						<div style={{margin:'20px 10px'}}>
-							<h3 style={{marginBottom:'30px',marginTop:'76px'}}>修改信息</h3>
-							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>姓名：</span>
-								<Input maxLength={10} value={this.state.name}  style={{width:'300px'}}
-								onChange={(e)=>{
-									this.setState({name:e.target.value})
-								}}/>
-							</div>
-							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>电话：</span>
-								<Input  value={this.state.phone}
-									onFocus={()=>{
-										if(this.state.changePhone == 0){
-											let This = this;
-											confirm({
-												title: '确定修改手机号么?',
-												content: '如果修改手机号您的登陆账号将会变成修改后的账号',
-												okText:'确定',
-												cancelText:'取消',
-												onOk() {
-													This.setState(
-														{changePhone:1}
-													)
-												},
-												onCancel() {
-													This.setState(
-														{changePhone:2}
-													)
-												},
-											  });
-										}
-									}}
-									onBlur={()=>{
-										if(this.state.changePhone !== 1){
-											this.setState({
-												changePhone:0
-											})
-										}
-									}}
-									style={{width:'300px'}}
-									onChange={(e)=>{
-										if(this.state.changePhone == 1){
-											this.setState({
-												phone:e.target.value
-											})   
-										}
-									}}/>
-							</div>
-							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>学科：</span>
-								{
-									this.getSub()
-								}
-							</div>
-							<Button style={{margin:'10px 100px'}} type="primary"
-								onClick={()=>{
-									let data ={
-										name:this.state.name,
-										phone:this.state.phone,									
-									}
-									if(this.state.subjectId!==100){
-										data.subjectId=this.props.state.subjectId
-									}
-									this.props.dispatch({
-										type: 'userInfo/updateInfo',
-										payload:data
-									})
-								}}
-							>确认修改</Button>
-						</div>
-					</div>
+					
+					<Row style={{marginTop:20}}>
+						<Col  xl={12} md={24}> 
+						 	<div id='main' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff'}}></div>
+						</Col>
+						<Col  xl={12} md={24}>
+							<div id='main1' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff'}}></div>
+						</Col>
+					</Row>
+
+					<Row style={{marginTop:20}}>
+						<Col span={24}> 
+							<div id='main2' style={{height:400,margin:'0 20px',padding:'20px',backgroundColor:'#fff'}}></div>
+						</Col>
+					</Row>
 				</Content>
 			</Layout>
 		);
@@ -194,19 +96,164 @@ class HomeworkCenter extends React.Component {
 
 	componentDidMount(){
 		let schoolId = store.get('wrongBookNews').schoolId
-		let data ={
-			schoolId:schoolId
-		}
+		let myChart = echarts.init(document.getElementById('main'));
+		let myChart1 = echarts.init(document.getElementById('main1'));
+		let myChart2 = echarts.init(document.getElementById('main2'));
 		const {dispatch} = this.props;
-		dispatch({
-			type: 'classHome/getClassList',
-		});
-		dispatch({
-			type: 'userInfo/getSubjectList',
-		});
-		dispatch({
-			type: 'userInfo/getUserInfo',
-		});
+		let option = {
+			title : {
+					text: '南丁格尔玫瑰图',
+					subtext: '纯属虚构',
+					x:'center'
+			},
+			tooltip : {
+					trigger: 'item',
+					formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend: {
+					x : 'right',
+					y : 'center',
+					data:['一年级','二年级','三年级','四年级','五年级'],
+					orient:'vertical'
+			},
+			// toolbox: {
+			// 		show : true,
+			// 		feature : {
+			// 				mark : {show: true},
+			// 				dataView : {show: true, readOnly: false},
+			// 				magicType : {
+			// 						show: true,
+			// 						type: ['pie', 'funnel']
+			// 				},
+			// 				restore : {show: true},
+			// 				saveAsImage : {show: true}
+			// 		}
+			// },
+			calculable : true,
+			series : [
+					{
+							name:'半径模式',
+							type:'pie',
+							radius : [20, 110],
+							center : ['25%', '50%'],
+							roseType : 'radius',
+							label: {
+									normal: {
+											show: true
+									},
+									emphasis: {
+											show: true
+									}
+							},
+							lableLine: {
+									normal: {
+											show: false
+									},
+									emphasis: {
+											show: true
+									}
+							},
+							data:[
+									{value:10, name:'一年级',itemStyle:{color:'#21A2F4'}},
+									{value:5,  name:'二年级', itemStyle:{color:'#B8A5DF'}},
+									{value:15, name:'三年级',itemStyle:{color:'#36C9CB'}},
+									{value:25, name:'四年级',itemStyle:{color:'#FBD437'}},
+									{value:25, name:'五年级',itemStyle:{color:'#DA7F85'}}
+							]
+					},
+
+			]
+	};
+	let option1 = {
+				tooltip: {
+						trigger: 'axis',
+						formatter: "{a} <br/>{b}: {c} ({d}%)"
+				},
+				legend: {
+					x : 'right',
+					y : 'center',
+					data:['一年级','二年级','三年级','四年级','五年级'],
+					orient:'vertical'
+				},
+				series: [
+						{
+								name:'访问来源',
+								type:'pie',
+								radius: ['50%', '70%'],
+								avoidLabelOverlap: false,
+								label: {
+										normal: {
+												show: false,
+												position: 'left'
+										},
+										emphasis: {
+												show: true,
+												textStyle: {
+														fontSize: '30',
+														fontWeight: 'bold'
+												}
+										}
+								},
+								labelLine: {
+										normal: {
+												show: false
+										}
+								},
+								data:[
+										{value:335, name:'一年级',itemStyle:{color:'#21A2F4'}},
+										{value:310, name:'二年级',itemStyle:{color:'#B8A5DF'}},
+										{value:234, name:'三年级',itemStyle:{color:'#36C9CB'}},
+										{value:135, name:'四年级',itemStyle:{color:'#FBD437'}},
+										{value:1548,name:'五年级',itemStyle:{color:'#DA7F85'}}
+								]
+						}
+				]
+		};
+
+		let option2 =  {
+			title: {
+					text: '折线图堆叠'
+			},
+			tooltip: {
+					trigger: 'axis'
+			},
+			legend: {
+					data:['邮件营销']
+			},
+			grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '3%',
+					containLabel: true
+			},
+			toolbox: {
+					feature: {
+							saveAsImage: {}
+					}
+			},
+			xAxis: {
+					type: 'category',
+					boundaryGap: false,
+					data: ['周一','周二','周三','周四','周五','周六','周日']
+			},
+			yAxis: {
+					type: 'value'
+			},
+			series: [
+					{
+							name:'邮件营销',
+							type:'line',
+							stack: '总量',
+							data:[120, 132, 101, 134, 90, 230, 210],
+							lineStyle:{color:'#2FC25B'},
+							itemStyle:{color:"#2FC25B"}
+					},
+			]
+	};
+	
+		myChart.setOption(option);
+		myChart1.setOption(option1);
+		myChart2.setOption(option2);
 	}
 }
 
