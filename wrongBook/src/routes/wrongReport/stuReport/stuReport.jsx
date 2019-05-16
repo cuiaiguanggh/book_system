@@ -309,7 +309,7 @@ class StuReport extends React.Component {
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
 							{
-                            this.props.state.AllPdf ?
+                             (this.props.state.AllPdf&&0!=this.props.state.mouNow)  ?
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
                                 loading={this.props.state.toDown} 

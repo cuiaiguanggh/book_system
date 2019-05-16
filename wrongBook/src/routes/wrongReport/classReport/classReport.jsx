@@ -453,6 +453,10 @@ class wrongTop extends React.Component {
                                         type: 'down/toDown',
                                         payload:true
                                     });
+                                    // 下载清空选题
+                                    this.props.dispatch({
+                                        type: 'down/delAllClass',
+                                    });
                                 }}>
                                 {
                                     this.props.state.toDown?
