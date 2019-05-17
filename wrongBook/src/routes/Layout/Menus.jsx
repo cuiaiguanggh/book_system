@@ -8,7 +8,8 @@ import QRCode from 'qrcode.react';
 import {Link} from "dva/router";
 import store from 'store';
 import style from './Menus.less';
-import WrongTop from '../wrongReport/wrongTop/wrongTop'
+import WrongTop from '../wrongReport/wrongTop/wrongTop';
+import {serverType} from '../../config/dataCenter';
 import moment from 'moment';
 
 
@@ -198,7 +199,11 @@ class HomePageLeft extends Component {
 				})
 			)
 		}else{
-			value= `http://hw-test.mizholdings.com/static/sc?schoolId=${store.get('wrongBookNews').schoolId}&year=2018`
+			let vstr='http://hw-test.mizholdings.com/static/'
+			if(serverType===2){
+				vstr='https://dy.kacha.xin/wx/'
+			}
+			value= `${vstr}sc?schoolId=${store.get('wrongBookNews').schoolId}&year=2018`
 			rodeType = store.get('wrongBookNews').rodeType
 		}
 		let hash = this.props.location.pathname;

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, message, Layout,Modal,Select ,Icon
 } from 'antd';
-import PDF from 'react-pdf-js';
-import {dataCenter , dataCen} from '../../../config/dataCenter'
+import {dataCenter , dataCen,serverType} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
 import QRCode from 'qrcode.react';
+
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 import { request } from 'http';
@@ -163,8 +163,14 @@ class wrongTop extends React.Component {
 		)
     }
     addVie() {
-		const userId = store.get('wrongBookNews').userId
-        let value = 'http://hw-test.mizholdings.com/wx/video?uqId='+this.props.state.uqId+'&authorId='+ userId
+        const userId = store.get('wrongBookNews').userId
+        
+        let value='http://hw-test.mizholdings.com/wx/'
+        if(serverType===2){
+            value='https://dy.kacha.xin/wx/takevideoPreview/'
+        }
+        value+='video?uqId='+this.props.state.uqId+'&authorId='+ userId
+        console.error(value)
         let This = this;
         var timestamp = new Date().getTime() + "";
         timestamp = timestamp.substring(0, timestamp.length-3);  
@@ -424,7 +430,7 @@ class wrongTop extends React.Component {
                         下载组卷({this.props.state.classDown.length})
                         </Button>
                         {
-                            this.props.state.AllPdf ?
+                            (this.props.state.AllPdf&&0!=this.props.state.mouNow) ?
                             
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
@@ -439,9 +445,26 @@ class wrongTop extends React.Component {
                                             month:this.props.state.mouNow.v,
                                         }
                                     });
+                                    // 添加导出次数
+                                    let qlist = this.props.state.qrdetailList.data.questionList;
+                                    qlist.forEach(item => {
+                                        this.props.dispatch({
+                                            type: 'down/classDownPic',
+                                            payload:item.picId
+                                        });
+                                    });
+
+                                    this.props.dispatch({
+                                        type: 'report/addClassup',
+                                        payload:this.props.state.classDownPic
+                                    })
                                     this.props.dispatch({
                                         type: 'down/toDown',
                                         payload:true
+                                    });
+                                    // 下载清空选题
+                                    this.props.dispatch({
+                                        type: 'down/delAllClass',
                                     });
                                 }}>
                                 {
