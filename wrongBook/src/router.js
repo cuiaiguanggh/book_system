@@ -7,7 +7,7 @@ import List from 'react-content-loader';
 const Login = Loadable({
   loader: () => import('./routes/log/login'),
   loading: () => <List/>,
-});9
+});
 const LoginP = Loadable({
   loader: () => import('./routes/log/LoginPage'),
   loading: () => <List/>,
