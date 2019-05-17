@@ -114,7 +114,9 @@ class HomeworkCenter extends React.Component {
 					x : 'right',
 					y : 'center',
 					data:['一年级','二年级','三年级','四年级','五年级'],
-					orient:'vertical'
+					orient:'vertical',
+					borderRadius:100,
+					type:'plain'
 			},
 			// toolbox: {
 			// 		show : true,
@@ -165,49 +167,50 @@ class HomeworkCenter extends React.Component {
 			]
 	};
 	let option1 = {
-				tooltip: {
-						trigger: 'axis',
-						formatter: "{a} <br/>{b}: {c} ({d}%)"
-				},
-				legend: {
-					x : 'right',
-					y : 'center',
-					data:['一年级','二年级','三年级','四年级','五年级'],
-					orient:'vertical'
-				},
-				series: [
-						{
-								name:'访问来源',
-								type:'pie',
-								radius: ['50%', '70%'],
-								avoidLabelOverlap: false,
-								label: {
-										normal: {
-												show: false,
-												position: 'left'
-										},
-										emphasis: {
-												show: true,
-												textStyle: {
-														fontSize: '30',
-														fontWeight: 'bold'
-												}
-										}
-								},
-								labelLine: {
-										normal: {
-												show: false
-										}
-								},
-								data:[
-										{value:335, name:'一年级',itemStyle:{color:'#21A2F4'}},
-										{value:310, name:'二年级',itemStyle:{color:'#B8A5DF'}},
-										{value:234, name:'三年级',itemStyle:{color:'#36C9CB'}},
-										{value:135, name:'四年级',itemStyle:{color:'#FBD437'}},
-										{value:1548,name:'五年级',itemStyle:{color:'#DA7F85'}}
-								]
-						}
-				]
+			tooltip: {
+					trigger: 'item',
+					formatter: "{a} <br/>{b}: {c} ({d}%)"
+			},
+			legend: {
+				x : 'right',
+				y : 'center',
+				data:['一年级','二年级','三年级','四年级','五年级'],
+				orient:'vertical'
+			},
+			series: [
+					{
+							name:'访问来源',
+							type:'pie',
+							radius: ['50%', '70%'],
+							center : ['25%', '50%'],
+							avoidLabelOverlap: false,
+							label: {
+									normal: {
+											show: false,
+											position: 'center'
+									},
+									emphasis: {
+											show: true,
+											textStyle: {
+													fontSize: '30',
+													fontWeight: 'bold'
+											}
+									}
+							},
+							labelLine: {
+									normal: {
+											show: false
+									}
+							},
+							data:[
+								{value:335, name:'一年级',itemStyle:{color:'#21A2F4'}},
+								{value:310, name:'二年级',itemStyle:{color:'#B8A5DF'}},
+								{value:234, name:'三年级',itemStyle:{color:'#36C9CB'}},
+								{value:135, name:'四年级',itemStyle:{color:'#FBD437'}},
+								{value:1548,name:'五年级',itemStyle:{color:'#DA7F85'}}
+							]
+					}
+			]
 		};
 
 		let option2 =  {
