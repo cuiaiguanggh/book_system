@@ -119,7 +119,7 @@ class Login extends Component {
                 password:this.state.pass,
                 rem:this.state.checked,
               }
-              if( this.state.name.replace(/(^\s*)|(\s*$)/g, "") == '' && this.state.pass == '') {
+              if( this.state.name.replace(/(^\s*)|(\s*$)/g, "") == '' || this.state.pass == '') {
                 message.warning("账号或密码不能为空")
               }else{
                 this.props.dispatch({
