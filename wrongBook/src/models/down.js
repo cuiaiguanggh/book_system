@@ -17,6 +17,7 @@ export default {
 		workDown:[],
 		workDownPic:[],
 		stuDown:[],
+		allStuDown:[],
 		stuDownPic:[],
 		stuName:'',
 		AllPdf:false,
@@ -122,6 +123,7 @@ export default {
 			stuDownPic.push(payload)
 			return { ...state, stuDownPic:stuDownPic };
 		},
+
 		stuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic
 			stuDownPic.push(payload)
@@ -131,6 +133,16 @@ export default {
 			let stuDown = state.stuDown
 			stuDown.push(payload)
 		return { ...state, stuDown:stuDown };
+		},
+		allStuDown(state, {payload}) {	
+			let arr=state.allStuDown
+			if(payload.length>0){
+				for(let i = 0 ; i < payload.length ; i ++ ) {
+					arr.push(payload[i].picId)
+				}
+			}
+			console.log(arr)
+			return { ...state, allStuDown:arr };
 		},
 		delstuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic

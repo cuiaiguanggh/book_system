@@ -125,6 +125,7 @@ export default {
 		},
 		addStudentUp(state, {payload}) {
 			let list = state.qrdetailList1;
+			console.error(payload)
 			if( payload.length > 0 ) {
 				for(let i = 0 ; i < list.data.questionList.length ; i ++ ) {
 					for( let j = 0 ; j < payload.length ; j ++ ) {

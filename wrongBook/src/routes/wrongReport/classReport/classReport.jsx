@@ -445,6 +445,10 @@ class wrongTop extends React.Component {
                                     });
                                     // 添加导出次数
                                     let qlist = this.props.state.qrdetailList.data.questionList;
+                                    // 下载清空选题
+                                    this.props.dispatch({
+                                        type: 'down/delAllClass',
+                                    });
                                     qlist.forEach(item => {
                                         this.props.dispatch({
                                             type: 'down/classDownPic',
@@ -460,10 +464,7 @@ class wrongTop extends React.Component {
                                         type: 'down/toDown',
                                         payload:true
                                     });
-                                    // 下载清空选题
-                                    this.props.dispatch({
-                                        type: 'down/delAllClass',
-                                    });
+
                                 }}>
                                 {
                                     this.props.state.toDown?
