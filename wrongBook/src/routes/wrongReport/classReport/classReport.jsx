@@ -1,10 +1,11 @@
 import React from 'react';
 import { Button, message, Layout,Modal,Select ,Icon
 } from 'antd';
-import {dataCenter , dataCen} from '../../../config/dataCenter'
+import {dataCenter , dataCen,serverType} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
 import QRCode from 'qrcode.react';
+
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 import { request } from 'http';
@@ -163,8 +164,14 @@ class wrongTop extends React.Component {
 		)
     }
     addVie() {
-		const userId = store.get('wrongBookNews').userId
-        let value = 'http://hw-test.mizholdings.com/wx/video?uqId='+this.props.state.uqId+'&authorId='+ userId
+        const userId = store.get('wrongBookNews').userId
+        
+        let value='http://hw-test.mizholdings.com/wx/'
+        if(serverType===2){
+            value='https://dy.kacha.xin/wx/takevideoPreview/'
+        }
+        value+='video?uqId='+this.props.state.uqId+'&authorId='+ userId
+        console.error(value)
         let This = this;
         var timestamp = new Date().getTime() + "";
         timestamp = timestamp.substring(0, timestamp.length-3);  
