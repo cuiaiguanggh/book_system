@@ -325,24 +325,11 @@ class StuReport extends React.Component {
                                             userId:this.props.state.userId
                                         }
 																		});								
-																		// // 下载清空选题
-																		// selectQrs=this.props.state.stuDown;
-																		// this.props.dispatch({
-																		// 	type: 'down/delAllStu',
-																		// });
-																		// 添加导出次数
 																		let qlist = this.props.state.qrdetailList1.data.questionList;
 
-																		// this.props.dispatch({
-																		// 	type: 'down/allStuDown',
-																		// 	payload:qlist
-																		// });
-																		console.error('1',this.props.state.allStuDown)
-																		qlist.forEach(item => {
-																			this.props.dispatch({
-																					type: 'down/allStuDown',
-																					payload:item.picId
-																			});
+																		this.props.dispatch({
+																				type: 'down/allStuDown',
+																				payload:qlist
 																		});
 																		this.props.dispatch({
 																			type: 'report/addStudentUp',
@@ -352,7 +339,13 @@ class StuReport extends React.Component {
                                     this.props.dispatch({
                                         type: 'down/toDown',
                                         payload:true
-                                    });
+																		});
+																		this.props.dispatch({
+																			type: 'down/delAllStuDown',
+																			payload:true
+																	});
+																		
+																		
                                 }}>
 								
                                 {

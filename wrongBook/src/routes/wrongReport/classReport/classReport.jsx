@@ -445,23 +445,24 @@ class wrongTop extends React.Component {
                                     });
                                     // 添加导出次数
                                     let qlist = this.props.state.qrdetailList.data.questionList;
-                                    // 下载清空选题
-                                    this.props.dispatch({
-                                        type: 'down/delAllClass',
-                                    });
-                                    qlist.forEach(item => {
-                                        this.props.dispatch({
-                                            type: 'down/classDownPic',
-                                            payload:item.picId
-                                        });
-                                    });
 
                                     this.props.dispatch({
+                                            type: 'down/allClassDown',
+                                            payload:qlist
+                                    });
+
+                                                                
+                                    this.props.dispatch({
                                         type: 'report/addClassup',
-                                        payload:this.props.state.classDownPic
+                                        payload:this.props.state.allClassDown
                                     })
+
                                     this.props.dispatch({
                                         type: 'down/toDown',
+                                        payload:true
+                                    });
+                                    this.props.dispatch({
+                                        type: 'down/delAllClassDown',
                                         payload:true
                                     });
 
