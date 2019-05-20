@@ -197,11 +197,7 @@ class StuReport extends React.Component {
 		let mounthList = this.props.state.mounthList;
 		let studentList = this.props.state.studentList;
 		let  detail = this.props.state.qrdetailList1;
-<<<<<<< HEAD
 		let fileLink=this.props.state.pdfUrl.fileLink;
-=======
-		let selectQrs=[]
->>>>>>> f603198cf7959d96f0db07e5b34d61cd9e9c9d7e
 		return (
             <Content style={{
                 background: '#fff', 

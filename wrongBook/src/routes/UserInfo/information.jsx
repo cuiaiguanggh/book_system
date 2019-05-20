@@ -188,7 +188,7 @@ class HomeworkCenter extends React.Component {
 										data.phone=this.props.state.phone
 									}
 									this.props.dispatch({
-										type: 'userInfo/updateInfo',
+										type: 'userInfo/updateInfo',  
 										payload:data
 									})
 								}}
