@@ -17,6 +17,8 @@ export default {
 		workDown:[],
 		workDownPic:[],
 		stuDown:[],
+		allStuDown:[],
+		allClassDown:[],
 		stuDownPic:[],
 		stuName:'',
 		AllPdf:false,
@@ -129,6 +131,7 @@ export default {
 			stuDownPic.push(payload)
 			return { ...state, stuDownPic:stuDownPic };
 		},
+
 		stuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic
 			stuDownPic.push(payload)
@@ -138,6 +141,32 @@ export default {
 			let stuDown = state.stuDown
 			stuDown.push(payload)
 		return { ...state, stuDown:stuDown };
+		},
+		allStuDown(state, {payload}) {	
+			let arr=state.allStuDown
+			if(payload.length>0){
+				for(let i = 0 ; i < payload.length ; i ++ ) {
+					arr.push(payload[i].picId)
+				}
+			}
+			return { ...state, allStuDown:arr };
+		},
+		delAllStuDown(state, {payload}) {	
+			let allStuDown=[]
+			return { ...state, ...{allStuDown} };
+		},
+		allClassDown(state, {payload}) {	
+			let arr=state.allClassDown
+			if(payload.length>0){
+				for(let i = 0 ; i < payload.length ; i ++ ) {
+					arr.push(payload[i].picId)
+				}
+			}
+			return { ...state, allClassDown:arr };
+		},
+		delAllClassDown(state, {payload}) {	
+			let allClassDown=[]
+			return { ...state, ...{allClassDown} };
 		},
 		delstuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic

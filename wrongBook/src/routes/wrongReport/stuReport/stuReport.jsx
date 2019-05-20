@@ -197,7 +197,11 @@ class StuReport extends React.Component {
 		let mounthList = this.props.state.mounthList;
 		let studentList = this.props.state.studentList;
 		let  detail = this.props.state.qrdetailList1;
+<<<<<<< HEAD
 		let fileLink=this.props.state.pdfUrl.fileLink;
+=======
+		let selectQrs=[]
+>>>>>>> f603198cf7959d96f0db07e5b34d61cd9e9c9d7e
 		return (
             <Content style={{
                 background: '#fff', 
@@ -326,26 +330,27 @@ class StuReport extends React.Component {
                                             userId:this.props.state.userId
                                         }
 																		});								
-																		// 添加导出次数
 																		let qlist = this.props.state.qrdetailList1.data.questionList;
-																		qlist.forEach(item => {
-																				this.props.dispatch({
-																					type: 'down/stuDownPic',
-																					payload:item.picId
-																				});
+
+																		this.props.dispatch({
+																				type: 'down/allStuDown',
+																				payload:qlist
 																		});
 																		this.props.dispatch({
 																			type: 'report/addStudentUp',
-																			payload:this.props.state.stuDownPic
+																			payload:this.props.state.allStuDown
 																		})
-																		// 下载清空选题
-																		this.props.dispatch({
-																			type: 'down/delAllStu',
-																		});
+
                                     this.props.dispatch({
                                         type: 'down/toDown',
                                         payload:true
-                                    });
+																		});
+																		this.props.dispatch({
+																			type: 'down/delAllStuDown',
+																			payload:true
+																	});
+																		
+																		
                                 }}>
 								
                                 {
