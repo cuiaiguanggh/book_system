@@ -29,7 +29,8 @@ export default {
 		userList:[],
 		classId:'',
 		userData:[],
-		subjectId:''
+		subjectId:'',
+		phone:''
 	},
 	reducers: {
 		classList(state, {payload}) {
@@ -61,6 +62,9 @@ export default {
 		},
 		subjectId(state, {payload}) {
 			return { ...state, subjectId:payload };
+		},
+		phone(state, {payload}) {
+			return { ...state, phone:payload };
 		},
 	},
 	subscriptions: {
@@ -95,6 +99,10 @@ export default {
 						type: 'subjectId',
 						payload:res.data.data.subjectId
 					})		
+					yield put ({
+						type: 'phone',
+						payload:res.data.data.phone
+					})
 				}
 			}else{
 				message.error(res.data.msg)
