@@ -1,0 +1,36 @@
+@import '../../css/baseless.less';
+:global(.chomePageContaier) {
+	min-width: 100% !important;
+}
+*{
+    padding:0;
+    margin:0;
+}
+.topbar{
+    display: flex;
+    height: 100%;  
+}
+
+.timemenu{
+    list-style: none;
+    display: flex;
+    margin:0;
+    height:100%;
+    li{
+        width:52px;
+        text-align: center;
+        &:nth-of-type(n+2){
+            margin: 0 5px;
+        }    
+        cursor: pointer;
+        position: relative;
+        &:hover{
+            // border-bottom:2px solid #1890ff;
+            color:#000;
+        }
+        &:global(.selected){
+            border-bottom:2px solid #1890ff;
+        }
+    }
+
+}

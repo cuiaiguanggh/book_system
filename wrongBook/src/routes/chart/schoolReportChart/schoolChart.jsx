@@ -3,7 +3,7 @@ import { Layout, Input,Modal,Button,Select,Row, Col,DatePicker, AutoComplete } f
 import { connect } from 'dva';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import style from './chart.less';
+import style from './schoolChart.less';
 import store from 'store';
 moment.locale('zh-cn');
 
