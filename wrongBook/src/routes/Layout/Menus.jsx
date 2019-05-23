@@ -304,7 +304,7 @@ class HomePageLeft extends Component {
 			}
 		}
 		return (
-			<Layout className={style.homePageContaier}>
+			<Layout className={style.homePageContaier+' '+ 'chomePageContaier'}>
 				<Sider
 				trigger={null}
 				collapsible
