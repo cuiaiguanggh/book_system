@@ -156,7 +156,7 @@ class HomeworkCenter extends React.Component {
 			},
 			grid: {
 					left: '0%',
-					right: '1%',
+					right: '2%',
 					bottom: '3%',
 					containLabel: true
 			},
@@ -233,7 +233,7 @@ class HomeworkCenter extends React.Component {
 			},
 			grid: {
 				left: '0%',
-				right: '1%',
+				right: '2%',
 				bottom: '3%',
 				containLabel: true
 			},

@@ -22,11 +22,12 @@ class topbar extends React.Component {
 
 	}
 	workHandlePanelChange = (value, mode) => {    
-		console.log(1111)			
+		
 	} 
-	workOnChange = (date) => { 
-			console.log('chenge',date)
-			
+	handleClick=(item)=> {
+		this.props.onChangeTime(item);
+	}
+	workOnChange = (date) => { 	
 			const dateFormat = 'YYYY-MM-DD';   
 			let startDate= moment(date[0]).format("YYYY-MM-DD")
 			let endDate = moment(date[1]).format("YYYY-MM-DD")
@@ -44,22 +45,20 @@ class topbar extends React.Component {
 				})
 			} 
 			console.log(queryDate)
+			this.props.onChangeDate(startDate,endDate);
 	}
 	disabledDate = current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year');
 	render() {
 		const {RangePicker} = DatePicker;
 		
 		let timeList=this.props.timeList
-		let subList = [];
-		let subName = [];
 
-		let classList = []
 		return(
 			<Header  style={{ background: '#fff',borderTop:'1px solid #eee',borderBottom:'1px solid #eee',overflow:'hidden',padding:'0 20px',height:44,lineHeight:'44px'}}>
 						<div className={style.topbar} style={{ background: '#fff',margin:'0'}}>
 								<div>
 									<ul className={style.timemenu}>
-									{timeList.map((item,i) =>(
+									{timeList.length>0?timeList.map((item,i) =>(
 											<li key={i}
 												className={i === this.state.timeIndex?'selected': ''}
 												onClick={() =>{
@@ -68,10 +67,10 @@ class topbar extends React.Component {
 														timeIndex:i,
 														date:null
 													})
+													this.handleClick(item);
 												}}>
 											{item.name}</li>
-										))
-									}									
+										)):''}														
 									</ul>
 								</div>
 								<div style={{marginLeft:14}}>

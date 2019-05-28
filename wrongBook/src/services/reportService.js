@@ -61,6 +61,16 @@ function getAllPdfV2ForQrs(payload){
         data:payload
     });
 }
+function getReportTimeList(payload){
+    return request(dataCenter('/web/report/timeStamp'),{
+        data:payload
+    });
+}
+function querySchoolDataReport(payload){
+    return request(dataCenter('/web/report/querySchoolDataReport'),{
+        data:payload
+    });
+}
 
 export {
     queryQrDetail,
@@ -75,4 +85,6 @@ export {
     getAllPdfV2ForQrc,
     getAllPdfV2ForQrs,
     getQuestionPdf2,
+    getReportTimeList,
+    querySchoolDataReport,
 };

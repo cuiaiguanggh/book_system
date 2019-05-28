@@ -7,6 +7,9 @@ import {
 	getUserInfo,
 } from '../services/classHomeService';
 import {
+	getReportTimeList,querySchoolDataReport,
+} from '../services/reportService';
+import {
 	pageRelevantSchool
 } from '../services/homePageService';
 import {routerRedux} from 'dva/router';
@@ -31,11 +34,31 @@ export default {
 		userData:[],
 		subjectId:'',
 		phone:'',
-		reportTimeList:[]
+		reportTimeList:[],
+		schoolDataReport:{},
+		periodTime: 100,
+		timeStamp: 100,
+		startTime:'',
+		endTime:'',
 	},
 	reducers: {
+		periodTime(state,{payload}){
+			return { ...state, periodTime:payload };
+		},
+		timeStamp(state,{payload}){
+			return { ...state, timeStamp:payload };
+		},
 		reportTimeList(state,{payload}){
 			return { ...state, reportTimeList:payload };
+		},
+		startTime(state,{payload}){
+			return { ...state, startTime:payload };
+		},
+		endTime(state,{payload}){
+			return { ...state, endTime:payload };
+		},
+		schoolDataReport(state,{payload}){
+			return { ...state, schoolDataReport:payload };
 		},
 		classList(state, {payload}) {
 			return { ...state, classList:payload };
@@ -78,21 +101,73 @@ export default {
   
 	effects: {
 		*getReportTimeList({}, {put, select}) {
-			let testdata=[
-				{name:'本周',value:'1'},
-				{name:'本月',value:'2'},
-				{name:'本学期',value:'3'},
-				{name:'本年',value:'4'},
-			]
-			//let res = yield getSubjectList();	
-			let res = testdata	
-			if(res){
+			let res = yield getReportTimeList();
+			if(res.data){
+				let arr=res.data.data
+				for(let i=0;i<arr.length;i++){
+					if(arr[i].periodTime===1){
+						arr[i].name='近一年'
+					}else if(arr[i].periodTime===2){
+						arr[i].name='近一学期'
+					}else if(arr[i].periodTime===3){
+						arr[i].name='近一月'
+					}else if(arr[i].periodTime===4){
+						arr[i].name='近一周'
+					}
+				}
 				yield put ({
 					type: 'reportTimeList',
-					payload:res
-				})			
+					payload:res.data.data
+				})
+				let {subList} = yield select(state => state.temp)
+				let {classList1} = yield select(state => state.temp)
+				yield put ({
+					type: 'classId',
+					payload:classList1.data[0].classId
+				})
+				yield put ({
+					type: 'subjectId',
+					payload:subList.data[0].v
+				})
+				yield put ({
+					type: 'periodTime',
+					payload:1
+				})
+				yield put ({
+					type: 'timeStamp',
+					payload:res.data.data[0].timeStamp
+				})
+				let data={
+					schoolId:store.get('wrongBookNews').schoolId,
+					periodTime:1,
+					timeStamp:res.data.data[0].timeStamp,
+					classId:classList1.data[0].classId,
+					subjectId:subList.data[0].v
+				}
+				let schoolRes= yield querySchoolDataReport(data);		
+				if(schoolRes.data.result===0){
+					yield put ({
+						type: 'schoolDataReport',
+						payload:schoolRes.data.data
+					})
+				}else{
+					message.error('获取报表失败')
+				}
 			}else{
 				message.error(res.data.msg)
+			}
+			
+		},
+		*getSchoolDataReport({payload}, {put, select}) {
+
+			let schoolRes= yield querySchoolDataReport(payload);		
+			if(schoolRes.data.result===0){
+				yield put ({
+					type: 'schoolDataReport',
+					payload:schoolRes.data.data
+				})
+			}else{
+				message.error('获取报表失败')
 			}
 			
 		},
