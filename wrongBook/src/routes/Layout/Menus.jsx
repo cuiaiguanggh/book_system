@@ -387,7 +387,7 @@ class HomePageLeft extends Component {
 												<div 
 												className="btnBack" 
 												type="primary">
-													<span>{user != '' ? user.name : ''}</span>
+													<span>{user != '' ? user.name : ''}老师</span>
 													<Icon type="caret-down" style={{color:"#e1e1e1"}} />
 												</div>
 											</Popover>

@@ -7,7 +7,7 @@ import {
 	getUserInfo,
 } from '../services/classHomeService';
 import {
-	getReportTimeList,querySchoolDataReport,
+	getReportTimeList,querySchoolDataReport,queryGradeDataBySchoolId
 } from '../services/reportService';
 import {
 	pageRelevantSchool
@@ -33,6 +33,7 @@ export default {
 		classId:'',
 		userData:[],
 		subjectId:'',
+		gradeId:'',
 		phone:'',
 		reportTimeList:[],
 		schoolDataReport:{},
@@ -40,8 +41,20 @@ export default {
 		timeStamp: 100,
 		startTime:'',
 		endTime:'',
+		sgradeList:[],
+		sclassList:[],
+		searchData:[]
 	},
 	reducers: {
+		searchData(state,{payload}){
+			return { ...state, searchData:payload };
+		},
+		sgradeList(state,{payload}){
+			return { ...state, sgradeList:payload };
+		},
+		sclassList(state,{payload}){
+			return { ...state, sclassList:payload };
+		},
 		periodTime(state,{payload}){
 			return { ...state, periodTime:payload };
 		},
@@ -78,6 +91,9 @@ export default {
 		userData(state,{payload}){
 			return { ...state, userData:payload };
 		},	
+		gradeId(state, {payload}) {
+			return { ...state, gradeId:payload };
+    },
 		schoolId(state, {payload}) {
 			return { ...state, schoolId:payload };
     },
@@ -119,40 +135,52 @@ export default {
 					type: 'reportTimeList',
 					payload:res.data.data
 				})
-				let {subList} = yield select(state => state.temp)
-				let {classList1} = yield select(state => state.temp)
-				yield put ({
-					type: 'classId',
-					payload:classList1.data[0].classId
-				})
-				yield put ({
-					type: 'subjectId',
-					payload:subList.data[0].v
-				})
-				yield put ({
-					type: 'periodTime',
-					payload:1
-				})
-				yield put ({
-					type: 'timeStamp',
-					payload:res.data.data[0].timeStamp
-				})
-				let data={
-					schoolId:store.get('wrongBookNews').schoolId,
-					periodTime:1,
-					timeStamp:res.data.data[0].timeStamp,
-					classId:classList1.data[0].classId,
-					subjectId:subList.data[0].v
-				}
-				let schoolRes= yield querySchoolDataReport(data);		
-				if(schoolRes.data.result===0){
+
+				let gradeData=yield queryGradeDataBySchoolId()
+				console.error('年级信息',gradeData)
+				if(gradeData){
+					let {subList} = yield select(state => state.temp)
+					let {classList1} = yield select(state => state.temp)
 					yield put ({
-						type: 'schoolDataReport',
-						payload:schoolRes.data.data
+						type: 'classId',
+						payload:classList1.data[0].classId
 					})
+					yield put ({
+						type: 'subjectId',
+						payload:subList.data[0].v
+					})
+					yield put ({
+						type: 'periodTime',
+						payload:1
+					})
+					yield put ({
+						type: 'timeStamp',
+						payload:res.data.data[0].timeStamp
+					})
+					let data={
+						schoolId:store.get('wrongBookNews').schoolId,
+						periodTime:1,
+						timeStamp:res.data.data[0].timeStamp,
+						classId:classList1.data[0].classId,
+						subjectId:subList.data[0].v
+					}
+					let schoolRes= yield querySchoolDataReport(data);		
+					if(schoolRes.data.result===0){
+						yield put ({
+							type: 'schoolDataReport',
+							payload:schoolRes.data.data
+						})
+						yield put ({
+							type: 'searchData',
+							payload:schoolRes.data.data.teacherUseDataList
+						})
+					}else{
+						message.error('获取报表失败')
+					}
 				}else{
-					message.error('获取报表失败')
+					message.error('获取班级信息失败')
 				}
+				
 			}else{
 				message.error(res.data.msg)
 			}

@@ -11,6 +11,7 @@ moment.locale('zh-cn');
 const { Content,Header } = Layout;
 const confirm = Modal.confirm;
 const Option = Select.Option;
+const Search = Input.Search;
 const echarts = require('echarts');
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
@@ -28,7 +29,7 @@ class HomeworkCenter extends React.Component {
 			myChart:{},
 			sbid:0,
 			cid:0,
-
+			searchData:[]
 		}
 
 	}
@@ -276,11 +277,16 @@ class HomeworkCenter extends React.Component {
 		myChart.setOption(option);
 		myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
 	}
-	renderTeacherUserCount(arr){
-		let data=arr
-		let { sortedInfo, filteredInfo } = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
+	renderTeacherUserCount(){
+	
+		// let data=[]
+		// if(type===1){
+		// 	data=this.state.searchData
+		// }else{
+		// 	data=this.props.state.schoolDataReport.teacherUseDataList
+		// }
+		let data=this.props.state.searchData
+		console.error('00',this.props,this.props.state.searchData)
 		const columns = [
       {
         title: '序号',
@@ -606,6 +612,37 @@ class HomeworkCenter extends React.Component {
 
 		}
 	} 
+	getGradeList() {
+		let gradeList =  this.props.state.classList1.data;
+		//let cid=classList[0].classId
+		// this.setState({
+		// 	cid:cid
+		// })
+		if(gradeList && gradeList.length> 0){
+			return(
+				<Select					
+						style={{ width: 100}}
+						placeholder="年级"
+						value={this.props.state.gradeId}
+						onChange={(value)=>{
+							this.props.dispatch({
+								type: 'reportChart/gradeId',
+								payload:value
+							});
+						}}
+						
+				>
+					{
+						gradeList.map((item,i) =>(
+							<Option key={i} value={item.classId}>{item.className}</Option>
+						))
+					}
+			</Select>
+			)
+		}else{
+
+		}
+	} 
 	render() {
 
 		let timeList=this.props.state.reportTimeList
@@ -641,6 +678,7 @@ class HomeworkCenter extends React.Component {
 							<Row >
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:20}}>
+										{this.getGradeList()}
 										{this.getSub()}
 										{this.getClassList()}
 										<div id='main2' style={{height:'400px'}}>
@@ -662,9 +700,42 @@ class HomeworkCenter extends React.Component {
 							<Row >
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:30}}>
+										<div className={style.searchInput}>
 										<p>教师使用情况</p>
+										<Search
+												placeholder="请输入教师姓名"
+												enterButton="搜索"
+												size="large"
+												style={{width:240,position:'absolute',right:0,top:0}}
+												onSearch={value =>{
+													console.log(schoolReport.teacherUseDataList,value)
+													if(value===''){
+														this.props.dispatch({
+															type: 'reportChart/searchData',
+															payload:this.props.state.schoolDataReport.teacherUseDataList
+														});
+													}else{
+														let arr=[]
+														for (let i = 0; i < schoolReport.teacherUseDataList.length; i++) {
+															const ele = schoolReport.teacherUseDataList[i];
+															if(ele.adminName.indexOf(value)>-1){
+																arr.push(ele)
+															}
+														}
+														this.props.dispatch({
+															type: 'reportChart/searchData',
+															payload:arr
+														});
+													}
+
+													this.renderTeacherUserCount()
+												} 
+													
+												}
+											/>
+										</div>
 										{schoolReport.teacherUseDataList?
-											this.renderTeacherUserCount(schoolReport.teacherUseDataList):''
+											this.renderTeacherUserCount():''
 										}
 									</div>
 								</Col>

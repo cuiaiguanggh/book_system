@@ -71,7 +71,11 @@ function querySchoolDataReport(payload){
         data:payload
     });
 }
-
+function queryGradeDataBySchoolId(payload){
+    return request(dataCenter('/web/report/querySchoolDataReport'),{
+        data:payload
+    });
+}
 export {
     queryQrDetail,
     queryHomeworkList,
@@ -87,4 +91,5 @@ export {
     getQuestionPdf2,
     getReportTimeList,
     querySchoolDataReport,
+    queryGradeDataBySchoolId,
 };
