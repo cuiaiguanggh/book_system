@@ -155,98 +155,43 @@ export default {
 				yield put ({
 					type: 'timeStamp',
 					payload:res.data.data[0].timeStamp
+				})		
+				yield put ({
+					type: 'getGradeList',
 				})
-				let _timeStamp=res.data.data[0].timeStamp
-				
-				let _schoolid=store.get('wrongBookNews').schoolId
-				let gradeData=yield queryGradeListBySchoolId({schoolId:_schoolid})
-				
-				//return
-				if(gradeData){
-
-					let glist=gradeData.data.data
-					yield put ({
-						type: 'sgradeList',
-						payload:glist
-					})
-					yield put ({
-						type: 'gradeId',
-						payload:glist[0].id
-					})
-					let classData=yield queryClassListByGradeId({schoolId:_schoolid,gradeId:glist[0].id})
-				
-
-					if(classData.data.result===0){
-						let clist=classData.data.data
-						yield put ({
-							type: 'sclassList',
-							payload:clist
-						})
-						let _classId=clist[0].id					
-						yield put ({
-							type: 'sclassId',
-							payload:_classId
-						})
-						let subData=yield querySubListByClassId({classId:_classId})
-						let _sublist=subData.data.data
-						if(subData.data.result===0){
-							yield put ({
-								type: 'ssubList',
-								payload:_sublist
-							})
-							yield put ({
-								type: 'subjectId',
-								payload:_sublist[0].id
-							})
-							let _subjectId=_sublist[0].id
-
-							let data={
-								schoolId:_schoolid,
-								periodTime:1,
-								timeStamp:_timeStamp,
-								classId:_classId,
-								subjectId:_subjectId
-							}
-
-							
-							let schoolRes= yield querySchoolDataReport(data);	
-							if(schoolRes.data.result===0){
-								yield put ({
-									type: 'schoolDataReport',
-									payload:schoolRes.data.data
-								})
-								yield put ({
-									type: 'searchData',
-									payload:schoolRes.data.data.teacherUseDataList
-								})
-							}else{
-								message.error('获取报表失败')
-							}
-
-						}else{
-							message.error('获取学科失败')
-							return
-						}
-						
-					}else{
-						message.error('获取班级失败')
-						return
-					}
-					
-				}else{
-					message.error('获取班级信息失败')
-				}
-				
+		
 			}else{
 				message.error(res.data.msg)
 			}
 			
 		},
+		*getGradeList({payload}, {put, select}) {
+			let _schoolid=store.get('wrongBookNews').schoolId
+			let gradeData=yield queryGradeListBySchoolId({schoolId:_schoolid})
+			if(gradeData){
+				let glist=gradeData.data.data
+				yield put ({
+					type: 'sgradeList',
+					payload:glist
+				})
+				yield put ({
+					type: 'gradeId',
+					payload:glist[0].id
+				})
+
+				yield put ({
+					type: 'getClassList',
+					payload:{schoolId:_schoolid,gradeId:glist[0].id}
+				})
+				
+			}else{
+				message.error('获取年级失败')
+			}
+		},
 		*getClassList({payload}, {put, select}) {
 			let classData=yield queryClassListByGradeId({schoolId:payload.schoolId,gradeId:payload.gradeId})
 					if(classData.data.result===0){
-						let clist=classData.data.data
-						
+						let clist=classData.data.data				
 						yield put ({
 							type: 'sclassList',
 							payload:clist
@@ -255,50 +200,21 @@ export default {
 							type: 'sclassId',
 							payload:clist[0].id
 						})
-						//console.error('qqq',clist[0].id)
-						let _classId=clist[0].id					
-						let subData=yield querySubListByClassId({classId:_classId})
-						let _sublist=subData.data.data
-						if(subData.data.result===0){
-							yield put ({
-								type: 'ssubList',
-								payload:_sublist
-							})
-							yield put ({
-								type: 'subjectId',
-								payload:_sublist[0].id
-							})
-
-							let data={
-								schoolId:payload.schoolId,
-								periodTime:payload.periodTime,
-								timeStamp:payload.timeStamp,
-								classId:_classId,
-								subjectId:_sublist[0].id
-							}
-
-							//console.error('请求数据',data)
-							let schoolRes= yield querySchoolDataReport(data);		
-							if(schoolRes.data.result===0){
-								yield put ({
-									type: 'schoolDataReport',
-									payload:schoolRes.data.data
-								})
-								yield put ({
-									type: 'searchData',
-									payload:schoolRes.data.data.teacherUseDataList
-								})
-							}else{
-								message.error('获取报表失败')
-							}
-						
-						}else{
-							message.error('获取学科失败')
-							return
-						}
+						const _state = yield select(state => state.reportChart);
+						let _classId=clist[0].id
+						let data={
+							classId:_classId,
+							schoolId:store.get('wrongBookNews').schoolId,
+							periodTime:_state.periodTime,
+							timeStamp:_state.timeStamp,
+							subjectId:_state.subjectId
+						}		
+						yield put ({
+							type: 'getSubList',
+							payload:data
+						})
 					}else{
 						message.error('获取班级失败')
-						return
 					}
 		},
 		*getSubList({payload}, {put, select}) {
@@ -322,54 +238,33 @@ export default {
 					subjectId:_subjectId
 				}
 
-			
-				let schoolRes= yield querySchoolDataReport(data);		
-				if(schoolRes.data.result===0){
-					yield put ({
-						type: 'schoolDataReport',
-						payload:schoolRes.data.data
-					})
-					yield put ({
-						type: 'searchData',
-						payload:schoolRes.data.data.teacherUseDataList
-					})
-				}else{
-					message.error('获取报表失败')
-				}
-
+				yield put ({
+					type: 'getSchoolDataReport',
+					payload:data
+				})
 			}else{
 				message.error('获取学科失败')
 				return
 			}
 		},
 		*changeSubList({payload}, {put, select}) {
-				let data=payload
-
-			//	console.error('请求数据',data)
-				let schoolRes= yield querySchoolDataReport(data);		
-				if(schoolRes.data.result===0){
-					yield put ({
-						type: 'schoolDataReport',
-						payload:schoolRes.data.data
-					})
-					yield put ({
-						type: 'searchData',
-						payload:schoolRes.data.data.teacherUseDataList
-					})
-				}else{
-					message.error('获取报表失败')
-				}
-
-			
+				yield put ({
+					type: 'getSchoolDataReport',
+					payload:payload
+				})		
 		},
+		
 		*getSchoolDataReport({payload}, {put, select}) {
-
 			let schoolRes= yield querySchoolDataReport(payload);	
 					
 			if(schoolRes.data.result===0){
 				yield put ({
 					type: 'schoolDataReport',
 					payload:schoolRes.data.data
+				})
+				yield put ({
+					type: 'searchData',
+					payload:schoolRes.data.data.teacherUseDataList
 				})
 			}else if(schoolRes.data.result===1){
 				message.warning(schoolRes.data.msg)
