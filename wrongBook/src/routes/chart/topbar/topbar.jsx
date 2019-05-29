@@ -64,8 +64,14 @@ class topbar extends React.Component {
 		const {RangePicker} = DatePicker;
 		
 		let timeList=this.props.timeList
+		let sdate
 		let cdate=this.format(this.state.ctimestamp)
-		let sdate=this.format(timeList[0].timeStamp)
+		let defaultDate=[]
+		if(timeList.length>0){
+			sdate=this.format(timeList[0].timeStamp)
+			defaultDate=[sdate, cdate]
+		}
+		console.log('defaultDate',defaultDate)
 		return(
 			<Header  style={{ background: '#fff',borderTop:'1px solid #eee',borderBottom:'1px solid #eee',overflow:'hidden',padding:'0 20px',height:44,lineHeight:'44px'}}>
 						<div className={style.topbar} style={{ background: '#fff',margin:'0'}}>
@@ -89,9 +95,9 @@ class topbar extends React.Component {
 								<div style={{marginLeft:14}}>
 									<RangePicker  
 										style={{width:220}}              
-										placeholder={this.state.dateValue}
+										placeholder={defaultDate}
 										value={this.state.date}  		
-										format="YYYY-MM-DD"                            
+										format="YYYY-MM-DD"                         
 										onPanelChange={this.workHandlePanelChange}
 										onChange={this.workOnChange} 
 										disabledDate={this.disabledDate}

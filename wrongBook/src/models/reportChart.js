@@ -43,7 +43,7 @@ export default {
 		endTime:'',
 		sgradeList:[],
 		sclassList:[],
-		searchData:[]
+		searchData:[],
 	},
 	reducers: {
 		searchData(state,{payload}){
