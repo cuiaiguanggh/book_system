@@ -21,9 +21,6 @@ class topbar extends React.Component {
 		}
 
 	}
-	workHandlePanelChange = (value, mode) => {    
-		
-	} 
 	add0(m){return m<10?'0'+m:m }
 	format(shijianchuo){
 		//shijianchuo是整数，否则要parseInt转换

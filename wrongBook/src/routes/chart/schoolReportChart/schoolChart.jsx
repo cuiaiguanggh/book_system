@@ -465,8 +465,19 @@ class HomeworkCenter extends React.Component {
 	}
 
 	renderClassData0(udata,wdata){
+		let cdate= moment(Date.now()).format('YYYY-MM-DD');
 		let myChart = echarts.init(document.getElementById('main2'));
-		var dateList = Object.getOwnPropertyNames(udata)
+		var dList = Object.getOwnPropertyNames(udata)
+
+		let dateArr=[]
+		for (let index = 0; index < dList.length; index++) {
+			const element = dList[index]
+			if(moment(cdate)>=moment(element)){
+				dateArr.push(element)
+			}			
+		}
+
+		let dateList=dateArr
 		var userList=dateList.map(function(i){return udata[i]})
 
 		var wList = Object.getOwnPropertyNames(wdata)
@@ -590,7 +601,6 @@ class HomeworkCenter extends React.Component {
 	} 
 	getClassList() {
 		let classList =  this.props.state.sclassList;
-		//console.log('班级00000000',classList)
 		if(classList && classList.length> 0){
 			return(
 				<Select					
@@ -630,8 +640,6 @@ class HomeworkCenter extends React.Component {
 	} 
 	getGradeList() {
 		let gradeList =  this.props.state.sgradeList;
-
-		//console.log('nianji000000000',gradeList)
 		if(gradeList && gradeList.length> 0){
 			return(
 				<Select					
@@ -779,7 +787,12 @@ class HomeworkCenter extends React.Component {
 			
 		);
 	}
-
+	componentWillUnmount(){
+		this.props.dispatch({
+			type: 'reportChart/subjectId',
+			payload:'',
+		});
+	}
 	componentDidMount(){
 		let schoolId = store.get('wrongBookNews').schoolId
 		

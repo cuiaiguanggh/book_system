@@ -209,7 +209,7 @@ export default {
 							}
 
 							
-							let schoolRes= yield querySchoolDataReport(data);		
+							let schoolRes= yield querySchoolDataReport(data);	
 							if(schoolRes.data.result===0){
 								yield put ({
 									type: 'schoolDataReport',
@@ -364,12 +364,15 @@ export default {
 		},
 		*getSchoolDataReport({payload}, {put, select}) {
 
-			let schoolRes= yield querySchoolDataReport(payload);		
+			let schoolRes= yield querySchoolDataReport(payload);	
+					
 			if(schoolRes.data.result===0){
 				yield put ({
 					type: 'schoolDataReport',
 					payload:schoolRes.data.data
 				})
+			}else if(schoolRes.data.result===1){
+				message.warning(schoolRes.data.msg)
 			}else{
 				message.error('获取报表失败')
 			}
