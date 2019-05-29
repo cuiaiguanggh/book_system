@@ -58,21 +58,37 @@ class HomeworkCenter extends React.Component {
 		});
 	}
 	onChangeDate(startDate,endDate){
-		this.dispatch({
-			type: 'reportChart/startTime',
-			payload:startDate
-		});
-		this.dispatch({
-			type: 'reportChart/endTime',
-			payload:endDate
-		});
-		let data={
-			schoolId:store.get('wrongBookNews').schoolId,
-			startTime:startDate,
-			endTime:endDate,
-			classId:this.state.classId,
-			subjectId:this.state.subjectId,
+		console.log(startDate,endDate)
+		let data={}
+		if(startDate!==''){
+			this.dispatch({
+				type: 'reportChart/startTime',
+				payload:startDate
+			});
+			this.dispatch({
+				type: 'reportChart/endTime',
+				payload:endDate
+			});
+			data={
+				schoolId:store.get('wrongBookNews').schoolId,
+				startTime:startDate,
+				endTime:endDate,
+				classId:this.state.classId,
+				subjectId:this.state.subjectId,
+				timeStamp:0,
+			}
+		}else{
+			console.error('11',this.state.reportTimeList)
+			//return
+			data={
+				schoolId:store.get('wrongBookNews').schoolId,
+				classId:this.state.classId,
+				subjectId:this.state.subjectId,
+				timeStamp:this.state.reportTimeList[0].timeStamp,
+				periodTime:1,
+			}
 		}
+		
 		this.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload:data

@@ -38,14 +38,16 @@ class topbar extends React.Component {
 					timeIndex:0,
 					date:null		
 				})
+				this.props.onChangeDate('','');
 			}else{
 				this.setState({
 					timeIndex:100,
 					date:[moment(startDate, dateFormat), moment(endDate, dateFormat)]			
 				})
+				this.props.onChangeDate(startDate,endDate);
 			} 
-			console.log(queryDate)
-			this.props.onChangeDate(startDate,endDate);
+			//console.log(queryDate)
+		
 	}
 	disabledDate = current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year');
 	render() {

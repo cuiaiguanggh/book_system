@@ -106,13 +106,13 @@ export default {
 				let arr=res.data.data
 				for(let i=0;i<arr.length;i++){
 					if(arr[i].periodTime===1){
-						arr[i].name='近一年'
+						arr[i].name='本学年'
 					}else if(arr[i].periodTime===2){
-						arr[i].name='近一学期'
+						arr[i].name='本学期'
 					}else if(arr[i].periodTime===3){
-						arr[i].name='近一月'
+						arr[i].name='本月'
 					}else if(arr[i].periodTime===4){
-						arr[i].name='近一周'
+						arr[i].name='本周'
 					}
 				}
 				yield put ({
