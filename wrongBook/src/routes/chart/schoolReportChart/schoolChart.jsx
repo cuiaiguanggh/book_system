@@ -74,15 +74,13 @@ class HomeworkCenter extends React.Component {
 			});
 			data={
 				schoolId:store.get('wrongBookNews').schoolId,
-				startTime:startDate,
-				endTime:endDate,
 				classId:this.state.sclassId,
 				subjectId:this.state.subjectId,
 				timeStamp:0,
+				startTime:startDate,
+				endTime:endDate,
 			}
 		}else{
-		//	console.error('11',this.state.reportTimeList)
-			//return
 			this.dispatch({
 				type: 'reportChart/periodTime',
 				payload:1
@@ -95,8 +93,8 @@ class HomeworkCenter extends React.Component {
 				schoolId:store.get('wrongBookNews').schoolId,
 				classId:this.state.sclassId,
 				subjectId:this.state.subjectId,
+				periodTime:0,
 				timeStamp:this.state.reportTimeList[0].timeStamp,
-				periodTime:1,
 			}
 		}
 		
