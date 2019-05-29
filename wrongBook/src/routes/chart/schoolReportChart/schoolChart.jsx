@@ -156,7 +156,7 @@ class HomeworkCenter extends React.Component {
 			calculable : true,  
 			series : [
 					{
-							name:'半径模式',
+							name:'错题量',
 							type:'pie',
 							radius : [20, 110],
 							center : ['25%', '50%'],
@@ -246,7 +246,7 @@ class HomeworkCenter extends React.Component {
 			},
 			series: [
 					{
-							name:'访问来源',
+							name:'使用人数',
 							type:'pie',
 							radius: ['50%', '65%'],
 							center : ['25%', '50%'],
@@ -356,6 +356,7 @@ class HomeworkCenter extends React.Component {
 		let wrongList=[]
 		for (let i = 0; i < udata.length; i++) {
 			wrongList.push(wdata[i].num)
+			
 		}
 
 		let option3 =  {
@@ -394,7 +395,8 @@ class HomeworkCenter extends React.Component {
 							},
 							axisTick:{
 								show:false
-							}
+							},
+							
 							
 					}
 			],
@@ -427,7 +429,7 @@ class HomeworkCenter extends React.Component {
 							name:'错题量',
 							type:'bar',
 							symbol: 'circle',
-							barWidth:'20',
+							barWidth:'30%',
 							symbolSize: 6,
 							lineStyle:{color:'#2FC25B'},
 							itemStyle:{color:"#2FC25B"},

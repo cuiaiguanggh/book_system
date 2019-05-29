@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout,Select,Row, Col,DatePicker } from 'antd';
+import { Layout,DatePicker } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -8,8 +8,7 @@ import 'react-count-animation/dist/count.min.css';
 import store from 'store';
 moment.locale('zh-cn');
 
-const { Content,Header } = Layout;
-const Option = Select.Option;
+const { Header } = Layout;
 //作业中心界面内容
 class topbar extends React.Component {
 	constructor(props) {
@@ -17,13 +16,26 @@ class topbar extends React.Component {
 		this.state={
 			timeIndex:0,
 			dateValue:['开始时间','结束时间'],
-			date:[]
+			date:[],
+			ctimestamp :new Date().getTime(),
 		}
 
 	}
 	workHandlePanelChange = (value, mode) => {    
 		
 	} 
+	add0(m){return m<10?'0'+m:m }
+	format(shijianchuo){
+		//shijianchuo是整数，否则要parseInt转换
+		var time = new Date(shijianchuo);
+		var y = time.getFullYear();
+		var m = time.getMonth()+1;
+		var d = time.getDate();
+		var h = time.getHours();
+		var mm = time.getMinutes();
+		var s = time.getSeconds();
+		return y+'-'+this.add0(m)+'-'+this.add0(d);
+	}
 	handleClick=(item)=> {
 		this.props.onChangeTime(item);
 	}
@@ -31,7 +43,6 @@ class topbar extends React.Component {
 			const dateFormat = 'YYYY-MM-DD';   
 			let startDate= moment(date[0]).format("YYYY-MM-DD")
 			let endDate = moment(date[1]).format("YYYY-MM-DD")
-			let queryDate=startDate+'~'+endDate
 
 			if(date.length===0){
 				this.setState({
@@ -46,7 +57,6 @@ class topbar extends React.Component {
 				})
 				this.props.onChangeDate(startDate,endDate);
 			} 
-			//console.log(queryDate)
 		
 	}
 	disabledDate = current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year');
@@ -54,7 +64,8 @@ class topbar extends React.Component {
 		const {RangePicker} = DatePicker;
 		
 		let timeList=this.props.timeList
-
+		let cdate=this.format(this.state.ctimestamp)
+		let sdate=this.format(timeList[0].timeStamp)
 		return(
 			<Header  style={{ background: '#fff',borderTop:'1px solid #eee',borderBottom:'1px solid #eee',overflow:'hidden',padding:'0 20px',height:44,lineHeight:'44px'}}>
 						<div className={style.topbar} style={{ background: '#fff',margin:'0'}}>
@@ -63,11 +74,11 @@ class topbar extends React.Component {
 									{timeList.length>0?timeList.map((item,i) =>(
 											<li key={i}
 												className={i === this.state.timeIndex?'selected': ''}
-												onClick={() =>{
-													console.log(i,item)
+												onClick={() =>{											
+													sdate=this.format(item.timeStamp)
 													this.setState({
 														timeIndex:i,
-														date:null
+														date:[moment(sdate, "YYYY-MM-DD"), moment(cdate, "YYYY-MM-DD")]
 													})
 													this.handleClick(item);
 												}}>
