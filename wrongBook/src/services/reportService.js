@@ -71,8 +71,18 @@ function querySchoolDataReport(payload){
         data:payload
     });
 }
-function queryGradeDataBySchoolId(payload){
-    return request(dataCenter('/web/report/querySchoolDataReport'),{
+function queryGradeListBySchoolId(payload){
+    return request(dataCenter('/web/report/getGradeList'),{
+        data:payload
+    });
+}
+function queryClassListByGradeId(payload){
+    return request(dataCenter('/web/report/getClassList'),{
+        data:payload
+    });
+}
+function querySubListByClassId(payload){
+    return request(dataCenter('/web/report/getSubjectList'),{
         data:payload
     });
 }
@@ -91,5 +101,7 @@ export {
     getQuestionPdf2,
     getReportTimeList,
     querySchoolDataReport,
-    queryGradeDataBySchoolId,
+    queryGradeListBySchoolId,
+    queryClassListByGradeId,
+    querySubListByClassId,
 };

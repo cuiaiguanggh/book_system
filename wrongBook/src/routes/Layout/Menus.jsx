@@ -111,7 +111,7 @@ class HomePageLeft extends Component {
 							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" /><span>批量导入</span></Link></Menu.Item>
 						)
 						menus.push(
-							<Menu.Item><Link to="/schoolChart" replace><Icon type="pie-chart" /><span>校级报表</span></Link></Menu.Item>
+							<Menu.Item><Link key="schoolChart" to="/schoolChart" replace><Icon type="pie-chart" /><span>校级报表</span></Link></Menu.Item>
 						)
 					}else{
 						menus.push(<Menu.Item key="grade">

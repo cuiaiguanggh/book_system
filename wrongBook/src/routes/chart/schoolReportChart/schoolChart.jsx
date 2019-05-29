@@ -44,7 +44,7 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		let cid=this.state.classId
+		let cid=this.state.sclassId
 		let sid=this.state.subjectId
 		let data={
 			schoolId:store.get('wrongBookNews').schoolId,
@@ -59,7 +59,7 @@ class HomeworkCenter extends React.Component {
 		});
 	}
 	onChangeDate(startDate,endDate){
-		console.log(startDate,endDate)
+		//console.log(startDate,endDate)
 		let data={}
 		if(startDate!==''){
 			this.dispatch({
@@ -74,12 +74,12 @@ class HomeworkCenter extends React.Component {
 				schoolId:store.get('wrongBookNews').schoolId,
 				startTime:startDate,
 				endTime:endDate,
-				classId:this.state.classId,
+				classId:this.state.sclassId,
 				subjectId:this.state.subjectId,
 				timeStamp:0,
 			}
 		}else{
-			console.error('11',this.state.reportTimeList)
+		//	console.error('11',this.state.reportTimeList)
 			//return
 			this.dispatch({
 				type: 'reportChart/periodTime',
@@ -91,7 +91,7 @@ class HomeworkCenter extends React.Component {
 			});
 			data={
 				schoolId:store.get('wrongBookNews').schoolId,
-				classId:this.state.classId,
+				classId:this.state.sclassId,
 				subjectId:this.state.subjectId,
 				timeStamp:this.state.reportTimeList[0].timeStamp,
 				periodTime:1,
@@ -286,7 +286,7 @@ class HomeworkCenter extends React.Component {
 		// 	data=this.props.state.schoolDataReport.teacherUseDataList
 		// }
 		let data=this.props.state.searchData
-		console.error('00',this.props,this.props.state.searchData)
+		//console.error('00',this.props,this.props.state.searchData)
 		const columns = [
       {
         title: '序号',
@@ -536,11 +536,11 @@ class HomeworkCenter extends React.Component {
 		
 	}
 	getSub() {
-		let subList =  this.props.state.subList.data;
+		let subList =  this.props.state.ssubList;
 		if(subList && subList.length> 0){
 			return(
 				<Select					
-						style={{ width: 100,marginRight:20}}
+						style={{ width: 100,marginLeft:20}}
 						placeholder="学科"
 						optionFilterProp="children"
 						value={this.props.state.subjectId}
@@ -553,18 +553,13 @@ class HomeworkCenter extends React.Component {
 
 							let data={
 								schoolId:store.get('wrongBookNews').schoolId,
-								classId:this.props.state.classId,
+								classId:this.props.state.sclassId,
 								subjectId:this.props.state.subjectId,
-
 								periodTime:this.props.state.periodTime,
 								timeStamp:this.props.state.timeStamp,
-							}
-							if(false){
-								// startTime:this.props.state.startTime,
-								// endTime:this.props.state.endTime,
-							}
+							}		
 							this.props.dispatch({
-								type: 'reportChart/getSchoolDataReport',
+								type: 'reportChart/changeSubList',
 								payload:data
 							});
 
@@ -573,7 +568,7 @@ class HomeworkCenter extends React.Component {
 				>
 					{
 						subList.map((item,i) =>(
-							<Option key={i} value={item.v}>{item.k}</Option>
+							<Option key={i} value={item.id}>{item.name}</Option>
 						))
 					}
 			</Select>
@@ -583,29 +578,37 @@ class HomeworkCenter extends React.Component {
 		}
 	} 
 	getClassList() {
-		let classList =  this.props.state.classList1.data;
-		let cid=classList[0].classId
-		// this.setState({
-		// 	cid:cid
-		// })
+		let classList =  this.props.state.sclassList;
+		//console.log('班级00000000',classList)
 		if(classList && classList.length> 0){
 			return(
 				<Select					
-						style={{ width: 140}}
+						style={{ width: 140,marginLeft:20}}
 						placeholder="班级"
-						optionFilterProp="children"
-						value={this.props.state.classId}
+						value={this.props.state.sclassId}
 						onChange={(value)=>{
 							this.props.dispatch({
 								type: 'reportChart/classId',
 								payload:value
+							});
+
+							let data={
+								schoolId:store.get('wrongBookNews').schoolId,
+								classId:this.props.state.sclassId,
+								subjectId:this.props.state.subjectId,
+								periodTime:this.props.state.periodTime,
+								timeStamp:this.props.state.timeStamp,
+							}		
+							this.props.dispatch({
+								type: 'reportChart/getSubList',
+								payload:data
 							});
 						}}
 						
 				>
 					{
 						classList.map((item,i) =>(
-							<Option key={i} value={item.classId}>{item.className}</Option>
+							<Option key={i} value={item.id}>{item.name}</Option>
 						))
 					}
 			</Select>
@@ -615,11 +618,9 @@ class HomeworkCenter extends React.Component {
 		}
 	} 
 	getGradeList() {
-		let gradeList =  this.props.state.classList1.data;
-		//let cid=classList[0].classId
-		// this.setState({
-		// 	cid:cid
-		// })
+		let gradeList =  this.props.state.sgradeList;
+
+		//console.log('nianji000000000',gradeList)
 		if(gradeList && gradeList.length> 0){
 			return(
 				<Select					
@@ -631,12 +632,25 @@ class HomeworkCenter extends React.Component {
 								type: 'reportChart/gradeId',
 								payload:value
 							});
+							let data={
+								schoolId:store.get('wrongBookNews').schoolId,
+								classId:this.props.state.sclassId,
+								subjectId:this.props.state.subjectId,
+								periodTime:this.props.state.periodTime,
+								timeStamp:this.props.state.timeStamp,
+								gradeId:this.props.state.gradeId
+							}	
+							this.props.dispatch({
+								type: 'reportChart/getClassList',
+								payload:data
+							});
+							
 						}}
 						
 				>
 					{
 						gradeList.map((item,i) =>(
-							<Option key={i} value={item.classId}>{item.className}</Option>
+							<Option key={i} value={item.id}>{item.name}</Option>
 						))
 					}
 			</Select>
@@ -649,18 +663,16 @@ class HomeworkCenter extends React.Component {
 
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
-		if(schoolReport.gradeWrongNumMap){
-			this.renderQustionCount(schoolReport.gradeWrongNumMap)
-		}
-		if(schoolReport.gradeUseNumMap){
-			this.renderUserCount(schoolReport.gradeUseNumMap)
-		}
-		if(schoolReport.classUseData){
-			this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
-		}
-		if(schoolReport.schoolUserNumData){
-			this.renderClassData0(schoolReport.schoolUserNumData,schoolReport.schoolWrongNumData)
-		}
+	
+		// if(schoolReport.gradeUseNumMap){
+		// 	this.renderUserCount(schoolReport.gradeUseNumMap)
+		// }
+		// if(schoolReport.classUseData){
+		// 	this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
+		// }
+		// if(schoolReport.schoolUserNumData){
+		// 	this.renderClassData0(schoolReport.schoolUserNumData,schoolReport.schoolWrongNumData)
+		// }
 	
 	  console.log('报告',schoolReport)
 		return(
@@ -671,6 +683,7 @@ class HomeworkCenter extends React.Component {
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
 									<div id='main' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
+									
 								</Col>
 								<Col  xl={12} md={24}>
 									<div id='main1' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
@@ -681,8 +694,8 @@ class HomeworkCenter extends React.Component {
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:20}}>
 										{this.getGradeList()}
-										{this.getSub()}
 										{this.getClassList()}
+										{this.getSub()}
 										<div id='main2' style={{height:'400px'}}>
 										
 										</div>
@@ -710,7 +723,7 @@ class HomeworkCenter extends React.Component {
 												size="large"
 												style={{width:240,position:'absolute',right:0,top:0}}
 												onSearch={value =>{
-													console.log(schoolReport.teacherUseDataList,value)
+													//console.log(schoolReport.teacherUseDataList,value)
 													if(value===''){
 														this.props.dispatch({
 															type: 'reportChart/searchData',
@@ -745,248 +758,77 @@ class HomeworkCenter extends React.Component {
 						
 					</Content>
 			</Layout>
+
+
 		);
 	}
 
 	componentDidMount(){
 		let schoolId = store.get('wrongBookNews').schoolId
-		let myChart = echarts.init(document.getElementById('main'));
-		let myChart1 = echarts.init(document.getElementById('main1'));
-		let myChart2 = echarts.init(document.getElementById('main2'));
-		let myChart3 = echarts.init(document.getElementById('main3'));
+		
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'reportChart/getReportTimeList',
 		});
 
-		let option2 =  {
-			title: {
-					text: ''
-			},
-			tooltip: {
-					trigger: 'axis'
-			},
-			legend: {
-				selectedMode:true,
-				data:['错题量','人数'],
-				itemGap:16,
-			},
-			grid: {
-					left: '0%',
-					right: '2%',
-					bottom: '3%',
-					containLabel: true
-			},
-			xAxis: {
-					type: 'category',
-					boundaryGap: false,
-					data: ['1.01','1.02','1.03','1.04','1.05','1.06','1.07','1.08','1.09','1.10','1.11','1.12','1.13','1.13','1.15','1.16','1.17','1.18','1.19','1.20','1.21','1.22','1.23','1.24','1.25','1.26','1.27','1.28','1.29','1.30'],			
-					axisTick:{
-						show:false
-					}
-			},
-			yAxis: {
-					type: 'value',
-					axisLine:{
-						show: false
-					},
-					splitLine:{
-            lineStyle:{
-                type:'dashed',
-                color:'#ccc'
-            }
-				},
-				axisTick:{
-					show:false
-				}
-			},
-			series: [
-					{
-							name:'错题量',
-							type:'line',
-							stack: '总量',
-							symbol: 'circle',
-            	symbolSize: 6,
-							data:[120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210, 90, 230, 210,],
-							lineStyle:{color:'#2FC25B'},
-							itemStyle:{color:"#2FC25B"}
-					},
-					{
-							name:'人数',
-							type:'line',
-							symbol: 'circle',
-            	symbolSize: 6,
-							stack: '总量',
-							data:[120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210, 90, 230, 210,],
-							lineStyle:{color:'#21A2F4'},
-							itemStyle:{color:"#21A2F4"}
-							
-					}
-			],
-			dataZoom: [
-        // {
-        //     type: 'inside'
-        // }
-    ],
-	};
-
-	let option3 =  {
-		title: {
-			text: '',
-			subtext: '',
-			x:'left',
-			textStyle:{
-					fontSize:14,
-					fontWeight:'normal'
-			}
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-					
-			}
-		},
-
-		legend: {
-				data:['错题量','人数'],
-				itemGap:16,
-		},
-		grid: {
-			left: '0%',
-			right: '1%',
-			bottom: '3%',
-			containLabel: true
-		},
-		xAxis: [
-				{
-						type: 'category',
-						data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-						axisPointer: {
-								type: 'shadow'
-						},
-						axisTick:{
-							show:false
-						}
-						
-				}
-		],
-		yAxis: [
-			
-				{
-						type: 'value',
-						axisLine:{
-							show: false
-						},
-						axisLabel: {
-								formatter: '{value}'
-						},
-						splitLine:{
-							lineStyle:{
-									type:'dashed',
-									color:'#ccc'
-							}
-						},
-						axisTick:{
-							show:false
-						}
-				},
-				{
-						show:false
-				}
-		],
-		series: [
-				{
-						name:'错题量',
-						type:'bar',
-						symbol: 'circle',
-						barWidth:'50%',
-						symbolSize: 6,
-						lineStyle:{color:'#2FC25B'},
-						itemStyle:{color:"#2FC25B"},
-						data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
-				},
-
-				{
-						name:'人数',
-						type:'line',
-						yAxisIndex: 1,
-						data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2],
-						symbol: 'circle',
-						symbolSize: 6,
-						lineStyle:{color:'#21A2F4'},
-						itemStyle:{color:"#21A2F4"}
-				}
-		]
-		};
 		
-		// myChart.setOption(option);
-		// myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
-		// myChart1.setOption(option1);
-		// myChart1.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
-		myChart2.setOption(option2);
-		// myChart3.setOption(option3);
-
-		myChart2.resize();
-		myChart3.resize();
-		myChart.resize();
-		myChart1.resize();
 		//return
-		window.onresize = function (e) {//用于使chart自适应高度和宽度	
-			let winWidth=e.target.innerWidth
-			let winHeight=e.target.innerheight
-			//resizeWorldMapContainer();//重置容器高宽
-			const chartBox = document.getElementById('main');
-			const chartBox1 = document.getElementById('main1');
-			const chartBox2 = document.getElementById('main2');
-			const chartBox3 = document.getElementById('main3');
-			if(!chartBox) return
-			if(winWidth<=1400){
-				chartBox3.style.width='1000px'
-				chartBox2.style.width='1000px'
-			}else{
+		// window.onresize = function (e) {//用于使chart自适应高度和宽度	
+		// 	let winWidth=e.target.innerWidth
+		// 	let winHeight=e.target.innerheight
+		// 	//resizeWorldMapContainer();//重置容器高宽
+		// 	const chartBox = document.getElementById('main');
+		// 	const chartBox1 = document.getElementById('main1');
+		// 	const chartBox2 = document.getElementById('main2');
+		// 	const chartBox3 = document.getElementById('main3');
+		// 	if(!chartBox) return
+		// 	if(winWidth<=1400){
+		// 		chartBox3.style.width='1000px'
+		// 		chartBox2.style.width='1000px'
+		// 	}else{
 
-				chartBox3.style.width='100%'
-				chartBox2.style.width='100%'
+		// 		chartBox3.style.width='100%'
+		// 		chartBox2.style.width='100%'
 		
-			}
+		// 	}
 
-			if(chartBox.offsetWidth<=600||winWidth<=1366){
-				chartBox.style.height='500px'
-				chartBox1.style.height='500px'
-				// option.legend.y='bottom'
-				// option.legend.x='center'
-				// option.legend.orient='horizontal'
-				// option.series[0].center = ['50%', '50%']
+		// 	if(chartBox.offsetWidth<=600||winWidth<=1366){
+		// 		chartBox.style.height='500px'
+		// 		chartBox1.style.height='500px'
+		// 		// option.legend.y='bottom'
+		// 		// option.legend.x='center'
+		// 		// option.legend.orient='horizontal'
+		// 		// option.series[0].center = ['50%', '50%']
 
 
 				
-				//myChart.setOption(option);
-			}else{
-				chartBox.style.height='400px'
-				chartBox1.style.height='400px'
-				// option.legend.y='center'
-				// option.legend.x='right'
-				// option.legend.orient='vertical'
-				// option.series[0].center = ['25%', '50%']
+		// 		//myChart.setOption(option);
+		// 	}else{
+		// 		chartBox.style.height='400px'
+		// 		chartBox1.style.height='400px'
+		// 		// option.legend.y='center'
+		// 		// option.legend.x='right'
+		// 		// option.legend.orient='vertical'
+		// 		// option.series[0].center = ['25%', '50%']
 				
 
-				// option1.legend.y='center'
-				// option1.legend.x='right'
-				// option1.legend.orient='vertical'
-				// option1.series[0].center = ['25%', '50%']
-				// option1.series[0].radius = ['50%', '70%']
+		// 		// option1.legend.y='center'
+		// 		// option1.legend.x='right'
+		// 		// option1.legend.orient='vertical'
+		// 		// option1.series[0].center = ['25%', '50%']
+		// 		// option1.series[0].radius = ['50%', '70%']
 
-			//	myChart.setOption(option);
-				//myChart1.setOption(option1);
-			}
-			//console.log(chartBox.offsetWidth)
-			myChart2.resize();
-			myChart3.resize();
-			myChart.resize();
-			myChart1.resize();
+		// 	//	myChart.setOption(option);
+		// 		//myChart1.setOption(option1);
+		// 	}
+		// 	//console.log(chartBox.offsetWidth)
+		// 	myChart2.resize();
+		// 	myChart3.resize();
+		// 	myChart.resize();
+		// 	myChart1.resize();
 
 	
-	};
+	//};
 	}
 }
 
