@@ -1,4 +1,4 @@
-import echarts  from 'echarts';
+
 import React from 'react';
 import { Layout, Input,Modal,Button,Select,Row, Col,DatePicker, AutoComplete,Table } from 'antd';
 import { connect } from 'dva';
@@ -7,6 +7,7 @@ import 'moment/locale/zh-cn';
 import style from './schoolChart.less';
 import TopBar from '../topbar/topbar'
 import store from 'store';
+import echarts  from 'echarts';
 moment.locale('zh-cn');
 
 const { Content,Header } = Layout;
@@ -301,6 +302,12 @@ class HomeworkCenter extends React.Component {
         key: 'adminName',
 			},
       {
+        title: '学科',
+        dataIndex: 'subjectName',
+        key: 'subjectName',
+        
+			},
+			{
         title: '班级',
         dataIndex: 'className',
         key: 'className',
@@ -339,7 +346,10 @@ class HomeworkCenter extends React.Component {
       // },
 		]; 
 		return(
-			<Table bordered columns={columns}  dataSource={data} pagination={false} />
+			<div className={style.cagtable}>
+					<Table  bordered columns={columns}  dataSource={data} pagination={false} />
+			</div>
+			
 		)
 	}
 	renderClassData(udata,wdata){
