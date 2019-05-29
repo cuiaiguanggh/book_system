@@ -71,7 +71,7 @@ class topbar extends React.Component {
 			sdate=this.format(timeList[0].timeStamp)
 			defaultDate=[sdate, cdate]
 		}
-		console.log('defaultDate',defaultDate)
+	
 		return(
 			<Header  style={{ background: '#fff',borderTop:'1px solid #eee',borderBottom:'1px solid #eee',overflow:'hidden',padding:'0 20px',height:44,lineHeight:'44px'}}>
 						<div className={style.topbar} style={{ background: '#fff',margin:'0'}}>

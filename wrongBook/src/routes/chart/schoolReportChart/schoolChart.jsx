@@ -1,3 +1,4 @@
+import echarts  from 'echarts';
 import React from 'react';
 import { Layout, Input,Modal,Button,Select,Row, Col,DatePicker, AutoComplete,Table } from 'antd';
 import { connect } from 'dva';
@@ -12,7 +13,7 @@ const { Content,Header } = Layout;
 const confirm = Modal.confirm;
 const Option = Select.Option;
 const Search = Input.Search;
-const echarts = require('echarts');
+
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
 	constructor(props) {
@@ -588,7 +589,7 @@ class HomeworkCenter extends React.Component {
 						value={this.props.state.sclassId}
 						onChange={(value)=>{
 							this.props.dispatch({
-								type: 'reportChart/classId',
+								type: 'reportChart/sclassId',
 								payload:value
 							});
 
@@ -664,17 +665,24 @@ class HomeworkCenter extends React.Component {
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
 	
-		// if(schoolReport.gradeUseNumMap){
-		// 	this.renderUserCount(schoolReport.gradeUseNumMap)
-		// }
-		// if(schoolReport.classUseData){
-		// 	this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
-		// }
-		// if(schoolReport.schoolUserNumData){
-		// 	this.renderClassData0(schoolReport.schoolUserNumData,schoolReport.schoolWrongNumData)
-		// }
-	
-	  console.log('报告',schoolReport)
+		setTimeout(() => {		
+			if(this.props.state.subjectId!==''){
+				if(schoolReport.gradeUseNumMap){
+					this.renderUserCount(schoolReport.gradeUseNumMap)
+				}
+				if(schoolReport.classUseData){
+					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
+				}
+				if(schoolReport.schoolUserNumData){
+					this.renderClassData0(schoolReport.schoolUserNumData,schoolReport.schoolWrongNumData)
+				}
+				if(schoolReport.gradeWrongNumMap){
+					this.renderQustionCount(schoolReport.gradeWrongNumMap)
+				}
+			}
+			
+		}, 20);
+	  //console.error('报告',schoolReport,schoolReport.gradeWrongNumMap)
 		return(
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
@@ -683,7 +691,6 @@ class HomeworkCenter extends React.Component {
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
 									<div id='main' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
-									
 								</Col>
 								<Col  xl={12} md={24}>
 									<div id='main1' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
@@ -759,7 +766,7 @@ class HomeworkCenter extends React.Component {
 					</Content>
 			</Layout>
 
-
+			
 		);
 	}
 

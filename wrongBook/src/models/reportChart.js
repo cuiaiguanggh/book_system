@@ -47,8 +47,12 @@ export default {
 		sclassList:[],
 		ssubList:[],
 		searchData:[],
+		showEachart:false
 	},
 	reducers: {
+		showEachart(state,{payload}){
+			return { ...state, showEachart:payload };
+		},
 		searchData(state,{payload}){
 			return { ...state, searchData:payload };
 		},
@@ -156,7 +160,7 @@ export default {
 				
 				let _schoolid=store.get('wrongBookNews').schoolId
 				let gradeData=yield queryGradeListBySchoolId({schoolId:_schoolid})
-				console.error('年级信息',gradeData)
+				
 				//return
 				if(gradeData){
 
@@ -170,7 +174,7 @@ export default {
 						payload:glist[0].id
 					})
 					let classData=yield queryClassListByGradeId({schoolId:_schoolid,gradeId:glist[0].id})
-					console.error('班级信息',classData)
+				
 
 					if(classData.data.result===0){
 						let clist=classData.data.data
@@ -178,12 +182,12 @@ export default {
 							type: 'sclassList',
 							payload:clist
 						})
+						let _classId=clist[0].id					
 						yield put ({
 							type: 'sclassId',
-							payload:clist[0].id
+							payload:_classId
 						})
-						let _classId=clist[0].id					
-						let subData=yield querySubListByClassId({classId:clist[0].id})
+						let subData=yield querySubListByClassId({classId:_classId})
 						let _sublist=subData.data.data
 						if(subData.data.result===0){
 							yield put ({
@@ -204,7 +208,7 @@ export default {
 								subjectId:_subjectId
 							}
 
-							//console.error('请求数据',data)
+							
 							let schoolRes= yield querySchoolDataReport(data);		
 							if(schoolRes.data.result===0){
 								yield put ({
@@ -223,7 +227,7 @@ export default {
 							message.error('获取学科失败')
 							return
 						}
-						//console.error('学科信息',subData)
+						
 					}else{
 						message.error('获取班级失败')
 						return
@@ -318,7 +322,7 @@ export default {
 					subjectId:_subjectId
 				}
 
-				console.error('请求数据',data)
+			
 				let schoolRes= yield querySchoolDataReport(data);		
 				if(schoolRes.data.result===0){
 					yield put ({
