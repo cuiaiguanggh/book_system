@@ -80,6 +80,14 @@ class HomeworkCenter extends React.Component {
 		}else{
 			console.error('11',this.state.reportTimeList)
 			//return
+			this.dispatch({
+				type: 'reportChart/periodTime',
+				payload:1
+			});
+			this.dispatch({
+				type: 'reportChart/timeStamp',
+				payload:this.state.reportTimeList[0].timeStamp
+			});
 			data={
 				schoolId:store.get('wrongBookNews').schoolId,
 				classId:this.state.classId,
