@@ -11,7 +11,7 @@ import style from './classReport.less';
 import { request } from 'http';
 import TracksVideo from '../TracksVideo/TracksVideo';
 import store from 'store';
-
+import commonCss from '../../css/commonCss.css';
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -42,7 +42,6 @@ class wrongTop extends React.Component {
         const { clientHeight} = this.refDom;
         hei = clientHeight;
     }
-    
 	quesList(){
 		let ques = this.props.state.qrdetailList.data;
         let num = ques.memberNum;
@@ -320,10 +319,13 @@ class wrongTop extends React.Component {
 		let key = this.state.key;
         let MaxKey = 0
         let QuestionDetail = this.props.state.qrdetailList;
+        let fileLink=this.props.state.pdfUrl.fileLink;
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
+        
 		return (
+
             <Content style={{position:'relative'}}>
 				<iframe style={{display:'none'}} src={this.state.wordUrl}/>
                 <Layout className={style.layout}>
@@ -424,7 +426,7 @@ class wrongTop extends React.Component {
                                     message.warning('请选择题目到错题篮')
                                 }
                             }}>
-                            <img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                            <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}}  src={require('../../images/xc-cl-n.png')}></img>
                         下载组卷({this.props.state.classDown.length})
                         </Button>
                         {
@@ -445,25 +447,27 @@ class wrongTop extends React.Component {
                                     });
                                     // 添加导出次数
                                     let qlist = this.props.state.qrdetailList.data.questionList;
-                                    qlist.forEach(item => {
-                                        this.props.dispatch({
-                                            type: 'down/classDownPic',
-                                            payload:item.picId
-                                        });
-                                    });
 
                                     this.props.dispatch({
+                                            type: 'down/allClassDown',
+                                            payload:qlist
+                                    });
+
+                                                                
+                                    this.props.dispatch({
                                         type: 'report/addClassup',
-                                        payload:this.props.state.classDownPic
+                                        payload:this.props.state.allClassDown
                                     })
+
                                     this.props.dispatch({
                                         type: 'down/toDown',
                                         payload:true
                                     });
-                                    // 下载清空选题
                                     this.props.dispatch({
-                                        type: 'down/delAllClass',
+                                        type: 'down/delAllClassDown',
+                                        payload:true
                                     });
+
                                 }}>
                                 {
                                     this.props.state.toDown?
@@ -516,6 +520,7 @@ class wrongTop extends React.Component {
                         }
                     </Content>
                 </Layout>
+               
                 <Modal
                     visible={this.state.visible}
                     width='1000px'
@@ -639,6 +644,32 @@ class wrongTop extends React.Component {
                             /> */}
                         </div>
                 </Modal>
+
+                <Modal
+                    visible={this.props.state.showPdfModal}
+                    onOk={()=>{
+                        window.location.href=this.props.state.pdfUrl.downloadLink
+                    }}
+                    onCancel={()=>{
+                        this.props.dispatch({
+                            type: 'down/showPdfModal',
+                            payload:false
+                        });
+                    }}
+                    className={commonCss.pdfModal}   
+                    closable={false}
+                    cancelText='取消'  
+                    okText='下载'     
+                >
+                    <div style={{height:'700px'}}>
+                        {/* <PDF
+                            file="http://homework.mizholdings.com/pdf/240CA1A5-E7A9-4CF3-8CE2-5CD48B1FADB4.pdf"
+                        /> */}
+                        {/* <embed src={fileLink} type="application/pdf" width="100%" height="100%"></embed> */}
+                        <iframe  src={fileLink} title='下载预览' style={{width:'100%',height:'100%',border:0}}></iframe>
+                    </div>
+                    
+                </Modal>
             </Content>
 		);
 	  }
@@ -647,6 +678,10 @@ class wrongTop extends React.Component {
 		let classId = this.props.state.classId;
 		let subId = this.props.state.subId;
         let year = this.props.state.years;
+        this.props.dispatch({
+			type: 'down/showPdfModal',
+			payload:false
+		});
 		if(classId!== '' && subId!='' && year!== ''){
 			let data ={
 					classId:classId,

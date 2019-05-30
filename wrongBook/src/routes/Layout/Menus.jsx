@@ -90,6 +90,7 @@ class HomePageLeft extends Component {
 								<Icon type="bar-chart" /><span>学校管理</span>
 							</Link>
 						</Menu.Item>)
+
 					}else if(rodeType === 20){
 					// menus.push(<Menu.Item key="schoolNews"><Link to="/schoolNews" replace><Icon type="bar-chart" />学校详情</Link></Menu.Item>)
 					}
@@ -109,6 +110,9 @@ class HomePageLeft extends Component {
 						menus.push(
 							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" /><span>批量导入</span></Link></Menu.Item>
 						)
+						menus.push(
+							<Menu.Item><Link key="schoolChart" to="/schoolChart" replace><Icon type="pie-chart" /><span>校级报表</span></Link></Menu.Item>
+						)
 					}else{
 						menus.push(<Menu.Item key="grade">
 							<Link to='grade#page=1' replace>
@@ -116,6 +120,7 @@ class HomePageLeft extends Component {
 							</Link>
 						</Menu.Item>)
 					}
+					
 				}
 				// 作业中心
 				if(item === 300 && rodeType != 10){
@@ -132,10 +137,10 @@ class HomePageLeft extends Component {
 							<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
 							<Icon type="appstore"  theme="filled"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
 						</Menu.Item>)
-						menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
-							<Link to="/workReport"  style={{cursor:'pointer'}} replace >
-							<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
-						</Menu.Item>)
+						// menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
+						// 	<Link to="/workReport"  style={{cursor:'pointer'}} replace >
+						// 	<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
+						// </Menu.Item>)
 					}
 				}
 			})
@@ -186,6 +191,16 @@ class HomePageLeft extends Component {
 			// 	</div>
 			// </Popover>
 		)
+	}
+	getUserPosition(type,orname){
+		let name=''
+		if(orname.indexOf("管理员")===-1){
+			name='管理员'
+		}
+		if(type>20){
+			name='老师'
+		}
+		return name
 	}
 	render() {
 		let  value= ''
@@ -303,8 +318,9 @@ class HomePageLeft extends Component {
 				leftName = userNews.schoolName
 			}
 		}
+		console.log(defaultKey)
 		return (
-			<Layout className={style.homePageContaier}>
+			<Layout className={style.homePageContaier+' '+ 'chomePageContaier'}>
 				<Sider
 				trigger={null}
 				collapsible
@@ -381,7 +397,7 @@ class HomePageLeft extends Component {
 												<div 
 												className="btnBack" 
 												type="primary">
-													<span>{user != '' ? user.name : ''}</span>
+													<span>{user != '' ? user.name : ''}{user != '' ?this.getUserPosition(rodeType,user.name):''}</span>
 													<Icon type="caret-down" style={{color:"#e1e1e1"}} />
 												</div>
 											</Popover>

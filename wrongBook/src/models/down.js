@@ -1,6 +1,6 @@
 import {
 	getQuestionDoxc,
-	getQuestionPdf,
+	getQuestionPdf2,
 	getAllPdfV2ForQrc,
 	getAllPdfV2ForQrs,
 } from '../services/reportService';
@@ -17,16 +17,25 @@ export default {
 		workDown:[],
 		workDownPic:[],
 		stuDown:[],
+		allStuDown:[],
+		allClassDown:[],
 		stuDownPic:[],
 		stuName:'',
 		AllPdf:false,
-		pdfUrl:[],
+		pdfUrl:{
+			fileLink:'',
+			downloadLink:''
+		},
 		toDown:false,
 		downQue:false,
+		showPdfModal:false
 	},
 	reducers: {
 		pdfUrl(state, {payload}) {
 			return { ...state, pdfUrl:payload };
+		},
+		showPdfModal(state, {payload}) {
+			return { ...state, showPdfModal:payload };
 		},
 		classDown(state, {payload}) {
 			let classDown = state.classDown
@@ -122,6 +131,7 @@ export default {
 			stuDownPic.push(payload)
 			return { ...state, stuDownPic:stuDownPic };
 		},
+
 		stuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic
 			stuDownPic.push(payload)
@@ -131,6 +141,32 @@ export default {
 			let stuDown = state.stuDown
 			stuDown.push(payload)
 		return { ...state, stuDown:stuDown };
+		},
+		allStuDown(state, {payload}) {	
+			let arr=state.allStuDown
+			if(payload.length>0){
+				for(let i = 0 ; i < payload.length ; i ++ ) {
+					arr.push(payload[i].picId)
+				}
+			}
+			return { ...state, allStuDown:arr };
+		},
+		delAllStuDown(state, {payload}) {	
+			let allStuDown=[]
+			return { ...state, ...{allStuDown} };
+		},
+		allClassDown(state, {payload}) {	
+			let arr=state.allClassDown
+			if(payload.length>0){
+				for(let i = 0 ; i < payload.length ; i ++ ) {
+					arr.push(payload[i].picId)
+				}
+			}
+			return { ...state, allClassDown:arr };
+		},
+		delAllClassDown(state, {payload}) {	
+			let allClassDown=[]
+			return { ...state, ...{allClassDown} };
 		},
 		delstuDownPic(state, {payload}) {
 			let stuDownPic = state.stuDownPic
@@ -193,17 +229,22 @@ export default {
 		*getQuestionPdf({payload}, {put, select}) {
 			// 下载pdf
 			
-			let res = yield getQuestionPdf(payload);
+			let res = yield getQuestionPdf2(payload);
 			if(res.data && res.data.result === 0){
+				console.log(res.data.data)
 				yield put ({
 					type: 'pdfUrl',
-					payload:res.data
+					payload:res.data.data
 				})
 				yield put ({
 					type: 'downQue',
 					payload:false
 				})
-				window.location.href=res.data.data.downloadLink
+				yield put ({
+					type: 'showPdfModal',
+					payload:true
+				})
+				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
 				yield put ({
@@ -230,10 +271,14 @@ export default {
 					payload:false
 				})
 				yield put ({
+					type: 'showPdfModal',
+					payload:true
+				})		
+				yield put ({
 					type: 'pdfUrl',
-					payload:res.data
+					payload:res.data.data
 				})
-				window.location.href=res.data.data.downloadLink
+				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
 				yield put ({
@@ -261,9 +306,13 @@ export default {
 				})
 				yield put ({
 					type: 'pdfUrl',
-					payload:res.data
+					payload:res.data.data
 				})
-				window.location.href=res.data.data.downloadLink
+				yield put ({
+					type: 'showPdfModal',
+					payload:true
+				})	
+				//window.location.href=res.data.data.downloadLink
 			}
 			else if(res.err){
 				yield put ({
