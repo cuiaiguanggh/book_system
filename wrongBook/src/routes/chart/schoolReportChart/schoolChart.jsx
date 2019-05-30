@@ -437,7 +437,22 @@ class HomeworkCenter extends React.Component {
 							}
 					},
 					{
+						type: 'value',
+						axisLine:{
+							show: false
+						},
+						axisLabel: {
+								formatter: '{value}'
+						},
+						splitLine:{
+							lineStyle:{
+									type:'dashed',
+									color:'#ccc'
+							}
+						},
+						axisTick:{
 							show:false
+						}
 					}
 			],
 			series: [
