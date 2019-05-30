@@ -104,6 +104,7 @@ class HomeworkCenter extends React.Component {
 		});
 	}
 	renderQustionCount(data){
+		
 		let myChart1 = echarts.init(document.getElementById('main'));
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
@@ -189,12 +190,18 @@ class HomeworkCenter extends React.Component {
 
 			]
 		};
+		let obj={
+			chart:myChart1,
+			option:option
+		}
+		this.test(obj)
 		myChart1.setOption(option);
 		myChart1.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
 	}
 
 	renderUserCount(data){
 		//return
+		//this.test('用户数量')
 		let myChart = echarts.init(document.getElementById('main1'));
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
@@ -785,6 +792,16 @@ class HomeworkCenter extends React.Component {
 			
 		);
 	}
+	test(obj){
+
+		window.addEventListener('resize',function(){
+		//	console.log(data+'size......')
+			 obj.chart.resize()
+	 },false);
+		// window.onresize = function (e) {
+		// 	console.log(data+'size......')
+		// }
+	}
 	componentWillUnmount(){
 		this.props.dispatch({
 			type: 'reportChart/subjectId',
@@ -801,62 +818,63 @@ class HomeworkCenter extends React.Component {
 
 		
 		//return
-		// window.onresize = function (e) {//用于使chart自适应高度和宽度	
-		// 	let winWidth=e.target.innerWidth
-		// 	let winHeight=e.target.innerheight
-		// 	//resizeWorldMapContainer();//重置容器高宽
-		// 	const chartBox = document.getElementById('main');
-		// 	const chartBox1 = document.getElementById('main1');
-		// 	const chartBox2 = document.getElementById('main2');
-		// 	const chartBox3 = document.getElementById('main3');
-		// 	if(!chartBox) return
-		// 	if(winWidth<=1400){
-		// 		chartBox3.style.width='1000px'
-		// 		chartBox2.style.width='1000px'
-		// 	}else{
+		window.onresize = function (e) {//用于使chart自适应高度和宽度	
+			
+			let winWidth=e.target.innerWidth
+			let winHeight=e.target.innerheight
+			//resizeWorldMapContainer();//重置容器高宽
+			const chartBox = document.getElementById('main');
+			const chartBox1 = document.getElementById('main1');
+			const chartBox2 = document.getElementById('main2');
+			const chartBox3 = document.getElementById('main3');
+			if(!chartBox) return
+			if(winWidth<=1400){
+				chartBox3.style.width='1000px'
+				chartBox2.style.width='1000px'
+			}else{
 
-		// 		chartBox3.style.width='100%'
-		// 		chartBox2.style.width='100%'
+				chartBox3.style.width='100%'
+				chartBox2.style.width='100%'
 		
-		// 	}
+			}
 
-		// 	if(chartBox.offsetWidth<=600||winWidth<=1366){
-		// 		chartBox.style.height='500px'
-		// 		chartBox1.style.height='500px'
-		// 		// option.legend.y='bottom'
-		// 		// option.legend.x='center'
-		// 		// option.legend.orient='horizontal'
-		// 		// option.series[0].center = ['50%', '50%']
+			if(chartBox.offsetWidth<=600||winWidth<=1366){
+				chartBox.style.height='500px'
+				chartBox1.style.height='500px'
+				// option.legend.y='bottom'
+				// option.legend.x='center'
+				// option.legend.orient='horizontal'
+				// option.series[0].center = ['50%', '50%']
 
 
 				
-		// 		//myChart.setOption(option);
-		// 	}else{
-		// 		chartBox.style.height='400px'
-		// 		chartBox1.style.height='400px'
-		// 		// option.legend.y='center'
-		// 		// option.legend.x='right'
-		// 		// option.legend.orient='vertical'
-		// 		// option.series[0].center = ['25%', '50%']
+				//myChart.setOption(option);
+			}else{
+				chartBox.style.height='400px'
+				chartBox1.style.height='400px'
+				// option.legend.y='center'
+				// option.legend.x='right'
+				// option.legend.orient='vertical'
+				// option.series[0].center = ['25%', '50%']
 				
 
-		// 		// option1.legend.y='center'
-		// 		// option1.legend.x='right'
-		// 		// option1.legend.orient='vertical'
-		// 		// option1.series[0].center = ['25%', '50%']
-		// 		// option1.series[0].radius = ['50%', '70%']
+				// option1.legend.y='center'
+				// option1.legend.x='right'
+				// option1.legend.orient='vertical'
+				// option1.series[0].center = ['25%', '50%']
+				// option1.series[0].radius = ['50%', '70%']
 
-		// 	//	myChart.setOption(option);
-		// 		//myChart1.setOption(option1);
-		// 	}
-		// 	//console.log(chartBox.offsetWidth)
-		// 	myChart2.resize();
-		// 	myChart3.resize();
-		// 	myChart.resize();
-		// 	myChart1.resize();
+			//	myChart.setOption(option);
+				//myChart1.setOption(option1);
+			}
+			//console.log(chartBox.offsetWidth)
+			// myChart2.resize();
+			// myChart3.resize();
+			// myChart.resize();
+			// myChart1.resize();
 
 	
-	//};
+	};
 	}
 }
 
