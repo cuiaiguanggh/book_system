@@ -10,8 +10,7 @@ import store from 'store';
 import echarts  from 'echarts';
 moment.locale('zh-cn');
 
-const { Content,Header } = Layout;
-const confirm = Modal.confirm;
+const { Content } = Layout;
 const Option = Select.Option;
 const Search = Input.Search;
 
@@ -20,10 +19,6 @@ class HomeworkCenter extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state={
-			changePhone:0,
-			phone:store.get('wrongBookNews').phone,
-			name:store.get('wrongBookNews').userName,
-			headUrl:store.get('wrongBookNews').avatarUrl,
 			subjectId:100,
 			timeIndex:0,
 			dateValue:['开始时间','结束时间'],
@@ -195,7 +190,7 @@ class HomeworkCenter extends React.Component {
 			option:option,
 			id:0
 		}
-		this.test(obj)
+		this.resizeChart(obj)
 		myChart1.setOption(option);
 		myChart1.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
 	}
@@ -284,7 +279,7 @@ class HomeworkCenter extends React.Component {
 			option:option,
 			id:1
 		}
-		this.test(obj)
+		this.resizeChart(obj)
 		myChart.setOption(option);
 		myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
 	}
@@ -488,7 +483,7 @@ class HomeworkCenter extends React.Component {
 				option:option3,
 				id:2
 			}
-			this.test(obj)
+			this.resizeChart(obj)
 			myChart.setOption(option3)
 			myChart.resize()
 	}
@@ -587,7 +582,7 @@ class HomeworkCenter extends React.Component {
 			option:option2,
 			id:2
 		}
-		this.test(obj)
+		this.resizeChart(obj)
 		myChart.setOption(option2)
 		
 	}
@@ -821,7 +816,7 @@ class HomeworkCenter extends React.Component {
 			
 		);
 	}
-	test(obj){
+	resizeChart(obj){
 
 		window.addEventListener('resize',function(e){
 			let winWidth=e.target.innerWidth
@@ -882,38 +877,17 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/subjectId',
 			payload:'',
 		});
+		window.removeEventListener('resize',function(e){
+			 //卸载resize
+	 },false);
 	}
 	componentDidMount(){
-		let schoolId = store.get('wrongBookNews').schoolId
-		
+	
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'reportChart/getReportTimeList',
 		});
 
-		
-		//return
-		window.onresize = function (e) {//用于使chart自适应高度和宽度	
-			
-			let winWidth=e.target.innerWidth
-			const chartBox2 = document.getElementById('main2');
-			const chartBox3 = document.getElementById('main3');
-
-			if(winWidth<=1400){
-				chartBox3.style.width='1000px'
-				chartBox2.style.width='1000px'
-			}else{
-
-				chartBox3.style.width='100%'
-				chartBox2.style.width='100%'
-		
-			}
-			//console.log(chartBox.offsetWidth)
-			// myChart2.resize();
-			// myChart3.resize();
-
-	
-	};
 	}
 }
 
