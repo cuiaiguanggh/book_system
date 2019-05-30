@@ -557,7 +557,7 @@ class HomeworkCenter extends React.Component {
 					{
 							name:'错题量',
 							type:'line',
-							stack: '总量',
+							stack: '总量1',
 							symbol: 'circle',
             	symbolSize: 6,
 							data:wrongList,
@@ -569,7 +569,7 @@ class HomeworkCenter extends React.Component {
 							type:'line',
 							symbol: 'circle',
             	symbolSize: 6,
-							stack: '总量',
+							stack: '总量2',
 							data:userList,
 							lineStyle:{color:'#21A2F4'},
 							itemStyle:{color:"#21A2F4"}
