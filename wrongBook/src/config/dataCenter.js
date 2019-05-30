@@ -2,12 +2,12 @@
 
 // const host = '192.168.10.239:80'
 // 测试服务器
- const url = "http://hw-mz-test.mizholdings.com/wrongManage";
- const host1 = "wss://hw-mz-test.mizholdings.com";
+//  const url = "http://hw-mz-test.mizholdings.com/wrongManage";
+//  const host1 = "wss://hw-mz-test.mizholdings.com";
 
 // 预备服务器
-// const url = 'https://login.kacha.xin/wrongManage-bate';
-// const host1 = "ws://login.kacha.xin";
+const url = 'https://login.kacha.xin/wrongManage-bate';
+const host1 = "ws://login.kacha.xin";
 
 
 // 正式服务器
