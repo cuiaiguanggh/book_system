@@ -71,7 +71,7 @@ class HomeworkCenter extends React.Component {
 		let userNews = store.get('wrongBookNews')
 		let classArray = this.props.state.classList1.data
 		let userData=this.props.state.userData
-		 console.log(userData.phone)
+		 //console.log(userData.phone)
 		// this.setState({
 		// 	phone:userData.phone
 		// })   
@@ -184,7 +184,7 @@ class HomeworkCenter extends React.Component {
 									if(this.state.subjectId!==100){
 										data.subjectId=this.props.state.subjectId
 									}
-									console.error('手机号',originalPhone,this.props.state.phone)
+								//	console.error('手机号',originalPhone,this.props.state.phone)
 									if(originalPhone!==this.props.state.phone){
 										data.phone=this.props.state.phone
 									}
