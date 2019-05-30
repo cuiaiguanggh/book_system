@@ -8,6 +8,7 @@ import style from './stuReport.less';
 import moment from 'moment';
 import {dataCenter} from '../../../config/dataCenter'
 import store from 'store';
+import commonCss from '../../css/commonCss.css'
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -196,6 +197,7 @@ class StuReport extends React.Component {
 		let mounthList = this.props.state.mounthList;
 		let studentList = this.props.state.studentList;
 		let  detail = this.props.state.qrdetailList1;
+		let fileLink=this.props.state.pdfUrl.fileLink;
 		return (
             <Content style={{
                 background: '#fff', 
@@ -305,7 +307,7 @@ class StuReport extends React.Component {
 										message.warning('请选择题目到错题篮')
 									}
 								}}>
-                        	<img style={{verticalAlign:"sub"}} src={require('../../images/xc-cl-n.png')}></img>
+                        	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>
 							{
@@ -324,26 +326,27 @@ class StuReport extends React.Component {
                                             userId:this.props.state.userId
                                         }
 																		});								
-																		// 添加导出次数
 																		let qlist = this.props.state.qrdetailList1.data.questionList;
-																		qlist.forEach(item => {
-																				this.props.dispatch({
-																					type: 'down/stuDownPic',
-																					payload:item.picId
-																				});
+
+																		this.props.dispatch({
+																				type: 'down/allStuDown',
+																				payload:qlist
 																		});
 																		this.props.dispatch({
 																			type: 'report/addStudentUp',
-																			payload:this.props.state.stuDownPic
+																			payload:this.props.state.allStuDown
 																		})
-																		// 下载清空选题
-																		this.props.dispatch({
-																			type: 'down/delAllStu',
-																		});
+
                                     this.props.dispatch({
                                         type: 'down/toDown',
                                         payload:true
-                                    });
+																		});
+																		this.props.dispatch({
+																			type: 'down/delAllStuDown',
+																			payload:true
+																	});
+																		
+																		
                                 }}>
 								
                                 {
@@ -428,6 +431,28 @@ class StuReport extends React.Component {
 							))
 						}
 					</Modal>
+
+					<Modal
+							visible={this.props.state.showPdfModal}
+							onOk={()=>{
+									window.location.href=this.props.state.pdfUrl.downloadLink
+							}}
+							onCancel={()=>{
+									this.props.dispatch({
+											type: 'down/showPdfModal',
+											payload:false
+									});
+							}}
+							closable={false}
+							cancelText='取消'  
+							okText='下载'  
+							className={commonCss.pdfModal}    
+					>
+							<div style={{height:'700px'}}>
+									<iframe  src={fileLink} title='下载预览' style={{width:'100%',height:'100%',border:0}}></iframe>
+							</div>
+							
+					</Modal>
 				</div>
 			</Content>
 		)
@@ -438,6 +463,10 @@ class StuReport extends React.Component {
 		let subId = this.props.state.subId;
 		let year = this.props.state.years;
 		let userId = this.props.state.userId;
+		this.props.dispatch({
+			type: 'down/showPdfModal',
+			payload:false
+		});
 		if(classId!== '' && subId!='' && year!== '' && userId!= ''){
 			let data ={
 					classId:classId,

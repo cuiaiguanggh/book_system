@@ -16,7 +16,7 @@ class HomeworkCenter extends React.Component {
 		super(props);
 		this.state={
 			changePhone:0,
-			phone:store.get('wrongBookNews').phone,
+			phone:'',
 			name:store.get('wrongBookNews').userName,
 			headUrl:store.get('wrongBookNews').avatarUrl,
 			subjectId:100
@@ -71,7 +71,12 @@ class HomeworkCenter extends React.Component {
 		let userNews = store.get('wrongBookNews')
 		let classArray = this.props.state.classList1.data
 		let userData=this.props.state.userData
-		// console.log(userNews,userData)
+		 console.log(userData.phone)
+		// this.setState({
+		// 	phone:userData.phone
+		// })   
+		let originalPhone=this.props.state.phone
+		
 		return(
 			<Layout>
 				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
@@ -126,7 +131,7 @@ class HomeworkCenter extends React.Component {
 							</div>
 							<div style={{marginBottom:'30px'}}>						
 								<span style={{width:"100px",display:'inline-block'}}>电话：</span>
-								<Input  value={this.state.phone}
+								<Input  value={this.props.state.phone}
 									onFocus={()=>{
 										if(this.state.changePhone == 0){
 											let This = this;
@@ -158,9 +163,10 @@ class HomeworkCenter extends React.Component {
 									style={{width:'300px'}}
 									onChange={(e)=>{
 										if(this.state.changePhone == 1){
-											this.setState({
-												phone:e.target.value
-											})   
+											this.props.dispatch({
+												type: 'userInfo/phone',
+												payload:e.target.value
+											})
 										}
 									}}/>
 							</div>
@@ -173,14 +179,16 @@ class HomeworkCenter extends React.Component {
 							<Button style={{margin:'10px 100px'}} type="primary"
 								onClick={()=>{
 									let data ={
-										name:this.state.name,
-										phone:this.state.phone,									
+										name:this.state.name,																
 									}
 									if(this.state.subjectId!==100){
 										data.subjectId=this.props.state.subjectId
 									}
+									if(originalPhone!==this.props.state.phone){
+										data.phone=this.props.state.phone
+									}
 									this.props.dispatch({
-										type: 'userInfo/updateInfo',
+										type: 'userInfo/updateInfo',  
 										payload:data
 									})
 								}}

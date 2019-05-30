@@ -17,7 +17,7 @@ app.model(require('./models/temp').default);
 app.model(require('./models/report').default);
 app.model(require('./models/down').default);
 app.model(require('./models/example').default);
-
+app.model(require('./models/reportChart').default);
 // 4. Router
 app.router(require('./router').default);
 

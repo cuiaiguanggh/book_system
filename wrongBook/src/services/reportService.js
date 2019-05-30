@@ -46,6 +46,11 @@ function getQuestionPdf(payload){
         data:payload
     });
 }
+function getQuestionPdf2(payload){
+    return request(dataCenter('/web/report/getQuestionPdfV2'),{
+        data:payload
+    });
+}
 function getAllPdfV2ForQrc(payload){
     return request(dataCenter('/web/report/getAllPdfV2ForQrc'),{
         data:payload
@@ -56,7 +61,31 @@ function getAllPdfV2ForQrs(payload){
         data:payload
     });
 }
-
+function getReportTimeList(payload){
+    return request(dataCenter('/web/report/timeStamp'),{
+        data:payload
+    });
+}
+function querySchoolDataReport(payload){
+    return request(dataCenter('/web/report/querySchoolDataReport'),{
+        data:payload
+    });
+}
+function queryGradeListBySchoolId(payload){
+    return request(dataCenter('/web/report/getGradeList'),{
+        data:payload
+    });
+}
+function queryClassListByGradeId(payload){
+    return request(dataCenter('/web/report/getClassList'),{
+        data:payload
+    });
+}
+function querySubListByClassId(payload){
+    return request(dataCenter('/web/report/getSubjectList'),{
+        data:payload
+    });
+}
 export {
     queryQrDetail,
     queryHomeworkList,
@@ -69,4 +98,10 @@ export {
     getQuestionPdf,
     getAllPdfV2ForQrc,
     getAllPdfV2ForQrs,
+    getQuestionPdf2,
+    getReportTimeList,
+    querySchoolDataReport,
+    queryGradeListBySchoolId,
+    queryClassListByGradeId,
+    querySubListByClassId,
 };
