@@ -75,7 +75,7 @@ class HomeworkCenter extends React.Component {
 		// this.setState({
 		// 	phone:userData.phone
 		// })   
-		let originalPhone=this.props.state.phone
+		let originalPhone=userData.phone
 		
 		return(
 			<Layout>
@@ -184,6 +184,7 @@ class HomeworkCenter extends React.Component {
 									if(this.state.subjectId!==100){
 										data.subjectId=this.props.state.subjectId
 									}
+									console.error('手机号',originalPhone,this.props.state.phone)
 									if(originalPhone!==this.props.state.phone){
 										data.phone=this.props.state.phone
 									}

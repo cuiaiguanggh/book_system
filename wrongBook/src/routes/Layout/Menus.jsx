@@ -192,6 +192,16 @@ class HomePageLeft extends Component {
 			// </Popover>
 		)
 	}
+	getUserPosition(type,orname){
+		let name=''
+		if(orname.indexOf("管理员")===-1){
+			name='管理员'
+		}
+		if(type>20){
+			name='老师'
+		}
+		return name
+	}
 	render() {
 		let  value= ''
 		let userNews = store.get('wrongBookNews')
@@ -387,7 +397,7 @@ class HomePageLeft extends Component {
 												<div 
 												className="btnBack" 
 												type="primary">
-													<span>{user != '' ? user.name : ''}老师</span>
+													<span>{user != '' ? user.name : ''}{user != '' ?this.getUserPosition(rodeType,user.name):''}</span>
 													<Icon type="caret-down" style={{color:"#e1e1e1"}} />
 												</div>
 											</Popover>
