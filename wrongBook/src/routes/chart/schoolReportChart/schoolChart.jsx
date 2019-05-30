@@ -483,7 +483,12 @@ class HomeworkCenter extends React.Component {
 					}
 			]
 			};
-
+			let obj={
+				chart:myChart,
+				option:option3,
+				id:2
+			}
+			this.test(obj)
 			myChart.setOption(option3)
 			myChart.resize()
 	}
@@ -577,7 +582,12 @@ class HomeworkCenter extends React.Component {
         // }
     ],
 	};
-
+		let obj={
+			chart:myChart,
+			option:option2,
+			id:2
+		}
+		this.test(obj)
 		myChart.setOption(option2)
 		
 	}
@@ -715,11 +725,11 @@ class HomeworkCenter extends React.Component {
 				if(schoolReport.gradeUseNumMap){
 					this.renderUserCount(schoolReport.gradeUseNumMap)
 				}
-				if(schoolReport.classUseData){
-					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
-				}
 				if(schoolReport.schoolUserNumData){
 					this.renderClassData0(schoolReport.schoolUserNumData,schoolReport.schoolWrongNumData)
+				}
+				if(schoolReport.classUseData){
+					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
 				}
 			}
 			
@@ -827,41 +837,44 @@ class HomeworkCenter extends React.Component {
 
 				chartBox3.style.width='100%'
 				chartBox2.style.width='100%'
-		
+				if(obj.id>=2){
+					obj.chart.resize()
+				 }
 			}
 
 			if(chartBox.offsetWidth<=600||winWidth<=1366){
-				chartBox.style.height='500px'
-				chartBox1.style.height='500px'
-				obj.option.legend.y='bottom'
-				obj.option.legend.x='center'
-				obj.option.legend.orient='horizontal'
-				obj.option.series[0].center = ['50%', '50%']
+				if(obj.id===0||obj.id===1){
+					chartBox.style.height='500px'
+					chartBox1.style.height='500px'
+					obj.option.legend.y='bottom'
+					obj.option.legend.x='center'
+					obj.option.legend.orient='horizontal'
+					obj.option.series[0].center = ['50%', '50%']
+				}
+				
 				if(obj.id===1){
 					obj.option.series[0].radius = ['40%', '55%']
 				}
 			}else{
-				chartBox.style.height='400px'
-				chartBox1.style.height='400px'
-				obj.option.legend.y='center'
-				obj.option.legend.x='right'
-				obj.option.legend.orient='vertical'
-				obj.option.series[0].center = ['25%', '50%']
+				if(obj.id===0||obj.id===1){
+					chartBox.style.height='400px'
+					chartBox1.style.height='400px'
+					obj.option.legend.y='center'
+					obj.option.legend.x='right'
+					obj.option.legend.orient='vertical'
+					obj.option.series[0].center = ['25%', '50%']
+				}
+				
 				if(obj.id===1){
 					obj.option.series[0].radius = ['50%', '65%']
 				}
-
-				// option1.legend.y='center'
-				// option1.legend.x='right'
-				// option1.legend.orient='vertical'
-				// option1.series[0].center = ['25%', '50%']
-				// option1.series[0].radius = ['50%', '70%']
-
-			//	myChart.setOption(option);
-				//myChart1.setOption(option1);
 			}
+
 			 obj.chart.setOption(obj.option)
-			 obj.chart.resize()
+			 if(obj.id===0||obj.id===1){
+				obj.chart.resize()
+			 }
+			 
 	 },false);
 	}
 	componentWillUnmount(){
@@ -883,13 +896,9 @@ class HomeworkCenter extends React.Component {
 		window.onresize = function (e) {//用于使chart自适应高度和宽度	
 			
 			let winWidth=e.target.innerWidth
-			let winHeight=e.target.innerheight
-			//resizeWorldMapContainer();//重置容器高宽
-			const chartBox = document.getElementById('main');
-			const chartBox1 = document.getElementById('main1');
 			const chartBox2 = document.getElementById('main2');
 			const chartBox3 = document.getElementById('main3');
-			if(!chartBox) return
+
 			if(winWidth<=1400){
 				chartBox3.style.width='1000px'
 				chartBox2.style.width='1000px'
@@ -899,41 +908,9 @@ class HomeworkCenter extends React.Component {
 				chartBox2.style.width='100%'
 		
 			}
-
-			if(chartBox.offsetWidth<=600||winWidth<=1366){
-				chartBox.style.height='500px'
-				chartBox1.style.height='500px'
-				// option.legend.y='bottom'
-				// option.legend.x='center'
-				// option.legend.orient='horizontal'
-				// option.series[0].center = ['50%', '50%']
-
-
-				
-				//myChart.setOption(option);
-			}else{
-				chartBox.style.height='400px'
-				chartBox1.style.height='400px'
-				// option.legend.y='center'
-				// option.legend.x='right'
-				// option.legend.orient='vertical'
-				// option.series[0].center = ['25%', '50%']
-				
-
-				// option1.legend.y='center'
-				// option1.legend.x='right'
-				// option1.legend.orient='vertical'
-				// option1.series[0].center = ['25%', '50%']
-				// option1.series[0].radius = ['50%', '70%']
-
-			//	myChart.setOption(option);
-				//myChart1.setOption(option1);
-			}
 			//console.log(chartBox.offsetWidth)
 			// myChart2.resize();
 			// myChart3.resize();
-			// myChart.resize();
-			// myChart1.resize();
 
 	
 	};

@@ -137,10 +137,10 @@ class HomePageLeft extends Component {
 							<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
 							<Icon type="appstore"  theme="filled"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
 						</Menu.Item>)
-						menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
-							<Link to="/workReport"  style={{cursor:'pointer'}} replace >
-							<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
-						</Menu.Item>)
+						// menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
+						// 	<Link to="/workReport"  style={{cursor:'pointer'}} replace >
+						// 	<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
+						// </Menu.Item>)
 					}
 				}
 			})
