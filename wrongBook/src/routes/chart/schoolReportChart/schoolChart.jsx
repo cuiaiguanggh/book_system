@@ -691,7 +691,7 @@ class HomeworkCenter extends React.Component {
 								subjectId:this.props.state.subjectId,
 								periodTime:this.props.state.periodTime,
 								timeStamp:this.props.state.timeStamp,
-								gradeId:this.props.state.gradeId
+								gradeId:value
 							}	
 							this.props.dispatch({
 								type: 'reportChart/getClassList',
