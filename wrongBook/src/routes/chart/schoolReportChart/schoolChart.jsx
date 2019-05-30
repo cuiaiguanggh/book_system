@@ -106,15 +106,15 @@ class HomeworkCenter extends React.Component {
 		let sdata=[]
 		for(let i=0;i<arr.length;i++){
 			let scolor=''
-			if(arr[i]==='一年级'){
+			if(i===0){
 				scolor='#21A2F4'
-			}else if(arr[i]==='二年级'){
+			}else if(i===1){
 				scolor='#B8A5DF'
-			}else if(arr[i]==='三年级'){
+			}else if(i===2){
 				scolor='#36C9CB'
-			}else if(arr[i]==='四年级'){
+			}else if(i===3){
 				scolor='#FBD437'
-			}else if(arr[i]==='五年级'){
+			}else if(i===4){
 				scolor='#DA7F85'
 			}
 			sdata.push({name:arr[i],value:arr1[i],itemStyle:{color:scolor}})
@@ -202,15 +202,15 @@ class HomeworkCenter extends React.Component {
 		let sdata=[]
 		for(let i=0;i<arr.length;i++){
 			let scolor=''
-			if(arr[i]==='一年级'){
+			if(i===0){
 				scolor='#21A2F4'
-			}else if(arr[i]==='二年级'){
+			}else if(i===1){
 				scolor='#B8A5DF'
-			}else if(arr[i]==='三年级'){
+			}else if(i===2){
 				scolor='#36C9CB'
-			}else if(arr[i]==='四年级'){
+			}else if(i===3){
 				scolor='#FBD437'
-			}else if(arr[i]==='五年级'){
+			}else if(i===4){
 				scolor='#DA7F85'
 			}
 			sdata.push({name:arr[i],value:arr1[i],itemStyle:{color:scolor},icon:'circle'})
@@ -411,6 +411,31 @@ class HomeworkCenter extends React.Component {
 							axisTick:{
 								show:false
 							},
+							axisLabel: {  
+								interval: 0,  
+								formatter:function(value)  
+								{  
+										debugger  
+										var ret = "";
+										var maxLength = 6;
+										var valLength = value.length; 
+										var rowN = Math.ceil(valLength / maxLength); 
+										if (rowN > 1)
+										{  
+												for (var i = 0; i < rowN; i++) {  
+														var temp = ""; 
+														var start = i * maxLength;
+														var end = start + maxLength;
+														temp = value.substring(start, end) + "\n";  
+														ret += temp; 
+												}  
+												return ret;  
+										}  
+										else {  
+												return value;  
+										}  
+								}  
+						}
 							
 							
 					}
@@ -531,7 +556,11 @@ class HomeworkCenter extends React.Component {
 					data: dateList,			
 					axisTick:{
 						show:false
-					}
+					},
+				// 	axisLabel: {  
+				// 		interval:0,  
+				// 		rotate:50  
+				//  }  
 			},
 			yAxis: {
 					type: 'value',
