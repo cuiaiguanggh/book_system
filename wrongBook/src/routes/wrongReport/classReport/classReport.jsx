@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, message, Layout,Modal,Select ,Icon
+import { Button, message, Layout,Modal,Select ,Icon,Spin
 } from 'antd';
 import {dataCenter , dataCen,serverType} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
@@ -18,6 +18,7 @@ const {
 	Header, Footer, Sider, Content,
   } = Layout;
 
+const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />
 let hei = 200
 class wrongTop extends React.Component {
 	constructor(props) {
@@ -35,7 +36,8 @@ class wrongTop extends React.Component {
             visible1:false,
             userId:'',
             uqId:'',
-            allPdf:false
+            allPdf:false,
+            toupload:false,
 	    };
     }
 	handleScroll(e){
@@ -162,6 +164,28 @@ class wrongTop extends React.Component {
 			</div>
 		)
     }
+    onImportExcel = file =>{
+		const { files } = file.target;
+        let form = new FormData();
+        form.append('file',file.target.files[0]);
+        let token = store.get('wrongBookToken');
+        fetch(dataCenter('/file/uploadImg?token=' + token), {
+            method: "POST",
+            body: form
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.result === 0){
+                message.success(res.msg)
+            }else{
+                message.error(res.msg)
+            }
+        })
+        .catch(function(error) {
+            message.error(error.msg)
+        })
+            
+	}
     addVie() {
         const userId = store.get('wrongBookNews').userId
         
@@ -239,11 +263,62 @@ class wrongTop extends React.Component {
         }
 
 
-
+        let questionNews = this.props.state.questionNews;
+        // console.log(questionNews)
         return(
-            <div style={{textAlign:'center',marginTop:20}}>
-                <QRCode className='qrcode' size={200} value={value} />
-                <h2 style={{marginTop:20}}>手机微信扫码，录制视频讲解</h2>
+            <div className={style.codeFram} style={{textAlign:'center',overflow:"hidden"}}>
+                <div  className={style.questionBody}>
+                    <div className={style.questionTop}>
+                        <span>答错<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{questionNews.wrongNum}</span>人</span>
+                    </div>
+                    <div style={{padding:'10px',height:'250px',overflow:'hidden'}} >
+                        {
+                            questionNews.questionUrl.split(',').map((item,i)=>(
+                                <img key={i} style={{width:'100%'}} src={item}></img>
+                            ))
+                        }
+                    </div>
+                </div>
+                <div className={style.phoneCode}>
+                        {
+                            !this.state.toupload ?
+                            <div>
+                                <QRCode className='qrcode' size={150} value={value} />
+                                <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>手机微信扫码，录制视频讲解</p>
+                                {/* <Button type="primary" onClick={()=>{
+                                    this.setState({toupload:true})
+
+                                }}>本地上传</Button> */}
+                                <label htmlFor="file">
+                                    <span
+                                        className={style.addButon}
+                                    >本地上传</span>
+                                </label> 
+                                <input
+                                    type='file' 
+                                    id='file' 
+                                    accept='.mp4'  
+                                    style={{display:'none'}}
+                                    onChange={this.onImportExcel} 
+                                />
+                            </div>:
+                            <div>
+                                <Spin style={{height:'155px',marginLeft:'-24px',lineHeight:"150px"}} indicator={antIcon} />
+                                {/* <Icon type="loading" style={{ fontSize: 24 }} spin /> */}
+                                <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>正在上传...</p>
+                                {/* <Button type="primary" onClick={()=>{
+                                    this.setState({toupload:false})
+                                    
+                                }}>取消上传</Button> */}
+                                
+                                <span
+                                    className={style.addButon}
+                                >本地上传</span>
+                            </div>
+
+                        }
+                    
+                </div>
             </div>
         )
     }
@@ -583,7 +658,8 @@ class wrongTop extends React.Component {
                 <Modal
                     visible={this.props.state.visible}
                     footer={null}
-                    width= '600px'
+                    width= '950px'
+                    title='添加讲解视频'
                     className={style.vidioCode}
                     onOk={()=>{
                         this.props.dispatch({

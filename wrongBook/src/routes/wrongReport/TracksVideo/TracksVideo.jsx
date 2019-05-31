@@ -107,6 +107,10 @@ class ClassReport extends React.Component {
                             payload:this.props.type.questionId
                         });
                         this.props.dispatch({
+                            type:'example/questionNews',
+                            payload:this.props.type
+                        })
+                        this.props.dispatch({
                             type: 'example/num',
                             payload:this.props.num
                         });

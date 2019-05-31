@@ -337,12 +337,12 @@ class HomeworkCenter extends React.Component {
 							}}
 						</Dropzone>
 						<input
-								type='file' 
-								id='file' 
-								accept='.xlsx, .xls'  
-								style={{display:'none'}}
-								onChange={this.onImportExcel} 
-							/>
+							type='file' 
+							id='file' 
+							accept='.xlsx, .xls'  
+							style={{display:'none'}}
+							onChange={this.onImportExcel} 
+						/>
 						
 						<Table
 							style={{marginTop:'20px'}}
