@@ -211,7 +211,11 @@ export default {
 					payload:schoolRes.data.data.teacherUseDataList
 				})
 			}else if(schoolRes.data.result===1){
-				message.warning(schoolRes.data.msg)
+				yield put ({
+					type: 'schoolDataReport',
+					payload:[]
+				})
+				//message.warning(schoolRes.data.msg)
 			}else{
 				message.error('获取报表失败')
 			}

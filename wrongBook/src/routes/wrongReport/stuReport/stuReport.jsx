@@ -288,7 +288,8 @@ class StuReport extends React.Component {
 										this.props.dispatch({
 											type: 'down/getQuestionPdf',
 											payload:{
-												picIds:this.props.state.stuDownPic.join(',')
+												picIds:this.props.state.stuDownPic.join(','),
+												mode:1
 											}
 										})
 										// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))

@@ -280,8 +280,31 @@ class HomeworkCenter extends React.Component {
 			id:1
 		}
 		this.resizeChart(obj)
+		let index=0
 		myChart.setOption(option);
-		myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
+		myChart.dispatchAction({        
+			type: "highlight",        
+			seriesIndex: index,        
+			dataIndex: index      
+		});      
+		myChart.on("mouseover", function(e) {        
+			if (e.dataIndex != index) {         
+				 myChart.dispatchAction({            
+					 type: "downplay",            
+					 seriesIndex: 0,            
+					 dataIndex: index          
+					});        }      
+			});      
+				// myChart.on("mouseout", function(e) {        
+				// 	index = e.dataIndex;        
+				// 	myChart.dispatchAction({          
+				// 		type: "highlight",          
+				// 		seriesIndex: 0,          
+				// 		dataIndex: e.dataIndex        
+				// 	});      
+				// });
+
+	//	myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
 	}
 	renderTeacherUserCount(){
 	
@@ -415,7 +438,7 @@ class HomeworkCenter extends React.Component {
 								interval: 0,  
 								formatter:function(value)  
 								{  
-										debugger  
+										// debugger  
 										var ret = "";
 										var maxLength = 6;
 										var valLength = value.length; 
@@ -736,11 +759,28 @@ class HomeworkCenter extends React.Component {
 
 		}
 	} 
+	nodata(){
+		return(
+			<div style={{textAlign:'center',position:'absolute',top:'40%',width:'100%',display:'flex',justifyContent:'center'}}>
+					<img src={require('../../images/wsj-n.png')}></img>
+					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
+					paddingTop: 50,
+					lineHeight: '40px',
+					textAlign: 'left',
+					paddingLeft: 20,
+					fontWeight: 700,}}>
+						暂无学生错题数据，无法查看数据报表
+						<br></br>
+						请让老师和家长督促学生收集错题
+					</span>
+			</div>
+		)
+	}
 	render() {
 
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
-	
+		
 		setTimeout(() => {		
 			if(this.props.state.subjectId!==''){
 				if(schoolReport.gradeWrongNumMap){
@@ -755,15 +795,17 @@ class HomeworkCenter extends React.Component {
 				if(schoolReport.classUseData){
 					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
 				}
+				
 			}
 			
-		}, 20);
+		}, 10);
 	  //console.error('报告',schoolReport,schoolReport.gradeWrongNumMap)
 		return(
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-										
+							{this.props.state.subjectId!==''&&schoolReport.length==0?this.nodata():<div>
+							{/* {true?this.nodata():<div> */}
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
 									<div id='main' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
@@ -838,6 +880,9 @@ class HomeworkCenter extends React.Component {
 									</div>
 								</Col>
 							</Row>
+							</div>
+						}	
+							
 						
 					</Content>
 			</Layout>
