@@ -42,8 +42,8 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		let cid=this.state.sclassId
-		let sid=this.state.subjectId
+		let cid=68
+		let sid=2
 		let data={
 			schoolId:store.get('wrongBookNews').schoolId,
 			periodTime:item.periodTime,
@@ -52,7 +52,7 @@ class HomeworkCenter extends React.Component {
 			subjectId:sid,
 		}
 		this.dispatch({
-			type: 'reportChart/getSchoolDataReport',
+			type: 'reportChart/getClassDataReport',
 			payload:data
 		});
 	}
@@ -139,7 +139,7 @@ class HomeworkCenter extends React.Component {
         
 			},
 			{
-        title: '视频讲解次数',
+        title: '视频讲解个数',
         dataIndex: 'videoExplain',
 				key: 'videoExplain',
 				defaultSortOrder: 'descend',
@@ -165,7 +165,7 @@ class HomeworkCenter extends React.Component {
 			
 		)}
 		renderStudentUseData(data){
-			let myChart = echarts.init(document.getElementById('main2'));
+			let myChart = echarts.init(document.getElementById('main6'));
 			let nameList = []
 			let numList = []
 			for (let index = 0; index < data.length; index++) {
@@ -189,7 +189,14 @@ class HomeworkCenter extends React.Component {
 					trigger: 'axis',
 					axisPointer: {
 							
-					}
+					},
+					formatter:function(params){       
+						var relVal = params[0].name;             
+						for (var i = 0, l = params.length; i < l; i++) {                  
+							relVal += '<br/>' +params[i].marker+ params[i].seriesName + ' : ' + params[i].value+"道";              
+						}             
+							return relVal;          
+						} 
 				},
 		
 				legend: {
@@ -246,6 +253,7 @@ class HomeworkCenter extends React.Component {
 								type:'bar',
 								symbol: 'circle',     
 								barWidth:'50%',
+								barMaxWidth:'40',
 								symbolSize: 6,
 								lineStyle:{color:'#21A2F4'},
 								itemStyle:{color:"#21A2F4"},
@@ -256,11 +264,111 @@ class HomeworkCenter extends React.Component {
 			let obj={
 				chart:myChart,
 				option:studentOption,
-				id:2
 			}
-			//this.resizeChart(obj)
+			this.resizeChart(obj)
 			myChart.setOption(studentOption)
 			
+		}
+		renderClassUseData(udata,wdata){
+			let timelist=[]
+			let userlist=[]
+			let wronglist=[]
+			for (let i = 0; i < udata.length; i++) {
+				const ele = udata[i]
+				timelist.push(ele.time)
+				userlist.push(ele.num)
+				wronglist.push(wdata[i].num)
+			}
+			let myChart1 = echarts.init(document.getElementById('main5'));		
+			let option1 =  {
+				title: {
+						text: ''
+				},
+				tooltip: {
+						trigger: 'axis',
+						formatter:function(params){       
+							console.log('111',params)
+							var relVal = params[0].name;   
+							let str=''          
+							for (var i = 0, l = params.length; i < l; i++) {  
+								
+								if(params[i].seriesName==='错题量')   {
+									str='道'
+								}else{
+									str='人'
+								}             
+								relVal += '<br/>' +params[i].marker+ params[i].seriesName + ' : ' + params[i].value+str;              
+							}             
+								return relVal;          
+							} 
+				},
+				legend: {
+					selectedMode:true,
+					data:['错题量','人数'],
+					itemGap:16,
+				},
+				grid: {
+						left: '0%',
+						right: '2%',
+						bottom: '3%',
+						containLabel: true
+				},
+				xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: timelist,			
+						axisTick:{
+							show:false
+						}
+				},
+				yAxis: {
+						type: 'value',
+						axisLine:{
+							show: false
+						},
+						splitLine:{
+							lineStyle:{
+									type:'dashed',
+									color:'#ccc'
+							}
+					},
+					axisTick:{
+						show:false
+					}
+				},
+				series: [
+						{
+								name:'错题量',
+								type:'line',
+								stack: '总量1',
+								symbol: 'circle',
+								symbolSize: 6,
+								data:wronglist,
+								lineStyle:{color:'#2FC25B'},
+								itemStyle:{color:"#2FC25B"}
+						},
+						{
+								name:'人数',
+								type:'line',
+								symbol: 'circle',
+								symbolSize: 6,
+								stack: '总量2',
+								data:userlist,
+								lineStyle:{color:'#21A2F4'},
+								itemStyle:{color:"#21A2F4"}
+								
+						}
+				],
+				dataZoom: [
+			],
+			};
+		
+			let obj={
+					chart:myChart1,
+					option:option1
+			}
+			this.resizeChart(obj)
+			myChart1.setOption(option1);
 		}
 	render() {
 		const {RangePicker} = DatePicker;
@@ -275,18 +383,12 @@ class HomeworkCenter extends React.Component {
 
 		setTimeout(() => {		
 			//if(this.props.state.subjectId===''){
-				// if(classReport.gradeWrongNumMap){
-				// 	this.renderQustionCount(classReport.gradeWrongNumMap)
-				// }
-				// if(classReport.gradeUseNumMap){
-				// 	this.renderUserCount(classReport.gradeUseNumMap)
-				// }
 				if(classReport.studentWrongNum){
 					this.renderStudentUseData(classReport.studentWrongNum)
 				}
-				// if(classReport.classUseData){
-				// 	this.renderClassData(classReport.classUseData,classReport.classWrongData)
-				// }
+				if(classReport.classUserNumData){
+					this.renderClassUseData(classReport.classUserNumData,classReport.classWrongNumData)
+				}
 				
 			//}
 			
@@ -303,7 +405,7 @@ class HomeworkCenter extends React.Component {
 												{this.getSub()}
 												{this.getClassList()}
 											</div>
-											<div id='main1' style={{height:400}}>
+											<div id='main5' style={{height:400}}>
 											
 											</div>
 										</div>
@@ -314,7 +416,7 @@ class HomeworkCenter extends React.Component {
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden'}}>
 										<p>学生使用情况</p>
-										<div id='main2' style={{height:400}} >
+										<div id='main6' style={{height:400}} >
 										
 										</div>
 
@@ -363,9 +465,6 @@ class HomeworkCenter extends React.Component {
 										{classReport.teacherUseDataList?
 											this.renderTeacherUserCount():''
 										}
-										<div id='main3' style={{height:400}} >
-										
-										</div>
 										</div>
 								</Col>
 							</Row>
@@ -374,38 +473,24 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	resizeChart(obj){
-
 		window.addEventListener('resize',function(e){
 			let winWidth=e.target.innerWidth
-			// const chartBox = document.getElementById('main');
-			// const chartBox1 = document.getElementById('main1');
-			const chartBox2 = document.getElementById('main2');
-			// const chartBox3 = document.getElementById('main3');
-			//if(!chartBox) return
+			const chartBox1 = document.getElementById('main5');
+			const chartBox2 = document.getElementById('main6');
 			if(winWidth<=1400){
-				//chartBox3.style.width='1000px'
-				chartBox2.style.width='1000px'
+				chartBox1.style.width='1200px'
+				chartBox2.style.width='1200px'
 			}else{
 
-				//chartBox3.style.width='100%'
+				chartBox1.style.width='100%'
 				chartBox2.style.width='100%'
-				if(obj.id>=2){
-					obj.chart.resize()
-				 }
-			}
+			}			
 
-			
-
-			 obj.chart.setOption(obj.option)
-			 if(obj.id===0||obj.id===1){
-				obj.chart.resize()
-			 }
+			obj.chart.resize()
 			 
 	 },false);
 	}
 	componentDidMount(){
-		let schoolId = store.get('wrongBookNews').schoolId
-
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'reportChart/getReportTimeList',
@@ -413,79 +498,18 @@ class HomeworkCenter extends React.Component {
 				classReport:true
 			}
 		});
-		let myChart1 = echarts.init(document.getElementById('main1'));
-		let myChart3 = echarts.init(document.getElementById('main3'));
 		
-		let option1 =  {
-			title: {
-					text: ''
-			},
-			tooltip: {
-					trigger: 'axis'
-			},
-			legend: {
-				selectedMode:true,
-				data:['错题量','人数'],
-				itemGap:16,
-			},
-			grid: {
-					left: '0%',
-					right: '2%',
-					bottom: '3%',
-					containLabel: true
-			},
-			xAxis: {
-					type: 'category',
-					boundaryGap: false,
-					data: ['1.01','1.02','1.03','1.04','1.05','1.06','1.07','1.08','1.09','1.10','1.11','1.12','1.13','1.13','1.15','1.16','1.17','1.18','1.19','1.20','1.21','1.22','1.23','1.24','1.25','1.26','1.27','1.28','1.29','1.30'],			
-					axisTick:{
-						show:false
-					}
-			},
-			yAxis: {
-					type: 'value',
-					axisLine:{
-						show: false
-					},
-					splitLine:{
-            lineStyle:{
-                type:'dashed',
-                color:'#ccc'
-            }
-				},
-				axisTick:{
-					show:false
-				}
-			},
-			series: [
-					{
-							name:'错题量',
-							type:'line',
-							stack: '总量',
-							symbol: 'circle',
-            	symbolSize: 6,
-							data:[120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210, 90, 230, 210,],
-							lineStyle:{color:'#2FC25B'},
-							itemStyle:{color:"#2FC25B"}
-					},
-					{
-							name:'人数',
-							type:'line',
-							symbol: 'circle',
-            	symbolSize: 6,
-							stack: '总量',
-							data:[120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210, 90, 230, 210,],
-							lineStyle:{color:'#21A2F4'},
-							itemStyle:{color:"#21A2F4"}
-							
-					}
-			],
-			dataZoom: [
-    ],
-		};
-	
+		let winwidth=document.body.offsetWidth
+		const chartBox1 = document.getElementById('main5');
+		const chartBox2 = document.getElementById('main6');
+		if(winwidth<=1400){
+			chartBox1.style.width='1200px'
+			chartBox2.style.width='1200px'
+		}else{
 
-		myChart1.setOption(option1);
+			chartBox1.style.width='100%'
+			chartBox2.style.width='100%'
+		}		
 	}
 }
 

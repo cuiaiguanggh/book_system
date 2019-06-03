@@ -108,7 +108,7 @@ export default {
 					type: 'timeStamp',
 					payload:res.data.data[0].timeStamp
 				})	
-				if(payload.classReport){
+				if(payload.classReport===true){
 					//获取班级报表
 					const _state = yield select(state => state.reportChart);
 					let _classId=68

@@ -102,6 +102,9 @@ class HomeworkCenter extends React.Component {
 	renderQustionCount(data){
 		
 		let myChart1 = echarts.init(document.getElementById('main'));
+		const chartBox = document.getElementById('main');
+		const winWidth=document.body.offsetWidth
+		
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
 		let sdata=[]
@@ -186,6 +189,21 @@ class HomeworkCenter extends React.Component {
 
 			]
 		};
+
+		if(!chartBox) return
+		if(chartBox.offsetWidth<=600||winWidth<=1366){
+
+			option.legend.y='bottom'
+			option.legend.x='center'
+			option.legend.orient='horizontal'
+			option.series[0].center = ['50%', '50%']
+		}else{
+			option.legend.y='center'
+			option.legend.x='right'
+			option.legend.orient='vertical'
+			option.series[0].center = ['25%', '50%']
+			
+		}
 		let obj={
 			chart:myChart1,
 			option:option,
@@ -193,11 +211,16 @@ class HomeworkCenter extends React.Component {
 		}
 		this.resizeChart(obj)
 		myChart1.setOption(option);
-		myChart1.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
+		if(arr.length>1){
+			myChart1.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
+		}
+		
 	}
 
 	renderUserCount(data){
 		let myChart = echarts.init(document.getElementById('main1'));
+		const chartBox = document.getElementById('main1');
+		const winWidth=document.body.offsetWidth
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
 		let sdata=[]
@@ -275,6 +298,20 @@ class HomeworkCenter extends React.Component {
 					}
 			]
 		};
+		if(chartBox.offsetWidth<=600||winWidth<=1366){
+			option.legend.y='bottom'
+			option.legend.x='center'
+			option.legend.orient='horizontal'
+			option.series[0].center = ['50%', '50%']
+			option.series[0].radius = ['40%', '55%']
+		}else{	
+			option.legend.y='center'
+			option.legend.x='right'
+			option.legend.orient='vertical'
+			option.series[0].center = ['25%', '50%']
+			option.series[0].radius = ['50%', '65%']
+			
+		}
 		let obj={
 			chart:myChart,
 			option:option,
@@ -283,11 +320,14 @@ class HomeworkCenter extends React.Component {
 		this.resizeChart(obj)
 		let index=0
 		myChart.setOption(option);
-		myChart.dispatchAction({        
-			type: "highlight",        
-			seriesIndex: index,        
-			dataIndex: index      
-		});      
+		if(arr.length>1){
+			myChart.dispatchAction({        
+				type: "highlight",        
+				seriesIndex: index,        
+				dataIndex: index      
+			});  
+		}
+		    
 		myChart.on("mouseover", function(e) {        
 			if (e.dataIndex != index) {         
 				 myChart.dispatchAction({            
@@ -296,16 +336,6 @@ class HomeworkCenter extends React.Component {
 					 dataIndex: index          
 					});        }      
 			});      
-				// myChart.on("mouseout", function(e) {        
-				// 	index = e.dataIndex;        
-				// 	myChart.dispatchAction({          
-				// 		type: "highlight",          
-				// 		seriesIndex: 0,          
-				// 		dataIndex: e.dataIndex        
-				// 	});      
-				// });
-
-	//	myChart.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
 	}
 	renderTeacherUserCount(){
 	
@@ -352,7 +382,7 @@ class HomeworkCenter extends React.Component {
        
 			},
 			{
-        title: '视频讲解次数',
+        title: '视频讲解个数',
         dataIndex: 'videoExplain',
 				key: 'videoExplain',
 				defaultSortOrder: 'descend',
@@ -509,6 +539,7 @@ class HomeworkCenter extends React.Component {
 							type:'bar',
 							symbol: 'circle',
 							barWidth:'30%',
+							barMaxWidth:'40',
 							symbolSize: 6,
 							lineStyle:{color:'#2FC25B'},
 							itemStyle:{color:"#2FC25B"},
