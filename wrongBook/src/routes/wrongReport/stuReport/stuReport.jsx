@@ -434,6 +434,8 @@ class StuReport extends React.Component {
 					</Modal>
 
 					<Modal
+							keyboard={false}
+							maskClosable={false}
 							visible={this.props.state.showPdfModal}
 							onOk={()=>{
 									window.location.href=this.props.state.pdfUrl.downloadLink
