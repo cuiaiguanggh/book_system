@@ -442,7 +442,21 @@ class HomeworkCenter extends React.Component {
 				trigger: 'axis',
 				axisPointer: {
 						
-				}
+				},
+				formatter:function(params){       
+					var relVal = params[0].name;   
+					let str=''          
+					for (var i = 0, l = params.length; i < l; i++) {  
+						
+						if(params[i].seriesName==='错题量')   {
+							str='道'
+						}else{
+							str='人'
+						}             
+						relVal += '<br/>' +params[i].marker+ params[i].seriesName + ' : ' + params[i].value+str;              
+					}             
+						return relVal;          
+					}
 			},
 	
 			legend: {
@@ -592,7 +606,22 @@ class HomeworkCenter extends React.Component {
 					text: ''
 			},
 			tooltip: {
-					trigger: 'axis'
+					trigger: 'axis',
+					formatter:function(params){       
+						console.log('111',params)
+						var relVal = params[0].name;   
+						let str=''          
+						for (var i = 0, l = params.length; i < l; i++) {  
+							
+							if(params[i].seriesName==='错题量')   {
+								str='道'
+							}else{
+								str='人'
+							}             
+							relVal += '<br/>' +params[i].marker+ params[i].seriesName + ' : ' + params[i].value+str;              
+						}             
+							return relVal;          
+						}
 			},
 			legend: {
 				selectedMode:true,
