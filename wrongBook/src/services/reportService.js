@@ -71,6 +71,11 @@ function querySchoolDataReport(payload){
         data:payload
     });
 }
+function queryClassDataReport(payload){
+    return request(dataCenter('/web/report/queryClassDataReport'),{
+        data:payload
+    });
+}
 function queryGradeListBySchoolId(payload){
     return request(dataCenter('/web/report/getGradeList'),{
         data:payload
@@ -104,4 +109,5 @@ export {
     queryGradeListBySchoolId,
     queryClassListByGradeId,
     querySubListByClassId,
+    queryClassDataReport,
 };

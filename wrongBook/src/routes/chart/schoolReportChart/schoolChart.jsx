@@ -21,7 +21,6 @@ class HomeworkCenter extends React.Component {
 		this.state={
 			subjectId:100,
 			timeIndex:0,
-			dateValue:['开始时间','结束时间'],
 			date:[],
 			myChart:{},
 			sbid:0,
@@ -41,8 +40,8 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		let cid=this.state.sclassId
-		let sid=this.state.subjectId
+		let cid=this.state.sclassList[0].id
+		let sid=this.state.ssubList[0].id
 		let data={
 			schoolId:store.get('wrongBookNews').schoolId,
 			periodTime:item.periodTime,
@@ -67,10 +66,12 @@ class HomeworkCenter extends React.Component {
 				type: 'reportChart/endTime',
 				payload:endDate
 			});
+			let cid=this.state.sclassList[0].id
+		  let sid=this.state.ssubList[0].id
 			data={
 				schoolId:store.get('wrongBookNews').schoolId,
-				classId:this.state.sclassId,
-				subjectId:this.state.subjectId,
+				classId:cid,
+				subjectId:sid,
 				timeStamp:0,
 				startTime:startDate,
 				endTime:endDate,
@@ -696,8 +697,7 @@ class HomeworkCenter extends React.Component {
 
 							let data={
 								schoolId:store.get('wrongBookNews').schoolId,
-								classId:this.props.state.sclassId,
-								subjectId:this.props.state.subjectId,
+								classId:value,
 								periodTime:this.props.state.periodTime,
 								timeStamp:this.props.state.timeStamp,
 							}		
@@ -804,8 +804,8 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{this.props.state.subjectId!==''&&schoolReport.length==0?this.nodata():<div>
-							{/* {true?this.nodata():<div> */}
+							{this.props.state.subjectId!==''&&schoolReport.length==0?this.nodata():
+							<div>
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
 									<div id='main' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
@@ -960,6 +960,9 @@ class HomeworkCenter extends React.Component {
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'reportChart/getReportTimeList',
+			payload:{
+				classReport:false
+			}
 		});
 
 	}

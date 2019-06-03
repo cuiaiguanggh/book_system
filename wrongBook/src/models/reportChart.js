@@ -3,7 +3,7 @@ import {
 } from '../services/classHomeService';
 import {
 	getReportTimeList,querySchoolDataReport,queryGradeListBySchoolId
-	,queryClassListByGradeId,querySubListByClassId
+	,queryClassListByGradeId,querySubListByClassId,queryClassDataReport,
 } from '../services/reportService';
 
 import store from 'store';
@@ -19,16 +19,21 @@ export default {
 		gradeId:'',
 		reportTimeList:[],
 		schoolDataReport:{},
+		classDataReport:{},
 		periodTime: 100,
 		timeStamp: 100,
 		sgradeList:[],
 		sclassList:[],
 		ssubList:[],
 		searchData:[],
+		classSearchData:[],
 	},
 	reducers: {
 		searchData(state,{payload}){
 			return { ...state, searchData:payload };
+		},
+		classSearchData(state,{payload}){
+			return { ...state, classSearchData:payload };
 		},
 		sgradeList(state,{payload}){
 			return { ...state, sgradeList:payload };
@@ -50,6 +55,9 @@ export default {
 		},
 		schoolDataReport(state,{payload}){
 			return { ...state, schoolDataReport:payload };
+		},
+		classDataReport(state,{payload}){
+			return { ...state, classDataReport:payload };
 		},
 		allSubList(state,{payload}){
 			return { ...state, allSubList:payload };
@@ -73,7 +81,7 @@ export default {
 	},
   
 	effects: {
-		*getReportTimeList({}, {put, select}) {
+		*getReportTimeList({payload}, {put, select}) {
 			let res = yield getReportTimeList();
 			if(res.data){
 				let arr=res.data.data
@@ -99,10 +107,28 @@ export default {
 				yield put ({
 					type: 'timeStamp',
 					payload:res.data.data[0].timeStamp
-				})		
-				yield put ({
-					type: 'getGradeList',
-				})
+				})	
+				if(payload.classReport){
+					//获取班级报表
+					const _state = yield select(state => state.reportChart);
+					let _classId=68
+					let data={
+						classId:_classId,
+						schoolId:store.get('wrongBookNews').schoolId,
+						periodTime:_state.periodTime,
+						timeStamp:_state.timeStamp,
+						subjectId:2
+					}	
+					yield put ({
+						type: 'getClassDataReport',
+						payload:data,
+					})
+				}else{
+					yield put ({
+						type: 'getGradeList',
+					})
+				}
+				
 		
 			}else{
 				message.error(res.data.msg)
@@ -231,6 +257,29 @@ export default {
 				})			
 			}else{
 				message.error(res.data.msg)
+			}
+			
+		},
+		*getClassDataReport({payload}, {put, select}) {
+			let classRes= yield queryClassDataReport(payload);	
+			console.log('班级报告',classRes)
+			if(classRes.data.result===0){
+				yield put ({
+					type: 'classDataReport',
+					payload:classRes.data.data
+				})
+				yield put ({
+					type: 'classSearchData',
+					payload:classRes.data.data.teacherUseDataList
+				})
+
+			}else if(classRes.data.result===1){
+				yield put ({
+					type: 'classDataReport',
+					payload:[]
+				})
+			}else{
+				message.error('获取报表失败')
 			}
 			
 		},

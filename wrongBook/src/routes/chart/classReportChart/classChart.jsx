@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Input,Modal,Button,Select,Row, Col,DatePicker, AutoComplete } from 'antd';
+import { Layout, Input,Modal,Button,Select,Row, Col,DatePicker,Table } from 'antd';
 import { connect } from 'dva';
 import ReactDOM from 'react-dom';
 import AnimationCount from 'react-count-animation';
@@ -14,7 +14,7 @@ moment.locale('zh-cn');
 const { Content,Header } = Layout;
 const confirm = Modal.confirm;
 const Option = Select.Option;
-
+const Search = Input.Search;
 const echarts = require('echarts');
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
@@ -32,7 +32,30 @@ class HomeworkCenter extends React.Component {
 		}
 
 	}
-
+	onChangeTime(item){
+		if(!item) return
+		this.dispatch({
+			type: 'reportChart/periodTime',
+			payload:item.periodTime
+		});
+		this.dispatch({
+			type: 'reportChart/timeStamp',
+			payload:item.timeStamp
+		});
+		let cid=this.state.sclassId
+		let sid=this.state.subjectId
+		let data={
+			schoolId:store.get('wrongBookNews').schoolId,
+			periodTime:item.periodTime,
+			timeStamp:item.timeStamp,
+			classId:cid,
+			subjectId:sid,
+		}
+		this.dispatch({
+			type: 'reportChart/getSchoolDataReport',
+			payload:data
+		});
+	}
 	getSub() {
 		let subList =  this.props.state.subList.data;
 		if(subList && subList.length> 0){
@@ -81,6 +104,164 @@ class HomeworkCenter extends React.Component {
 
 		}
 	}  
+	renderTeacherUserCount(){
+		let data=this.props.state.classSearchData
+		const columns = [
+      {
+        title: '序号',
+        dataIndex: 'number',
+        key: 'number',
+        
+			},
+			{
+        title: '教师',
+        dataIndex: 'adminName',
+        key: 'adminName',
+			},
+      {
+        title: '学科',
+        dataIndex: 'subjectName',
+        key: 'subjectName',
+        
+			},
+			{
+        title: '班级',
+        dataIndex: 'className',
+        key: 'className',
+        
+			},
+			{
+        title: '组卷次数',
+        dataIndex: 'assembleTimes',
+				key: 'assembleTimes',
+				defaultSortOrder: 'descend',
+    		sorter: (a, b) => a.assembleTimes - b.assembleTimes,
+        
+			},
+			{
+        title: '视频讲解次数',
+        dataIndex: 'videoExplain',
+				key: 'videoExplain',
+				defaultSortOrder: 'descend',
+    		sorter: (a, b) => a.videoExplain - b.videoExplain,
+        
+			},
+			// {
+      //   title: '视频点赞数',
+      //   dataIndex: 'address',
+			// 	key: 'address2',
+			// 	filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
+      //   filteredValue: filteredInfo.address || null,
+      //   onFilter: (value, record) => record.address.includes(value),
+      //   sorter: (a, b) => a.address.length - b.address.length,
+      //   sortOrder: sortedInfo.columnKey === 'className' && sortedInfo.order,
+       
+      // },
+		]; 
+		return(
+			<div className={style.cagtable}>
+					<Table  bordered columns={columns}  dataSource={data} pagination={false} />
+			</div>
+			
+		)}
+		renderStudentUseData(data){
+			let myChart = echarts.init(document.getElementById('main2'));
+			let nameList = []
+			let numList = []
+			for (let index = 0; index < data.length; index++) {
+				const element = data[index]
+				nameList.push(element.name)	
+				numList.push(element.num)	
+			}
+	
+			
+			let studentOption =  {
+				title: {
+					text: '',
+					subtext: '',
+					x:'left',
+					textStyle:{
+							fontSize:14,
+							fontWeight:'normal'
+					}
+				},
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+							
+					}
+				},
+		
+				legend: {
+						data:['错题量'],
+						itemGap:16,
+						selectedMode:false,
+				},
+				grid: {
+					left: '0%',
+					right: '2%',
+					bottom: '3%',
+					containLabel: true
+				},
+				xAxis: [
+						{
+								type: 'category',
+								data: nameList,
+								axisPointer: {
+										type: 'shadow'
+								},
+								axisTick:{
+									show:false
+								}
+								
+						}
+				],
+				yAxis: [
+					
+						{
+								type: 'value',
+								axisLine:{
+									show: false
+								},
+								axisLabel: {
+										formatter: '{value}'
+								},
+								splitLine:{
+									lineStyle:{
+											type:'dashed',
+											color:'#ccc'
+									}
+								},
+								axisTick:{
+									show:false
+								}
+						},
+						{
+								show:false
+						}
+				],
+				series: [
+						{
+								name:'错题量',
+								type:'bar',
+								symbol: 'circle',     
+								barWidth:'50%',
+								symbolSize: 6,
+								lineStyle:{color:'#21A2F4'},
+								itemStyle:{color:"#21A2F4"},
+								data:numList
+						}
+				]
+				};
+			let obj={
+				chart:myChart,
+				option:studentOption,
+				id:2
+			}
+			//this.resizeChart(obj)
+			myChart.setOption(studentOption)
+			
+		}
 	render() {
 		const {RangePicker} = DatePicker;
 		
@@ -90,10 +271,30 @@ class HomeworkCenter extends React.Component {
 
 		let classList = this.props.state.classList1
 		let className = this.props.state.className;
+		let classReport=this.props.state.classDataReport
+
+		setTimeout(() => {		
+			//if(this.props.state.subjectId===''){
+				// if(classReport.gradeWrongNumMap){
+				// 	this.renderQustionCount(classReport.gradeWrongNumMap)
+				// }
+				// if(classReport.gradeUseNumMap){
+				// 	this.renderUserCount(classReport.gradeUseNumMap)
+				// }
+				if(classReport.studentWrongNum){
+					this.renderStudentUseData(classReport.studentWrongNum)
+				}
+				// if(classReport.classUseData){
+				// 	this.renderClassData(classReport.classUseData,classReport.classWrongData)
+				// }
+				
+			//}
+			
+		}, 10);
 	  console.error(subList,subName,classList)
 		return(
 			<Layout>
-					<TopBar timeList={timeList}></TopBar>
+					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 					<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
 							<Row style={{marginTop:20}}>
 								<Col md={24}> 
@@ -102,7 +303,7 @@ class HomeworkCenter extends React.Component {
 												{this.getSub()}
 												{this.getClassList()}
 											</div>
-											<div id='main2' style={{height:400}}>
+											<div id='main1' style={{height:400}}>
 											
 											</div>
 										</div>
@@ -113,36 +314,109 @@ class HomeworkCenter extends React.Component {
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden'}}>
 										<p>学生使用情况</p>
-										<div id='main3' style={{height:400}} >
+										<div id='main2' style={{height:400}} >
 										
 										</div>
+
+
 									</div>
 								</Col>
 							</Row>
 
 							<Row style={{marginTop:20}}>
-								<Col md={24}> 
-									<div style={{margin:'0 20px',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:30}}>
+							<Col md={24}> 
+									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:30}}>
+										<div className={style.searchInput}>
 										<p>教师使用情况</p>
-									</div>
+										<Search
+												placeholder="请输入教师姓名"
+												enterButton="搜索"
+												size="large"
+												style={{width:240,position:'absolute',right:0,top:0}}
+												onSearch={value =>{
+													//console.log(schoolReport.teacherUseDataList,value)
+													if(value===''){
+														this.props.dispatch({
+															type: 'reportChart/classSearchData',
+															payload:this.props.state.classDataReport.teacherUseDataList
+														});
+													}else{
+														let arr=[]
+														for (let i = 0; i < classReport.teacherUseDataList.length; i++) {
+															const ele = classReport.teacherUseDataList[i];
+															if(ele.adminName.indexOf(value)>-1){
+																arr.push(ele)
+															}
+														}
+														this.props.dispatch({
+															type: 'reportChart/classSearchData',
+															payload:arr
+														});
+													}
+
+													this.renderTeacherUserCount()
+												} 
+													
+												}
+											/>
+										</div>
+										{classReport.teacherUseDataList?
+											this.renderTeacherUserCount():''
+										}
+										<div id='main3' style={{height:400}} >
+										
+										</div>
+										</div>
 								</Col>
 							</Row>
 					</Content>
 			</Layout>
 		);
 	}
+	resizeChart(obj){
 
+		window.addEventListener('resize',function(e){
+			let winWidth=e.target.innerWidth
+			// const chartBox = document.getElementById('main');
+			// const chartBox1 = document.getElementById('main1');
+			const chartBox2 = document.getElementById('main2');
+			// const chartBox3 = document.getElementById('main3');
+			//if(!chartBox) return
+			if(winWidth<=1400){
+				//chartBox3.style.width='1000px'
+				chartBox2.style.width='1000px'
+			}else{
+
+				//chartBox3.style.width='100%'
+				chartBox2.style.width='100%'
+				if(obj.id>=2){
+					obj.chart.resize()
+				 }
+			}
+
+			
+
+			 obj.chart.setOption(obj.option)
+			 if(obj.id===0||obj.id===1){
+				obj.chart.resize()
+			 }
+			 
+	 },false);
+	}
 	componentDidMount(){
 		let schoolId = store.get('wrongBookNews').schoolId
 
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'reportChart/getReportTimeList',
+			payload:{
+				classReport:true
+			}
 		});
-		let myChart2 = echarts.init(document.getElementById('main2'));
+		let myChart1 = echarts.init(document.getElementById('main1'));
 		let myChart3 = echarts.init(document.getElementById('main3'));
 		
-		let option2 =  {
+		let option1 =  {
 			title: {
 					text: ''
 			},
@@ -209,101 +483,9 @@ class HomeworkCenter extends React.Component {
 			dataZoom: [
     ],
 		};
-		let option3 =  {
-			title: {
-				text: '',
-				subtext: '',
-				x:'left',
-				textStyle:{
-						fontSize:14,
-						fontWeight:'normal'
-				}
-			},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-						
-				}
-			},
 	
-			legend: {
-					data:['错题量'],
-					itemGap:16,
-					selectedMode:false,
-			},
-			grid: {
-				left: '0%',
-				right: '2%',
-				bottom: '3%',
-				containLabel: true
-			},
-			xAxis: [
-					{
-							type: 'category',
-							data: [
-								'张三','里斯','王五','张三','里斯','王五','张三','里斯','王五','张三',
-								'张三','里斯','王五','张三','里斯','王五','张三','里斯','王五','张三',
-								'张三','里斯','王五','张三','里斯','王五','张三','里斯','王五','张三',
-								// '张三','里斯','王五','张三','里斯','王五','张三','里斯','王五','张三',
-								// '张三','里斯','王五','张三','里斯','王五','张三','里斯','王五','张三',
-								// '张三','里斯','王五','张三','里斯','王五','张三','里斯','王五','张三',
-							],
-							axisPointer: {
-									type: 'shadow'
-							},
-							axisTick:{
-								show:false
-							}
-							
-					}
-			],
-			yAxis: [
-				
-					{
-							type: 'value',
-							axisLine:{
-								show: false
-							},
-							axisLabel: {
-									formatter: '{value}'
-							},
-							splitLine:{
-								lineStyle:{
-										type:'dashed',
-										color:'#ccc'
-								}
-							},
-							axisTick:{
-								show:false
-							}
-					},
-					{
-							show:false
-					}
-			],
-			series: [
-					{
-							name:'错题量',
-							type:'bar',
-							symbol: 'circle',     
-							barWidth:'50%',
-							symbolSize: 6,
-							lineStyle:{color:'#21A2F4'},
-							itemStyle:{color:"#21A2F4"},
-							data:[
-								12, 23, 45, 23, 25, 76, 135, 162, 32, 20,
-								12, 23, 45, 23, 25, 76, 135, 162, 32, 20,
-								12, 23, 45, 23, 25, 76, 135, 162, 32, 20,
-								// 12, 23, 45, 23, 25, 76, 135, 162, 32, 20,
-								// 12, 23, 45, 23, 25, 76, 135, 162, 32, 20,
-								// 12, 23, 45, 23, 25, 76, 135, 162, 32, 20,
-							]
-					}
-			]
-			};
 
-		myChart2.setOption(option2);
-		myChart3.setOption(option3);
+		myChart1.setOption(option1);
 	}
 }
 
