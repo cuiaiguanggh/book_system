@@ -104,10 +104,10 @@ class HomeworkCenter extends React.Component {
 		let myChart1 = echarts.init(document.getElementById('main'));
 		const chartBox = document.getElementById('main');
 		const winWidth=document.body.offsetWidth
-		
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
 		let sdata=[]
+
 		for(let i=0;i<arr.length;i++){
 			let scolor=''
 			if(i===0){
@@ -586,7 +586,11 @@ class HomeworkCenter extends React.Component {
 		let cdate= moment(Date.now()).format('YYYY-MM-DD');
 		let myChart = echarts.init(document.getElementById('main2'));
 		var dList = Object.getOwnPropertyNames(udata)
-
+		const winWidth=document.body.offsetWidth
+		let gright='2%'
+		if(winWidth<=1400){
+			gright='3%'
+		}
 		let dateArr=[]
 		for (let index = 0; index < dList.length; index++) {
 			const element = dList[index]
@@ -629,7 +633,7 @@ class HomeworkCenter extends React.Component {
 			},
 			grid: {
 					left: '1%',
-					right: '2%',
+					right: gright,
 					bottom: '3%',
 					containLabel: true
 			},
@@ -717,7 +721,7 @@ class HomeworkCenter extends React.Component {
 							let data={
 								schoolId:store.get('wrongBookNews').schoolId,
 								classId:this.props.state.sclassId,
-								subjectId:this.props.state.subjectId,
+								subjectId:value,
 								periodTime:this.props.state.periodTime,
 								timeStamp:this.props.state.timeStamp,
 							}		
@@ -1023,6 +1027,18 @@ class HomeworkCenter extends React.Component {
 				classReport:false
 			}
 		});
+
+		let winwidth=document.body.offsetWidth
+		const chartBox1 = document.getElementById('main2');
+		const chartBox2 = document.getElementById('main3');
+		if(winwidth<=1400){
+			chartBox1.style.width='1200px'
+			chartBox2.style.width='1200px'
+		}else{
+
+			chartBox1.style.width='100%'
+			chartBox2.style.width='100%'
+		}		
 
 	}
 }

@@ -61,11 +61,14 @@ class HomeworkCenter extends React.Component {
 		if(subList && subList.length> 0){
 			return(
 				<Select					
-						style={{ width: 100,marginRight:20}}
+						style={{ width: 100}}
 						placeholder="学科"
-						optionFilterProp="children"
+						value={this.props.state.csubjectId}
 						onChange={(value)=>{
-							console.log(value)
+							this.props.dispatch({
+								type: 'reportChart/csubjectId',
+								payload:value
+							});
 						}}
 						
 				>
@@ -85,11 +88,14 @@ class HomeworkCenter extends React.Component {
 		if(classList && classList.length> 0){
 			return(
 				<Select					
-						style={{ width: 100}}
+						style={{ width: 140,marginRight:20}}
 						placeholder="班级"
-						optionFilterProp="children"
+						value={this.props.state.cclassId}
 						onChange={(value)=>{
-							console.log(value)
+							this.props.dispatch({
+								type: 'reportChart/cclassId',
+								payload:value
+							});
 						}}
 						
 				>
@@ -287,7 +293,6 @@ class HomeworkCenter extends React.Component {
 				tooltip: {
 						trigger: 'axis',
 						formatter:function(params){       
-							console.log('111',params)
 							var relVal = params[0].name;   
 							let str=''          
 							for (var i = 0, l = params.length; i < l; i++) {  
@@ -402,8 +407,8 @@ class HomeworkCenter extends React.Component {
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',	overflowX:'auto',overflowY:'hidden'}}>
 											<div className={{}}>
-												{this.getSub()}
 												{this.getClassList()}
+												{this.getSub()}
 											</div>
 											<div id='main5' style={{height:400}}>
 											

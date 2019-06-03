@@ -16,6 +16,8 @@ export default {
 		schoolId:'',
 		sclassId:'',
 		subjectId:'',
+		cclassId:'',
+		csubjectId:'',
 		gradeId:'',
 		reportTimeList:[],
 		schoolDataReport:{},
@@ -74,6 +76,12 @@ export default {
 		subjectId(state, {payload}) {
 			return { ...state, subjectId:payload };
 		},
+		cclassId(state, {payload}) {
+			return { ...state, cclassId:payload };
+    },
+		csubjectId(state, {payload}) {
+			return { ...state, csubjectId:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -111,13 +119,23 @@ export default {
 				if(payload.classReport===true){
 					//获取班级报表
 					const _state = yield select(state => state.reportChart);
-					let _classId=68
+					const _class = yield select(state => state.temp);
+					let _ccid=_class.classList1.data[0].classId
+					let _sid=_class.subList.data[0].v
+					yield put ({
+						type: 'cclassId',
+						payload:_ccid
+					})
+					yield put ({
+						type: 'csubjectId',
+						payload:_sid
+					})
 					let data={
-						classId:_classId,
+						classId:_ccid,
 						schoolId:store.get('wrongBookNews').schoolId,
 						periodTime:_state.periodTime,
 						timeStamp:_state.timeStamp,
-						subjectId:2
+						subjectId:_sid
 					}	
 					yield put ({
 						type: 'getClassDataReport',
