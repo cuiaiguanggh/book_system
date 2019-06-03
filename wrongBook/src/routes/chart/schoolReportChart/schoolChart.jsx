@@ -608,7 +608,6 @@ class HomeworkCenter extends React.Component {
 			tooltip: {
 					trigger: 'axis',
 					formatter:function(params){       
-						console.log('111',params)
 						var relVal = params[0].name;   
 						let str=''          
 						for (var i = 0, l = params.length; i < l; i++) {  
