@@ -29,8 +29,12 @@ export default {
 		ssubList:[],
 		searchData:[],
 		classSearchData:[],
+		stateTimeIndex:0
 	},
 	reducers: {
+		stateTimeIndex(state,{payload}){
+			return { ...state, stateTimeIndex:payload };
+		},
 		searchData(state,{payload}){
 			return { ...state, searchData:payload };
 		},
@@ -294,7 +298,6 @@ export default {
 		},
 		*getClassDataReport({payload}, {put, select}) {
 			let classRes= yield queryClassDataReport(payload);	
-			console.log('班级报告',classRes)
 			if(classRes.data.result===0){
 				yield put ({
 					type: 'classDataReport',

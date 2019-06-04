@@ -45,13 +45,21 @@ class topbar extends React.Component {
 				this.setState({
 					timeIndex:0,
 					date:null		
-				})
+				})				
+				this.props.dispatch({
+					type: 'reportChart/stateTimeIndex',
+					payload:0
+				});
 				this.props.onChangeDate('','');
 			}else{
 				this.setState({
 					timeIndex:100,
 					date:[moment(startDate, dateFormat), moment(endDate, dateFormat)]			
 				})
+				this.props.dispatch({
+					type: 'reportChart/stateTimeIndex',
+					payload:100
+				});
 				this.props.onChangeDate(startDate,endDate);
 			} 
 		
@@ -82,6 +90,10 @@ class topbar extends React.Component {
 													this.setState({
 														timeIndex:i,
 														date:[moment(sdate, "YYYY-MM-DD"), moment(cdate, "YYYY-MM-DD")]
+													})
+													this.props.dispatch({
+														type: 'reportChart/stateTimeIndex',
+														payload:i
 													})
 													this.handleClick(item);
 												}}>

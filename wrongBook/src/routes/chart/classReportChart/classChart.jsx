@@ -26,7 +26,6 @@ class HomeworkCenter extends React.Component {
 			name:store.get('wrongBookNews').userName,
 			headUrl:store.get('wrongBookNews').avatarUrl,
 			subjectId:100,
-			timeIndex:0,
 			dateValue:['开始时间','结束时间'],
 			date:[]
 		}
@@ -42,14 +41,62 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		let cid=68
-		let sid=2
+		let cid=this.state.cclassId
+		let sid=this.state.csubjectId
 		let data={
 			schoolId:store.get('wrongBookNews').schoolId,
 			periodTime:item.periodTime,
 			timeStamp:item.timeStamp,
 			classId:cid,
 			subjectId:sid,
+		}
+		this.dispatch({
+			type: 'reportChart/getClassDataReport',
+			payload:data
+		});
+	}
+
+	onChangeDate(startDate,endDate){
+		if(this.state.classList1.data.length===0||this.state.subList.data.length===0) return
+		let data={}
+		if(startDate!==''){
+			this.dispatch({
+				type: 'reportChart/startTime',
+				payload:startDate
+			});
+			this.dispatch({
+				type: 'reportChart/endTime',
+				payload:endDate
+			});	
+			let cid=this.state.cclassId
+			let sid=this.state.csubjectId
+			data={
+				schoolId:store.get('wrongBookNews').schoolId,
+				timeStamp:0,
+				startTime:startDate,
+				endTime:endDate,
+				classId:cid,
+				subjectId:sid,
+			}
+
+		}else{
+			this.dispatch({
+				type: 'reportChart/periodTime',
+				payload:1
+			});
+			this.dispatch({
+				type: 'reportChart/timeStamp',
+				payload:this.state.reportTimeList[0].timeStamp
+			});
+			let cid=this.state.cclassId
+			let sid=this.state.csubjectId
+			data={
+				schoolId:store.get('wrongBookNews').schoolId,
+				classId:cid,
+				subjectId:sid,
+				periodTime:1,
+				timeStamp:this.state.reportTimeList[0].timeStamp,
+			}
 		}
 		this.dispatch({
 			type: 'reportChart/getClassDataReport',
@@ -68,6 +115,25 @@ class HomeworkCenter extends React.Component {
 							this.props.dispatch({
 								type: 'reportChart/csubjectId',
 								payload:value
+							});
+							let cid=this.props.state.cclassId
+							let sid=value
+							let data={
+								schoolId:store.get('wrongBookNews').schoolId,								
+								classId:cid,
+								subjectId:sid,
+							}
+							if(this.props.state.stateTimeIndex===100){
+								data.startTime=this.props.state.startTime
+								data.endTime=this.props.state.endTime
+								data.timeStamp=0	
+							}else{
+								data.periodTime=this.props.state.periodTime
+								data.timeStamp=this.props.state.timeStamp
+							}
+							this.props.dispatch({
+								type: 'reportChart/getClassDataReport',
+								payload:data
 							});
 						}}
 						
@@ -95,6 +161,26 @@ class HomeworkCenter extends React.Component {
 							this.props.dispatch({
 								type: 'reportChart/cclassId',
 								payload:value
+							});
+
+							let cid=value
+							let sid=this.props.state.csubjectId
+							let data={
+								schoolId:store.get('wrongBookNews').schoolId,								
+								classId:cid,
+								subjectId:sid,
+							}
+							if(this.props.state.stateTimeIndex===100){
+								data.startTime=this.props.state.startTime
+								data.endTime=this.props.state.endTime
+								data.timeStamp=0	
+							}else{
+								data.periodTime=this.props.state.periodTime
+								data.timeStamp=this.props.state.timeStamp
+							}
+							this.props.dispatch({
+								type: 'reportChart/getClassDataReport',
+								payload:data
 							});
 						}}
 						
@@ -383,14 +469,9 @@ class HomeworkCenter extends React.Component {
 			myChart1.setOption(option1);
 		}
 	render() {
-		const {RangePicker} = DatePicker;
 		
 		let timeList=this.props.state.reportTimeList
-		let subList =  this.props.state.subList ;
-		let subName = this.props.state.subName;
 
-		let classList = this.props.state.classList1
-		let className = this.props.state.className;
 		let classReport=this.props.state.classDataReport
 		
 		setTimeout(() => {		
@@ -400,13 +481,11 @@ class HomeworkCenter extends React.Component {
 				}
 				if(classReport.studentWrongNum){
 					this.renderStudentUseData(classReport.studentWrongNum)
-					console.log(classReport.studentWrongNum,'111')
 				}
 				
 			//}
 			
 		}, 10);
-	  //console.error(subList,subName,classList)
 		return(
 			<Layout>
 					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
@@ -450,7 +529,7 @@ class HomeworkCenter extends React.Component {
 												size="large"
 												style={{width:240,position:'absolute',right:0,top:0}}
 												onSearch={value =>{
-													//console.log(schoolReport.teacherUseDataList,value)
+
 													if(value===''){
 														this.props.dispatch({
 															type: 'reportChart/classSearchData',

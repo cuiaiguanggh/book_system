@@ -20,7 +20,6 @@ class HomeworkCenter extends React.Component {
 		super(props);
 		this.state={
 			subjectId:100,
-			timeIndex:0,
 			date:[],
 			myChart:{},
 			sbid:0,
@@ -56,7 +55,6 @@ class HomeworkCenter extends React.Component {
 		});
 	}
 	onChangeDate(startDate,endDate){
-		//console.log(startDate,endDate)
 		let data={}
 		if(startDate!==''){
 			this.dispatch({
@@ -338,15 +336,7 @@ class HomeworkCenter extends React.Component {
 			});      
 	}
 	renderTeacherUserCount(){
-	
-		// let data=[]
-		// if(type===1){
-		// 	data=this.state.searchData
-		// }else{
-		// 	data=this.props.state.schoolDataReport.teacherUseDataList
-		// }
 		let data=this.props.state.searchData
-		//console.error('00',this.props,this.props.state.searchData)
 		const columns = [
       {
         title: '序号',
@@ -413,7 +403,6 @@ class HomeworkCenter extends React.Component {
 	renderClassData(udata,wdata){
 		let myChart = echarts.init(document.getElementById('main3'));
 		const chartBox = document.getElementById('main3');
-		console.error(udata,wdata)
 		if(udata.length===0||wdata.length===0){
 			chartBox.style.display='none'
 			return
@@ -883,16 +872,15 @@ class HomeworkCenter extends React.Component {
 				}
 				
 			}else{
-				this.nodata()
+				
 			}
 			
 		}, 10);
-	  //console.error('报告',schoolReport,schoolReport.gradeWrongNumMap)
 		return(
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{JSON.stringify(schoolReport) === "{}"?this.nodata():
+							{JSON.stringify(schoolReport) === "{}"?'':
 							<div>
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
@@ -952,7 +940,6 @@ class HomeworkCenter extends React.Component {
 												size="large"
 												style={{width:240,position:'absolute',right:0,top:0}}
 												onSearch={value =>{
-													//console.log(schoolReport.teacherUseDataList,value)
 													if(value===''){
 														this.props.dispatch({
 															type: 'reportChart/searchData',
