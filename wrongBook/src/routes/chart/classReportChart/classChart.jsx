@@ -398,7 +398,7 @@ class HomeworkCenter extends React.Component {
 			//}
 			
 		}, 10);
-	  console.error(subList,subName,classList)
+	  //console.error(subList,subName,classList)
 		return(
 			<Layout>
 					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>

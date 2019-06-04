@@ -156,12 +156,14 @@ export default {
 		*getGradeList({payload}, {put, select}) {
 			let _schoolid=store.get('wrongBookNews').schoolId
 			let gradeData=yield queryGradeListBySchoolId({schoolId:_schoolid})
-			if(gradeData){
+			console.log('1',gradeData)
+			if(gradeData.data.result===0){			
 				let glist=gradeData.data.data
 				yield put ({
 					type: 'sgradeList',
 					payload:glist
 				})
+				if(gradeData.data.data.length===0) return
 				yield put ({
 					type: 'gradeId',
 					payload:glist[0].id
@@ -178,12 +180,25 @@ export default {
 		},
 		*getClassList({payload}, {put, select}) {
 			let classData=yield queryClassListByGradeId({schoolId:payload.schoolId,gradeId:payload.gradeId})
+			console.error(classData,'班级列表')
 					if(classData.data.result===0){
 						let clist=classData.data.data				
 						yield put ({
 							type: 'sclassList',
 							payload:clist
 						})
+
+						if(clist.length===0){
+							yield put ({
+								type: 'sclassId',
+								payload:''
+							})
+							yield put ({
+								type: 'ssubList',
+								payload:[]
+							})
+							return
+						}
 						yield put ({
 							type: 'sclassId',
 							payload:clist[0].id

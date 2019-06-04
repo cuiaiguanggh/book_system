@@ -40,6 +40,7 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
+		if(this.state.sclassList.length===0) return
 		let cid=this.state.sclassList[0].id
 		let sid=this.state.ssubList[0].id
 		let data={
@@ -66,6 +67,7 @@ class HomeworkCenter extends React.Component {
 				type: 'reportChart/endTime',
 				payload:endDate
 			});
+			if(this.state.sclassList.length===0) return
 			let cid=this.state.sclassList[0].id
 		  let sid=this.state.ssubList[0].id
 			data={
@@ -100,9 +102,14 @@ class HomeworkCenter extends React.Component {
 		});
 	}
 	renderQustionCount(data){
-		
 		let myChart1 = echarts.init(document.getElementById('main'));
 		const chartBox = document.getElementById('main');
+		if(JSON.stringify(data)==='{}'){
+			chartBox.style.display='none'
+			return
+		}else{
+			chartBox.style.display='block'
+		}
 		const winWidth=document.body.offsetWidth
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
@@ -125,13 +132,6 @@ class HomeworkCenter extends React.Component {
 		}
 		let option = {
 			title : {
-					text: '错题总量',
-					subtext: '',
-					x:'left',
-					textStyle:{
-							fontSize:14,
-							fontWeight:'normal'
-					}
 			},
 			tooltip : {
 					trigger: 'item',
@@ -220,6 +220,12 @@ class HomeworkCenter extends React.Component {
 	renderUserCount(data){
 		let myChart = echarts.init(document.getElementById('main1'));
 		const chartBox = document.getElementById('main1');
+		if(JSON.stringify(data)==='{}'){
+			chartBox.style.display='none'
+			return
+		}else{
+			chartBox.style.display='block'
+		}
 		const winWidth=document.body.offsetWidth
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1=arr.map(function(i){return data[i]})
@@ -242,13 +248,7 @@ class HomeworkCenter extends React.Component {
 	
 		let option = {
 			title:{
-				text: '使用人数',
-				subtext: '',
-				x:'left',
-				textStyle:{
-						fontSize:14,
-						fontWeight:'normal'
-				}
+				
 			},
 			tooltip: {
 					trigger: 'item',
@@ -412,6 +412,15 @@ class HomeworkCenter extends React.Component {
 	}
 	renderClassData(udata,wdata){
 		let myChart = echarts.init(document.getElementById('main3'));
+		const chartBox = document.getElementById('main3');
+		console.error(udata,wdata)
+		if(udata.length===0||wdata.length===0){
+			chartBox.style.display='none'
+			return
+		}else{
+			chartBox.style.display='block'
+		}
+		
 		let classList=[]
 		for (let i = 0; i < udata.length; i++) {
 			classList.push(udata[i].className)
@@ -839,13 +848,27 @@ class HomeworkCenter extends React.Component {
 			</div>
 		)
 	}
+	noResposeData(){
+		return(
+			<div style={{textAlign:'center',top:'25%',width:'100%',position:'relative',display:'flex',justifyContent:'center'}}>
+					<img src={require('../../images/wsj-n.png')}></img>
+					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
+					paddingTop: 50,
+					lineHeight: '40px',
+					textAlign: 'left',
+					paddingLeft: 20,
+					fontWeight: 700,}}>
+						暂无数据
+					</span>
+			</div>
+		)
+	}
 	render() {
 
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
-		
 		setTimeout(() => {		
-			if(this.props.state.subjectId!==''){
+			if(this.props.state.subjectId!==''){			
 				if(schoolReport.gradeWrongNumMap){
 					this.renderQustionCount(schoolReport.gradeWrongNumMap)
 				}
@@ -859,6 +882,8 @@ class HomeworkCenter extends React.Component {
 					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
 				}
 				
+			}else{
+				this.nodata()
 			}
 			
 		}, 10);
@@ -867,14 +892,27 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{this.props.state.subjectId!==''&&schoolReport.length==0?this.nodata():
+							{JSON.stringify(schoolReport) === "{}"?this.nodata():
 							<div>
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
-									<div id='main' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
+									<div style={{margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}>
+										<p>错题总量</p>
+										<div id='main' style={{height:400}}>
+																			
+										</div>	
+										{JSON.stringify(schoolReport.gradeWrongNumMap)==='{}'?
+										<div  style={{height:400}}>{this.noResposeData()}</div>:""}						
+									</div>
 								</Col>
 								<Col  xl={12} md={24}>
-									<div id='main1' style={{height:400, margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}></div>
+									<div style={{margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}>
+										<p>使用人数</p>
+										<div id='main1' style={{height:400}}>
+										</div>
+										{JSON.stringify(schoolReport.gradeUseNumMap)==='{}'?
+										<div  style={{height:400}}>{this.noResposeData()}</div>:""}		
+									</div>
 								</Col>
 							</Row>
 
@@ -897,6 +935,9 @@ class HomeworkCenter extends React.Component {
 										<p>班级使用情况</p>
 										<div id='main3' style={{height:400}}>							
 										</div>
+										{schoolReport.classUseData.length===0?
+										<div  style={{height:400}}>{this.noResposeData()}</div>:""}	
+										
 									</div>
 								</Col>
 							</Row>
@@ -1031,6 +1072,7 @@ class HomeworkCenter extends React.Component {
 		let winwidth=document.body.offsetWidth
 		const chartBox1 = document.getElementById('main2');
 		const chartBox2 = document.getElementById('main3');
+		if(!chartBox1||chartBox2) return
 		if(winwidth<=1400){
 			chartBox1.style.width='1200px'
 			chartBox2.style.width='1200px'
