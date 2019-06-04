@@ -407,7 +407,7 @@ class StuReport extends React.Component {
 						}}>
 							{
 									detail.data && detail.data.questionList.length != 0 ?  this.questions():
-									<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',width:'100%'}}>
+									<div style={{textAlign:'center',position:'relative',top:'50%',transform: 'translate(0%, -50%)',width:'100%'}}>
 										<img src={require('../../images/wsj-n.png')}></img>
 										<span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
 									</div>
