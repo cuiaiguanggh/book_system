@@ -83,7 +83,7 @@ class HomeworkCenter extends React.Component {
 				<div
 				className='space'
 					onClick={() =>{
-						alert(1)
+					//	alert(1)
 					}}>
 					{text}
 				</div>
