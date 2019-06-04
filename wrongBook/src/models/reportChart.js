@@ -183,7 +183,6 @@ export default {
 		},
 		*getClassList({payload}, {put, select}) {
 			let classData=yield queryClassListByGradeId({schoolId:payload.schoolId,gradeId:payload.gradeId})
-			console.error(classData,'班级列表')
 					if(classData.data.result===0){
 						let clist=classData.data.data				
 						yield put ({
