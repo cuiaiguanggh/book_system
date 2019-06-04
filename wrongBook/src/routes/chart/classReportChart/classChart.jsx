@@ -172,6 +172,13 @@ class HomeworkCenter extends React.Component {
 		)}
 		renderStudentUseData(data){
 			let myChart = echarts.init(document.getElementById('main6'));
+			const chartBox = document.getElementById('main6');
+			if(data.length===0){
+				chartBox.style.display='none'
+				return
+			}else{
+				chartBox.style.display='block'
+			}
 			let nameList = []
 			let numList = []
 			for (let index = 0; index < data.length; index++) {
@@ -385,14 +392,15 @@ class HomeworkCenter extends React.Component {
 		let classList = this.props.state.classList1
 		let className = this.props.state.className;
 		let classReport=this.props.state.classDataReport
-
+		
 		setTimeout(() => {		
 			//if(this.props.state.subjectId===''){
-				if(classReport.studentWrongNum){
-					this.renderStudentUseData(classReport.studentWrongNum)
-				}
 				if(classReport.classUserNumData){
 					this.renderClassUseData(classReport.classUserNumData,classReport.classWrongNumData)
+				}
+				if(classReport.studentWrongNum){
+					this.renderStudentUseData(classReport.studentWrongNum)
+					console.log(classReport.studentWrongNum,'111')
 				}
 				
 			//}
@@ -424,7 +432,8 @@ class HomeworkCenter extends React.Component {
 										<div id='main6' style={{height:400}} >
 										
 										</div>
-
+										{classReport.studentWrongNum!==undefined&&classReport.studentWrongNum.length===0?
+										<div  style={{height:400}}>{this.noResposeData()}</div>:""}	
 
 									</div>
 								</Col>
@@ -476,6 +485,38 @@ class HomeworkCenter extends React.Component {
 					</Content>
 			</Layout>
 		);
+	}
+	nodata(){
+		return(
+			<div style={{textAlign:'center',position:'absolute',top:'40%',width:'100%',display:'flex',justifyContent:'center'}}>
+					<img src={require('../../images/wsj-n.png')}></img>
+					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
+					paddingTop: 50,
+					lineHeight: '40px',
+					textAlign: 'left',
+					paddingLeft: 20,
+					fontWeight: 700,}}>
+						暂无学生错题数据，无法查看数据报表
+						<br></br>
+						请让老师和家长督促学生收集错题
+					</span>
+			</div>
+		)
+	}
+	noResposeData(){
+		return(
+			<div style={{textAlign:'center',top:'25%',width:'100%',position:'relative',display:'flex',justifyContent:'center'}}>
+					<img src={require('../../images/wsj-n.png')}></img>
+					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
+					paddingTop: 50,
+					lineHeight: '40px',
+					textAlign: 'left',
+					paddingLeft: 20,
+					fontWeight: 700,}}>
+						暂无数据
+					</span>
+			</div>
+		)
 	}
 	resizeChart(obj){
 		window.addEventListener('resize',function(e){

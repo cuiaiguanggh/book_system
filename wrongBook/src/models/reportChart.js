@@ -156,7 +156,6 @@ export default {
 		*getGradeList({payload}, {put, select}) {
 			let _schoolid=store.get('wrongBookNews').schoolId
 			let gradeData=yield queryGradeListBySchoolId({schoolId:_schoolid})
-			console.log('1',gradeData)
 			if(gradeData.data.result===0){			
 				let glist=gradeData.data.data
 				yield put ({
