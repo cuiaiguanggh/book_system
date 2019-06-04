@@ -318,7 +318,32 @@ class HomeworkCenter extends React.Component {
 								},
 								axisTick:{
 									show:false
-								}
+								},
+								axisLabel: {  
+									interval: 0,  
+									formatter:function(value)  
+									{  
+											// debugger  
+											var ret = "";
+											var maxLength = 4;
+											var valLength = value.length; 
+											var rowN = Math.ceil(valLength / maxLength); 
+											if (rowN > 1)
+											{  
+													for (var i = 0; i < rowN; i++) {  
+															var temp = ""; 
+															var start = i * maxLength;
+															var end = start + maxLength;
+															temp = value.substring(start, end) + "\n";  
+															ret += temp; 
+													}  
+													return ret;  
+											}  
+											else {  
+													return value;  
+											}  
+									}  
+							}
 								
 						}
 				],
@@ -351,7 +376,7 @@ class HomeworkCenter extends React.Component {
 								name:'错题量',
 								type:'bar',
 								symbol: 'circle',     
-								barWidth:'50%',
+								barWidth:'20',
 								barMaxWidth:'40',
 								symbolSize: 6,
 								lineStyle:{color:'#21A2F4'},

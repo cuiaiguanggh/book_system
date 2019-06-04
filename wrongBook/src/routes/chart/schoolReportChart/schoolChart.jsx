@@ -24,50 +24,58 @@ class HomeworkCenter extends React.Component {
 			myChart:{},
 			sbid:0,
 			cid:0,
-			searchData:[]
+			searchData:[],
+			updatePei:true
 		}
-
+		this.onChangeTime=this.onChangeTime.bind(this)
+		this.onChangeDate=this.onChangeDate.bind(this)
 	}
 
 	onChangeTime(item){
+		this.setState({
+			updatePei:true
+		})
 		if(!item) return
-		this.dispatch({
+		this.props.dispatch({
 			type: 'reportChart/periodTime',
 			payload:item.periodTime
 		});
-		this.dispatch({
+		this.props.dispatch({
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		if(this.state.sclassList.length===0) return
-		let cid=this.state.sclassList[0].id
-		let sid=this.state.ssubList[0].id
+		if(this.props.state.sclassList.length===0) return
+		let cid=this.props.state.sclassList[0].id
+		let sid=this.props.state.ssubList[0].id
 		let data={
 			schoolId:store.get('wrongBookNews').schoolId,
 			periodTime:item.periodTime,
 			timeStamp:item.timeStamp,
 			classId:cid,
-			subjectId:sid,
+			subjectId:sid, 
 		}
-		this.dispatch({
+		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload:data
 		});
 	}
 	onChangeDate(startDate,endDate){
+		this.setState({
+			updatePei:true
+		})
 		let data={}
 		if(startDate!==''){
-			this.dispatch({
+			this.props.dispatch({
 				type: 'reportChart/startTime',
 				payload:startDate
 			});
-			this.dispatch({
+			this.props.dispatch({
 				type: 'reportChart/endTime',
 				payload:endDate
 			});
-			if(this.state.sclassList.length===0) return
-			let cid=this.state.sclassList[0].id
-		  let sid=this.state.ssubList[0].id
+			if(this.props.state.sclassList.length===0) return
+			let cid=this.props.state.sclassList[0].id
+		  let sid=this.props.state.ssubList[0].id
 			data={
 				schoolId:store.get('wrongBookNews').schoolId,
 				classId:cid,
@@ -77,29 +85,30 @@ class HomeworkCenter extends React.Component {
 				endTime:endDate,
 			}
 		}else{
-			this.dispatch({
+			this.props.dispatch({
 				type: 'reportChart/periodTime',
 				payload:1
 			});
-			this.dispatch({
+			this.props.dispatch({
 				type: 'reportChart/timeStamp',
-				payload:this.state.reportTimeList[0].timeStamp
+				payload:this.props.state.reportTimeList[0].timeStamp
 			});
 			data={
 				schoolId:store.get('wrongBookNews').schoolId,
-				classId:this.state.sclassId,
-				subjectId:this.state.subjectId,
-				periodTime:0,
-				timeStamp:this.state.reportTimeList[0].timeStamp,
+				classId:this.props.state.sclassId,
+				subjectId:this.props.state.subjectId,
+				periodTime:1,
+				timeStamp:this.props.state.reportTimeList[0].timeStamp,
 			}
 		}
 		
-		this.dispatch({
+		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload:data
 		});
 	}
 	renderQustionCount(data){
+		if(!this.state.updatePei) return
 		let myChart1 = echarts.init(document.getElementById('main'));
 		const chartBox = document.getElementById('main');
 		if(JSON.stringify(data)==='{}'){
@@ -216,6 +225,7 @@ class HomeworkCenter extends React.Component {
 	}
 
 	renderUserCount(data){
+		if(!this.state.updatePei) return
 		let myChart = echarts.init(document.getElementById('main1'));
 		const chartBox = document.getElementById('main1');
 		if(JSON.stringify(data)==='{}'){
@@ -403,7 +413,7 @@ class HomeworkCenter extends React.Component {
 	renderClassData(udata,wdata){
 		let myChart = echarts.init(document.getElementById('main3'));
 		const chartBox = document.getElementById('main3');
-		if(udata.length===0||wdata.length===0){
+		if(udata===undefined||udata.length===0||wdata.length===0){
 			chartBox.style.display='none'
 			return
 		}else{
@@ -743,6 +753,7 @@ class HomeworkCenter extends React.Component {
 		}
 	} 
 	getClassList() {
+	
 		let classList =  this.props.state.sclassList;
 		if(classList && classList.length> 0){
 			return(
@@ -755,7 +766,9 @@ class HomeworkCenter extends React.Component {
 								type: 'reportChart/sclassId',
 								payload:value
 							});
-
+							this.setState({
+								updatePei:false
+							})
 							let data={
 								schoolId:store.get('wrongBookNews').schoolId,
 								classId:value,
@@ -793,6 +806,9 @@ class HomeworkCenter extends React.Component {
 								type: 'reportChart/gradeId',
 								payload:value
 							});
+							this.setState({
+								updatePei:false
+							})
 							let data={
 								schoolId:store.get('wrongBookNews').schoolId,
 								classId:this.props.state.sclassId,
@@ -856,6 +872,7 @@ class HomeworkCenter extends React.Component {
 
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
+		console.error('11',schoolReport)
 		setTimeout(() => {		
 			if(this.props.state.subjectId!==''){			
 				if(schoolReport.gradeWrongNumMap){
@@ -880,7 +897,7 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{JSON.stringify(schoolReport) === "{}"?'':
+							{JSON.stringify(schoolReport) === "{}"?this.nodata():
 							<div>
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
@@ -923,7 +940,7 @@ class HomeworkCenter extends React.Component {
 										<p>班级使用情况</p>
 										<div id='main3' style={{height:400}}>							
 										</div>
-										{schoolReport.classUseData.length===0?
+										{schoolReport.classUseData===undefined||schoolReport.classUseData.length===0?
 										<div  style={{height:400}}>{this.noResposeData()}</div>:""}	
 										
 									</div>
