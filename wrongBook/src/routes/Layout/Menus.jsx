@@ -318,7 +318,6 @@ class HomePageLeft extends Component {
 				leftName = userNews.schoolName
 			}
 		}
-		console.log(defaultKey)
 		return (
 			<Layout className={style.homePageContaier+' '+ 'chomePageContaier'}>
 				<Sider

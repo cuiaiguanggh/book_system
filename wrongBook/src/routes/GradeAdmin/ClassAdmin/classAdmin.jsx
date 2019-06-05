@@ -467,7 +467,6 @@ class HomeworkCenter extends React.Component {
 									type: 'homePage/createSchoolUser',
 									payload:data
 								});
-								
 								this.props.dispatch({
 									type: 'homePage/teacherName',
 									payload:''
