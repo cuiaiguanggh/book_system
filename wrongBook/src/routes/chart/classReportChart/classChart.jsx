@@ -9,6 +9,7 @@ import style from './classChart.less';
 import 'react-count-animation/dist/count.min.css';
 import TopBar from '../topbar/topbar';
 import store from 'store';
+import {noResposeDataCon} from '../../../utils/common';
 moment.locale('zh-cn');
 
 const { Content,Header } = Layout;
@@ -536,6 +537,7 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 					<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
+					
 						{classReport==='none'?this.nodata():<div>
 						<Row style={{marginTop:20}}>
 								<Col md={24}> 
@@ -559,7 +561,7 @@ class HomeworkCenter extends React.Component {
 										
 										</div>
 										{classReport.studentWrongNum!==undefined&&classReport.studentWrongNum.length===0?
-										<div  style={{height:400}}>{this.noResposeData()}</div>:""}	
+										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}	
 
 									</div>
 								</Col>
@@ -619,25 +621,7 @@ class HomeworkCenter extends React.Component {
 			<div style={{textAlign:'center',position:'absolute',top:'40%',width:'100%',display:'flex',justifyContent:'center'}}>
 					<img src={require('../../images/wsj-n.png')}></img>
 					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
-					paddingTop: 50,
-					lineHeight: '40px',
-					textAlign: 'left',
-					paddingLeft: 20,
-					fontWeight: 700,}}>
-						暂无学生错题数据，无法查看数据报表
-						<br></br>
-						请让老师和家长督促学生收集错题
-					</span>
-			</div>
-		)
-	}
-	noResposeData(){
-		return(
-			<div style={{textAlign:'center',top:'25%',width:'100%',position:'relative',display:'flex',justifyContent:'center'}}>
-					<img src={require('../../images/wsj-n.png')}></img>
-					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
-					paddingTop: 50,
-					lineHeight: '40px',
+					lineHeight: '195px',
 					textAlign: 'left',
 					paddingLeft: 20,
 					fontWeight: 700,}}>
@@ -646,6 +630,7 @@ class HomeworkCenter extends React.Component {
 			</div>
 		)
 	}
+
 	resizeChart(obj){
 		window.addEventListener('resize',function(e){
 			let winWidth=e.target.innerWidth

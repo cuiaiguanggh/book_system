@@ -8,6 +8,7 @@ import style from './schoolChart.less';
 import TopBar from '../topbar/topbar'
 import store from 'store';
 import echarts  from 'echarts';
+import {noResposeDataCon} from '../../../utils/common';
 moment.locale('zh-cn');
 
 const { Content } = Layout;
@@ -839,35 +840,7 @@ class HomeworkCenter extends React.Component {
 
 		}
 	} 
-	nodata(){
-		return(
-			<div style={{textAlign:'center',position:'absolute',top:'40%',width:'100%',display:'flex',justifyContent:'center'}}>
-					<img src={require('../../images/wsj-n.png')}></img>
-					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
-					lineHeight: '195px',
-					textAlign: 'left',
-					paddingLeft: 20,
-					fontWeight: 700,}}>
-						暂无数据
-					</span>
-			</div>
-		)
-	}
-	noResposeData(){
-		return(
-			<div style={{textAlign:'center',top:'25%',width:'100%',position:'relative',display:'flex',justifyContent:'center'}}>
-					<img src={require('../../images/wsj-n.png')}></img>
-					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
-					paddingTop: 50,
-					lineHeight: '40px',
-					textAlign: 'left',
-					paddingLeft: 20,
-					fontWeight: 700,}}>
-						暂无数据
-					</span>
-			</div>
-		)
-	}
+
 	render() {
 
 		let timeList=this.props.state.reportTimeList
@@ -896,7 +869,7 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{JSON.stringify(schoolReport) === "{}"?this.nodata():
+							{JSON.stringify(schoolReport) === "none"?noResposeDataCon():
 							<div>
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 
@@ -906,7 +879,7 @@ class HomeworkCenter extends React.Component {
 																			
 										</div>	
 										{JSON.stringify(schoolReport.gradeWrongNumMap)==='{}'?
-										<div  style={{height:400}}>{this.noResposeData()}</div>:""}						
+										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}						
 									</div>
 								</Col>
 								<Col  xl={12} md={24}>
@@ -915,7 +888,7 @@ class HomeworkCenter extends React.Component {
 										<div id='main1' style={{height:400}}>
 										</div>
 										{JSON.stringify(schoolReport.gradeUseNumMap)==='{}'?
-										<div  style={{height:400}}>{this.noResposeData()}</div>:""}		
+										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}		
 									</div>
 								</Col>
 							</Row>
@@ -940,7 +913,7 @@ class HomeworkCenter extends React.Component {
 										<div id='main3' style={{height:400}}>							
 										</div>
 										{schoolReport.classUseData===undefined||schoolReport.classUseData.length===0?
-										<div  style={{height:400}}>{this.noResposeData()}</div>:""}	
+										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}	
 										
 									</div>
 								</Col>

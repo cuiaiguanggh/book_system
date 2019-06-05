@@ -126,7 +126,6 @@ export default {
 					const _class = yield select(state => state.temp);
 					let _ccid=_class.classList1.data[0].classId
 					let _sid=_class.subList.data[0].v
-					console.log('班级信息',_class)
 					yield put ({
 						type: 'cclassId',
 						payload:_ccid
@@ -275,7 +274,7 @@ export default {
 			}else if(schoolRes.data.result===1){
 				yield put ({
 					type: 'schoolDataReport',
-					payload:{}
+					payload:'none'
 				})
 				//message.warning(schoolRes.data.msg)
 			}else{
