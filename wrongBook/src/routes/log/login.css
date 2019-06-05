@@ -122,3 +122,9 @@ input{
     color:#00b1fe;
     border-bottom: 4px solid #00b1fe;
 }
+.iframe {
+    border:none;
+}
+.iframe :global(.title){
+    display: none;
+}

@@ -5,6 +5,7 @@ import {routerRedux} from 'dva/router';
 import { Input,Checkbox, message } from 'antd';
 import style from './login.css';
 import cookie from 'react-cookies'
+import WxLogin from 'wxlogin.react';
 
 let  loginType = [
 	{key:0,cho:true,name:'扫码登陆'},
@@ -48,7 +49,7 @@ class Login extends Component {
         <div className={style.loginInner}>
             <h2>咔嚓错题数据详情系统</h2>
             {/* <h2>账号登陆</h2> */}
-            {/* <div className={style.chooseType}>
+            <div className={style.chooseType}>
               {
                 loginType.map((item,i)=>(
                   <span className={item.key == 0 ? cl1:cl2} onClick={()=>{
@@ -56,7 +57,7 @@ class Login extends Component {
                   }}>{item.name}</span>
                 ))
               }
-            </div> */}
+            </div>
             {
               !this.state.wxLog ?
 
@@ -175,8 +176,7 @@ class Login extends Component {
           </div>
           </div>:
           <div className='log'>
-            <iframe className={style.iframe} src='https://open.weixin.qq.com/connect/qrconnect?appid=wx84919fd1783f83f8&redirect_uri=https%3a%2f%2flogin.kacha.xin%2fwrongManage-bate%2fuser%2fwebchatLoginForWeb&response_type=code&scope=snsapi_login&state=11111'/>
-
+            <iframe src='https://open.weixin.qq.com/connect/qrconnect?appid=wx84919fd1783f83f8&redirect_uri=https%3a%2f%2flogin.kacha.xin%2fwrongManage-bate%2fuser%2fwebchatLoginForWeb&response_type=code&scope=snsapi_login&state=11111'/>
             {/* <WxLogin
               option={{
                 appid: 'wx2683f546552bc572',
