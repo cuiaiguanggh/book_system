@@ -248,6 +248,7 @@ class wrongTop extends React.Component {
                         type: 'report/toupload',
                         payload:true
                     });
+                    
                 }
                 if ( data.url ) {
                     json = JSON.parse(data.url)
@@ -259,15 +260,19 @@ class wrongTop extends React.Component {
                             key:This.props.state.num
                         }
                     });
-                    
-                    // This.props.dispatch({
-                    //     type: 'report/videlUrl',
-                    //     payload:json.url
-                    // });
-                    // This.props.dispatch({
-                    //     type: 'report/visi ble1',
-                    //     payload:true
-                    // });
+                    This.props.dispatch({
+                        type: 'report/videlUrl',
+						payload:json.url
+                    });
+                    This.props.dispatch({
+                        type: 'report/visible1',
+                        payload:true
+                    });
+                    This.props.dispatch({
+                        type: 'report/toupload',
+                        payload:false
+                    });
+
                 }
                 
             }
