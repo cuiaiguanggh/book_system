@@ -52,13 +52,25 @@ class ClassReport extends React.Component {
                 <span >
                     <Tooltip placement="bottom" title="讲解视频">
                         <span style={{padding:'0 10px',background:"#52a5fa",color:'#fff',borderRadius:'3px',cursor:'pointer'}} onClick={()=>{
-                             this.props.dispatch({
+                            this.props.dispatch({
+                                type: 'report/visible',
+                                payload:true
+                            });
+                            this.props.dispatch({
                                 type: 'report/visible1',
                                 payload:true
                             });
                             this.props.dispatch({
+                                type:'example/questionNews',
+                                payload:this.props.type
+                            })
+                            this.props.dispatch({
                                 type: 'report/videlUrl',
                                 payload:this.props.type.teachVideo.url
+                            });
+                            this.props.dispatch({
+                                type: 'example/num',
+                                payload:this.props.num
                             });
                         }}>
                             <Icon type="play-circle"  theme="filled" style={{marginRight:'10px',cursor:"pointer"}} title=""  onClick={()=>{
@@ -94,6 +106,15 @@ class ClassReport extends React.Component {
                             type: 'report/visible',
                             payload:true
                         });
+                        this.props.dispatch({
+                            type: 'report/visible1',
+                            payload:false
+                        });
+                        this.props.dispatch({
+                            type: 'report/toupload',
+                            payload:false
+                        });
+                        
                         this.props.dispatch({
                             type: 'example/uqId',
                             payload:this.props.type.questionId

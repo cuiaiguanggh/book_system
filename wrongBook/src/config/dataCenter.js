@@ -3,15 +3,18 @@
 // const host = '192.168.10.239:80'
 // 测试服务器
 const url = "http://hw-mz-test.mizholdings.com/wrongManage";
+const url1 = "http://hw-mz-test.mizholdings.com";
 const host1 = "wss://hw-mz-test.mizholdings.com";
 
 // 预备服务器
 //  const url = 'https://login.kacha.xin/wrongManage-bate';
+// const url1 = "https://login.kacha.xin/";
 // const host1 = "ws://login.kacha.xin";
 
 
 // 正式服务器
 //  const url = 'https://login.kacha.xin/wrongManage';
+// const url1 = "https://login.kacha.xin/";
 // const host1 = "ws://login.kacha.xin";
 
 // const url = host+'/wrongManage';// test
@@ -26,8 +29,12 @@ function dataCenter(api) {
 function dataCen(api) {
 	return host1 + api
 }
+function dataCenIp(api) {
+	return url1 + api
+}
 
 export  {
 	dataCenter,
-	dataCen
+	dataCen,
+	dataCenIp,
 }  

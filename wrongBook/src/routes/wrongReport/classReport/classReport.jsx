@@ -14,6 +14,7 @@ import store from 'store';
 import commonCss from '../../css/commonCss.css';
 //作业中心界面内容
 const Option = Select.Option;
+const confirm = Modal.confirm;
 const {
 	Header, Footer, Sider, Content,
   } = Layout;
@@ -165,18 +166,38 @@ class wrongTop extends React.Component {
 		)
     }
     onImportExcel = file =>{
-		const { files } = file.target;
         let form = new FormData();
-        form.append('file',file.target.files[0]);
+        form.append('file',document.getElementById("file").files[0]);
+        var url = URL.createObjectURL(document.getElementById("file").files[0]);
+        var audioElement = new Audio(url);
+        var duration;
+        audioElement.addEventListener("loadedmetadata", function (_event) {
+            duration = audioElement.duration;
+        });
+        let This =this;
+        This.props.dispatch({
+            type: 'report/toupload',
+            payload:true
+        });
         let token = store.get('wrongBookToken');
-        fetch(dataCenter('/file/uploadImg?token=' + token), {
+        fetch(dataCenter('/file/uploadFlie?token=' + token), {
             method: "POST",
             body: form
         })
         .then(response => response.json())
         .then(res => {
             if(res.result === 0){
-                message.success(res.msg)
+                This.props.dispatch({
+                    type: 'report/uploadVideo',
+                    payload:{
+                        uqId:This.props.state.uqId,
+                        url:res.data.path,
+                        // authorId:store.get('wrongBookNews').userId,
+                        duration:parseInt(duration)
+                    }
+                });
+                
+                
             }else{
                 message.error(res.msg)
             }
@@ -194,77 +215,86 @@ class wrongTop extends React.Component {
             value='https://dy.kacha.xin/wx/takevideoPreview/'
         }
         value+='video?uqId='+this.props.state.uqId+'&authorId='+ userId
-        console.error(value)
         let This = this;
-        var timestamp = new Date().getTime() + "";
-        timestamp = timestamp.substring(0, timestamp.length-3);  
-        var websocket = null;
-        //判断当前浏览器是否支持WebSocket
-        let url =  dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
-        if ('WebSocket' in window) {
-            websocket = new WebSocket(url);
-        }
-        else {
-            alert('当前浏览器  Not support websocket');
-        }
-        //连接发生错误的回调方法
-        websocket.onerror = function () {
-            console.log("WebSocket连接发生错误");
-        };
-        //连接成功建立的回调方法
-        websocket.onopen = function () {
-            console.log("WebSocket连接成功");
-        }
-        //接收到消息的回调方法
-        websocket.onmessage = function (event) {
-            let data = JSON.parse(event.data);
-            let json ;
-            if ( data.url ) {
-                json = JSON.parse(data.url)
-                message.success('视频上传成功')
-                This.props.dispatch({
-                    type: 'report/updataVideo',
-                    payload:{
-                        video:json,
-                        key:This.props.state.num
-                    }
-                });
-                This.props.dispatch({
-                    type: 'report/updataVideo',
-                    payload:{
-                        video:json,
-                        key:This.props.state.num
-                    }
-                });
-                
-                // This.props.dispatch({
-                //     type: 'report/videlUrl',
-                //     payload:json.url
-                // });
-                // This.props.dispatch({
-                //     type: 'report/visi ble1',
-                //     payload:true
-                // });
+        // console.log(this.props.state.visible1,this.props.state.toupload )
+        if(!this.props.state.visible1 && !this.props.state.toupload ){
+            var timestamp = new Date().getTime() + "";
+            timestamp = timestamp.substring(0, timestamp.length-3);  
+            var websocket = null;
+            //判断当前浏览器是否支持WebSocket
+            let url =  dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
+            console.log(url)
+            if ('WebSocket' in window) {
+                websocket = new WebSocket(url);
             }
-            
+            else {
+                alert('当前浏览器  Not support websocket');
+            }
+            //连接发生错误的回调方法
+            websocket.onerror = function () {
+                console.log("WebSocket连接发生错误");
+            };
+            //连接成功建立的回调方法
+            websocket.onopen = function () {
+                console.log("WebSocket连接成功");
+            }
+            //接收到消息的回调方法
+            websocket.onmessage = function (event) {
+                console.log(event)
+                let data = JSON.parse(event.data);
+                let json ;
+                if ( data.status == 2) {
+                    This.props.dispatch({
+                        type: 'report/toupload',
+                        payload:true
+                    });
+                }
+                if ( data.url ) {
+                    json = JSON.parse(data.url)
+                    // message.success('视频上传成功')
+                    This.props.dispatch({
+                        type: 'report/updataVideo',
+                        payload:{
+                            video:json,
+                            key:This.props.state.num
+                        }
+                    });
+                    
+                    // This.props.dispatch({
+                    //     type: 'report/videlUrl',
+                    //     payload:json.url
+                    // });
+                    // This.props.dispatch({
+                    //     type: 'report/visi ble1',
+                    //     payload:true
+                    // });
+                }
+                
+            }
+            //连接关闭的回调方法
+            websocket.onclose = function () {
+                console.log("WebSocket连接关闭");
+
+                This.props.dispatch({
+                    type: 'report/toupload',
+                    payload:false
+                });
+            }
+            //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
+            //防止连接还没断开就关闭窗口，server端会抛异常。
+            window.onbeforeunload = function () {
+                closeWebSocket();
+            }
+            //关闭WebSocket连接
+            function closeWebSocket() {
+                websocket.close();
+            }
         }
-        //连接关闭的回调方法
-        websocket.onclose = function () {
-            console.log("WebSocket连接关闭");
-        }
-        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
-        //防止连接还没断开就关闭窗口，server端会抛异常。
-        window.onbeforeunload = function () {
-            closeWebSocket();
-        }
-        //关闭WebSocket连接
-        function closeWebSocket() {
-            websocket.close();
-        }
+        
 
 
         let questionNews = this.props.state.questionNews;
-        // console.log(questionNews)
+        
         return(
             <div className={style.codeFram} style={{textAlign:'center',overflow:"hidden"}}>
                 <div  className={style.questionBody}>
@@ -281,42 +311,73 @@ class wrongTop extends React.Component {
                 </div>
                 <div className={style.phoneCode}>
                         {
-                            !this.state.toupload ?
+                            !this.props.state.visible1 ?
                             <div>
-                                <QRCode className='qrcode' size={150} value={value} />
-                                <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>手机微信扫码，录制视频讲解</p>
-                                {/* <Button type="primary" onClick={()=>{
-                                    this.setState({toupload:true})
-
-                                }}>本地上传</Button> */}
-                                <label htmlFor="file">
-                                    <span
-                                        className={style.addButon}
-                                    >本地上传</span>
-                                </label> 
-                                <input
-                                    type='file' 
-                                    id='file' 
-                                    accept='.mp4'  
-                                    style={{display:'none'}}
-                                    onChange={this.onImportExcel} 
-                                />
-                            </div>:
+                                {
+                                    !this.props.state.toupload ?
+                                    <div>
+                                        <QRCode className='qrcode' size={150} value={value} />
+                                        <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>手机微信扫码，录制视频讲解</p>
+                                        
+                                        <label htmlFor="file">
+                                            <span
+                                                className={style.addButon}
+                                            >本地上传</span>
+                                        </label> 
+                                        <input
+                                            type='file' 
+                                            id='file' 
+                                            accept='.mp4'  
+                                            style={{display:'none'}}
+                                            onChange={this.onImportExcel} 
+                                        />
+                                    </div>:
+                                    <div>
+                                        <Spin style={{height:'155px',marginLeft:'-24px',lineHeight:"150px"}} indicator={antIcon} />
+                                        {/* <Icon type="loading" style={{ fontSize: 24 }} spin /> */}
+                                        <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>正在上传...</p>
+                                        <span
+                                            className={style.addButon}
+                                        >本地上传</span>
+                                    </div>
+                                }
+                            </div>
+                            :
                             <div>
-                                <Spin style={{height:'155px',marginLeft:'-24px',lineHeight:"150px"}} indicator={antIcon} />
-                                {/* <Icon type="loading" style={{ fontSize: 24 }} spin /> */}
-                                <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>正在上传...</p>
-                                {/* <Button type="primary" onClick={()=>{
-                                    this.setState({toupload:false})
-                                    
-                                }}>取消上传</Button> */}
-                                
+                                <video 
+                                    id="video" 
+                                    controls="controls"
+                                    width="100%" 
+                                    style={{height:'210px'}}
+                                    src={this.props.state.videlUrl}
+                                    controls  >
+                                </video>
                                 <span
                                     className={style.addButon}
-                                >本地上传</span>
+                                    onClick={()=>{
+                                        let This = this;
+                                        console.log(This.props.state.num,questionNews.teachVideo.videoId)
+                                        confirm({
+                                            title: '确认删除讲解视频？',
+                                            okText: '是',
+                                            cancelText: '否',
+                                            onOk() {
+                                                This.props.dispatch({
+                                                    type: 'report/deleteTeachVideo',
+                                                    payload:{
+                                                        videoId:questionNews.teachVideo.videoId,
+                                                        key:This.props.state.num
+                                                    }
+                                                });
+                                            },
+                                            onCancel() {
+                                            },
+                                        });
+                                    }}
+                                >删除视频</span>
                             </div>
-
                         }
+                        
                     
                 </div>
             </div>
@@ -676,49 +737,6 @@ class wrongTop extends React.Component {
                         {
                             this.props.state.visible ? this.addVie() : ''
                         }
-                </Modal>
-
-                <Modal
-                    visible={this.props.state.visible1}
-                    footer={null}
-                    // style={{padding:0}}
-                    className={style.vidioCode1}
-                    onOk={()=>{
-                        this.props.dispatch({
-                            type: 'report/visible1',
-                            payload:false
-                        });
-                        this.props.dispatch({
-                            type: 'report/videlUrl',
-                            payload:''
-                        });
-                    }}
-                    onCancel={()=>{
-                        this.props.dispatch({
-                            type: 'report/visible1',
-                            payload:false
-                        });
-                        this.props.dispatch({
-                            type: 'report/videlUrl',
-                            payload:''
-                        });
-                    }}>
-                        <div>
-                            <video 
-                                id="video" 
-                                controls="controls"
-                                 width="100%" 
-                                 src={this.props.state.videlUrl}
-                                 controls  >
-                            </video>
-                            {/* <Player
-                                style={{width:'400px'}}
-                                width = '400px'
-                                playsInline
-                                poster="/assets/poster.png"
-                                src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
-                            /> */}
-                        </div>
                 </Modal>
 
                 <Modal
