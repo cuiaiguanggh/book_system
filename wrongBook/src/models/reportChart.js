@@ -3,7 +3,7 @@ import {
 } from '../services/classHomeService';
 import {
 	getReportTimeList,querySchoolDataReport,queryGradeListBySchoolId
-	,queryClassListByGradeId,querySubListByClassId
+	,queryClassListByGradeId,querySubListByClassId,queryClassDataReport,
 } from '../services/reportService';
 
 import store from 'store';
@@ -16,19 +16,30 @@ export default {
 		schoolId:'',
 		sclassId:'',
 		subjectId:'',
+		cclassId:'',
+		csubjectId:'',
 		gradeId:'',
 		reportTimeList:[],
 		schoolDataReport:{},
+		classDataReport:{},
 		periodTime: 100,
 		timeStamp: 100,
 		sgradeList:[],
 		sclassList:[],
 		ssubList:[],
 		searchData:[],
+		classSearchData:[],
+		stateTimeIndex:0
 	},
 	reducers: {
+		stateTimeIndex(state,{payload}){
+			return { ...state, stateTimeIndex:payload };
+		},
 		searchData(state,{payload}){
 			return { ...state, searchData:payload };
+		},
+		classSearchData(state,{payload}){
+			return { ...state, classSearchData:payload };
 		},
 		sgradeList(state,{payload}){
 			return { ...state, sgradeList:payload };
@@ -51,6 +62,9 @@ export default {
 		schoolDataReport(state,{payload}){
 			return { ...state, schoolDataReport:payload };
 		},
+		classDataReport(state,{payload}){
+			return { ...state, classDataReport:payload };
+		},
 		allSubList(state,{payload}){
 			return { ...state, allSubList:payload };
 		},
@@ -66,6 +80,12 @@ export default {
 		subjectId(state, {payload}) {
 			return { ...state, subjectId:payload };
 		},
+		cclassId(state, {payload}) {
+			return { ...state, cclassId:payload };
+    },
+		csubjectId(state, {payload}) {
+			return { ...state, csubjectId:payload };
+		},
 	},
 	subscriptions: {
 	  setup({ dispatch, history }) {  // eslint-disable-line
@@ -73,7 +93,7 @@ export default {
 	},
   
 	effects: {
-		*getReportTimeList({}, {put, select}) {
+		*getReportTimeList({payload}, {put, select}) {
 			let res = yield getReportTimeList();
 			if(res.data){
 				let arr=res.data.data
@@ -99,10 +119,38 @@ export default {
 				yield put ({
 					type: 'timeStamp',
 					payload:res.data.data[0].timeStamp
-				})		
-				yield put ({
-					type: 'getGradeList',
-				})
+				})	
+				if(payload.classReport===true){
+					//获取班级报表
+					const _state = yield select(state => state.reportChart);
+					const _class = yield select(state => state.temp);
+					let _ccid=_class.classList1.data[0].classId
+					let _sid=_class.subList.data[0].v
+					yield put ({
+						type: 'cclassId',
+						payload:_ccid
+					})
+					yield put ({
+						type: 'csubjectId',
+						payload:_sid
+					})
+					let data={
+						classId:_ccid,
+						schoolId:store.get('wrongBookNews').schoolId,
+						periodTime:_state.periodTime,
+						timeStamp:_state.timeStamp,
+						subjectId:_sid
+					}	
+					yield put ({
+						type: 'getClassDataReport',
+						payload:data,
+					})
+				}else{
+					yield put ({
+						type: 'getGradeList',
+					})
+				}
+				
 		
 			}else{
 				message.error(res.data.msg)
@@ -112,12 +160,13 @@ export default {
 		*getGradeList({payload}, {put, select}) {
 			let _schoolid=store.get('wrongBookNews').schoolId
 			let gradeData=yield queryGradeListBySchoolId({schoolId:_schoolid})
-			if(gradeData){
+			if(gradeData.data.result===0){			
 				let glist=gradeData.data.data
 				yield put ({
 					type: 'sgradeList',
 					payload:glist
 				})
+				if(gradeData.data.data.length===0) return
 				yield put ({
 					type: 'gradeId',
 					payload:glist[0].id
@@ -140,6 +189,18 @@ export default {
 							type: 'sclassList',
 							payload:clist
 						})
+
+						if(clist.length===0){
+							yield put ({
+								type: 'sclassId',
+								payload:''
+							})
+							yield put ({
+								type: 'ssubList',
+								payload:[]
+							})
+							return
+						}
 						yield put ({
 							type: 'sclassId',
 							payload:clist[0].id
@@ -211,7 +272,11 @@ export default {
 					payload:schoolRes.data.data.teacherUseDataList
 				})
 			}else if(schoolRes.data.result===1){
-				message.warning(schoolRes.data.msg)
+				yield put ({
+					type: 'schoolDataReport',
+					payload:'none'
+				})
+				//message.warning(schoolRes.data.msg)
 			}else{
 				message.error('获取报表失败')
 			}
@@ -227,6 +292,28 @@ export default {
 				})			
 			}else{
 				message.error(res.data.msg)
+			}
+			
+		},
+		*getClassDataReport({payload}, {put, select}) {
+			let classRes= yield queryClassDataReport(payload);	
+			if(classRes.data.result===0){
+				yield put ({
+					type: 'classDataReport',
+					payload:classRes.data.data
+				})
+				yield put ({
+					type: 'classSearchData',
+					payload:classRes.data.data.teacherUseDataList
+				})
+
+			}else if(classRes.data.result===1){
+				yield put ({
+					type: 'classDataReport',
+					payload:'none'
+				})
+			}else{
+				message.error('获取报表失败')
 			}
 			
 		},

@@ -5,7 +5,6 @@ import {routerRedux} from 'dva/router';
 import { Input,Checkbox, message } from 'antd';
 import style from './login.css';
 import cookie from 'react-cookies'
-import WxLogin from 'wxlogin.react';
 
 let  loginType = [
 	{key:0,cho:true,name:'扫码登陆'},

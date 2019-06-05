@@ -547,7 +547,8 @@ class wrongTop extends React.Component {
                                     this.props.dispatch({
                                         type: 'down/getQuestionPdf',
                                         payload:{
-                                            picIds:this.props.state.classDownPic.join(',')
+                                            picIds:this.props.state.classDownPic.join(','),
+                                            mode:2
                                         }
                                     })
                                     

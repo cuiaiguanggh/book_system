@@ -288,7 +288,8 @@ class StuReport extends React.Component {
 										this.props.dispatch({
 											type: 'down/getQuestionPdf',
 											payload:{
-												picIds:this.props.state.stuDownPic.join(',')
+												picIds:this.props.state.stuDownPic.join(','),
+												mode:1
 											}
 										})
 										// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
@@ -406,7 +407,7 @@ class StuReport extends React.Component {
 						}}>
 							{
 									detail.data && detail.data.questionList.length != 0 ?  this.questions():
-									<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',width:'100%'}}>
+									<div style={{textAlign:'center',position:'relative',top:'50%',transform: 'translate(0%, -50%)',width:'100%'}}>
 										<img src={require('../../images/wsj-n.png')}></img>
 										<span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
 									</div>
@@ -433,6 +434,8 @@ class StuReport extends React.Component {
 					</Modal>
 
 					<Modal
+							keyboard={false}
+							maskClosable={false}
 							visible={this.props.state.showPdfModal}
 							onOk={()=>{
 									window.location.href=this.props.state.pdfUrl.downloadLink
