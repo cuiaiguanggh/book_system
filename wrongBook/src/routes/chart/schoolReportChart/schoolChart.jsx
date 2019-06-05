@@ -869,7 +869,7 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{JSON.stringify(schoolReport) === "none"?noResposeDataCon():
+							{JSON.stringify(schoolReport) === "none"||JSON.stringify(schoolReport) ==='{}'?noResposeDataCon():
 							<div>
 							<Row style={{marginTop:20}}>
 								<Col  xl={12} md={24} > 

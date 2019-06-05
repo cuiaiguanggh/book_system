@@ -538,7 +538,7 @@ class HomeworkCenter extends React.Component {
 					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 					<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
 					
-						{classReport==='none'?this.nodata():<div>
+						{classReport==='none'||JSON.stringify(classReport)==='{}'?this.nodata():<div>
 						<Row style={{marginTop:20}}>
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',	overflowX:'auto',overflowY:'hidden'}}>
@@ -661,6 +661,7 @@ class HomeworkCenter extends React.Component {
 		let winwidth=document.body.offsetWidth
 		const chartBox1 = document.getElementById('main5');
 		const chartBox2 = document.getElementById('main6');
+		if(!chartBox1) return
 		if(winwidth<=1400){
 			chartBox1.style.width='1200px'
 			chartBox2.style.width='1200px'
