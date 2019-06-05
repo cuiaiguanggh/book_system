@@ -259,6 +259,8 @@ class HomeworkCenter extends React.Component {
 		renderStudentUseData(data){
 			let myChart = echarts.init(document.getElementById('main6'));
 			const chartBox = document.getElementById('main6');
+			let _barWidth='50%'
+
 			if(data.length===0){
 				chartBox.style.display='none'
 				return
@@ -267,6 +269,9 @@ class HomeworkCenter extends React.Component {
 			}
 			let nameList = []
 			let numList = []
+			if(data.length>10){
+				_barWidth='20'
+			}
 			for (let index = 0; index < data.length; index++) {
 				const element = data[index]
 				nameList.push(element.name)	
@@ -304,9 +309,9 @@ class HomeworkCenter extends React.Component {
 						selectedMode:false,
 				},
 				grid: {
-					left: '0%',
+					left: '2%',
 					right: '2%',
-					bottom: '3%',
+					bottom: '1%',
 					containLabel: true
 				},
 				xAxis: [
@@ -376,7 +381,7 @@ class HomeworkCenter extends React.Component {
 								name:'错题量',
 								type:'bar',
 								symbol: 'circle',     
-								barWidth:'20',
+								barWidth:_barWidth,
 								barMaxWidth:'40',
 								symbolSize: 6,
 								lineStyle:{color:'#21A2F4'},
@@ -397,11 +402,23 @@ class HomeworkCenter extends React.Component {
 			let timelist=[]
 			let userlist=[]
 			let wronglist=[]
-			for (let i = 0; i < udata.length; i++) {
+			let cdate= moment(Date.now()).format('YYYY-MM-DD');
+			let _axisLabelRotate=0
+			
+			for (let i = 0; i < udata.length; i++) {			
 				const ele = udata[i]
-				timelist.push(ele.time)
-				userlist.push(ele.num)
-				wronglist.push(wdata[i].num)
+				const itemtime = ele.time
+				if(moment(cdate)>=moment(itemtime)){
+					timelist.push(ele.time)
+					userlist.push(ele.num)
+					wronglist.push(wdata[i].num)
+				}				
+			}
+
+			let _gleft='2%'
+			if(timelist.length>20){
+				_axisLabelRotate=40
+				_gleft='2%'
 			}
 			let myChart1 = echarts.init(document.getElementById('main5'));		
 			let option1 =  {
@@ -431,9 +448,9 @@ class HomeworkCenter extends React.Component {
 					itemGap:16,
 				},
 				grid: {
-						left: '0%',
+						left: _gleft,
 						right: '2%',
-						bottom: '3%',
+						bottom: '1%',
 						containLabel: true
 				},
 				xAxis: {
@@ -442,7 +459,11 @@ class HomeworkCenter extends React.Component {
 						data: timelist,			
 						axisTick:{
 							show:false
-						}
+						},
+						axisLabel: {  
+							interval:0,  
+							rotate:_axisLabelRotate
+					 } 
 				},
 				yAxis: {
 						type: 'value',
@@ -515,7 +536,8 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 					<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							<Row style={{marginTop:20}}>
+						{classReport==='none'?this.nodata():<div>
+						<Row style={{marginTop:20}}>
 								<Col md={24}> 
 									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',	overflowX:'auto',overflowY:'hidden'}}>
 											<div className={{}}>
@@ -586,6 +608,8 @@ class HomeworkCenter extends React.Component {
 										</div>
 								</Col>
 							</Row>
+						</div>}
+							
 					</Content>
 			</Layout>
 		);

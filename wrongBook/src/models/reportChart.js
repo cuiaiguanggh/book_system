@@ -311,7 +311,7 @@ export default {
 			}else if(classRes.data.result===1){
 				yield put ({
 					type: 'classDataReport',
-					payload:[]
+					payload:'none'
 				})
 			}else{
 				message.error('获取报表失败')

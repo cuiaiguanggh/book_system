@@ -472,9 +472,9 @@ class HomeworkCenter extends React.Component {
 					itemGap:16,
 			},
 			grid: {
-				left: '1%',
+				left: '2%',
 				right: '1%',
-				bottom: '3%',
+				bottom: '1%',
 				containLabel: true
 			},
 			xAxis: [
@@ -606,7 +606,10 @@ class HomeworkCenter extends React.Component {
 				dateArr.push(element)
 			}			
 		}
-
+		let _axisLabelRotate=0
+		if(dateArr.length>20){
+			_axisLabelRotate=40
+		}
 		let dateList=dateArr
 		var userList=dateList.map(function(i){return udata[i]})
 
@@ -640,9 +643,9 @@ class HomeworkCenter extends React.Component {
 				itemGap:16,
 			},
 			grid: {
-					left: '1%',
+					left: '2%',
 					right: gright,
-					bottom: '3%',
+					bottom: '1%',
 					containLabel: true
 			},
 			xAxis: {
@@ -652,10 +655,10 @@ class HomeworkCenter extends React.Component {
 					axisTick:{
 						show:false
 					},
-				// 	axisLabel: {  
-				// 		interval:0,  
-				// 		rotate:50  
-				//  }  
+					axisLabel: {  
+						interval:0,  
+						rotate:_axisLabelRotate  
+				 }  
 			},
 			yAxis: {
 					type: 'value',
@@ -841,14 +844,11 @@ class HomeworkCenter extends React.Component {
 			<div style={{textAlign:'center',position:'absolute',top:'40%',width:'100%',display:'flex',justifyContent:'center'}}>
 					<img src={require('../../images/wsj-n.png')}></img>
 					<span style={{fontSize:'20px',color:"#434e59",  height: 195,
-					paddingTop: 50,
-					lineHeight: '40px',
+					lineHeight: '195px',
 					textAlign: 'left',
 					paddingLeft: 20,
 					fontWeight: 700,}}>
-						暂无学生错题数据，无法查看数据报表
-						<br></br>
-						请让老师和家长督促学生收集错题
+						暂无数据
 					</span>
 			</div>
 		)
@@ -872,7 +872,6 @@ class HomeworkCenter extends React.Component {
 
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
-		console.error('11',schoolReport)
 		setTimeout(() => {		
 			if(this.props.state.subjectId!==''){			
 				if(schoolReport.gradeWrongNumMap){
