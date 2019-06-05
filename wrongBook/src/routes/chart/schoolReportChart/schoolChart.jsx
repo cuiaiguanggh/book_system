@@ -45,7 +45,7 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		if(this.props.state.sclassList.length===0) return
+		if(this.props.state.sclassList.length===0||this.props.state.ssubList.length===0) return
 		let cid=this.props.state.sclassList[0].id
 		let sid=this.props.state.ssubList[0].id
 		let data={
@@ -899,9 +899,9 @@ class HomeworkCenter extends React.Component {
 										{this.getGradeList()}
 										{this.getClassList()}
 										{this.getSub()}
-										<div id='main2' style={{height:'400px'}}>
-										
+										<div id='main2' className={this.props.state.noClassData?'hidden':''} style={{height:'400px'}}>
 										</div>
+										{this.props.state.noClassData===true?<div  style={{height:400}}>{noResposeDataCon()}</div>:''}
 										</div>
 								</Col>
 							</Row>

@@ -29,9 +29,13 @@ export default {
 		ssubList:[],
 		searchData:[],
 		classSearchData:[],
-		stateTimeIndex:0
+		stateTimeIndex:0,
+		noClassData:true,
 	},
 	reducers: {
+		noClassData(state,{payload}){
+			return { ...state, noClassData:payload };
+		},
 		stateTimeIndex(state,{payload}){
 			return { ...state, stateTimeIndex:payload };
 		},
@@ -183,6 +187,7 @@ export default {
 		},
 		*getClassList({payload}, {put, select}) {
 			let classData=yield queryClassListByGradeId({schoolId:payload.schoolId,gradeId:payload.gradeId})
+			console.error('classData',classData)
 					if(classData.data.result===0){
 						let clist=classData.data.data				
 						yield put ({
@@ -198,6 +203,10 @@ export default {
 							yield put ({
 								type: 'ssubList',
 								payload:[]
+							})
+							yield put ({
+								type: 'noClassData',
+								payload:true
 							})
 							return
 						}
@@ -226,6 +235,27 @@ export default {
 			let subData=yield querySubListByClassId({classId:payload.classId})
 			let _sublist=subData.data.data
 			if(subData.data.result===0){
+				
+				if(_sublist.length===0){
+					yield put ({
+						type: '_sublist',
+						payload:''
+					})
+					yield put ({
+						type: 'ssubList',
+						payload:[]
+					})
+					yield put ({
+						type: 'noClassData',
+						payload:true
+					})
+					return
+				}else{
+					yield put ({
+						type: 'noClassData',
+						payload:false
+					})
+				}
 				yield put ({
 					type: 'ssubList',
 					payload:_sublist
