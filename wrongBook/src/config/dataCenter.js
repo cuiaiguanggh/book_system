@@ -7,15 +7,15 @@
 // const host1 = "wss://hw-mz-test.mizholdings.com";
 
 // 预备服务器
-//  const url = 'https://login.kacha.xin/wrongManage-bate';
-// const url1 = "https://login.kacha.xin/";
-// const host1 = "ws://login.kacha.xin";
+ const url = 'https://login.kacha.xin/wrongManage-bate';
+const url1 = "https://login.kacha.xin/";
+const host1 = "ws://login.kacha.xin";
 
 
 // 正式服务器
- const url = 'https://login.kacha.xin/wrongManage';
-const url1 = "https://login.kacha.xin/";
-const host1 = "ws://login.kacha.xin";
+//  const url = 'https://login.kacha.xin/wrongManage';
+// const url1 = "https://login.kacha.xin/";
+// const host1 = "ws://login.kacha.xin";
 
 // const url = host+'/wrongManage';// test
 // const url = 'http://hw-pre.mizholdings.com/wrongManage';// true

@@ -1,3 +1,7 @@
 .pdfModal{
     width:650px !important;
+    top:50px !important;   
+}
+.pdfModal :global(.ant-modal-body){  
+    padding:12px !important;  
 }

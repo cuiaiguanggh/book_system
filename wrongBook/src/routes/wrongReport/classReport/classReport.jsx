@@ -761,6 +761,8 @@ class wrongTop extends React.Component {
 
                 <Modal
                     visible={this.props.state.showPdfModal}
+                    maskClosable={false}
+                    keyboard={false}
                     onOk={()=>{
                         window.location.href=this.props.state.pdfUrl.downloadLink
                     }}
@@ -773,7 +775,7 @@ class wrongTop extends React.Component {
                     className={commonCss.pdfModal}   
                     closable={false}
                     cancelText='取消'  
-                    okText='下载'     
+                    okText='下载'   
                 >
                     <div style={{height:'700px'}}>
                         {/* <PDF
