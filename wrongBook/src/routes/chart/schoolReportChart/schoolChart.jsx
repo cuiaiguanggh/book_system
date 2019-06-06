@@ -166,7 +166,7 @@ class HomeworkCenter extends React.Component {
 					{
 							name:'错题量',
 							type:'pie',
-							radius : [20, 110],
+							radius: ['20', '63%'],
 							center : ['25%', '50%'],
 							roseType : 'radius',
 							label: {
@@ -1004,6 +1004,9 @@ class HomeworkCenter extends React.Component {
 				if(obj.id===1){
 					obj.option.series[0].radius = ['40%', '55%']
 				}
+				if(obj.id===0){
+					obj.option.series[0].radius = [20, '55%']
+				}
 			}else{
 				if(obj.id===0||obj.id===1){
 					chartBox.style.height='400px'
@@ -1015,7 +1018,10 @@ class HomeworkCenter extends React.Component {
 				}
 				
 				if(obj.id===1){
-					obj.option.series[0].radius = ['50%', '65%']
+					obj.option.series[0].radius = ['50%', '63%']
+				}
+				if(obj.id===0){
+					obj.option.series[0].radius = [20, '60%']
 				}
 			}
 

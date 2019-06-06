@@ -636,6 +636,7 @@ class HomeworkCenter extends React.Component {
 			let winWidth=e.target.innerWidth
 			const chartBox1 = document.getElementById('main5');
 			const chartBox2 = document.getElementById('main6');
+			if(!chartBox2||!chartBox1) return
 			if(winWidth<=1400){
 				chartBox1.style.width='1200px'
 				chartBox2.style.width='1200px'
@@ -647,6 +648,11 @@ class HomeworkCenter extends React.Component {
 
 			obj.chart.resize()
 			 
+	 },false);
+	}
+	componentWillUnmount(){
+		window.removeEventListener('resize',function(e){
+			 //卸载resize
 	 },false);
 	}
 	componentDidMount(){
@@ -675,10 +681,7 @@ class HomeworkCenter extends React.Component {
 
 export default connect((state) => ({
 	state: {
-		...state.userInfo,
-		...state.classHome,
 		...state.reportChart,
-		...state.report,
 		...state.temp,
 	}
 }))(HomeworkCenter);

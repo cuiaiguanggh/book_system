@@ -464,7 +464,7 @@ class wrongTop extends React.Component {
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
-        
+        // console.log(this.props.state.mouNow)
 		return (
 
             <Content style={{position:'relative'}}>
@@ -501,12 +501,14 @@ class wrongTop extends React.Component {
                             }}>全部</span>
                         {
                             mounthList.data ?
-                            mounthList.data.map((item,i)=>(
-                                <span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
-                                    this.props.dispatch({
-                                        type: 'report/changeMouth',
-                                        payload:item
-                                    });
+                            mounthList.data.map((item,i)=>{
+                                return(
+                                    <span key={i} className={item.k ==this.props.state.mouNow.k?'choseMonthOn': 'choseMonth'} onClick={()=>{
+                                        this.props.dispatch({
+                                            type: 'report/changeMouth',
+                                            payload:item
+                                        });
+                                       
                                     this.setState({page:1})
                                     this.props.dispatch({
                                         type: 'report/qrdetailList',
@@ -531,12 +533,14 @@ class wrongTop extends React.Component {
                                     // w[i].className='wrongNum wrongNumOn'
 
                                 }}>{item.k}</span>
-                            ))
+                            )
+                            })
                             :''
                         }
-                        <Button 
+                        {QuestionDetail.data&&QuestionDetail.data.questionList.length>0?<Button 
                             style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
                             loading={this.props.state.downQue} 
+                            disabled={this.props.state.classDown.length===0&&!this.props.state.downQue}
                             onClick={()=>{
                                 if(this.props.state.classDown.length!= 0){
                                     
@@ -570,9 +574,10 @@ class wrongTop extends React.Component {
                             }}>
                             <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}}  src={require('../../images/xc-cl-n.png')}></img>
                         下载组卷({this.props.state.classDown.length})
-                        </Button>
+                        </Button>:''}
+                        
                         {
-                            (this.props.state.AllPdf&&0!=this.props.state.mouNow) ?
+                            (this.props.state.AllPdf&&0!=this.props.state.mouNow&&QuestionDetail.data&&QuestionDetail.data.questionList.length>0) ?
                             
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}

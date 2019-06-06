@@ -244,7 +244,7 @@ class StuReport extends React.Component {
 							{
 								mounthList.data ?
 								mounthList.data.map((item,i)=>(
-									<span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
+									<span key={i} className={item.k ==this.props.state.mouNow.k?'choseMonthOn': 'choseMonth'} onClick={()=>{
 										this.props.dispatch({
 											type: 'report/changeMouth',
 											payload:item
@@ -276,9 +276,11 @@ class StuReport extends React.Component {
 								))
 								:''
 							}
-							<Button 
+							
+							{detail.data && detail.data.questionList.length != 0 ?<Button 
 								style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
 								loading={this.props.state.downQue} 
+								disabled={this.props.state.stuDown.length===0&&!this.props.state.downQue}
 								onClick={()=>{
 									if(this.props.state.stuDown.length!= 0){
 										this.props.dispatch({
@@ -310,9 +312,9 @@ class StuReport extends React.Component {
 								}}>
                         	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
-							</Button>
+							</Button>:''}
 							{
-                             (this.props.state.AllPdf&&0!=this.props.state.mouNow)  ?
+                             (detail.data && detail.data.questionList.length != 0&&this.props.state.AllPdf&&0!=this.props.state.mouNow)  ?
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
                                 loading={this.props.state.toDown} 
