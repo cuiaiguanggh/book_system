@@ -8,12 +8,20 @@ const Login = Loadable({
   loader: () => import('./routes/log/login'),
   loading: () => <List/>,
 });
+const Getcode = Loadable({
+  loader: () => import('./routes/log/getcode'),
+  loading: () => <List/>,
+});
 const LoginP = Loadable({
   loader: () => import('./routes/log/LoginPage'),
   loading: () => <List/>,
 });
 const FindPsd = Loadable({
   loader: () => import('./routes/log/finPsd'),
+  loading: () => <List/>,
+});
+const GetPhone = Loadable({
+  loader: () => import('./routes/log/getPhone'),
   loading: () => <List/>,
 });
 const Home = Loadable({
@@ -82,8 +90,10 @@ function RouterConfig({ history }) {
     <Router history={history}>
       <Switch>
         <Route path="/login"  component={Login} />
+        <Route path="/getcode"  component={Getcode} />
         <Route path="/loginPhone"  component={LoginP} />
         <Route path="/fin_psd"  component={FindPsd} />
+        <Route path="/getPhone"  component={GetPhone} />
         {/* <Route path="/classInfo" component={ClassInfo} /> */}
         <Route path="/studentDetail" component={StudentDetail} />
           <Home>

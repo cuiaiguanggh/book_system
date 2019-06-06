@@ -4,6 +4,7 @@ import {
 	getVC,
 	checkVC,
 	updateInfo,
+	webchatLoginForWeb,
 } from '../services/loginService';
 import {routerRedux} from 'dva/router';
 import store from 'store';
@@ -130,6 +131,16 @@ export default {
 						type: 'pc',
 						payload:0
 					})
+					message.error(res.data.msg)
+				}
+		},
+		*codelog({payload}, {put, select}) {
+			// 获取验证码
+			let res = yield webchatLoginForWeb(payload);
+			// if(!res.hasOwnProperty("err")){
+				if(res.data.result === 0 ){
+					
+				}else{
 					message.error(res.data.msg)
 				}
 		},
