@@ -27,7 +27,6 @@ class StuReport extends React.Component {
 			wordUrl:'',
 			visible:false,
 			Img:'',
-			page:1,
 			next:true,
 		}
 	}
@@ -47,7 +46,10 @@ class StuReport extends React.Component {
 					mode="inline" 
 					defaultSelectedKeys={[current]}
 					onClick={(e)=>{
-						this.setState({page:1})
+						this.props.dispatch({
+							type: 'report/propsPageNum',
+							payload:1
+					});
 						this.props.dispatch({
 							type: 'down/stuName',
 							payload:e.key
@@ -217,7 +219,10 @@ class StuReport extends React.Component {
 										type: 'report/changeMouth',
 										payload:0
 									});
-									this.setState({page:1})
+									this.props.dispatch({
+										type: 'report/propsPageNum',
+										payload:1
+								});
 									this.props.dispatch({
 										type:'report/qrStudentDetailList',
 										payload:[]
@@ -249,7 +254,10 @@ class StuReport extends React.Component {
 											type: 'report/changeMouth',
 											payload:item
 										});
-										this.setState({page:1})
+										this.props.dispatch({
+											type: 'report/propsPageNum',
+											payload:1
+									});
 										this.props.dispatch({
 											type:'report/qrStudentDetailList',
 											payload:[]
@@ -378,12 +386,16 @@ class StuReport extends React.Component {
 						onScroll={(e)=>{
 							if(hei-200 < e.target.scrollTop+e.target.clientHeight){
 								if(this.state.next ){
-									let page = this.state.page;
+									let page = this.props.state.propsPageNum;
 									let classId = this.props.state.classId;
 									let subId = this.props.state.subId;
 									let year = this.props.state.years;
 									page++
-									this.setState({next:false,page:page})
+									this.setState({next:false})
+									this.props.dispatch({
+										type: 'report/propsPageNum',
+										payload:page
+									});
 									let data ={
 										classId:classId,
 										year:year,
@@ -472,6 +484,10 @@ class StuReport extends React.Component {
 			type: 'down/showPdfModal',
 			payload:false
 		});
+		this.props.dispatch({
+			type: 'report/propsPageNum',
+			payload:1
+	});
 		if(classId!== '' && subId!='' && year!== '' && userId!= ''){
 			let data ={
 					classId:classId,

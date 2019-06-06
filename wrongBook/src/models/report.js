@@ -32,8 +32,12 @@ export default {
 		visible1:false,
 		videlUrl:'',
 		toupload:false,
+		propsPageNum:1,
 	},
 	reducers: {
+		propsPageNum(state, {payload}) {
+			return { ...state, propsPageNum:payload };
+		},
 		toupload(state, {payload}) {
 			return { ...state, toupload:payload };
 		},

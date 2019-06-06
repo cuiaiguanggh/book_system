@@ -31,7 +31,6 @@ class wrongTop extends React.Component {
 			showAns:'',
 			wordUrl:'',
             loading:false,
-            page:1,
             hei:0,
             next:true,
             visible1:false,
@@ -48,7 +47,6 @@ class wrongTop extends React.Component {
 	quesList(){
 		let ques = this.props.state.qrdetailList.data;
         let num = ques.memberNum;
-        
 		return(
             <div className={style.outBody}
                 onWheel={(e) => this.handleScroll(e)}
@@ -476,8 +474,11 @@ class wrongTop extends React.Component {
                                 this.props.dispatch({
                                     type: 'report/changeMouth',
                                     payload:0
+                                });                              
+                                this.props.dispatch({
+                                    type: 'report/propsPageNum',
+                                    payload:1
                                 });
-                                this.setState({page:1})
                                 this.props.dispatch({
                                     type: 'report/qrdetailList',
                                     payload:[]
@@ -509,7 +510,10 @@ class wrongTop extends React.Component {
                                             payload:item
                                         });
                                        
-                                    this.setState({page:1})
+                                    this.props.dispatch({
+                                        type: 'report/propsPageNum',
+                                        payload:1
+                                    });
                                     this.props.dispatch({
                                         type: 'report/qrdetailList',
                                         payload:[]
@@ -628,12 +632,17 @@ class wrongTop extends React.Component {
                         onScroll={(e)=>{
                             if(hei-200 < e.target.scrollTop+e.target.clientHeight){
                                 if(this.state.next ){
-                                    let page = this.state.page;
+                                    let page = this.props.state.propsPageNum;
                                     let classId = this.props.state.classId;
                                     let subId = this.props.state.subId;
                                     let year = this.props.state.years;
                                     page++
-                                    this.setState({next:false,page:page})
+                                    this.setState({next:false})
+                                    
+                                    this.props.dispatch({
+                                        type: 'report/propsPageNum',
+                                        payload:page
+                                    });
                                     let data ={
                                         classId:classId,
                                         year:year,
@@ -786,7 +795,11 @@ class wrongTop extends React.Component {
         this.props.dispatch({
 			type: 'down/showPdfModal',
 			payload:false
-		});
+        });
+        this.props.dispatch({
+            type: 'report/propsPageNum',
+            payload:1
+        });
 		if(classId!== '' && subId!='' && year!== ''){
 			let data ={
 					classId:classId,
