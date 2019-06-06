@@ -109,11 +109,11 @@ class HomePageLeft extends Component {
 						</Menu.Item>)
 						menus.push(<Menu.Item key="workDetail2" style={{cursor:'pointer'}}>
 							<Link to="/stuReport"  style={{cursor:'pointer'}} replace >
-							<Icon type="appstore"  theme="filled"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
+							<Icon type="solution"/><span style={{cursor:'pointer'}}>学生错题</span></Link>
 						</Menu.Item>)
 							menus.push(
 								<Menu.Item><Link key="classChart" to="/classChart" replace>
-									<Icon type="pie-chart" /><span>班级报表</span></Link></Menu.Item>
+									<Icon type="area-chart" /><span>班级报表</span></Link></Menu.Item>
 							)
 						// menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
 						// 	<Link to="/workReport"  style={{cursor:'pointer'}} replace >
@@ -123,7 +123,14 @@ class HomePageLeft extends Component {
 				}
 				// 班级管理模块
 				if(item === 200){
-					if(rodeType <= 20){
+					if(rodeType > 20){
+						
+						menus.push(<Menu.Item key="grade">
+						<Link to='grade#page=1' replace>
+							<Icon type="align-left" /><span>班级列表</span>
+						</Link>
+					</Menu.Item>)
+					}else{
 						menus.push(
 							<Menu.Item><Link key="schoolChart" to="/schoolChart" replace><Icon type="pie-chart" /><span>校级报表</span></Link></Menu.Item>
 						)
@@ -131,7 +138,7 @@ class HomePageLeft extends Component {
 						// <SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
 								<Menu.Item key="grade">
 									<Link to='grade#page=1' replace>
-										<Icon type="bar-chart" /><span>班级管理</span>
+										<Icon type="team" /><span>班级管理</span>
 									</Link>
 							</Menu.Item>
 						// </SubMenu>
@@ -139,13 +146,6 @@ class HomePageLeft extends Component {
 						menus.push(
 							<Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle" /><span>批量导入</span></Link></Menu.Item>
 						)
-
-					}else{
-						menus.push(<Menu.Item key="grade">
-							<Link to='grade#page=1' replace>
-								<Icon type="bar-chart" /><span>班级列表</span>
-							</Link>
-						</Menu.Item>)
 					}
 					
 				}
