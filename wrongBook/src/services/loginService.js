@@ -23,10 +23,16 @@ function updateInfo(payload){
         data:payload
     });
 }
+function webchatLoginForWeb(payload){
+    return request(dataCenter('/user/webchatLoginForWeb'),{
+        data:payload
+    });
+}
 
 export {
     loginTiku,
     getVC,
     checkVC,
     updateInfo,
+    webchatLoginForWeb,
 };
