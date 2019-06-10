@@ -135,14 +135,102 @@ export default {
 				}
 		},
 		*codelog({payload}, {put, select}) {
-			// 获取验证码
+			// code登陆
 			let res = yield webchatLoginForWeb(payload);
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
-					
+					yield put ({
+						type: 'codeType',
+						payload:false
+					})
+					let data = res.data
+					store.set('wrongBookNews',data.data)
+					store.set('accessToken',data.data.accessToken)
+					store.set('wrongBookToken',data.data.token)
+					console.log(data.data.phone == '' || data.data.phone == null)
+					if(data.data.phone == '' || data.data.phone == null) {
+						message.error(res.data.msg)
+						yield put(routerRedux.push('/getPhone'))
+					}else{
+						let rodeType = data.data.rodeType;
+						yield put ({
+							type: 'temp/classList1',
+							payload:[]
+						})
+						yield put ({
+							type: 'report/changeMouth',
+							payload:0
+						})
+						
+						if(rodeType === 10){
+							yield put(routerRedux.push({
+								pathname: '/school',
+								hash:'page=1'
+							}))
+						}else if(rodeType ===20){
+							yield put(routerRedux.push({
+								pathname: '/grade',
+								hash:'page=1'
+							}))
+						}else if(rodeType ===30 || rodeType ===40){
+							yield put(routerRedux.push({
+								pathname: '/classReport',
+							}))
+						}
+					}
 				}else{
 					message.error(res.data.msg)
 				}
+		},
+		*phoneLogin({payload}, {put, select}) {
+			// login登陆
+			let res = yield loginTiku(payload);
+			// if(!res.hasOwnProperty("err")){
+			if(res.data.result === 0 ){
+				let data = res.data
+				if(payload.rem){
+					let tim = new Date()*1
+					store.set('logTime',tim)
+				}else{
+					store.set('logTime','')
+				}
+				store.set('wrongBookNews',data.data)
+				store.set('wrongBookToken',data.data.token)
+				let rodeType = data.data.rodeType;
+				
+				yield put ({
+					type: 'temp/classList1',
+					payload:[]
+				})
+				yield put ({
+					type: 'report/changeMouth',
+					payload:0
+				})
+				
+				if(rodeType === 10){
+					yield put(routerRedux.push({
+						pathname: '/school',
+						hash:'page=1'
+					}))
+				}else if(rodeType ===20){
+					yield put(routerRedux.push({
+						pathname: '/grade',
+						hash:'page=1'
+					}))
+				}else if(rodeType ===30 || rodeType ===40){
+					yield put(routerRedux.push({
+						pathname: '/classReport',
+					}))
+				}
+			}else{
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
+				}
+			}
 		},
 		*checkVC({payload}, {put, select}) {
 			// 校验验证码
