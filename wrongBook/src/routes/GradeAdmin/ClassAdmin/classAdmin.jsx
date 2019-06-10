@@ -83,7 +83,7 @@ class HomeworkCenter extends React.Component {
 				<div
 				className='space'
 					onClick={() =>{
-						alert(1)
+					//	alert(1)
 					}}>
 					{text}
 				</div>
@@ -467,7 +467,6 @@ class HomeworkCenter extends React.Component {
 									type: 'homePage/createSchoolUser',
 									payload:data
 								});
-								
 								this.props.dispatch({
 									type: 'homePage/teacherName',
 									payload:''

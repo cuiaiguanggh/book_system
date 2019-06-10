@@ -1,5 +1,5 @@
 import request from '../utils/request';
-import {dataCenter} from '../config/dataCenter';
+import {dataCenter , dataCenIp} from '../config/dataCenter';
 
 function queryQrDetail(payload){
     return request(dataCenter('/web/report/queryQrDetail'),{
@@ -71,6 +71,11 @@ function querySchoolDataReport(payload){
         data:payload
     });
 }
+function queryClassDataReport(payload){
+    return request(dataCenter('/web/report/queryClassDataReport'),{
+        data:payload
+    });
+}
 function queryGradeListBySchoolId(payload){
     return request(dataCenter('/web/report/getGradeList'),{
         data:payload
@@ -83,6 +88,11 @@ function queryClassListByGradeId(payload){
 }
 function querySubListByClassId(payload){
     return request(dataCenter('/web/report/getSubjectList'),{
+        data:payload
+    });
+}
+function uploadVideo(payload){
+    return request(dataCenter('/web/report/uploadVideo'),{
         data:payload
     });
 }
@@ -104,4 +114,6 @@ export {
     queryGradeListBySchoolId,
     queryClassListByGradeId,
     querySubListByClassId,
+    uploadVideo,
+    queryClassDataReport,
 };

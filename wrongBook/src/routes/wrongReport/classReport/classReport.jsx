@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, message, Layout,Modal,Select ,Icon
+import { Button, message, Layout,Modal,Select ,Icon,Spin
 } from 'antd';
 import {dataCenter , dataCen,serverType} from '../../../config/dataCenter'
 import { routerRedux,  } from "dva/router";
@@ -14,10 +14,12 @@ import store from 'store';
 import commonCss from '../../css/commonCss.css';
 //作业中心界面内容
 const Option = Select.Option;
+const confirm = Modal.confirm;
 const {
 	Header, Footer, Sider, Content,
   } = Layout;
 
+const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />
 let hei = 200
 class wrongTop extends React.Component {
 	constructor(props) {
@@ -29,13 +31,13 @@ class wrongTop extends React.Component {
 			showAns:'',
 			wordUrl:'',
             loading:false,
-            page:1,
             hei:0,
             next:true,
             visible1:false,
             userId:'',
             uqId:'',
-            allPdf:false
+            allPdf:false,
+            toupload:false,
 	    };
     }
 	handleScroll(e){
@@ -45,7 +47,6 @@ class wrongTop extends React.Component {
 	quesList(){
 		let ques = this.props.state.qrdetailList.data;
         let num = ques.memberNum;
-        
 		return(
             <div className={style.outBody}
                 onWheel={(e) => this.handleScroll(e)}
@@ -162,6 +163,48 @@ class wrongTop extends React.Component {
 			</div>
 		)
     }
+    onImportExcel = file =>{
+        let form = new FormData();
+        form.append('file',document.getElementById("file").files[0]);
+        var url = URL.createObjectURL(document.getElementById("file").files[0]);
+        var audioElement = new Audio(url);
+        var duration;
+        audioElement.addEventListener("loadedmetadata", function (_event) {
+            duration = audioElement.duration;
+        });
+        let This =this;
+        This.props.dispatch({
+            type: 'report/toupload',
+            payload:true
+        });
+        let token = store.get('wrongBookToken');
+        fetch(dataCenter('/file/uploadFlie?token=' + token), {
+            method: "POST",
+            body: form
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.result === 0){
+                This.props.dispatch({
+                    type: 'report/uploadVideo',
+                    payload:{
+                        uqId:This.props.state.uqId,
+                        url:res.data.path,
+                        // authorId:store.get('wrongBookNews').userId,
+                        duration:parseInt(duration)
+                    }
+                });
+                
+                
+            }else{
+                message.error(res.msg)
+            }
+        })
+        .catch(function(error) {
+            message.error(error.msg)
+        })
+            
+	}
     addVie() {
         const userId = store.get('wrongBookNews').userId
         
@@ -170,80 +213,176 @@ class wrongTop extends React.Component {
             value='https://dy.kacha.xin/wx/takevideoPreview/'
         }
         value+='video?uqId='+this.props.state.uqId+'&authorId='+ userId
-        console.error(value)
         let This = this;
-        var timestamp = new Date().getTime() + "";
-        timestamp = timestamp.substring(0, timestamp.length-3);  
-        var websocket = null;
-        //判断当前浏览器是否支持WebSocket
-        let url =  dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
-        if ('WebSocket' in window) {
-            websocket = new WebSocket(url);
-        }
-        else {
-            alert('当前浏览器  Not support websocket');
-        }
-        //连接发生错误的回调方法
-        websocket.onerror = function () {
-            console.log("WebSocket连接发生错误");
-        };
-        //连接成功建立的回调方法
-        websocket.onopen = function () {
-            console.log("WebSocket连接成功");
-        }
-        //接收到消息的回调方法
-        websocket.onmessage = function (event) {
-            let data = JSON.parse(event.data);
-            let json ;
-            if ( data.url ) {
-                json = JSON.parse(data.url)
-                message.success('视频上传成功')
-                This.props.dispatch({
-                    type: 'report/updataVideo',
-                    payload:{
-                        video:json,
-                        key:This.props.state.num
-                    }
-                });
-                This.props.dispatch({
-                    type: 'report/updataVideo',
-                    payload:{
-                        video:json,
-                        key:This.props.state.num
-                    }
-                });
-                
-                // This.props.dispatch({
-                //     type: 'report/videlUrl',
-                //     payload:json.url
-                // });
-                // This.props.dispatch({
-                //     type: 'report/visi ble1',
-                //     payload:true
-                // });
+        // console.log(this.props.state.visible1,this.props.state.toupload )
+        if(!this.props.state.visible1 && !this.props.state.toupload ){
+            var timestamp = new Date().getTime() + "";
+            timestamp = timestamp.substring(0, timestamp.length-3);  
+            var websocket = null;
+            //判断当前浏览器是否支持WebSocket
+            let url =  dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
+            console.log(url)
+            if ('WebSocket' in window) {
+                websocket = new WebSocket(url);
             }
-            
+            else {
+                alert('当前浏览器  Not support websocket');
+            }
+            //连接发生错误的回调方法
+            websocket.onerror = function () {
+                console.log("WebSocket连接发生错误");
+            };
+            //连接成功建立的回调方法
+            websocket.onopen = function () {
+                console.log("WebSocket连接成功");
+            }
+            //接收到消息的回调方法
+            websocket.onmessage = function (event) {
+                console.log(event)
+                let data = JSON.parse(event.data);
+                let json ;
+                if ( data.status == 2) {
+                    This.props.dispatch({
+                        type: 'report/toupload',
+                        payload:true
+                    });
+                    
+                }
+                if ( data.url ) {
+                    json = JSON.parse(data.url)
+                    // message.success('视频上传成功')
+                    This.props.dispatch({
+                        type: 'report/updataVideo',
+                        payload:{
+                            video:json,
+                            key:This.props.state.num
+                        }
+                    });
+                    This.props.dispatch({
+                        type: 'report/videlUrl',
+						payload:json.url
+                    });
+                    This.props.dispatch({
+                        type: 'report/visible1',
+                        payload:true
+                    });
+                    This.props.dispatch({
+                        type: 'report/toupload',
+                        payload:false
+                    });
+
+                }
+                
+            }
+            //连接关闭的回调方法
+            websocket.onclose = function () {
+                console.log("WebSocket连接关闭");
+
+                This.props.dispatch({
+                    type: 'report/toupload',
+                    payload:false
+                });
+            }
+            //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
+            //防止连接还没断开就关闭窗口，server端会抛异常。
+            window.onbeforeunload = function () {
+                closeWebSocket();
+            }
+            //关闭WebSocket连接
+            function closeWebSocket() {
+                websocket.close();
+            }
         }
-        //连接关闭的回调方法
-        websocket.onclose = function () {
-            console.log("WebSocket连接关闭");
-        }
-        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
-        //防止连接还没断开就关闭窗口，server端会抛异常。
-        window.onbeforeunload = function () {
-            closeWebSocket();
-        }
-        //关闭WebSocket连接
-        function closeWebSocket() {
-            websocket.close();
-        }
+        
 
 
-
+        let questionNews = this.props.state.questionNews;
+        
         return(
-            <div style={{textAlign:'center',marginTop:20}}>
-                <QRCode className='qrcode' size={200} value={value} />
-                <h2 style={{marginTop:20}}>手机微信扫码，录制视频讲解</h2>
+            <div className={style.codeFram} style={{textAlign:'center',overflow:"hidden"}}>
+                <div  className={style.questionBody}>
+                    <div className={style.questionTop}>
+                        <span>答错<span style={{color:"#1890ff",fontWeight:'bold',padding:'0 5px'}}>{questionNews.wrongNum}</span>人</span>
+                    </div>
+                    <div style={{padding:'10px',height:'250px',overflow:'hidden'}} >
+                        {
+                            questionNews.questionUrl.split(',').map((item,i)=>(
+                                <img key={i} style={{width:'100%'}} src={item}></img>
+                            ))
+                        }
+                    </div>
+                </div>
+                <div className={style.phoneCode}>
+                        {
+                            !this.props.state.visible1 ?
+                            <div>
+                                {
+                                    !this.props.state.toupload ?
+                                    <div>
+                                        <QRCode className='qrcode' size={150} value={value} />
+                                        <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>手机微信扫码，录制视频讲解</p>
+                                        
+                                        <label htmlFor="file">
+                                            <span
+                                                className={style.addButon}
+                                            >本地上传</span>
+                                        </label> 
+                                        <input
+                                            type='file' 
+                                            id='file' 
+                                            accept='.mp4'  
+                                            style={{display:'none'}}
+                                            onChange={this.onImportExcel} 
+                                        />
+                                    </div>:
+                                    <div>
+                                        <Spin style={{height:'155px',marginLeft:'-24px',lineHeight:"150px"}} indicator={antIcon} />
+                                        {/* <Icon type="loading" style={{ fontSize: 24 }} spin /> */}
+                                        <p style={{marginTop:20,fontSize:'16px',color:'#606266'}}>正在上传...</p>
+                                        <span
+                                            className={style.addButon}
+                                        >本地上传</span>
+                                    </div>
+                                }
+                            </div>
+                            :
+                            <div>
+                                <video 
+                                    id="video" 
+                                    controls="controls"
+                                    width="100%" 
+                                    style={{height:'210px'}}
+                                    src={this.props.state.videlUrl}
+                                    controls  >
+                                </video>
+                                <span
+                                    className={style.addButon}
+                                    onClick={()=>{
+                                        let This = this;
+                                        console.log(This.props.state.num,questionNews.teachVideo.videoId)
+                                        confirm({
+                                            title: '确认删除讲解视频？',
+                                            okText: '是',
+                                            cancelText: '否',
+                                            onOk() {
+                                                This.props.dispatch({
+                                                    type: 'report/deleteTeachVideo',
+                                                    payload:{
+                                                        videoId:questionNews.teachVideo.videoId,
+                                                        key:This.props.state.num
+                                                    }
+                                                });
+                                            },
+                                            onCancel() {
+                                            },
+                                        });
+                                    }}
+                                >删除视频</span>
+                            </div>
+                        }
+                        
+                    
+                </div>
             </div>
         )
     }
@@ -323,7 +462,7 @@ class wrongTop extends React.Component {
         if(QuestionDetail.data){
             MaxKey = QuestionDetail.data.questionList.length-1;
         }
-        
+        // console.log(this.props.state.mouNow)
 		return (
 
             <Content style={{position:'relative'}}>
@@ -335,8 +474,11 @@ class wrongTop extends React.Component {
                                 this.props.dispatch({
                                     type: 'report/changeMouth',
                                     payload:0
+                                });                              
+                                this.props.dispatch({
+                                    type: 'report/propsPageNum',
+                                    payload:1
                                 });
-                                this.setState({page:1})
                                 this.props.dispatch({
                                     type: 'report/qrdetailList',
                                     payload:[]
@@ -360,13 +502,18 @@ class wrongTop extends React.Component {
                             }}>全部</span>
                         {
                             mounthList.data ?
-                            mounthList.data.map((item,i)=>(
-                                <span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
+                            mounthList.data.map((item,i)=>{
+                                return(
+                                    <span key={i} className={item.k ==this.props.state.mouNow.k?'choseMonthOn': 'choseMonth'} onClick={()=>{
+                                        this.props.dispatch({
+                                            type: 'report/changeMouth',
+                                            payload:item
+                                        });
+                                       
                                     this.props.dispatch({
-                                        type: 'report/changeMouth',
-                                        payload:item
+                                        type: 'report/propsPageNum',
+                                        payload:1
                                     });
-                                    this.setState({page:1})
                                     this.props.dispatch({
                                         type: 'report/qrdetailList',
                                         payload:[]
@@ -390,12 +537,14 @@ class wrongTop extends React.Component {
                                     // w[i].className='wrongNum wrongNumOn'
 
                                 }}>{item.k}</span>
-                            ))
+                            )
+                            })
                             :''
                         }
-                        <Button 
+                        {QuestionDetail.data&&QuestionDetail.data.questionList.length>0?<Button 
                             style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
                             loading={this.props.state.downQue} 
+                            disabled={this.props.state.classDown.length===0&&!this.props.state.downQue}
                             onClick={()=>{
                                 if(this.props.state.classDown.length!= 0){
                                     
@@ -406,7 +555,8 @@ class wrongTop extends React.Component {
                                     this.props.dispatch({
                                         type: 'down/getQuestionPdf',
                                         payload:{
-                                            picIds:this.props.state.classDownPic.join(',')
+                                            picIds:this.props.state.classDownPic.join(','),
+                                            mode:2
                                         }
                                     })
                                     
@@ -428,9 +578,10 @@ class wrongTop extends React.Component {
                             }}>
                             <img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}}  src={require('../../images/xc-cl-n.png')}></img>
                         下载组卷({this.props.state.classDown.length})
-                        </Button>
+                        </Button>:''}
+                        
                         {
-                            (this.props.state.AllPdf&&0!=this.props.state.mouNow) ?
+                            (this.props.state.AllPdf&&0!=this.props.state.mouNow&&QuestionDetail.data&&QuestionDetail.data.questionList.length>0) ?
                             
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
@@ -481,12 +632,17 @@ class wrongTop extends React.Component {
                         onScroll={(e)=>{
                             if(hei-200 < e.target.scrollTop+e.target.clientHeight){
                                 if(this.state.next ){
-                                    let page = this.state.page;
+                                    let page = this.props.state.propsPageNum;
                                     let classId = this.props.state.classId;
                                     let subId = this.props.state.subId;
                                     let year = this.props.state.years;
                                     page++
-                                    this.setState({next:false,page:page})
+                                    this.setState({next:false})
+                                    
+                                    this.props.dispatch({
+                                        type: 'report/propsPageNum',
+                                        payload:page
+                                    });
                                     let data ={
                                         classId:classId,
                                         year:year,
@@ -583,7 +739,8 @@ class wrongTop extends React.Component {
                 <Modal
                     visible={this.props.state.visible}
                     footer={null}
-                    width= '600px'
+                    width= '950px'
+                    title='添加讲解视频'
                     className={style.vidioCode}
                     onOk={()=>{
                         this.props.dispatch({
@@ -603,50 +760,9 @@ class wrongTop extends React.Component {
                 </Modal>
 
                 <Modal
-                    visible={this.props.state.visible1}
-                    footer={null}
-                    // style={{padding:0}}
-                    className={style.vidioCode1}
-                    onOk={()=>{
-                        this.props.dispatch({
-                            type: 'report/visible1',
-                            payload:false
-                        });
-                        this.props.dispatch({
-                            type: 'report/videlUrl',
-                            payload:''
-                        });
-                    }}
-                    onCancel={()=>{
-                        this.props.dispatch({
-                            type: 'report/visible1',
-                            payload:false
-                        });
-                        this.props.dispatch({
-                            type: 'report/videlUrl',
-                            payload:''
-                        });
-                    }}>
-                        <div>
-                            <video 
-                                id="video" 
-                                controls="controls"
-                                 width="100%" 
-                                 src={this.props.state.videlUrl}
-                                 controls  >
-                            </video>
-                            {/* <Player
-                                style={{width:'400px'}}
-                                width = '400px'
-                                playsInline
-                                poster="/assets/poster.png"
-                                src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
-                            /> */}
-                        </div>
-                </Modal>
-
-                <Modal
                     visible={this.props.state.showPdfModal}
+                    maskClosable={false}
+                    keyboard={false}
                     onOk={()=>{
                         window.location.href=this.props.state.pdfUrl.downloadLink
                     }}
@@ -659,7 +775,7 @@ class wrongTop extends React.Component {
                     className={commonCss.pdfModal}   
                     closable={false}
                     cancelText='取消'  
-                    okText='下载'     
+                    okText='下载'   
                 >
                     <div style={{height:'700px'}}>
                         {/* <PDF
@@ -681,7 +797,11 @@ class wrongTop extends React.Component {
         this.props.dispatch({
 			type: 'down/showPdfModal',
 			payload:false
-		});
+        });
+        this.props.dispatch({
+            type: 'report/propsPageNum',
+            payload:1
+        });
 		if(classId!== '' && subId!='' && year!== ''){
 			let data ={
 					classId:classId,

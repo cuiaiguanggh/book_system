@@ -5,6 +5,7 @@ import {
 	queryQrStudentCount,
 	deleteTeachVideo,
 	queryTeachVideo,
+	uploadVideo,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -29,9 +30,17 @@ export default {
 		studentList:[],
 		visible:false,
 		visible1:false,
-		videlUrl:''
+		videlUrl:'',
+		toupload:false,
+		propsPageNum:1,
 	},
 	reducers: {
+		propsPageNum(state, {payload}) {
+			return { ...state, propsPageNum:payload };
+		},
+		toupload(state, {payload}) {
+			return { ...state, toupload:payload };
+		},
 		qrdetailList(state, {payload}) {
 			return { ...state, qrdetailList:payload };
 		},
@@ -92,13 +101,14 @@ export default {
 		deleteVidio(state, {payload}) {
 			let list = state.qrdetailList;
 			delete list.data.questionList[payload].teachVideo; 
+			console.log(list)
 			return { ...state, qrdetailList:list };
 		},
 		updataVideo(state, {payload}) {
 			let qrdetailList = state.qrdetailList;
-			let visible = false;
+			// let visible = false;
 			qrdetailList.data.questionList[payload.key].teachVideo = payload.video
-			return { ...state, ...{qrdetailList,visible} };
+			return { ...state, ...{qrdetailList} };
 		},
 		visible(state, {payload}) {
 			return { ...state, visible:payload };
@@ -403,6 +413,14 @@ export default {
 					type: 'deleteVidio',
 					payload:payload.key
 				})
+				yield put ({
+					type: 'visible1',
+					payload:false
+				})
+				yield put ({
+					type: 'visible1',
+					payload:false
+				})
 			}
 			else{
 				if(res.data.msg == '无效TOKEN!'){
@@ -447,6 +465,59 @@ export default {
 				}
 			}
 			else{
+				if(res.data.msg == '无效TOKEN!'){
+					yield put(routerRedux.push('/login'))
+				}else if(res.data.msg == '服务器异常'){
+
+				}else{
+					message.error(res.data.msg)
+				}
+
+			}
+		},
+		*uploadVideo({payload},{put,select}) {
+			//上传讲解视频
+			const { num } = yield select(state => state.example)
+			let res = yield uploadVideo(payload);
+			if(res.hasOwnProperty("err")){
+				yield put(routerRedux.push('/login'))
+			}else
+			if(res.data && res.data.result === 0){
+				
+				// yield put ({
+				// 	type:  'toupload',
+				// 	payload:false
+				// })
+				if( res.data.data ) {
+					message.success('视频上传成功')
+					yield put ({
+						type: 'updataVideo',
+						payload:{
+							key:num,
+							video:res.data.data
+						}
+					})
+					yield put ({
+						type:  'videlUrl',
+						payload:res.data.data.url
+					})
+					yield put ({
+						type: 'visible1',
+						payload:true
+					})
+					yield put ({
+						type: 'toupload',
+						payload:false
+					})
+				}else{
+					message.warning('未检测到上传视频')
+				}
+			}
+			else{
+				yield put ({
+					type:  'toupload',
+					payload:false
+				})
 				if(res.data.msg == '无效TOKEN!'){
 					yield put(routerRedux.push('/login'))
 				}else if(res.data.msg == '服务器异常'){

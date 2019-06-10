@@ -33,6 +33,10 @@ class ClassReport extends React.Component {
 									payload:value
 								});
 								this.props.dispatch({
+									type: 'report/propsPageNum',
+									payload:1
+								});
+								this.props.dispatch({
 									type: 'report/changeMouth',
 									payload:0,
 								});
@@ -75,6 +79,10 @@ class ClassReport extends React.Component {
 								this.props.dispatch({
 									type: 'report/changeMouth',
 									payload:0
+							});
+							this.props.dispatch({
+								type: 'report/propsPageNum',
+								payload:1
 							});
 								this.props.dispatch({
 									type: 'report/queryQrDetail',

@@ -8,10 +8,13 @@ export default {
     userId:'',
     questionId:'',
     num:'',
+    questionNews:[],
   },
 
   reducers: {
-    
+    questionNews(state, {payload}) {
+			return { ...state, questionNews:payload };
+    },
 		uqId(state, {payload}) {
 			return { ...state, uqId:payload };
     },

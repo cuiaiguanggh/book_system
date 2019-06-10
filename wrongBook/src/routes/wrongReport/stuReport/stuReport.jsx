@@ -27,7 +27,6 @@ class StuReport extends React.Component {
 			wordUrl:'',
 			visible:false,
 			Img:'',
-			page:1,
 			next:true,
 		}
 	}
@@ -47,7 +46,10 @@ class StuReport extends React.Component {
 					mode="inline" 
 					defaultSelectedKeys={[current]}
 					onClick={(e)=>{
-						this.setState({page:1})
+						this.props.dispatch({
+							type: 'report/propsPageNum',
+							payload:1
+					});
 						this.props.dispatch({
 							type: 'down/stuName',
 							payload:e.key
@@ -217,7 +219,10 @@ class StuReport extends React.Component {
 										type: 'report/changeMouth',
 										payload:0
 									});
-									this.setState({page:1})
+									this.props.dispatch({
+										type: 'report/propsPageNum',
+										payload:1
+								});
 									this.props.dispatch({
 										type:'report/qrStudentDetailList',
 										payload:[]
@@ -244,12 +249,15 @@ class StuReport extends React.Component {
 							{
 								mounthList.data ?
 								mounthList.data.map((item,i)=>(
-									<span key={i} className={item ==this.props.state.mouNow?'choseMonthOn': 'choseMonth'} onClick={()=>{
+									<span key={i} className={item.k ==this.props.state.mouNow.k?'choseMonthOn': 'choseMonth'} onClick={()=>{
 										this.props.dispatch({
 											type: 'report/changeMouth',
 											payload:item
 										});
-										this.setState({page:1})
+										this.props.dispatch({
+											type: 'report/propsPageNum',
+											payload:1
+									});
 										this.props.dispatch({
 											type:'report/qrStudentDetailList',
 											payload:[]
@@ -276,9 +284,11 @@ class StuReport extends React.Component {
 								))
 								:''
 							}
-							<Button 
+							
+							{detail.data && detail.data.questionList.length != 0 ?<Button 
 								style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
 								loading={this.props.state.downQue} 
+								disabled={this.props.state.stuDown.length===0&&!this.props.state.downQue}
 								onClick={()=>{
 									if(this.props.state.stuDown.length!= 0){
 										this.props.dispatch({
@@ -288,7 +298,8 @@ class StuReport extends React.Component {
 										this.props.dispatch({
 											type: 'down/getQuestionPdf',
 											payload:{
-												picIds:this.props.state.stuDownPic.join(',')
+												picIds:this.props.state.stuDownPic.join(','),
+												mode:1
 											}
 										})
 										// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
@@ -309,9 +320,9 @@ class StuReport extends React.Component {
 								}}>
                         	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
-							</Button>
+							</Button>:''}
 							{
-                             (this.props.state.AllPdf&&0!=this.props.state.mouNow)  ?
+                             (detail.data && detail.data.questionList.length != 0&&this.props.state.AllPdf&&0!=this.props.state.mouNow)  ?
                             <Button 
                                 style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none',marginRight:'10px'}}
                                 loading={this.props.state.toDown} 
@@ -375,12 +386,16 @@ class StuReport extends React.Component {
 						onScroll={(e)=>{
 							if(hei-200 < e.target.scrollTop+e.target.clientHeight){
 								if(this.state.next ){
-									let page = this.state.page;
+									let page = this.props.state.propsPageNum;
 									let classId = this.props.state.classId;
 									let subId = this.props.state.subId;
 									let year = this.props.state.years;
 									page++
-									this.setState({next:false,page:page})
+									this.setState({next:false})
+									this.props.dispatch({
+										type: 'report/propsPageNum',
+										payload:page
+									});
 									let data ={
 										classId:classId,
 										year:year,
@@ -406,7 +421,7 @@ class StuReport extends React.Component {
 						}}>
 							{
 									detail.data && detail.data.questionList.length != 0 ?  this.questions():
-									<div style={{textAlign:'center',position:'absolute',top:'50%',left:'50%',transform: 'translate(-50%, -50%)',width:'100%'}}>
+									<div style={{textAlign:'center',position:'relative',top:'50%',transform: 'translate(0%, -50%)',width:'100%'}}>
 										<img src={require('../../images/wsj-n.png')}></img>
 										<span style={{fontSize:'30px',marginLeft:'50px',fontWeight:'bold',color:"#434e59"}}>暂无数据</span>
 									</div>
@@ -433,6 +448,8 @@ class StuReport extends React.Component {
 					</Modal>
 
 					<Modal
+							keyboard={false}
+							maskClosable={false}
 							visible={this.props.state.showPdfModal}
 							onOk={()=>{
 									window.location.href=this.props.state.pdfUrl.downloadLink
@@ -467,6 +484,10 @@ class StuReport extends React.Component {
 			type: 'down/showPdfModal',
 			payload:false
 		});
+		this.props.dispatch({
+			type: 'report/propsPageNum',
+			payload:1
+	});
 		if(classId!== '' && subId!='' && year!== '' && userId!= ''){
 			let data ={
 					classId:classId,

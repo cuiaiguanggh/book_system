@@ -500,6 +500,7 @@ class EditableTable extends React.Component {
 						<Pagination defaultCurrent={cur} 
 						style={{marginTop:'10px',textAlign:'center'}}
 							onChange={(pageNumber)=>{
+								this.cancel()
 								this.props.dispatch(
 									routerRedux.push({
 										pathname: '/grade',
