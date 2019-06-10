@@ -9,7 +9,7 @@
 .loginInner{
     position: absolute;
     width:564px;
-    height:478px;
+    height:534px;
     right:10%;
     top:0px;
     bottom:0;
@@ -29,7 +29,7 @@
     width:386px;
     /* border:1px solid #ccc; */
     margin:30px auto;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 .forgotPassword{
     float:right;
@@ -124,6 +124,9 @@ input{
 }
 .iframe {
     border:none;
+    /* height:260px; */
+    height:400px;
+    margin-top: -47px;
 }
 .iframe :global(.title){
     display: none;
