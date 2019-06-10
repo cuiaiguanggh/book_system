@@ -8,19 +8,12 @@
 
 // 预备服务器
  const url = 'https://login.kacha.xin/wrongManage-bate';
-<<<<<<< HEAD
-=======
 const url1 = "https://login.kacha.xin/";
->>>>>>> 4f1cbf037c5301f7d3942c2307e543206cadd77b
 const host1 = "ws://login.kacha.xin";
 
 
 // 正式服务器
 //  const url = 'https://login.kacha.xin/wrongManage';
-<<<<<<< HEAD
-=======
-// const url1 = "https://login.kacha.xin/";
->>>>>>> 4f1cbf037c5301f7d3942c2307e543206cadd77b
 // const host1 = "ws://login.kacha.xin";
 
 // const url = host+'/wrongManage';// test
