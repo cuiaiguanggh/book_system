@@ -81,7 +81,7 @@ class EditableTable extends React.Component {
 			editable: true,
 			render: (text, record) => {
 				return (
-					<div className='space' style={{cursor:'pointer'}} onClick={()=>{
+					<div style={{cursor:'pointer'}} onClick={()=>{
 						store.set('wrong_hash', this.props.location.hash)
 						this.props.dispatch(
 							routerRedux.push({
