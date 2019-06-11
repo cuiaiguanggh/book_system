@@ -165,6 +165,15 @@ class wrongTop extends React.Component {
     }
     onImportExcel = file =>{
         let form = new FormData();
+        let fil = document.getElementById("file").files[0];
+        if(fil.type.indexOf('mp4') < 0 ) {
+            message.warning('上传文件只支持mp4')
+            return false
+        }
+        if((fil.size/1024)/1024 <= 50){
+            message.warning('上传文件大小需小于50Mb')
+            return false
+        }
         form.append('file',document.getElementById("file").files[0]);
         var url = URL.createObjectURL(document.getElementById("file").files[0]);
         var audioElement = new Audio(url);
@@ -207,7 +216,6 @@ class wrongTop extends React.Component {
 	}
     addVie() {
         const userId = store.get('wrongBookNews').userId
-        
         let value='http://hw-test.mizholdings.com/wx/'
         if(serverType===2){
             value='https://dy.kacha.xin/wx/takevideoPreview/'
@@ -221,7 +229,6 @@ class wrongTop extends React.Component {
             var websocket = null;
             //判断当前浏览器是否支持WebSocket
             let url =  dataCen('/wrongManage/teachVideoUpload?userId='+userId+'&uqId='+this.props.state.uqId)
-            console.log(url)
             if ('WebSocket' in window) {
                 websocket = new WebSocket(url);
             }
@@ -293,11 +300,7 @@ class wrongTop extends React.Component {
                 websocket.close();
             }
         }
-        
-
-
         let questionNews = this.props.state.questionNews;
-        
         return(
             <div className={style.codeFram} style={{textAlign:'center',overflow:"hidden"}}>
                 <div  className={style.questionBody}>

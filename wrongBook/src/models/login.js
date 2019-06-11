@@ -147,9 +147,7 @@ export default {
 					store.set('wrongBookNews',data.data)
 					store.set('accessToken',data.data.accessToken)
 					store.set('wrongBookToken',data.data.token)
-					console.log(data.data.phone == '' || data.data.phone == null)
 					if(data.data.phone == '' || data.data.phone == null) {
-						message.error(res.data.msg)
 						yield put(routerRedux.push('/getPhone'))
 					}else{
 						let rodeType = data.data.rodeType;
