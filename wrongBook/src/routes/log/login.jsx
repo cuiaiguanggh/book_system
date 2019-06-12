@@ -20,7 +20,8 @@ var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) 
     d = Math.floor(d / 16);
     return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
 });
-let iframeVal = `https://open.weixin.qq.com/connect/qrconnect?appid=wx84919fd1783f83f8&redirect_uri=https%3a%2f%2flogin.kacha.xin%2fstatic%2fka%2f%23%2fgetcode&response_type=code&scope=snsapi_login&state=${uuid}`
+let urlIp = 'kacha'
+let iframeVal = `https://open.weixin.qq.com/connect/qrconnect?appid=wx84919fd1783f83f8&redirect_uri=https%3a%2f%2flogin.kacha.xin%2fstatic%2f${urlIp}%2f%23%2fgetcode&response_type=code&scope=snsapi_login&state=${uuid}`
 class Login extends Component {
 	constructor(props) {
     super(props);

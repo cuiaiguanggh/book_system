@@ -8,7 +8,6 @@ import QRCode from 'qrcode.react';
 
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
-import { request } from 'http';
 import TracksVideo from '../TracksVideo/TracksVideo';
 import store from 'store';
 import commonCss from '../../css/commonCss.css';
@@ -793,7 +792,6 @@ class wrongTop extends React.Component {
 		);
 	  }
 	componentDidMount(){
-        
 		let classId = this.props.state.classId;
 		let subId = this.props.state.subId;
         let year = this.props.state.years;
