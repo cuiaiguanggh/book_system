@@ -1,5 +1,5 @@
 import request from '../utils/request';
-import {dataCenter , dataCenIp} from '../config/dataCenter';
+import {dataCenter } from '../config/dataCenter';
 
 function queryQrDetail(payload){
     return request(dataCenter('/web/report/queryQrDetail'),{

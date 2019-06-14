@@ -9,6 +9,7 @@ import QRCode from 'qrcode.react';
 
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
+
 import {request} from 'http';
 import TracksVideo from '../TracksVideo/TracksVideo';
 import store from 'store';
@@ -864,6 +865,7 @@ class wrongTop extends React.Component {
             {/* <PDF
                             file="http://homework.mizholdings.com/pdf/240CA1A5-E7A9-4CF3-8CE2-5CD48B1FADB4.pdf"
                         /> */}
+
             {/* <embed src={fileLink} type="application/pdf" width="100%" height="100%"></embed> */}
             <iframe src={fileLink} title='下载预览' style={{width: '100%', height: '100%', border: 0}}></iframe>
           </div>
