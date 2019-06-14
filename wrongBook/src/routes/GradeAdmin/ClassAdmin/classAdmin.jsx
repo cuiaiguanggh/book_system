@@ -182,6 +182,34 @@ class HomeworkCenter extends React.Component {
 				</div>
 			)
 		},
+      {
+        title:<div className='space'>联系电话</div>,
+        dataIndex:'parentPhones',
+        key:'parentPhones',
+        editable: false,
+        render: (text, record) => (
+          <div
+            className='space'
+            onClick={() =>{
+            }}>
+            {text}
+          </div>
+        )
+      },
+      {
+        title:<div className='space'>视频数量</div>,
+        dataIndex:'courseVideoNum',
+        key:'courseVideoNum',
+        editable: false,
+        render: (text, record) => (
+          <div
+            className='space'
+            onClick={() =>{
+            }}>
+            {text}
+          </div>
+        )
+      },
 		{
 			title:<div className='space'>操作</div>,
 			editable: true,
@@ -314,7 +342,9 @@ class HomeworkCenter extends React.Component {
 						p['subJec'] = det.subject;
 						p['phone'] = det.phone
 						p['wrongNum'] = det.questionNum;
-						p['OnwerTeacher'] = det.admin 
+						p['OnwerTeacher'] = det.admin ;
+            p['parentPhones'] = det.parentPhones ;
+            p['courseVideoNum'] = det.courseVideoNum ;
 						dataSource.push(p);
 					}
 				}else{
@@ -324,8 +354,10 @@ class HomeworkCenter extends React.Component {
 					p["name"] = det.userName;
 					p['wrongNum'] = det.questionNum;
 					p['subJec'] = det.subject;
-					p['phone'] = det.phone
-					p['OnwerTeacher'] = det.admin 
+					p['phone'] = det.phone;
+					p['OnwerTeacher'] = det.admin;
+          p['parentPhones'] = det.parentPhones ;
+          p['courseVideoNum'] = det.courseVideoNum ;
 					dataSource.push(p);
 				}
 			}

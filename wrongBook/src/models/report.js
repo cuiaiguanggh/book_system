@@ -33,8 +33,12 @@ export default {
 		videlUrl:'',
 		toupload:false,
 		propsPageNum:1,
+    hastrace: ['1']
 	},
 	reducers: {
+    hastrace(state, {payload}) {
+      return { ...state, hastrace:payload };
+    },
 		propsPageNum(state, {payload}) {
 			return { ...state, propsPageNum:payload };
 		},
@@ -534,4 +538,3 @@ export default {
 	
   
   };
-  
