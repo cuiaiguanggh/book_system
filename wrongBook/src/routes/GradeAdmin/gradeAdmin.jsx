@@ -77,6 +77,7 @@ class EditableTable extends React.Component {
 			title: '班级名称',
 			dataIndex: 'name',
 			key: 'name',
+      align:'center',
 			// width: '20%',
 			editable: true,
 			render: (text, record) => {
@@ -99,6 +100,7 @@ class EditableTable extends React.Component {
 			title:'班主任',
 			dataIndex:'teacherName',
 			key:'teacherName',
+      align:'center',
 			// width: '15%',
 			render: (text, record) => {
 				return (
@@ -120,6 +122,7 @@ class EditableTable extends React.Component {
 			title:'人数',
 			dataIndex:'stuNum',
 			key:'stuNum',
+      align:'center',
 			// width: '15%',
 			render: (text, record) => {
 				return (
@@ -141,6 +144,7 @@ class EditableTable extends React.Component {
 			title:'作业数',
 			dataIndex:'workNum',
 			key:'workNum',
+      align:'center',
 			// width: '15%',
 			render: (text, record) => {
 				return (
@@ -161,6 +165,7 @@ class EditableTable extends React.Component {
 		{
 		title: '操作',
 		dataIndex: 'operation',
+      align:'center',
 		width: '200px',
 		render: (text, record) => {
 			const rodeType = store.get('wrongBookNews').rodeType

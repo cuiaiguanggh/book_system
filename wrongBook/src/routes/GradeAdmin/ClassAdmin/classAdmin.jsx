@@ -42,6 +42,7 @@ class HomeworkCenter extends React.Component {
 			title: '姓名',
 			dataIndex: 'name',
 			key: 'name',
+      align:'center',
 			editable: true,
 			render: (text, record) => (
 				<div
@@ -64,6 +65,7 @@ class HomeworkCenter extends React.Component {
 			title:<div className='space'>手机号</div>,
 			dataIndex:'phone',
 			key:'phone',
+      align:'center',
 			editable: true,
 			render: (text, record) => (
 				<div
@@ -78,6 +80,7 @@ class HomeworkCenter extends React.Component {
 			title:<div className='space'>学科</div>,
 			dataIndex:'subJec',
 			key:'subJec',
+      align:'center',
 			editable: true,
 			render: (text, record) => (
 				<div
@@ -93,6 +96,7 @@ class HomeworkCenter extends React.Component {
 			title:<div className='space'>错题量</div>,
 			dataIndex:'wrongNum',
 			key:'wrongNum',
+      align:'center',
 			editable: true,
 			render: (text, record) => (
 				<div
@@ -106,6 +110,7 @@ class HomeworkCenter extends React.Component {
 		{
 			title:<div className='space'>操作</div>,
 			editable: true,
+      align:'center',
 			render: (text, record) => {
 				const rodeType = store.get('wrongBookNews').rodeType
 				if(rodeType <= 20) {
@@ -158,6 +163,7 @@ class HomeworkCenter extends React.Component {
 			title: '姓名',
 			dataIndex: 'name',
 			key: 'name',
+      align:'center',
 			editable: true,
 			render: (text, record) => (
 				<div
@@ -172,6 +178,7 @@ class HomeworkCenter extends React.Component {
 			title:<div className='space'>错题量</div>,
 			dataIndex:'wrongNum',
 			key:'wrongNum',
+      align:'center',
 			editable: false,
 			render: (text, record) => (
 				<div
@@ -186,6 +193,7 @@ class HomeworkCenter extends React.Component {
         title:<div className='space'>联系电话</div>,
         dataIndex:'parentPhones',
         key:'parentPhones',
+        align:'center',
         editable: false,
         render: (text, record) => (
           <div
@@ -200,6 +208,7 @@ class HomeworkCenter extends React.Component {
         title:<div className='space'>视频数量</div>,
         dataIndex:'courseVideoNum',
         key:'courseVideoNum',
+        align:'center',
         editable: false,
         render: (text, record) => (
           <div
@@ -213,6 +222,7 @@ class HomeworkCenter extends React.Component {
 		{
 			title:<div className='space'>操作</div>,
 			editable: true,
+      align:'center',
 			render: (text, record) => {
 				const rodeType = store.get('wrongBookNews').rodeType
 				if(rodeType <= 20) {
