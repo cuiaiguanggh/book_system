@@ -185,7 +185,7 @@ class wrongTop extends React.Component {
       message.warning('上传文件只支持mp4')
       return false
     }
-    if ((fil.size / 1024) / 1024 <= 50) {
+    if ((fil.size / 1024) / 1024 >= 50) {
       message.warning('上传文件大小需小于50Mb')
       return false
     }
