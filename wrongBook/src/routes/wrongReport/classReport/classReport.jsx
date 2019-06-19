@@ -346,6 +346,8 @@ class wrongTop extends React.Component {
                                             <span
                                               className={style.addButon}
                                             >本地上传</span>
+                        <p style={{margin:'10px 0'}}>支持文件类型:mp4 </p>
+                        <p style={{margin:'10px 0'}}>文件大小限制:500MB</p>
                       </label>
                       <input
                         type='file'
@@ -362,6 +364,8 @@ class wrongTop extends React.Component {
                       <span
                         className={style.addButon}
                       >本地上传</span>
+                      <p style={{margin:'10px 0'}}>支持文件类型：mp4 </p>
+                      <p style={{margin:'10px 0'}}>文件大小限制：500MB</p>
                     </div>
                 }
               </div>

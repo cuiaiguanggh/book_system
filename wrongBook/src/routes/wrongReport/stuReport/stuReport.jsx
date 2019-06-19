@@ -1,5 +1,6 @@
 import React from 'react';
-import { Layout, Menu, Button,message,Select,Modal,Icon
+import {
+  Layout, Menu, Button, message, Select, Modal, Icon, Row
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -28,6 +29,7 @@ class StuReport extends React.Component {
 			visible:false,
 			Img:'',
 			next:true,
+      pull: false,
 		}
 	}
 	
@@ -284,7 +286,11 @@ class StuReport extends React.Component {
 								))
 								:''
 							}
-							
+              <div style={{float: 'right'}} onMouseEnter={() => {
+                this.setState({pull: true})
+              }} onMouseLeave={() => {
+                this.setState({pull: false})
+              }}>
 							{detail.data && detail.data.questionList.length != 0 ?<Button 
 								style={{background:'#67c23a',color:'#fff',float:'right',marginTop:"9px",border:'none'}}
 								loading={this.props.state.downQue} 
@@ -295,13 +301,28 @@ class StuReport extends React.Component {
 											type: 'down/downQue',
 											payload:true
 										})
-										this.props.dispatch({
-											type: 'down/getQuestionPdf',
-											payload:{
-												picIds:this.props.state.stuDownPic.join(','),
-												mode:1
-											}
-										})
+
+
+                    if (this.props.state.hastrace[0] == 1){
+
+                      this.props.dispatch({
+                        type: 'down/getQuestionPdf',
+                        payload: {
+                          picIds: this.props.state.stuDownPic.join(','),
+                          mode: 1,
+                          clean :1
+                        }
+                      })
+                    }else {
+                      this.props.dispatch({
+                        type: 'down/getQuestionPdf',
+                        payload: {
+                          picIds: this.props.state.stuDownPic.join(','),
+                          mode: 1,
+                        }
+                      })
+                    }
+
 										// let url = dataCenter('/web/report/getQuestionPdf?picIds='+this.props.state.stuDownPic.join(','))
 										// // window.open(url,'_blank'); 
 										// this.setState({wordUrl:url})
@@ -321,6 +342,34 @@ class StuReport extends React.Component {
                         	<img style={{marginLeft:'10px',height:'15px',marginBottom:'4px'}} src={require('../../images/xc-cl-n.png')}></img>
 							下载组卷({this.props.state.stuDown.length})
 							</Button>:''}
+              {this.state.pull?
+                <div className={style.buttonPull}
+                     onClick={(e) => {
+                       if (this.props.state.hastrace.indexOf('1') > -1) {
+                         this.props.dispatch({
+                           type: 'report/hastrace',
+                           payload: ['2']
+                         });
+                       } else if (this.props.state.hastrace.indexOf('2')> -1) {
+                         this.props.dispatch({
+                           type: 'report/hastrace',
+                           payload: ['1']
+                         });
+                       }
+                     }}>
+                  <Row style={{height: '25px', cursor: 'pointer', margin:'10px 0 ', display: 'flex', justifyContent: 'center', alignItems: 'center',}}>{this.props.state.hastrace[0] == 1?
+                    <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvxz.png')}></img>:
+                    <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvwxz.png')}></img>}
+                    <span className={style.inputk} value="1">无答题痕迹</span>
+                  </Row>
+                  <Row style={{height: '25px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center',}}>
+                    {this.props.state.hastrace[0] == 2?
+                      <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvxz.png')}></img>:
+                      <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvwxz.png')}></img>}
+                    <span className={style.inputk} value="2">有答题痕迹</span>
+                  </Row>
+                </div> :''}
+              </div>
 							{
                              (detail.data && detail.data.questionList.length != 0&&this.props.state.AllPdf&&0!=this.props.state.mouNow)  ?
                             <Button 
