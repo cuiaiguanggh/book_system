@@ -1,6 +1,11 @@
 import request from '../utils/request';
 import {dataCenter } from '../config/dataCenter';
 
+function searchLink(payload){
+  return request(dataCenter('/web/report/getSearchLink'),{
+    data:payload
+  });
+}
 function queryQrDetail(payload){
     return request(dataCenter('/web/report/queryQrDetail'),{
         data:payload
@@ -116,4 +121,5 @@ export {
     querySubListByClassId,
     uploadVideo,
     queryClassDataReport,
+    searchLink,
 };

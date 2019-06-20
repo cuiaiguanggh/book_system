@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Table, Input,Select,Modal,Radio,Button,Pagination,Popover  } from 'antd';
+import { Layout, Table, Input,Select,Modal,Radio,Button,Pagination,Popover,message  } from 'antd';
 import { routerRedux,  } from "dva/router";
 import { connect } from 'dva';
 import store from 'store';
@@ -260,7 +260,7 @@ class HomeworkCenter extends React.Component {
 		const dataSource = [];
 		let total = 0;
 		if(schoolList.data ){
-			total = schoolList.data.total
+			total = schoolList.data.total;
 			for(let i = 0;i < schoolList.data.list.length; i ++){
 				let p = {};
 				let det = schoolList.data.list[i];

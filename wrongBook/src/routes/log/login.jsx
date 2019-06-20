@@ -20,8 +20,12 @@ var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) 
     d = Math.floor(d / 16);
     return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
 });
-let urlIp = 'kacha'
+//正式
+let urlIp = 'kacha';
+//预备
+// let urlIp = 'kacha2';
 let iframeVal = `https://open.weixin.qq.com/connect/qrconnect?appid=wx84919fd1783f83f8&redirect_uri=https%3a%2f%2flogin.kacha.xin%2fstatic%2f${urlIp}%2f%23%2fgetcode&response_type=code&scope=snsapi_login&state=${uuid}`
+
 class Login extends Component {
 	constructor(props) {
     super(props);
@@ -48,47 +52,47 @@ class Login extends Component {
     console.log(`selected ${value}`);
   }
   getCode() {
-    let This = this;
-    var websocket = null;
-    //判断当前浏览器是否支持WebSocket
-    let url =  dataCen('/wrongManage-bate/wechatLogin?loginId='+uuid)
-    if ('WebSocket' in window) {
-        websocket = new WebSocket(url);
-    }
-    else {
-        alert('当前浏览器  Not support websocket');
-    }
-    //连接发生错误的回调方法
-    websocket.onerror = function () {
-        console.log("WebSocket连接发生错误");
-    };
-    //连接成功建立的回调方法
-    websocket.onopen = function () {
-        console.log("WebSocket连接成功");
-    }
-    //接收到消息的回调方法
-    websocket.onmessage = function (event) {
-        console.log(event)
-        
-    }
-    //连接关闭的回调方法
-    websocket.onclose = function () {
-        console.log("WebSocket连接关闭");
-
-        This.props.dispatch({
-            type: 'report/toupload',
-            payload:false
-        });
-    }
-    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
-    //防止连接还没断开就关闭窗口，server端会抛异常。
-    window.onbeforeunload = function () {
-        closeWebSocket();
-    }
-    //关闭WebSocket连接
-    function closeWebSocket() {
-        websocket.close();
-    }
+    // let This = this;
+    // var websocket = null;
+    // //判断当前浏览器是否支持WebSocket
+    // let url =  dataCen('/wrongManage-bate/wechatLogin?loginId='+uuid)
+    // if ('WebSocket' in window) {
+    //     websocket = new WebSocket(url);
+    // }
+    // else {
+    //     alert('当前浏览器  Not support websocket');
+    // }
+    // //连接发生错误的回调方法
+    // websocket.onerror = function () {
+    //     console.log("WebSocket连接发生错误");
+    // };
+    // //连接成功建立的回调方法
+    // websocket.onopen = function () {
+    //     console.log("WebSocket连接成功");
+    // }
+    // //接收到消息的回调方法
+    // websocket.onmessage = function (event) {
+    //     console.log(event)
+    //
+    // }
+    // //连接关闭的回调方法
+    // websocket.onclose = function () {
+    //     console.log("WebSocket连接关闭");
+    //
+    //     This.props.dispatch({
+    //         type: 'report/toupload',
+    //         payload:false
+    //     });
+    // }
+    // //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，
+    // //防止连接还没断开就关闭窗口，server端会抛异常。
+    // window.onbeforeunload = function () {
+    //     closeWebSocket();
+    // }
+    // //关闭WebSocket连接
+    // function closeWebSocket() {
+    //     websocket.close();
+    // }
   }
   render() {
     let cl1= '';
@@ -235,7 +239,7 @@ class Login extends Component {
           </div>:
           <div className='log'>
             <div id="login_container"></div>
-            <iframe id='iframe' ref={this.Ref} className={style.iframe} src={iframeVal}  onLoad={this.getCode()}/>
+            <iframe id='iframe' ref={this.Ref} sandbox="allow-top-navigation allow-popups-to-escape-sandbox allow-same-origin allow-scripts"  className={style.iframe} src={iframeVal}  onLoad={this.getCode()}/>
           </div>
           }
         </div>

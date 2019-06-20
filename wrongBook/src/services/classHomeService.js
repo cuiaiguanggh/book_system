@@ -46,8 +46,10 @@ function queryHomeworkList(payload){
         data:payload
     });
 }
-function getClassList(){
-    return request(dataCenter('/user/getClassList'));
+function getClassList(payload){
+    return request(dataCenter('/user/getClassList'),{
+      data:payload
+    });
 }
 function getYears(payload){
     return request(dataCenter('/sys/config/getEnableYears'),{

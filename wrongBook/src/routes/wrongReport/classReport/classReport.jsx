@@ -21,7 +21,7 @@ const {
   Header, Footer, Sider, Content,
 } = Layout;
 
-const antIcon = <Icon type="loading" style={{fontSize: 50}} spin/>
+const antIcon = <Icon type="loading" style={{fontSize: 50}} spin/>;
 let hei = 200
 
 class wrongTop extends React.Component {
@@ -47,7 +47,14 @@ class wrongTop extends React.Component {
     };
   }
 
-
+//搜索题目跳转链接
+  tiaoz(picId){
+    this.props.dispatch({
+      type: 'report/searchLink',
+      payload: {picId},
+    });
+    window.open(this.props.state.classLink);
+  }
   handleScroll(e) {
     const {clientHeight} = this.refDom;
     hei = clientHeight;
@@ -119,7 +126,7 @@ class wrongTop extends React.Component {
                     }
                   </div>
                   <div style={{overflow: 'hidden', paddingLeft: '10px', paddingTop: '20px'}}>
-                                <span style={{float: 'left', color: '#409eff', cursor: 'pointer'}} onClick={() => {
+                                <span style={{float: 'left',display: 'flex', alignItems: 'center', color: '#409eff', cursor: 'pointer'}} onClick={() => {
                                   if (item.wrongScore != 0) {
                                     this.setState({visible: true, key: i, showAns: ans[0]})
                                   }
@@ -131,7 +138,13 @@ class wrongTop extends React.Component {
                                     w[0].className = 'wrongNum wrongNumOn'
                                   }
 
-                                }}>查看统计</span>
+                                }}> <img src={require('../../images/statistics.png')} style={{marginRight:'6px'}}/>
+                                  查看统计</span>
+
+                    <span style={{marginLeft:'24px',float: 'left',display: 'flex', alignItems: 'center', color: '#409eff', cursor: 'pointer'}} onClick={this.tiaoz.bind(this,item.picId)}>
+                      <img src={require('../../images/seek.png')} style={{marginRight:'6px'}}/>
+                                  搜索题目</span>
+
                     <span className={cls} onClick={() => {
                       let dom = document.getElementsByClassName('down');
                       let downs = this.props.state.classDown;
@@ -179,12 +192,14 @@ class wrongTop extends React.Component {
   }
 
   onImportExcel = file => {
+    console.log(11)
     let form = new FormData();
     let fil = document.getElementById("file").files[0];
     if (fil.type.indexOf('mp4') < 0) {
       message.warning('上传文件只支持mp4')
       return false
     }
+    console.log(fil.size)
     if ((fil.size / 1024) / 1024 >= 50) {
       message.warning('上传文件大小需小于50Mb')
       return false
@@ -347,7 +362,7 @@ class wrongTop extends React.Component {
                                               className={style.addButon}
                                             >本地上传</span>
                         <p style={{margin:'10px 0'}}>支持文件类型:mp4 </p>
-                        <p style={{margin:'10px 0'}}>文件大小限制:500MB</p>
+                        <p style={{margin:'10px 0'}}>文件大小限制:50MB</p>
                       </label>
                       <input
                         type='file'
@@ -365,7 +380,7 @@ class wrongTop extends React.Component {
                         className={style.addButon}
                       >本地上传</span>
                       <p style={{margin:'10px 0'}}>支持文件类型：mp4 </p>
-                      <p style={{margin:'10px 0'}}>文件大小限制：500MB</p>
+                      <p style={{margin:'10px 0'}}>文件大小限制：50MB</p>
                     </div>
                 }
               </div>
@@ -665,15 +680,30 @@ class wrongTop extends React.Component {
                   }}
                   loading={this.props.state.toDown}
                   onClick={() => {
-                    this.props.dispatch({
-                      type: 'down/getAllPdfV2ForQrc',
-                      payload: {
-                        classId: this.props.state.classId,
-                        subjectId: this.props.state.subId,
-                        year: this.props.state.years,
-                        month: this.props.state.mouNow.v,
-                      }
-                    });
+
+                    if (this.props.state.hastrace[0] == 1){
+                      this.props.dispatch({
+                        type: 'down/getAllPdfV2ForQrc',
+                        payload: {
+                          classId: this.props.state.classId,
+                          subjectId: this.props.state.subId,
+                          year: this.props.state.years,
+                          month: this.props.state.mouNow.v,
+                          clean :1
+                        }
+                      });
+                    }else {
+                      this.props.dispatch({
+                        type: 'down/getAllPdfV2ForQrc',
+                        payload: {
+                          classId: this.props.state.classId,
+                          subjectId: this.props.state.subId,
+                          year: this.props.state.years,
+                          month: this.props.state.mouNow.v,
+                        }
+                      });
+                    }
+
                     // 添加导出次数
                     let qlist = this.props.state.qrdetailList.data.questionList;
 

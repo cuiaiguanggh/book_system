@@ -71,7 +71,7 @@ class EditableCell extends React.Component {
 class EditableTable extends React.Component {
   constructor(props) {
     super(props);
-	this.state = {  editingKey: '',classId:'' };
+	this.state = {  editingKey: '',classId:'' ,searchClass:''};
 	this.columns = [
 		{
 			title: '班级名称',
@@ -442,7 +442,23 @@ class EditableTable extends React.Component {
 							style={{width:'300px',marginRight:'10px'}}
 							placeholder="班级名称"
 							enterButton="搜索"
+              onChange = {e =>{
+                this.setState({
+                  searchClass:e.currentTarget.value
+                })
+              }}
 							onSearch={value => {
+                const rodeType = store.get('wrongBookNews').rodeType;
+
+                if(rodeType !== 10 && rodeType !== 20){
+                  let data={
+                    className:this.state.searchClass
+                  };
+                  this.props.dispatch({
+                    type: 'classHome/searchClass',
+                    payload:data
+                  });
+                }
 								let data ={
 									pageNum:1,
 									pageSize:10,
@@ -453,12 +469,6 @@ class EditableTable extends React.Component {
 									type: 'classHome/pageClass',
 									payload:data
 								});
-								this.props.dispatch(
-									routerRedux.push({
-										pathname: '/grade',
-										hash:'page=1'
-									})
-								)
 							}}
 						/>
 						{

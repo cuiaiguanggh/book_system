@@ -95,6 +95,29 @@ export default {
 	},
   
 	effects: {
+	  *searchClass({payload}, {put, select}){
+      yield put ({
+        type: 'classInfoPayload',
+        payload:payload
+      })
+      let res = yield getClassList(payload);
+      if(res.data && res.data.result === 0){
+        yield put ({
+          type: 'classList1',
+          payload:res.data
+        })
+      }
+      else{
+        if(res.data.msg == '无效TOKEN!'){
+          yield put(routerRedux.push('/login'))
+        }else if(res.data.msg == '服务器异常'){
+
+        }else{
+          message.error(res.data.msg)
+        }
+      }
+
+    },
 		*pageClass({payload}, {put, select}) {
 			// 班级列表
 			yield put ({
@@ -425,4 +448,3 @@ export default {
 	
   
   };
-  

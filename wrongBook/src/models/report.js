@@ -6,6 +6,7 @@ import {
 	deleteTeachVideo,
 	queryTeachVideo,
 	uploadVideo,
+  searchLink
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -33,7 +34,7 @@ export default {
 		videlUrl:'',
 		toupload:false,
 		propsPageNum:1,
-    hastrace: ['1']
+    hastrace: ['1'],
 	},
 	reducers: {
     hastrace(state, {payload}) {
@@ -104,15 +105,21 @@ export default {
 		},
 		deleteVidio(state, {payload}) {
 			let list = state.qrdetailList;
-			delete list.data.questionList[payload].teachVideo; 
-			console.log(list)
-			return { ...state, qrdetailList:list };
+			delete list.data.questionList[payload].teachVideo;
+      //学生错题页面
+      let list1 = state.qrdetailList1;
+      delete list1.data.questionList[payload].teachVideo;
+			return { ...state, qrdetailList:list,qrdetailList1:list1 };
 		},
 		updataVideo(state, {payload}) {
 			let qrdetailList = state.qrdetailList;
 			// let visible = false;
-			qrdetailList.data.questionList[payload.key].teachVideo = payload.video
-			return { ...state, ...{qrdetailList} };
+			qrdetailList.data.questionList[payload.key].teachVideo = payload.video;
+      //学生错题页面
+      let qrdetailList1 = state.qrdetailList1;
+      // let visible = false;
+      qrdetailList1.data.questionList[payload.key].teachVideo = payload.video;
+			return { ...state, ...{qrdetailList}, ...{qrdetailList1}};
 		},
 		visible(state, {payload}) {
 			return { ...state, visible:payload };
@@ -159,6 +166,10 @@ export default {
 	},
   
 	effects: {
+	  *searchLink({payload},{put,select}){
+      let res = yield searchLink(payload);
+      window.open(res.data.data.link);
+    },
 		*queryQrDetail({payload},{put,select}) {
 			let {mouNow} = yield select(state => state.report)
 			if(mouNow != 0){
@@ -410,8 +421,7 @@ export default {
 			let res = yield deleteTeachVideo(data);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
+			}else if(res.data && res.data.result === 0){
 				message.success('删除成功')
 				yield put ({
 					type: 'deleteVidio',
