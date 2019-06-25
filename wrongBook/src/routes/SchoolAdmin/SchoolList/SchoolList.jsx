@@ -159,7 +159,7 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title: '校长',
+			title: '校管理员',
 			dataIndex: 'principal',
 			key: 'principal',
 			width: '10%',
@@ -562,7 +562,7 @@ class HomeworkCenter extends React.Component {
 									</RadioGroup>
 								</div>
 								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>校长</span>
+									<span style={{width:"80px",display:'inline-block'}}>校管理员</span>
 									<Input defaultValue={schoolInfo.data.masterName}
 										onChange={(e)=>{
 											this.props.dispatch({
@@ -607,7 +607,7 @@ class HomeworkCenter extends React.Component {
 									</RadioGroup>
 								</div>
 								<div style={{marginBottom:'10px'}}>
-									<span style={{width:"80px",display:'inline-block'}}>校长</span>
+									<span style={{width:"80px",display:'inline-block'}}>校管理员</span>
 									<Input style={{width:'200px'}}/>
 								</div>
 								<div style={{marginBottom:'10px'}}>

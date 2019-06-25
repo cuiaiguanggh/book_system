@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button, message, Layout, Modal, Select, Icon, Spin, Checkbox, Row, Col
+  Button, message, Layout, Modal, Select, Icon, Spin, Checkbox, Row, Col,
 } from 'antd';
 import {dataCenter, dataCen, serverType} from '../../../config/dataCenter'
 import {routerRedux,} from "dva/router";
@@ -48,13 +48,13 @@ class wrongTop extends React.Component {
   }
 
 //搜索题目跳转链接
-  tiaoz(picId){
+  tiaoz(picId) {
     this.props.dispatch({
       type: 'report/searchLink',
       payload: {picId},
     });
-    window.open(this.props.state.classLink);
   }
+
   handleScroll(e) {
     const {clientHeight} = this.refDom;
     hei = clientHeight;
@@ -119,14 +119,20 @@ class wrongTop extends React.Component {
                       w[0].className = 'wrongNum wrongNumOn'
                     }
                   }}>
-                    {
+                    {item.questionUrl ?
                       item.questionUrl.split(',').map((item, i) => (
                         <img key={i} style={{width: '100%'}} src={item}></img>
-                      ))
+                      )) : ''
                     }
                   </div>
                   <div style={{overflow: 'hidden', paddingLeft: '10px', paddingTop: '20px'}}>
-                                <span style={{float: 'left',display: 'flex', alignItems: 'center', color: '#409eff', cursor: 'pointer'}} onClick={() => {
+                                <span style={{
+                                  float: 'left',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  color: '#409eff',
+                                  cursor: 'pointer'
+                                }} onClick={() => {
                                   if (item.wrongScore != 0) {
                                     this.setState({visible: true, key: i, showAns: ans[0]})
                                   }
@@ -138,11 +144,18 @@ class wrongTop extends React.Component {
                                     w[0].className = 'wrongNum wrongNumOn'
                                   }
 
-                                }}> <img src={require('../../images/statistics.png')} style={{marginRight:'6px'}}/>
+                                }}> <img src={require('../../images/statistics.png')} style={{marginRight: '6px'}}/>
                                   查看统计</span>
 
-                    <span style={{marginLeft:'24px',float: 'left',display: 'flex', alignItems: 'center', color: '#409eff', cursor: 'pointer'}} onClick={this.tiaoz.bind(this,item.picId)}>
-                      <img src={require('../../images/seek.png')} style={{marginRight:'6px'}}/>
+                    <span style={{
+                      marginLeft: '24px',
+                      float: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      color: '#409eff',
+                      cursor: 'pointer'
+                    }} onClick={this.tiaoz.bind(this, item.picId)}>
+                      <img src={require('../../images/seek.png')} style={{marginRight: '6px'}}/>
                                   搜索题目</span>
 
                     <span className={cls} onClick={() => {
@@ -192,7 +205,6 @@ class wrongTop extends React.Component {
   }
 
   onImportExcel = file => {
-    console.log(11)
     let form = new FormData();
     let fil = document.getElementById("file").files[0];
     if (fil.type.indexOf('mp4') < 0) {
@@ -287,7 +299,7 @@ class wrongTop extends React.Component {
         }
         if (data.url) {
           json = JSON.parse(data.url)
-          // message.success('视频上传成功')
+          message.success('视频已发送至学生端，可提醒学生及时复习')
           This.props.dispatch({
             type: 'report/updataVideo',
             payload: {
@@ -358,11 +370,9 @@ class wrongTop extends React.Component {
                       <p style={{marginTop: 20, fontSize: '16px', color: '#606266'}}>手机微信扫码，录制视频讲解</p>
 
                       <label htmlFor="file">
-                                            <span
-                                              className={style.addButon}
-                                            >本地上传</span>
-                        <p style={{margin:'10px 0'}}>支持文件类型:mp4 </p>
-                        <p style={{margin:'10px 0'}}>文件大小限制:50MB</p>
+                        <span className={style.addButon}>本地上传</span>
+                        <p style={{margin: '10px 0'}}>支持文件类型:mp4 </p>
+                        <p style={{margin: '10px 0'}}>文件大小限制:50MB</p>
                       </label>
                       <input
                         type='file'
@@ -379,8 +389,8 @@ class wrongTop extends React.Component {
                       <span
                         className={style.addButon}
                       >本地上传</span>
-                      <p style={{margin:'10px 0'}}>支持文件类型：mp4 </p>
-                      <p style={{margin:'10px 0'}}>文件大小限制：50MB</p>
+                      <p style={{margin: '10px 0'}}>支持文件类型：mp4 </p>
+                      <p style={{margin: '10px 0'}}>文件大小限制：50MB</p>
                     </div>
                 }
               </div>
@@ -597,17 +607,17 @@ class wrongTop extends React.Component {
                       type: 'down/downQue',
                       payload: true
                     })
-                    if (this.props.state.hastrace[0] == 1){
+                    if (this.props.state.hastrace[0] == 1) {
 
                       this.props.dispatch({
                         type: 'down/getQuestionPdf',
                         payload: {
                           picIds: this.props.state.classDownPic.join(','),
                           mode: 2,
-                          clean :1
+                          clean: 1
                         }
                       })
-                    }else {
+                    } else {
                       this.props.dispatch({
                         type: 'down/getQuestionPdf',
                         payload: {
@@ -638,33 +648,46 @@ class wrongTop extends React.Component {
                      src={require('../../images/xc-cl-n.png')}></img>
                 下载组卷({this.props.state.classDown.length})
               </Button> : ''}
-              {this.state.pull?
-              <div className={style.buttonPull}
-                              onClick={(e) => {
-                if (this.props.state.hastrace.indexOf('1') > -1) {
-                  this.props.dispatch({
-                    type: 'report/hastrace',
-                    payload: ['2']
-                  });
-                } else if (this.props.state.hastrace.indexOf('2')> -1) {
-                  this.props.dispatch({
-                    type: 'report/hastrace',
-                    payload: ['1']
-                  });
-                }
-              }}>
-                <Row style={{height: '25px', cursor: 'pointer', margin:'10px 0 ', display: 'flex', justifyContent: 'center', alignItems: 'center',}}>{this.props.state.hastrace[0] == 1?
-                  <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvxz.png')}></img>:
-                  <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvwxz.png')}></img>}
-                  <span className={style.inputk} value="1">无答题痕迹</span>
-                </Row>
-                <Row style={{height: '25px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center',}}>
-                  {this.props.state.hastrace[0] == 2?
-                    <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvxz.png')}></img>:
-                    <img style={{marginRight: '9px',height:'14px'}} src={require('../../images/lvwxz.png')}></img>}
-                  <span className={style.inputk} value="2">有答题痕迹</span>
-                </Row>
-              </div> :''}
+              {this.state.pull ?
+                <div className={style.buttonPull}
+                     onClick={(e) => {
+                       if (this.props.state.hastrace.indexOf('1') > -1) {
+                         this.props.dispatch({
+                           type: 'report/hastrace',
+                           payload: ['2']
+                         });
+                       } else if (this.props.state.hastrace.indexOf('2') > -1) {
+                         this.props.dispatch({
+                           type: 'report/hastrace',
+                           payload: ['1']
+                         });
+                       }
+                     }}>
+                  <Row style={{
+                    height: '25px',
+                    cursor: 'pointer',
+                    margin: '10px 0 ',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>{this.props.state.hastrace[0] == 1 ?
+                    <img style={{marginRight: '9px', height: '14px'}} src={require('../../images/lvxz.png')}></img> :
+                    <img style={{marginRight: '9px', height: '14px'}} src={require('../../images/lvwxz.png')}></img>}
+                    <span className={style.inputk} value="1">无答题痕迹</span>
+                  </Row>
+                  <Row style={{
+                    height: '25px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    {this.props.state.hastrace[0] == 2 ?
+                      <img style={{marginRight: '9px', height: '14px'}} src={require('../../images/lvxz.png')}></img> :
+                      <img style={{marginRight: '9px', height: '14px'}} src={require('../../images/lvwxz.png')}></img>}
+                    <span className={style.inputk} value="2">有答题痕迹</span>
+                  </Row>
+                </div> : ''}
             </div>
             {
               (this.props.state.AllPdf && 0 != this.props.state.mouNow && QuestionDetail.data && QuestionDetail.data.questionList.length > 0) ?
@@ -681,7 +704,7 @@ class wrongTop extends React.Component {
                   loading={this.props.state.toDown}
                   onClick={() => {
 
-                    if (this.props.state.hastrace[0] == 1){
+                    if (this.props.state.hastrace[0] == 1) {
                       this.props.dispatch({
                         type: 'down/getAllPdfV2ForQrc',
                         payload: {
@@ -689,10 +712,10 @@ class wrongTop extends React.Component {
                           subjectId: this.props.state.subId,
                           year: this.props.state.years,
                           month: this.props.state.mouNow.v,
-                          clean :1
+                          clean: 1
                         }
                       });
-                    }else {
+                    } else {
                       this.props.dispatch({
                         type: 'down/getAllPdfV2ForQrc',
                         payload: {
@@ -910,7 +933,6 @@ class wrongTop extends React.Component {
   }
 
   componentDidMount() {
-
     let classId = this.props.state.classId;
     let subId = this.props.state.subId;
     let year = this.props.state.years;

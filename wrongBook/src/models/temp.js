@@ -170,11 +170,11 @@ export default {
 
 		*getUserSubjectList({payload}, {put, select}) {
 			// 返回教师所在班级科目
-			let {years} = yield select(state => state.temp)
-			let data={
+			let {years} = yield select(state => state.temp);
+      let data={
 				classId:payload,
 				year:years
-			}
+			};
 			let res = yield getUserSubjectList(data);
 			if(res.data && res.data.result === 0){
 				if(res.data.data.length> 0 ){
@@ -308,4 +308,3 @@ export default {
 	
   
   };
-  

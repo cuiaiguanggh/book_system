@@ -168,7 +168,11 @@ export default {
 	effects: {
 	  *searchLink({payload},{put,select}){
       let res = yield searchLink(payload);
-      window.open(res.data.data.link);
+      window.open(res.data.data.link,'_blank');
+      // var tempwindow=window.open('_blank'); // 先打开页面
+      // tempwindow.location=res.data.data.link; // 后更改页面地址
+      //如果被拦截的备选方案
+      // window.open(`${document.location.protocol}://www.baidu.com/s?wd=${res.data.data.link}`,'_blank');
     },
 		*queryQrDetail({payload},{put,select}) {
 			let {mouNow} = yield select(state => state.report)
@@ -195,7 +199,8 @@ export default {
 			}
 		},
 		*queryQrStudentCount({payload},{put,select}) {
-			let {mouNow,userId} = yield select(state => state.report)
+			let {mouNow,userId} = yield select(state => state.report);
+
 			if(mouNow != 0){
 				payload.month = mouNow.v
 			}
@@ -203,8 +208,7 @@ export default {
 			let res = yield queryQrStudentCount(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
+			}else if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'studentList',
 					payload:res.data

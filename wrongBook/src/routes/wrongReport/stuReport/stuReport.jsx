@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin
+  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin,
 } from 'antd';
 import {routerRedux, Link} from "dva/router";
 import {connect} from 'dva';
@@ -279,8 +279,7 @@ class StuReport extends React.Component {
 
   menulist() {
     let studentList = this.props.state.studentList;
-    // let current = this.props.state.userId;
-    let current=String(store.get('wrongBookNews').userId);
+    let current = this.props.state.userId;
     if (studentList.data.length > 0) {
       if (current !== '') {
         return (
@@ -408,10 +407,10 @@ class StuReport extends React.Component {
                       w[0].className = 'wrongNum wrongNumOn'
                     }
                   }}>
-                    {
+                    {item.userAnswerList[0].answer?
                       item.userAnswerList[0].answer.split(',').map((item, i) => (
                         <img key={i} style={{width: '100%'}} src={item}></img>
-                      ))
+                      )):''
                     }
                   </div>
 
@@ -888,9 +887,9 @@ class StuReport extends React.Component {
 
 export default connect((state) => ({
   state: {
-    ...state.report,
     ...state.temp,
     ...state.down,
     ...state.example,
+    ...state.report,
   }
 }))(StuReport);

@@ -27,7 +27,7 @@ export default {
 		schoolList:[],
 		schoolId:'',
 		userList:[],
-		classId:'',
+		// classId:'',
 		userData:[],
 		subjectId:'',
 		phone:''
@@ -54,9 +54,9 @@ export default {
 		schoolId(state, {payload}) {
 			return { ...state, schoolId:payload };
     },
-    classId(state, {payload}) {
-			return { ...state, classId:payload };
-    },
+    // classId(state, {payload}) {
+		// 	return { ...state, classId:payload };
+    // },
     userList(state, {payload}) {
 			return { ...state, userLisgetUserInfot:payload };
 		},
@@ -239,4 +239,3 @@ export default {
 	
   
   };
-  

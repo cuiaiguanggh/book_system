@@ -72,15 +72,15 @@ export default {
 			let res = yield loginTiku(payload);
 			// if(!res.hasOwnProperty("err")){
 				if(res.data.result === 0 ){
-					let data = res.data
+					let data = res.data;
 					if(payload.rem){
-						let tim = new Date()*1
+						let tim = new Date()*1;
 						store.set('logTime',tim)
 					}else{
 						store.set('logTime','')
 					}
-					store.set('wrongBookNews',data.data)
-					store.set('wrongBookToken',data.data.token)
+					store.set('wrongBookNews',data.data);
+					store.set('wrongBookToken',data.data.token);
 					let rodeType = data.data.rodeType;
 					
 					yield put ({
@@ -91,7 +91,9 @@ export default {
 						type: 'report/changeMouth',
 						payload:0
 					})
-					
+
+
+
 					if(rodeType === 10){
 						yield put(routerRedux.push({
 							pathname: '/school',
@@ -292,4 +294,3 @@ export default {
 		},
 	},
   };
-  
