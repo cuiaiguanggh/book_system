@@ -101,8 +101,8 @@ export default {
 						}))
 					}else if(rodeType ===20){
 						yield put(routerRedux.push({
-							pathname: '/grade',
-							hash:'page=1'
+							pathname: '/classReport',
+							// hash:'page=1'
 						}))
 					}else if(rodeType ===30 || rodeType ===40){
 						yield put(routerRedux.push({

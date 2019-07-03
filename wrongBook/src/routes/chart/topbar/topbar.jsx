@@ -71,7 +71,7 @@ class topbar extends React.Component {
 		let timeList=this.props.timeList
 		let sdate
 		let cdate=this.format(this.state.ctimestamp)
-		let defaultDate=[]
+		let defaultDate=[];
 		if(timeList.length>0){
 			sdate=this.format(timeList[0].timeStamp)
 			defaultDate=[sdate, cdate]
@@ -121,6 +121,7 @@ class topbar extends React.Component {
 	componentDidMount(){
 
 	}
+
 }
 
 export default connect((state) => ({

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin,
+  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin,DatePicker
 } from 'antd';
 import {routerRedux, Link} from "dva/router";
 import {connect} from 'dva';
@@ -12,8 +12,10 @@ import store from 'store';
 import commonCss from '../../css/commonCss.css'
 import TracksVideo from "../TracksVideo/TracksVideo";
 import QRCode from "qrcode.react";
+import 'moment/locale/zh-cn';
 //作业中心界面内容
 const Option = Select.Option;
+const { RangePicker} = DatePicker;
 const {
   Header, Footer, Sider, Content,
 } = Layout;
@@ -36,6 +38,8 @@ class StuReport extends React.Component {
       next: true,
       toupload: false,
       pull: false,
+      BegtoendTime:[],
+      StbegtoendTime:[]
     }
   }
 
@@ -95,8 +99,9 @@ class StuReport extends React.Component {
   addVie() {
     const userId = store.get('wrongBookNews').userId;
     let value = 'http://hw-test.mizholdings.com/wx/';
-    if (serverType === 2) {
-      value = 'https://dy.kacha.xin/wx/takevideoPreview/'
+      //测试
+    if (serverType === 0) {
+       value = 'http://dev.kacha.xin/wx/';
     }
     value += 'video?uqId=' + this.props.state.uqId + '&authorId=' + userId;
     let This = this;
@@ -316,6 +321,12 @@ class StuReport extends React.Component {
               if (this.props.state.mouNow != 0) {
                 data.month = this.props.state.mouNow.v
               }
+            if(this.state.StbegtoendTime.length > 0){
+              data.startTime=this.state.StbegtoendTime[0];
+              data.endTime=this.state.StbegtoendTime[1];
+              }
+     
+
               this.props.dispatch({
                 type: 'report/userQRdetail',
                 payload: data
@@ -481,6 +492,10 @@ class StuReport extends React.Component {
             <div style={{padding: '0 20px', background: "#fff", borderBottom: '1px solid #ccc'}}>
               <span>时间：</span>
               <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'} onClick={() => {
+                      this.setState({
+                        BegtoendTime:[],
+                        StbegtoendTime:[]
+                      })
                 this.props.dispatch({
                   type: 'report/changeMouth',
                   payload: 0
@@ -517,6 +532,10 @@ class StuReport extends React.Component {
                   mounthList.data.map((item, i) => (
                     <span key={i} className={item.k == this.props.state.mouNow.k ? 'choseMonthOn' : 'choseMonth'}
                           onClick={() => {
+                            this.setState({
+                              BegtoendTime:[],
+                              StbegtoendTime:[]
+                            })
                             this.props.dispatch({
                               type: 'report/changeMouth',
                               payload: item
@@ -551,6 +570,49 @@ class StuReport extends React.Component {
                   ))
                   : ''
               }
+                  <RangePicker
+           style={{width:220}} 
+           format="YYYY-MM-DD"  
+           placeholder={['开始时间', '结束时间']}
+           value={this.state.BegtoendTime}
+           disabledDate ={ current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
+           onChange={(date, dateString)=>{
+             
+            this.props.dispatch({
+              type: 'report/changeMouth',
+              payload: 0
+            });
+            this.props.dispatch({
+              type: 'report/propsPageNum',
+              payload: 1
+            });
+            this.props.dispatch({
+              type: 'report/qrStudentDetailList',
+              payload: []
+            })
+
+             this.props.dispatch({
+              type: 'report/queryQrStudentCount',
+              payload: {
+                classId: this.props.state.classId,
+                year: this.props.state.years,
+                subjectId: this.props.state.subId,
+                info: 0,
+                pageSize: 50,
+                pageNum: 1,
+                startTime:dateString[0],
+                endTime:dateString[1],
+              }
+            });
+            this.props.dispatch({
+              type: 'down/AllPdf',
+              payload: true
+            });
+             this.setState({
+              BegtoendTime:date,
+              StbegtoendTime:dateString
+             })
+           }} />
               <div style={{float: 'right'}} onMouseEnter={() => {
                 this.setState({pull: true})
               }} onMouseLeave={() => {

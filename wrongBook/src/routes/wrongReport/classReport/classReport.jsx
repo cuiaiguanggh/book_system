@@ -1,12 +1,13 @@
 import React from 'react';
 import {
-  Button, message, Layout, Modal, Select, Icon, Spin, Checkbox, Row, Col,
+  Button, message, Layout, Modal, Select, Icon, Spin, Checkbox, Row, Col,DatePicker 
 } from 'antd';
 import {dataCenter, dataCen, serverType} from '../../../config/dataCenter'
 import {routerRedux,} from "dva/router";
 import {connect} from 'dva';
 import QRCode from 'qrcode.react';
-
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 
@@ -20,7 +21,7 @@ const confirm = Modal.confirm;
 const {
   Header, Footer, Sider, Content,
 } = Layout;
-
+const { RangePicker} = DatePicker;
 const antIcon = <Icon type="loading" style={{fontSize: 50}} spin/>;
 let hei = 200
 
@@ -44,6 +45,7 @@ class wrongTop extends React.Component {
       allPdf: false,
       toupload: false,
       pull: false,
+      BegtoendTime:[],
     };
   }
 
@@ -260,9 +262,10 @@ class wrongTop extends React.Component {
   addVie() {
     const userId = store.get('wrongBookNews').userId
     let value = 'http://hw-test.mizholdings.com/wx/'
-    if (serverType === 2) {
-      value = 'https://dy.kacha.xin/wx/takevideoPreview/'
-    }
+      //测试
+     if (serverType === 0) {
+        value = 'http://dev.kacha.xin/wx/';
+     }
     value += 'video?uqId=' + this.props.state.uqId + '&authorId=' + userId
     let This = this;
     // console.log(this.props.state.visible1,this.props.state.toupload )
@@ -521,6 +524,9 @@ class wrongTop extends React.Component {
           <Header className={style.layoutHead}>
             <span>时间：</span>
             <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'} onClick={() => {
+                    this.setState({
+                      BegtoendTime:[]
+                    })
               this.props.dispatch({
                 type: 'report/changeMouth',
                 payload: 0
@@ -556,6 +562,9 @@ class wrongTop extends React.Component {
                   return (
                     <span key={i} className={item.k == this.props.state.mouNow.k ? 'choseMonthOn' : 'choseMonth'}
                           onClick={() => {
+                            this.setState({
+                              BegtoendTime:[]
+                            })
                             this.props.dispatch({
                               type: 'report/changeMouth',
                               payload: item
@@ -592,6 +601,45 @@ class wrongTop extends React.Component {
                 })
                 : ''
             }
+          <RangePicker
+           style={{width:220}} 
+           format="YYYY-MM-DD"  
+           placeholder={['开始时间', '结束时间']}
+           value={this.state.BegtoendTime}
+           disabledDate ={ current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
+           onChange={(date, dateString)=>{
+           
+             this.props.dispatch({
+              type: 'report/changeMouth',
+              payload: 0
+            });
+
+            this.props.dispatch({
+              type: 'report/propsPageNum',
+              payload: 1
+            });
+            this.props.dispatch({
+              type: 'report/qrdetailList',
+              payload: []
+            });
+
+             this.props.dispatch({
+              type: 'report/queryQrDetail',
+              payload: {
+                classId: this.props.state.classId,
+                year: this.props.state.years,
+                subjectId: this.props.state.subId,
+                info: 0,
+                pageSize: 50,
+                pageNum: 1,
+                startTime:dateString[0],
+                endTime:dateString[1],
+              }
+            });
+             this.setState({
+              BegtoendTime:date
+             })
+           }} />
             <div style={{float: 'right'}} onMouseEnter={() => {
               this.setState({pull: true})
             }} onMouseLeave={() => {

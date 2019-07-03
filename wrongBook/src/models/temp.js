@@ -16,94 +16,98 @@ import {
 	getClassList,
 	getYears,
 } from '../services/classHomeService';
-import {routerRedux} from 'dva/router';
+import { routerRedux } from 'dva/router';
 import moment from 'moment';
 import { message } from 'antd';
 export default {
 
 	namespace: 'temp',
-  
-	state: {
-		className:'',
-		classId:'',
-		classList: [],
-		classList1:[],
-		subList:[],
-		mounthList:[],
-		years:moment().format('YYYY'),
-		subId:'',
-		subName:'',
 
-		scoreList:[],
-		QuestionDetail:[],
-		classInfoPayload:[],
-		schoolId:'',
-		workList:[],
-		workName:'',
-		workId:'',
-		workDetail:[],
+	state: {
+		className: '',
+		classId: '',
+		classList: [],
+		classList1: [],
+		subList: [],
+		mounthList: [],
+		years: moment().format('YYYY'),
+		subId: '',
+		subName: '',
+
+		scoreList: [],
+		QuestionDetail: [],
+		classInfoPayload: [],
+		schoolId: '',
+		workList: [],
+		workName: '',
+		workId: '',
+		workDetail: [],
+		subjectId: ''
 	},
 	reducers: {
-		className(state, {payload}) {
-			return { ...state, className:payload };
+		subjectId(state, { payload }) {
+			return { ...state, subjectId: payload };
 		},
-		classId(state, {payload}) {
-			return { ...state, classId:payload };
+		className(state, { payload }) {
+			return { ...state, className: payload };
 		},
-		classList(state, {payload}) {
-			return { ...state, classList:payload };
+		classId(state, { payload }) {
+			return { ...state, classId: payload };
 		},
-		classList1(state, {payload}) {
-			return { ...state, classList1:payload };
+		classList(state, { payload }) {
+			return { ...state, classList: payload };
 		},
-		subList(state, {payload}) {
-			return { ...state, subList:payload };
+		classList1(state, { payload }) {
+			return { ...state, classList1: payload };
 		},
-		mounthList(state, {payload}) {
-			return { ...state, mounthList:payload };
+		subList(state, { payload }) {
+			return { ...state, subList: payload };
 		},
-		years(state, {payload}) {
-			return { ...state, years:payload };
+		mounthList(state, { payload }) {
+			return { ...state, mounthList: payload };
 		},
-		subId(state, {payload}) {
+		years(state, { payload }) {
+			return { ...state, years: payload };
+		},
+		subId(state, { payload }) {
 			let subList = state.subList;
 			let subId = payload;
 			let subName = '';
-			if(subList.data){
-				for(let i = 0 ; i < subList.data.length ; i ++ ) {
-					if( subList.data[i].v == payload ){
+			if (subList.data) {
+				for (let i = 0; i < subList.data.length; i++) {
+					if (subList.data[i].v == payload) {
 						subName = subList.data[i].k
 					}
 				}
 			}
-			return { ...state, ...{subId,subName} };
+			return { ...state, ...{ subId, subName } };
 		},
-		subName(state, {payload}) {
-			return { ...state, subName:payload };
+		subName(state, { payload }) {
+			return { ...state, subName: payload };
 		},
 	},
 	subscriptions: {
-	  setup({ dispatch, history }) {  // eslint-disable-line
-	  },
+		setup({ dispatch, history }) {  // eslint-disable-line
+		},
 	},
-  
+
 	effects: {
-		*pageClass({payload}, {put, select}) {
+		*pageClass({ payload }, { put, select }) {
 			// 班级列表
-			yield put ({
+			yield put({
 				type: 'classInfoPayload',
-				payload:payload
+				payload: payload
 			})
 			let res = yield pageClass(payload);
-			if(res.data && res.data.result === 0){
-				
-				yield put ({
+			if (res.data && res.data.result === 0) {
+
+				yield put({
 					type: 'className',
-					payload:res.data.data.list[0].className
+					payload: res.data.data.list[0].className
 				})
-				yield put ({
+				yield put({
 					type: 'classId',
-					payload:res.data.data.list[0].classId
+					payload: res.data.data.list[0].classId
 				})
 
 				// yield put ({
@@ -112,199 +116,218 @@ export default {
 				// 		classId:res.data.data.list[0].classId,
 				// 	}
 				// })
-				
-				yield put ({
+
+				yield put({
 					type: 'classList',
-					payload:res.data
+					payload: res.data
 				})
 			}
-			else{
-				if(res.data.msg == '无效TOKEN!'){
+			else {
+				if (res.data.msg == '无效TOKEN!') {
 					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
+				} else if (res.data.msg == '服务器异常') {
 
-				}else{
+				} else {
 					message.error(res.data.msg)
 				}
 
 			}
 		},
 
-		*getClassList({payload}, {put, select}) {
+		*getClassList({ payload }, { put, select }) {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
-			if(res.data && res.data.result === 0){
-				if(res.data.data.length > 0 ){
-					yield put ({
+			if (res.data && res.data.result === 0) {
+				if (res.data.data.length > 0) {
+					yield put({
 						type: 'className',
-						payload:res.data.data[0].className
+						payload: res.data.data[0].className
 					})
-					yield put ({
+					yield put({
 						type: 'classId',
-						payload:res.data.data[0].classId
+						payload: res.data.data[0].classId
 					})
-					yield put ({
+					yield put({
 						type: 'classList1',
-						payload:res.data
+						payload: res.data
 					})
-	
-					yield put ({
+
+					yield put({
 						type: 'getUserSubjectList',
-						payload:res.data.data[0].classId
+						payload: res.data.data[0].classId
 					})
 				}
 
-				
-				
-			}else{
-				if(res.data.msg == '无效TOKEN!'){
-					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
 
-				}else{
+
+			} else {
+				if (res.data.msg == '无效TOKEN!') {
+					yield put(routerRedux.push('/login'))
+				} else if (res.data.msg == '服务器异常') {
+
+				} else {
 					message.error(res.data.msg)
 				}
 			}
-			
+
 		},
 
-		*getUserSubjectList({payload}, {put, select}) {
+		*getUserSubjectList({ payload }, { put, select }) {
 			// 返回教师所在班级科目
-			let {years} = yield select(state => state.temp);
-      let data={
-				classId:payload,
-				year:years
+			let { years } = yield select(state => state.temp);
+			let data = {
+				classId: payload,
+				year: years
 			};
 			let res = yield getUserSubjectList(data);
-			if(res.data && res.data.result === 0){
-				if(res.data.data.length> 0 ){
-					yield put ({
+			if (res.data && res.data.result === 0) {
+				if (res.data.data.length > 0) {
+					yield put({
 						type: 'subId',
-						payload:res.data.data[0].v
+						payload: res.data.data[0].v
 					})
-					yield put ({
+					yield put({
 						type: 'subName',
-						payload:res.data.data[0].k
+						payload: res.data.data[0].k
 					})
-					yield put ({
+					yield put({
 						type: 'subList',
-						payload:res.data
+						payload: res.data
 					})
-					yield put ({
-						type:'report/queryQrStudentCount',
-						payload:{
-							classId:payload,
-							year:years,
-							subjectId:res.data.data[0].v
+					yield put({
+						type: 'subjectId',
+						payload: res.data.data[0].v
+					})
+					yield put({
+						type: 'report/queryQrStudentCount',
+						payload: {
+							classId: payload,
+							year: years,
+							subjectId: res.data.data[0].v
 						}
 					})
-					yield put ({
+					yield put({
 						type: 'report/queryQrDetail',
-						payload:{
-							classId:payload,
-							year:years,
-							subjectId:res.data.data[0].v,
-							info:0,
-							page:1,
-							pageSize:50
+						payload: {
+							classId: payload,
+							year: years,
+							subjectId: res.data.data[0].v,
+							info: 0,
+							page: 1,
+							pageSize: 50
 						}
 					})
-					yield put ({
+					yield put({
 						type: 'getQrMonthList',
-						payload:{
-							classId:payload,
-							year:years,
-							subjectId:res.data.data[0].v
+						payload: {
+							classId: payload,
+							year: years,
+							subjectId: res.data.data[0].v
 						}
 					})
-					yield put ({
+					yield put({
 						type: 'report/queryHomeworkList',
-						payload:{
-							classId:payload,
-							subjectId:res.data.data[0].v
+						payload: {
+							classId: payload,
+							subjectId: res.data.data[0].v
 						}
 					})
 				}
-				
-			}else{
-				if(res.data.msg == '无效TOKEN!'){
-					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
 
-				}else{
+			} else {
+				if (res.data.msg == '无效TOKEN!') {
+					yield put(routerRedux.push('/login'))
+				} else if (res.data.msg == '服务器异常') {
+
+				} else {
 					message.error(res.data.msg)
 				}
 			}
-			
+
 		},
-		
-		*getQrMonthList({payload}, {put, select}) {
+		*updateMonthList({ payload }, { put, select }) {
+			//更新月份列表
+			let { years, classId, subjectId } = yield select(state => state.temp);
+			let res = yield getQrMonthList({
+				classId,
+				year: years,
+				subjectId
+			});
+			if (res.data && res.data.result === 0) {
+				yield put({
+					type: 'mounthList',
+					payload: res.data
+				})
+			}
+
+		},
+		*getQrMonthList({ payload }, { put, select }) {
 			// 返回教师所在班级科目
 			let res = yield getQrMonthList(payload);
-			if(res.data && res.data.result === 0){
-				yield put ({
+			if (res.data && res.data.result === 0) {
+				yield put({
 					type: 'mounthList',
-					payload:res.data
+					payload: res.data
 				})
-			}else{
-				if(res.data.msg == '无效TOKEN!'){
+			} else {
+				if (res.data.msg == '无效TOKEN!') {
 					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
+				} else if (res.data.msg == '服务器异常') {
 
-				}else{
+				} else {
 					message.error(res.data.msg)
 				}
 			}
-			
+
 		},
 
-		*queryQuestionDetail({payload}, {put, select}) {
+		*queryQuestionDetail({ payload }, { put, select }) {
 			// 导航栏信息
 			let res = yield queryQuestionDetail(payload);
-			if(res.data && res.data.result === 0){
-				yield put ({
+			if (res.data && res.data.result === 0) {
+				yield put({
 					type: 'QuestionDetail',
-					payload:res.data
+					payload: res.data
 				})
 			}
-			else{
-				if(res.data.msg == '无效TOKEN!'){
+			else {
+				if (res.data.msg == '无效TOKEN!') {
 					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
+				} else if (res.data.msg == '服务器异常') {
 
-				}else{
+				} else {
 					message.error(res.data.msg)
 				}
 			}
 		},
 
-		
-		*homeworkDetail({payload}, {put, select}) {
+
+		*homeworkDetail({ payload }, { put, select }) {
 			// 导航栏信息
 			let res = yield homeworkDetail(payload);
-			if(res.hasOwnProperty("err")){
+			if (res.hasOwnProperty("err")) {
 				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
-				yield put ({
-					type: 'workDetail',
-					payload:res.data
-				})
-			}
-			else{
-				if(res.data.msg == '无效TOKEN!'){
-					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
-
-				}else{
-					message.error(res.data.msg)
+			} else
+				if (res.data && res.data.result === 0) {
+					yield put({
+						type: 'workDetail',
+						payload: res.data
+					})
 				}
-			}
+				else {
+					if (res.data.msg == '无效TOKEN!') {
+						yield put(routerRedux.push('/login'))
+					} else if (res.data.msg == '服务器异常') {
+
+					} else {
+						message.error(res.data.msg)
+					}
+				}
 		},
 
 	},
 
-  
-	
-  
-  };
+
+
+
+};

@@ -42,19 +42,21 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload:item.timeStamp
 		});
-		let cid=this.state.cclassId
-		let sid=this.state.csubjectId
+		let cid=this.state.cclassId;
+		let sid=this.state.csubjectId;
 		let data={
 			schoolId:store.get('wrongBookNews').schoolId,
 			periodTime:item.periodTime,
 			timeStamp:item.timeStamp,
 			classId:cid,
 			subjectId:sid,
-		}
+		};
+
 		this.dispatch({
 			type: 'reportChart/getClassDataReport',
 			payload:data
 		});
+
 	}
 
 	onChangeDate(startDate,endDate){
@@ -517,9 +519,9 @@ class HomeworkCenter extends React.Component {
 		}
 	render() {
 		
-		let timeList=this.props.state.reportTimeList
+		let timeList=this.props.state.reportTimeList;
 
-		let classReport=this.props.state.classDataReport
+		let classReport=this.props.state.classDataReport;
 		
 		setTimeout(() => {		
 			//if(this.props.state.subjectId===''){
@@ -651,6 +653,10 @@ class HomeworkCenter extends React.Component {
 	 },false);
 	}
 	componentWillUnmount(){
+		this.props.dispatch({
+			type: 'periodTime',
+			payload: 1
+		})
 		window.removeEventListener('resize',function(e){
 			 //卸载resize
 	 },false);

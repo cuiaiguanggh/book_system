@@ -107,6 +107,19 @@ class HomeworkCenter extends React.Component {
 				</div>
 			)
 		},
+      {
+        title:<div className='space'>视频量</div>,
+        dataIndex:'courseVideoNum',
+        key:'courseVideoNum',
+        align:'center',
+        editable: true,
+        render: (text, record) => (
+          <div
+            className='space'>
+            {text}
+          </div>
+        )
+      },
 		{
 			title:<div className='space'>操作</div>,
 			editable: true,
@@ -611,6 +624,12 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount(){
+	}
+	componentWillMount(){
+		this.props.dispatch({
+			type: 'homePage/tealist',
+			payload:[]
+		})
 	}
 }
 

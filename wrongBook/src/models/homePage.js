@@ -28,7 +28,7 @@ export default {
 		MenuList:[],
 		schoolList:[],
 		schoolInfo:[],
-		phaseId:1,
+		phaseId:2,
 		schoolName:'',
 		masterName:'',
 		masterPhone:'',
@@ -50,8 +50,15 @@ export default {
 		teacherName:'',
 		phone:'',
 		subjectId:'',
+    upperLimit:'',
+    schoolType:0,
+    changeSchoolType:0,
+    changeUpperLimit:0
 	},
 	reducers: {
+    schoolType(state, {payload}) {
+      return { ...state, schoolType:payload };
+    },
 		classNews(state, {payload}) {
 			return { ...state, classNews:payload };
 		},
@@ -76,6 +83,12 @@ export default {
 		changeSchoolName(state, {payload}) {
 			return { ...state, schoolName:payload}
 		},
+    changeSchoolType(state, {payload}) {
+      return { ...state, changeSchoolType:payload}
+    },
+    changeUpperLimit(state, {payload}) {
+      return { ...state, changeUpperLimit:payload}
+    },
 		changephaseId(state, {payload}) {
 			return { ...state, phaseId:payload}
 		},
@@ -225,6 +238,14 @@ export default {
 					type: 'changeaddress',
 					payload:res.data.data.address
 				})
+        yield put ({
+          type: 'changeUpperLimit',
+          payload:res.data.data.upperLimit
+        })
+        yield put ({
+          type: 'changeSchoolType',
+          payload:res.data.data.schoolType
+        })
 				yield put ({
 					type: 'changedes',
 					payload:res.data.data.des
@@ -242,19 +263,32 @@ export default {
 		},
 		*changeSchool({payload}, {put, select}) {
 			// 修改学校信息
-			let {phaseId,schoolName,masterName, address, des,schoolPay,provinces,citys,areas} = yield select(state => state.homePage)
+			let {changeUpperLimit,changeSchoolType,phaseId,schoolName,masterName, address, des,schoolPay,provinces,citys,areas,schoolInfo} = yield select(state => state.homePage);
 			let data = {
 				schoolId:payload,
 				schoolName:schoolName,
 				address:address,
 				masterName:masterName,
-				des:des,
+				// des:des,
 				phaseId:phaseId,
 				province:provinces,
 				city:citys,
-				area:areas
-			}
-			let res = yield updateSchool(data);
+				area:areas,
+        schoolType:changeSchoolType,
+			};
+      if (changeUpperLimit){
+        data.upperLimit=changeUpperLimit;
+      }
+      if(!provinces){
+        data.province=schoolInfo.data.province
+      }
+      if(!citys){
+        data.city=schoolInfo.data.city
+      }
+      if(!areas){
+        data.area=schoolInfo.data.area
+      }
+        let res = yield updateSchool(data);
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'pageRelevantSchool',
@@ -300,17 +334,17 @@ export default {
 		},
 		*addSchool({payload}, {put, select}) {
 			// 修改学校信息
-			let {phaseId,schoolName,masterName,masterPhone, address, des,schoolPay,citys,provinces,areas} = yield select(state => state.homePage)
+			let {phaseId,schoolName,masterName,masterPhone, address, des,schoolPay,citys,provinces,areas,schoolType} = yield select(state => state.homePage)
 			let data = {
 				schoolName:schoolName,
 				address:address,
 				masterName:masterName,
 				phone:masterPhone,
-				des:des,
 				phaseId:phaseId,
 				province:provinces,
 				city:citys,
 				area:areas,
+        schoolType,
 			}
 			let res = yield addSchool(data);
 			if(res.data && res.data.result === 0){
@@ -364,7 +398,7 @@ export default {
 		},
 		*teacherList({payload}, {put, select}) {
 			// 获取教师列表
-			let {infoClass,infoSchool} = yield select(state => state.homePage)
+			let {infoClass,infoSchool} = yield select(state => state.homePage);
 			let data = {
 				type:payload.type,
 				classId:infoClass,
@@ -498,4 +532,3 @@ export default {
 	
   
   };
-  

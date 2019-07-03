@@ -1,15 +1,17 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import 'antd/dist/antd.css';
-import {Menu, Icon, Layout, Popover, Select, message} from 'antd';
-import {connect} from 'dva';
-import {routerRedux} from 'dva/router';
+import { Menu, Icon, Layout, Popover, Select, message } from 'antd';
+import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import QRCode from 'qrcode.react';
-import {Link} from "dva/router";
+import { Link } from "dva/router";
 import store from 'store';
 import style from './Menus.less';
 import WrongTop from '../wrongReport/wrongTop/wrongTop';
-import {serverType} from '../../config/dataCenter';
+import { serverType } from '../../config/dataCenter';
 import moment from 'moment';
+import ydt from '../images/guideFigure.png';
+
 
 
 const Option = Select.Option;
@@ -27,7 +29,7 @@ class HomePageLeft extends Component {
     this.state = {
       current: 'home',
       collapsed: false,
-      guideState: true
+      guideState: true,
     }
   }
 
@@ -55,7 +57,6 @@ class HomePageLeft extends Component {
     let pathname = this.props.location.pathname;
     let hash = this.props.location.hash;
     let key = hash.substr(hash.indexOf("page=") + 5) * 1;
-
     if (key === 0) {
       key = 1
     }
@@ -88,12 +89,12 @@ class HomePageLeft extends Component {
         // 学校管理模块
         if (item === 100) {
           if (rodeType === 10) {
+
             menus.push(<Menu.Item key="school">
               <Link to='school#page=1' replace>
-                <Icon type="bar-chart"/><span>学校管理</span>
+                <Icon type="bar-chart" /><span>学校管理</span>
               </Link>
             </Menu.Item>)
-
           } else if (rodeType === 20) {
             // menus.push(<Menu.Item key="schoolNews"><Link to="/schoolNews" replace><Icon type="bar-chart" />学校详情</Link></Menu.Item>)
           }
@@ -106,17 +107,17 @@ class HomePageLeft extends Component {
             // 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
             // 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
             // </Menu.Item>)
-            menus.push(<Menu.Item key="workDetail1" style={{cursor: 'pointer'}}>
-              <Link to="/classReport" style={{cursor: 'pointer'}} replace>
-                <Icon type="file-text" theme="filled"/><span style={{cursor: 'pointer'}}>班级错题</span></Link>
+            menus.push(<Menu.Item key="workDetail1" style={{ cursor: 'pointer' }}>
+              <Link to="/classReport" style={{ cursor: 'pointer' }} replace>
+                <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span></Link>
             </Menu.Item>)
-            menus.push(<Menu.Item key="workDetail2" style={{cursor: 'pointer'}}>
-              <Link to="/stuReport" style={{cursor: 'pointer'}} replace>
-                <Icon type="solution"/><span style={{cursor: 'pointer'}}>学生错题</span></Link>
+            menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }}>
+              <Link to="/stuReport" style={{ cursor: 'pointer' }} replace>
+                <Icon type="solution" /><span style={{ cursor: 'pointer' }}>学生错题</span></Link>
             </Menu.Item>)
             menus.push(
-              <Menu.Item><Link key="classChart" to="/classChart" replace>
-                <Icon type="area-chart"/><span>班级报表</span></Link></Menu.Item>
+              <Menu.Item key="classChart"><Link key="classChart" to="/classChart" replace>
+                <Icon type="area-chart" /><span>班级报表</span></Link></Menu.Item>
             )
             // menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
             // 	<Link to="/workReport"  style={{cursor:'pointer'}} replace >
@@ -128,28 +129,36 @@ class HomePageLeft extends Component {
         if (item === 200) {
           if (rodeType > 20) {
 
-            menus.push(<Menu.Item key="grade">
-              <Link to='grade#page=1' replace>
-                <Icon type="align-left"/><span>班级列表</span>
-              </Link>
-            </Menu.Item>)
+            // menus.push(<Menu.Item key="grade">
+            //   <Link to='grade#page=1' replace>
+            //     <Icon type="align-left" /><span>班级管理</span>
+            //   </Link>
+            // </Menu.Item>)    
+                 menus.push(<Menu.Item key="grade">
+                 <Link to='classUser' replace>
+                   <Icon type="align-left" /><span>班级管理</span>
+                 </Link>
+               </Menu.Item>)
+
+
           } else {
+
+            if (rodeType !== 10) {
+              menus.push(
+                <Menu.Item><Link key="schoolChart" to="/schoolChart" replace><Icon
+                  type="pie-chart" /><span>校级报表</span></Link></Menu.Item>
+              )
             menus.push(
-              <Menu.Item><Link key="schoolChart" to="/schoolChart" replace><Icon
-                type="pie-chart"/><span>校级报表</span></Link></Menu.Item>
-            )
-            menus.push(
-              // <SubMenu key="sub" title={<span><Icon type="smile" />班级管理</span>}>
               <Menu.Item key="grade">
-                <Link to='grade#page=1' replace>
+                <Link to='classUser' replace>
                   <Icon type="team"/><span>班级管理</span>
                 </Link>
               </Menu.Item>
-              // </SubMenu>
             )
-            menus.push(
-              <Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle"/><span>批量导入</span></Link></Menu.Item>
-            )
+            }
+            // menus.push(
+            //   <Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle"/><span>批量导入</span></Link></Menu.Item>
+            // )
           }
 
         }
@@ -169,55 +178,101 @@ class HomePageLeft extends Component {
   getyear() {
     let yearList = this.props.state.yearList;
     return (
-      <Select defaultValue={`${this.props.state.years}-${Number(this.props.state.years) + 1}学年`}
-              className={'academicBox'} onChange={(value) => {
-        this.props.dispatch({
-          type: 'temp/years',
-          payload: value
-        });
-        //学年改变，重新渲染调用接口
-        let classId = this.props.state.classId;
-        let subId = this.props.state.subId;
-        let year = value;
-        this.props.dispatch({
-          type: 'down/showPdfModal',
-          payload: false
-        });
-        this.props.dispatch({
-          type: 'report/propsPageNum',
-          payload: 1
-        });
-        if (window.location.href.split('/#/')[1] == 'stuReport') {
-          let userId = this.props.state.userId;
-          if (classId !== '' && subId != '' && year !== '' && userId != '') {
-            let data = {
-              classId: classId,
-              year: year,
-              subjectId: this.props.state.subId,
-            }
-            this.props.dispatch({
-              type: 'report/queryQrStudentCount',
-              payload: data
-            });
-          }
-        } else if (window.location.href.split('/#/')[1] == 'classReport') {
-          if (classId !== '' && subId != '' && year !== '') {
-            let data = {
-              classId: classId,
-              year: year,
-              subjectId: this.props.state.subId,
-              info: 0,
-              pageNum: 1,
-              pageSize: 50,
-            }
-            this.props.dispatch({
-              type: 'report/queryQrDetail',
-              payload: data
-            });
-          }
-        }
+      <Select value={`${this.props.state.years}-${Number(this.props.state.years) + 1}学年`}
+        className={'academicBox'} onChange={(value) => {
+          this.props.dispatch({
+            type: 'temp/years',
+            payload: value
+          });
+          //学年改变，重新渲染调用接口
+          let classId = this.props.state.classId;
+          let subId = this.props.state.subId;
+          let year = value;
+          this.props.dispatch({
+            type: 'down/showPdfModal',
+            payload: false
+          });
+          this.props.dispatch({
+            type: 'report/propsPageNum',
+            payload: 1
+          });
+          this.props.dispatch({
+            type: 'temp/updateMonthList',
+          });
 
-      }}>
+          if (window.location.href.split('/#/')[1] == 'stuReport') {
+            let userId = this.props.state.userId;
+            if (classId !== '' && subId != '' && year !== '' && userId != '') {
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              let data = {
+                classId: classId,
+                year: year,
+                subjectId: this.props.state.subId,
+              }
+              this.props.dispatch({
+                type: 'report/queryQrStudentCount',
+                payload: data
+              });
+            }
+          } else if (window.location.href.split('/#/')[1] == 'classReport') {
+            if (classId !== '' && subId != '' && year !== '') {
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              let data = {
+                classId: classId,
+                year: year,
+                subjectId: this.props.state.subId,
+                info: 0,
+                pageNum: 1,
+                pageSize: 50,
+              }
+              this.props.dispatch({
+                type: 'report/queryQrDetail',
+                payload: data
+              });
+            }
+          }else if (window.location.href.split('/#/')[1] == 'classChart') {
+            if (classId !== '' && subId != '' && year !== '') {
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              this.props.dispatch({
+                type: 'reportChart/getReportTimeList',
+                payload:{
+                  classReport:true
+                }
+              });
+            }
+          }else if (window.location.href.split('/#/')[1] == 'schoolChart') {
+            if (classId !== '' && subId != '' && year !== '') {
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              this.props.dispatch({
+                type: 'reportChart/getReportTimeList',
+                payload:{
+                  classReport:false
+                }
+              });
+            }
+          }
+
+        }}>
         {
           yearList.data.map((item, i) => (
             <Option value={item} key={i}>{`${item}-${item + 1}学年`}</Option>
@@ -275,7 +330,11 @@ class HomePageLeft extends Component {
       defaultKey = 'workDetail2'
     } else if (defaultKey.indexOf('workReport') === 0) {
       defaultKey = 'workDetail3'
-    } else if (defaultKey == '') {
+    }else if(defaultKey.indexOf('classChart') === 0){
+      defaultKey = 'classChart'
+    } else if(defaultKey.indexOf('classUser') === 0){
+      defaultKey = 'grade'
+    } if (defaultKey == '') {
       if (userNews) {
         if (userNews.rodeType == 10) {
           defaultKey = 'school'
@@ -340,8 +399,8 @@ class HomePageLeft extends Component {
     );
     let code = (
       <div className={style.qrcode}>
-        <QRCode className='qrcode' value={value}/>
-        <p style={{textAlign: "center", margin: 0}}>邀请学生加入班级</p>
+        <QRCode className='qrcode' value={value} />
+        <p style={{ textAlign: "center", margin: 0 }}>邀请学生加入班级</p>
       </div>
     )
     let leftName = ''
@@ -353,12 +412,12 @@ class HomePageLeft extends Component {
       }
     }
     return (
-      <Layout className={style.homePageContaier + ' ' + 'chomePageContaier'} style={{overflowX: 'hidden'}}>
+      <Layout className={style.homePageContaier + ' ' + 'chomePageContaier'}>
 
-        {this.state.guideState ?
-          (<div style={{position: 'absolute', width: '1920px', height: '1080px',}}>
-            <img src={require('../images/guideFigure.png')}
-                 style={{width: '100%', position: 'absolute', zIndex: '100'}}/>
+        
+          <div style={{ position: 'absolute', width: '1920px', height: '1080px', }}  hidden={this.state.guideState ? false: true} >
+            <img src={ydt}
+              style={{ width: '100%', position: 'absolute', zIndex: '100' }} />
             <div style={{
               top: '875px',
               right: '607px',
@@ -367,21 +426,21 @@ class HomePageLeft extends Component {
               position: 'absolute',
               zIndex: '105',
             }}
-                 onClick={() => {
-                   this.setState({
-                     guideState: false
-                   });
-                   localStorage.setItem('guide1', store.get('wrongBookNews').userId)
-                 }}>
+              onClick={() => {
+                this.setState({
+                  guideState: false
+                });
+                localStorage.setItem('guide1', store.get('wrongBookNews').userId)
+              }}>
             </div>
-          </div>)
-          : ''}
+          </div>
+         
         <Sider
           trigger={null}
           collapsible
           collapsed={this.state.collapsed}
         >
-          <div className="logo"/>
+          <div className="logo" />
           <Menu
             theme="dark"
             mode="inline"
@@ -397,9 +456,9 @@ class HomePageLeft extends Component {
 
         </Sider>
         <Layout>
-          <Header style={{background: '#fff', padding: 0}}>
+          <Header style={{ background: '#fff', padding: 0 }}>
             <Icon
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
               className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
@@ -409,40 +468,40 @@ class HomePageLeft extends Component {
               {
                 userNews == undefined ? '' :
                   <div>
-                    {
-                      rodeType === 10 ? '' :
-                        <Popover
-                          content={code}
-                          trigger="click"
-                          type="primary"
-                          placement="bottom"
-                        >
-                          <div
-                            className={style.classcode}
-                            type="primary">
-                            <img src={require('../images/ma-sj-n.png')}></img>
-                            <span>
-														班级邀请码
-														</span>
-                          </div>
-                        </Popover>
+                    {/*{*/}
+                    {/*  rodeType === 10 ? '' :*/}
+                    {/*    <Popover*/}
+                    {/*      content={code}*/}
+                    {/*      trigger="click"*/}
+                    {/*      type="primary"*/}
+                    {/*      placement="bottom"*/}
+                    {/*    >*/}
+                    {/*      <div*/}
+                    {/*        className={style.classcode}*/}
+                    {/*        type="primary">*/}
+                    {/*        <img src={require('../images/ma-sj-n.png')}></img>*/}
+                    {/*        <span>*/}
+                    {/*				班级邀请码*/}
+                    {/*				</span>*/}
+                    {/*      </div>*/}
+                    {/*    </Popover>*/}
 
-                    }
+                    {/*}*/}
                     {
                       this.props.state.yearList.data ?
                         this.getyear() : ''
                     }
 
                     <span className={style.usinfo}>
-									{leftName}
-									</span>
+                      {leftName}
+                    </span>
                     {
                       this.props.type == 'findPsd' ? '' :
                         <div className={style.usinfo}>
 
                           {/* <img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/> */}
                           <img alt=''
-                               src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl}/>
+                            src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
 
                           <Popover
                             content={content}
@@ -455,7 +514,7 @@ class HomePageLeft extends Component {
                               type="primary">
                               {/* {user != '' ?this.getUserPosition(rodeType,user.name):''} */}
                               <span>{user != '' ? user.name : ''}</span>
-                              <Icon type="caret-down" style={{color: "#e1e1e1"}}/>
+                              <Icon type="caret-down" style={{ color: "#e1e1e1" }} />
                             </div>
                           </Popover>
                         </div>
@@ -467,8 +526,8 @@ class HomePageLeft extends Component {
           </Header>
           {
             defaultKey.indexOf('workDetail') != -1 ?
-              <Header style={{background: '#a3b0c3', height: '50px', padding: 0}}>
-                <WrongTop type={this.props.location}/>
+              <Header style={{ background: '#a3b0c3', height: '50px', padding: 0 }}>
+                <WrongTop type={this.props.location} />
               </Header> : ''
           }
           {this.props.children}
@@ -495,7 +554,6 @@ class HomePageLeft extends Component {
       })
     }
 
-
     // 9月1号 之前，是2018-2019学年，9月1号之后，是2019-2020学年 moment().format('YYYY')
     if (Number(moment().format('MM')) < 9) {
       let years = moment().format('YYYY') - 1;
@@ -518,7 +576,7 @@ class HomePageLeft extends Component {
       let nowTime = new Date() - 10800000;
     }
 
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
 
     dispatch({
       type: 'homePage/getYears',

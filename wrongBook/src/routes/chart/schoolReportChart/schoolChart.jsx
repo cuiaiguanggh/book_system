@@ -716,14 +716,16 @@ class HomeworkCenter extends React.Component {
 	}
 	getSub() {
 		let subList =  this.props.state.ssubList;
+
 		if(subList && subList.length> 0){
 			return(
 				<Select					
 						style={{ width: 100,marginLeft:20}}
 						placeholder="学科"
-						optionFilterProp="children"
+						// optionFilterProp="children"
 						value={this.props.state.subjectId}
 						onChange={(value)=>{
+			
 							this.props.dispatch({
 								type: 'reportChart/subjectId',
 								payload:value
@@ -846,7 +848,7 @@ class HomeworkCenter extends React.Component {
 		let timeList=this.props.state.reportTimeList
 		let schoolReport=this.props.state.schoolDataReport
 		setTimeout(() => {		
-			if(this.props.state.subjectId!==''){			
+			// if(this.props.state.subjectId!==''){			
 				if(schoolReport.gradeWrongNumMap){
 					this.renderQustionCount(schoolReport.gradeWrongNumMap)
 				}
@@ -860,9 +862,9 @@ class HomeworkCenter extends React.Component {
 					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
 				}
 				
-			}else{
+			// }else{
 				
-			}
+			// }
 			
 		}, 10);
 		return(
@@ -1033,6 +1035,16 @@ class HomeworkCenter extends React.Component {
 	 },false);
 	}
 	componentWillUnmount(){
+		//清空图表数据
+		this.props.dispatch({
+			type: 'reportChart/schoolDataReport',
+			payload: 'none'
+		})
+
+		this.props.dispatch({
+			type: 'periodTime',
+			payload: 1
+		});
 		this.props.dispatch({
 			type: 'reportChart/subjectId',
 			payload:'',
@@ -1069,10 +1081,7 @@ class HomeworkCenter extends React.Component {
 
 export default connect((state) => ({
 	state: {
-		...state.userInfo,
-		...state.classHome,
-		...state.reportChart,
-		...state.report,
 		...state.temp,
+		...state.reportChart,
 	}
 }))(HomeworkCenter);

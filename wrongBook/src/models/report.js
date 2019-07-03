@@ -247,6 +247,10 @@ export default {
 					if(mouNow != 0){
 						data.month = mouNow.v
 					}
+					if(payload.startTime){
+						data.startTime=payload.startTime;
+						data.endTime=payload.endTime;
+					}
 					yield put ({
 						type: 'userQRdetail',
 						payload:data
