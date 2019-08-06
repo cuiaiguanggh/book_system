@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  Table, Button, message, Modal, Select, Layout, Icon, Row
+  Table, Button, message, Modal, Select, Layout, Icon, Input, Row
 } from 'antd';
 import {connect} from 'dva';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './workReport.less';
 import store from 'store';
+import observer from '../../../utils/observer'
+import {VariableSizeGrid} from 'react-window';
 import commonCss from '../../css/commonCss.css'
 import MistakesTC from '../../components/mistakesTC/mistakesTC';
 //作业中心界面内容 
@@ -15,6 +16,50 @@ const {
 } = Layout;
 let hei = 0;
 const {confirm} = Modal;
+
+class ItemRenderer extends React.Component {
+  render() {
+    let columnIndex = this.props.columnIndex;
+    let rowIndex = this.props.rowIndex;
+    let data = this.props.data;
+    let nowvalue = data[rowIndex * 2 + columnIndex];
+
+    if (data.length%2===0) {
+    }else{
+      data.push({true:true})
+    }
+    if (nowvalue.true) {
+      return (
+        <div></div>
+      )
+    } else {
+      return (
+        <div style={{
+          ...this.props.style,
+          padding: '10px'
+        }}>
+          <div key={`${columnIndex}-${rowIndex}`}
+               className={nowvalue.teacherCollect !== 0 ? (nowvalue.teacherCollect === 1 ? `${style.rightbox}  ${style.cuowubox} ` : `${style.rightbox}  ${style.duibox} `) : style.rightbox}
+               onClick={() => {
+                 observer.publish('trueOrFalse', (rowIndex * 2 + columnIndex))
+               }} >
+            <div className={style.ylbiaoq}>
+              {nowvalue.name}
+              {nowvalue.questionUrl.height}
+            </div>
+            {nowvalue.collect === 1 ?
+              <div className={style.buhui}>不会</div> : ''}
+            {nowvalue.teacherCollect !== 0 ?
+              (nowvalue.teacherCollect === 1 ?
+                <div className={style.cuowuhong}>错误</div> :
+                <div className={style.truelv}>正确 </div>) :
+              <div className={style.cuowuhui}>错误</div>}
+            <img style={{width: '100%', height: 260}} src={nowvalue.questionUrl}/>
+          </div>
+        </div>)
+    }
+  }
+}
 
 class WorkReport extends React.Component {
   constructor(props) {
@@ -39,6 +84,7 @@ class WorkReport extends React.Component {
       //预批改弹窗滚动条是否出现
       gundt: false
     };
+    observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
 
   handleScroll(e) {
@@ -84,10 +130,6 @@ class WorkReport extends React.Component {
     if (timunumber < 10) {
       timunumber = `0${timunumber}`
     }
-    //滚动条回滚到顶部
-    if (document.getElementById('tcright')) {
-      document.getElementById('tcright').scrollTop = 0;
-    }
     //调用对应的学生错题
     if (uqId) {
       this.props.dispatch({
@@ -120,7 +162,6 @@ class WorkReport extends React.Component {
     uqId = list[number].uqId.split('uqid-')[1];
     timunumber = number + 1;
 
-
     //题目列表的待批改
     let leftdaipi = -1;
     for (let i = 0; i < list.length; i++) {
@@ -131,10 +172,6 @@ class WorkReport extends React.Component {
     //左侧题目列表的题目序号
     if (timunumber < 10) {
       timunumber = `0${timunumber}`
-    }
-    //滚动条回滚到顶部
-    if (document.getElementById('tcright')) {
-      document.getElementById('tcright').scrollTop = 0;
     }
     //调用对应的学生错题
     this.props.dispatch({
@@ -565,10 +602,6 @@ class WorkReport extends React.Component {
         if (timunumber < 10) {
           timunumber = `0${timunumber}`
         }
-        //滚动条回滚到顶部
-        if (document.getElementById('tcright')) {
-          document.getElementById('tcright').scrollTop = 0;
-        }
         //调用对应的学生错题
         this.props.dispatch({
           type: 'report/getCorrection',
@@ -616,7 +649,7 @@ class WorkReport extends React.Component {
       stugoto: false,
       gundt: false,
       topicxy: true
-    }, () => {
+    },()=>{
       //关闭弹窗时，重新调用接口
       this.props.dispatch({
         type: 'report/queryHomeworkScoreDetail',
@@ -767,7 +800,6 @@ class WorkReport extends React.Component {
     let beforehand = this.props.state.beforehand;
     let beforstuTopic = this.props.state.beforstuTopic;
 
-
     return (
       <Content style={{
         background: '#fff',
@@ -840,17 +872,15 @@ class WorkReport extends React.Component {
                 <div className={style.kuangtop}>
                   未提交人数
                   <div className={style.remind}
-                       onClick={() => {
-                         if (scoreDetail.data) {
-                           this.props.dispatch({
-                             type: 'report/remindHomework',
-                             payload: {
-                               userId: scoreDetail.data.unCommitId,
-                               subjectId: this.props.state.subId,
-                             }
-                           })
-                         }
-                       }}
+                    //      onClick={()=>{
+                    //   this.props.dispatch({
+                    //     type:'report/remindHomework',
+                    //     payload:{
+                    //       userId:,
+                    //   subjectId:this.props.state.subId,
+                    //     }
+                    //   })
+                    // }}
                   >提醒上交作业</div>
                 </div>
                 <div className={style.wtjrs} style={{padding: ' 0 20px 5px'}}>
@@ -970,25 +1000,20 @@ class WorkReport extends React.Component {
                 <span>待批{this.props.state.dainumber}人 </span>
               </div>
               <div style={{padding: '30px 30px 20px 40px'}}>
-                <Content className={style.aheadRightCon} id='tcright'>
-                  {beforstuTopic.length > 0 ?
-                    beforstuTopic.map((item, i) => (
-                      <div key={i}
-                           className={item.teacherCollect !== 0 ? (item.teacherCollect === 1 ? `${style.rightbox}  ${style.cuowubox} ` : `${style.rightbox}  ${style.duibox} `) : style.rightbox}
-                           onClick={this.yupirightb.bind(this, i)}>
-                        <div className={style.ylbiaoq}>{item.name}</div>
-                        {item.collect === 1 ?
-                          <div className={style.buhui}>不会</div> : ''}
-                        {item.teacherCollect !== 0 ?
-                          (item.teacherCollect === 1 ?
-                            <div className={style.cuowuhong}>错误</div> :
-                            <div className={style.truelv}>正确 </div>) :
-                          <div className={style.cuowuhui}>错误</div>}
-                        <img key={i} style={{width: '100%'}} src={item.questionUrl}/>
-                      </div>
-                    )) : ''
-                  }
-                </Content>
+                {beforstuTopic.length > 0 ?
+                  <VariableSizeGrid
+                    height={660}
+                    columnWidth={() => 660}
+                    rowHeight={() => 320}
+                    width={1340}
+                    columnCount={2}
+                    rowCount={beforstuTopic.length / 2}
+                    itemData={beforstuTopic}
+                    className={'aheadRightCon'}
+                  >
+                    {ItemRenderer}
+                  </VariableSizeGrid> : ''
+                }
                 <div style={{width: '100%', textAlign: 'right', padding: '15px 15px 0 0'}}>
                   <div className={style.jindukang}>
 									<span className={style.jinduerr}
@@ -1008,6 +1033,7 @@ class WorkReport extends React.Component {
         <MistakesTC tcxuhao={this.state.tcxuhao} xqtc={this.state.xqtc} guanbi={() => {
           this.setState({xqtc: false})
         }} errorDetails={this.state.errorDetails}/>
+        {/*<Magnify/>*/}
         <Modal
           visible={this.props.state.showPdfModal}
           onOk={() => {
@@ -1071,4 +1097,4 @@ export default connect((state) => ({
     ...state.temp,
     ...state.down,
   }
-}))(WorkReport);
+}))(WorkReport, ItemRenderer);

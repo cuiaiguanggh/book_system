@@ -99,13 +99,13 @@
   background: #a3b0c3;
   color: #fff;
 }
-
-:global(.ant-popover-inner-content) {
-  padding: 0 !important;
-  overflow: hidden;
-  border-radius: 4px;
+:global(.ant-popover-placement-bottom){
+ :global(.ant-popover-inner-content) {
+   padding: 0 !important;
+   overflow: hidden;
+   border-radius: 4px;
+ }
 }
-
 .userPover {
   width: 100px;
 
@@ -207,6 +207,9 @@
   }
   :global(.ant-select-arrow){
       color: #fff
+  }
+  :global(.ant-select-selection-selected-value){
+    padding: 0;
   }
 }
 

@@ -101,7 +101,45 @@ function uploadVideo(payload){
         data:payload
     });
 }
+function getCorrection(payload){
+    return request(dataCenter('/web/report/getCorrection'),{
+        data:payload
+    });
+}
+function WrongQuestionMarker(payload){
+    return request(dataCenter('/web/report/wrongQuestionMarker'),{
+        data:payload
+    });
+}
+function CorrectionMarker(payload){
+    return request(dataCenter('/web/report/correctionMarker'),{
+        // headers:{'Content-Type':'application/json'},
+        // method: 'post',
+        data:payload
+    }) 
+}
+function homeworkRefresh(payload){
+  return request(dataCenter('/web/report/homeworkRefresh'),{
+    data:payload
+  });
+}
+function makeSelectWB(payload){
+  return request(('https://develop.kacha.xin/export/pdf/makeSelectWB'),{
+    data:payload
+  });
+}
+function remindHomework(payload){
+  return request(dataCenter('/web/report/remindHomework'),{
+    data:payload
+  });
+}
 export {
+  remindHomework,
+    makeSelectWB,
+    homeworkRefresh,
+    CorrectionMarker,
+    WrongQuestionMarker,
+    getCorrection,
     queryQrDetail,
     queryHomeworkList,
     queryHomeworkScoreDetail,

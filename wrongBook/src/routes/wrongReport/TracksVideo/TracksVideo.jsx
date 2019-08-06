@@ -51,7 +51,7 @@ class ClassReport extends React.Component {
                 {this.props.type.teachVideo != null ?
                 <span >
                     <Tooltip placement="bottom" title="讲解视频">
-                        <span style={{padding:'0 10px',background:"#52a5fa",color:'#fff',borderRadius:'3px',cursor:'pointer'}} onClick={()=>{
+                        <span style={{padding:'2px 10px',background:"#52a5fa",color:'#fff',borderRadius:'3px',cursor:'pointer'}} onClick={()=>{
                             this.props.dispatch({
                                 type: 'report/visible',
                                 payload:true
@@ -73,7 +73,7 @@ class ClassReport extends React.Component {
                                 payload:this.props.num
                             });
                         }}>
-                            <Icon type="play-circle"  theme="filled" style={{marginRight:'10px',cursor:"pointer"}} title=""  onClick={()=>{
+                            <Icon type="play-circle"  theme="filled" style={{marginRight:'10px',cursor:"pointer",fontSize: 15}} title=""  onClick={()=>{
                                
                             }}/>
                                 {time}

@@ -1,14 +1,15 @@
 
 import React from 'react';
-import { Layout, Input,Modal,Button,Select,Row, Col,DatePicker, AutoComplete,Table } from 'antd';
+import { Layout, Input, Modal, Button, Select, Row, Col, DatePicker, AutoComplete, Table } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import style from './schoolChart.less';
 import TopBar from '../topbar/topbar'
 import store from 'store';
-import echarts  from 'echarts';
-import {noResposeDataCon} from '../../../utils/common';
+import echarts from 'echarts';
+import { routerRedux } from 'dva/router';
+import { noResposeDataCon } from '../../../utils/common';
 moment.locale('zh-cn');
 
 const { Content } = Layout;
@@ -19,458 +20,459 @@ const Search = Input.Search;
 class HomeworkCenter extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state={
-			subjectId:100,
-			date:[],
-			myChart:{},
-			sbid:0,
-			cid:0,
-			searchData:[],
-			updatePei:true
+		this.state = {
+			subjectId: 100,
+			date: [],
+			myChart: {},
+			sbid: 0,
+			cid: 0,
+			searchData: [],
+			updatePei: true
 		}
-		this.onChangeTime=this.onChangeTime.bind(this)
-		this.onChangeDate=this.onChangeDate.bind(this)
+		this.onChangeTime = this.onChangeTime.bind(this)
+		this.onChangeDate = this.onChangeDate.bind(this)
 	}
 
-	onChangeTime(item){
+	onChangeTime(item) {
 		this.setState({
-			updatePei:true
+			updatePei: true
 		})
-		if(!item) return
+		if (!item) return
 		this.props.dispatch({
 			type: 'reportChart/periodTime',
-			payload:item.periodTime
+			payload: item.periodTime
 		});
 		this.props.dispatch({
 			type: 'reportChart/timeStamp',
-			payload:item.timeStamp
+			payload: item.timeStamp
 		});
-		if(this.props.state.sclassList.length===0||this.props.state.ssubList.length===0) return
-		let cid=this.props.state.sclassList[0].id
-		let sid=this.props.state.ssubList[0].id
-		let data={
-			schoolId:store.get('wrongBookNews').schoolId,
-			periodTime:item.periodTime,
-			timeStamp:item.timeStamp,
-			classId:cid,
-			subjectId:sid, 
+		if (this.props.state.sclassList.length === 0 || this.props.state.ssubList.length === 0) return
+		let cid = this.props.state.sclassList[0].id
+		let sid = this.props.state.ssubList[0].id
+		let data = {
+			schoolId: store.get('wrongBookNews').schoolId,
+			periodTime: item.periodTime,
+			timeStamp: item.timeStamp,
+			classId: cid,
+			subjectId: sid,
 		}
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
-			payload:data
+			payload: data
 		});
 	}
-	onChangeDate(startDate,endDate){
+	onChangeDate(startDate, endDate) {
 		this.setState({
-			updatePei:true
+			updatePei: true
 		})
-		let data={}
-		if(startDate!==''){
+		let data = {}
+		if (startDate !== '') {
 			this.props.dispatch({
 				type: 'reportChart/startTime',
-				payload:startDate
+				payload: startDate
 			});
 			this.props.dispatch({
 				type: 'reportChart/endTime',
-				payload:endDate
+				payload: endDate
 			});
-			if(this.props.state.sclassList.length===0) return
-			let cid=this.props.state.sclassList[0].id
-		  let sid=this.props.state.ssubList[0].id
-			data={
-				schoolId:store.get('wrongBookNews').schoolId,
-				classId:cid,
-				subjectId:sid,
-				timeStamp:0,
-				startTime:startDate,
-				endTime:endDate,
+			if (this.props.state.sclassList.length === 0) return
+			let cid = this.props.state.sclassList[0].id
+			let sid = this.props.state.ssubList[0].id
+			data = {
+				schoolId: store.get('wrongBookNews').schoolId,
+				classId: cid,
+				subjectId: sid,
+				timeStamp: 0,
+				startTime: startDate,
+				endTime: endDate,
 			}
-		}else{
+		} else {
 			this.props.dispatch({
 				type: 'reportChart/periodTime',
-				payload:1
+				payload: 1
 			});
 			this.props.dispatch({
 				type: 'reportChart/timeStamp',
-				payload:this.props.state.reportTimeList[0].timeStamp
+				payload: this.props.state.reportTimeList[0].timeStamp
 			});
-			data={
-				schoolId:store.get('wrongBookNews').schoolId,
-				classId:this.props.state.sclassId,
-				subjectId:this.props.state.subjectId,
-				periodTime:1,
-				timeStamp:this.props.state.reportTimeList[0].timeStamp,
+			data = {
+				schoolId: store.get('wrongBookNews').schoolId,
+				classId: this.props.state.sclassId,
+				subjectId: this.props.state.subjectId,
+				periodTime: 1,
+				timeStamp: this.props.state.reportTimeList[0].timeStamp,
 			}
 		}
-		
+
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
-			payload:data
+			payload: data
 		});
 	}
-	renderQustionCount(data){
-		if(!this.state.updatePei) return
+	renderQustionCount(data) {
+		if (!this.state.updatePei) return
 		let myChart1 = echarts.init(document.getElementById('main'));
 		const chartBox = document.getElementById('main');
-		if(JSON.stringify(data)==='{}'){
-			chartBox.style.display='none'
+		if (JSON.stringify(data) === '{}') {
+			chartBox.style.display = 'none'
 			return
-		}else{
-			chartBox.style.display='block'
+		} else {
+			chartBox.style.display = 'block'
 		}
-		const winWidth=document.body.offsetWidth
+		const winWidth = document.body.offsetWidth
 		var arr = Object.getOwnPropertyNames(data)
-		var arr1=arr.map(function(i){return data[i]})
-		let sdata=[]
+		var arr1 = arr.map(function (i) { return data[i] })
+		let sdata = []
 
-		for(let i=0;i<arr.length;i++){
-			let scolor=''
-			if(i===0){
-				scolor='#21A2F4'
-			}else if(i===1){
-				scolor='#B8A5DF'
-			}else if(i===2){
-				scolor='#36C9CB'
-			}else if(i===3){
-				scolor='#FBD437'
-			}else if(i===4){
-				scolor='#DA7F85'
+		for (let i = 0; i < arr.length; i++) {
+			let scolor = ''
+			if (i === 0) {
+				scolor = '#21A2F4'
+			} else if (i === 1) {
+				scolor = '#B8A5DF'
+			} else if (i === 2) {
+				scolor = '#36C9CB'
+			} else if (i === 3) {
+				scolor = '#FBD437'
+			} else if (i === 4) {
+				scolor = '#DA7F85'
 			}
-			sdata.push({name:arr[i],value:arr1[i],itemStyle:{color:scolor}})
+			sdata.push({ name: arr[i], value: arr1[i], itemStyle: { color: scolor } })
 		}
 		let option = {
-			title : {
+			title: {
 			},
-			tooltip : {
-					trigger: 'item',
-					formatter: "{a} <br/>{b} : {c} ({d}%)"
+			tooltip: {
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
 			},
 			legend: {
-					x : 'right',
-					y : 'center',
-					itemGap:18,
-					data:sdata,
-					align: 'left',
-					formatter: function (params) {
-						for (var i = 0; i < option.series[0].data.length; i++) {
-							if (option.series[0].data[i].name == params) {
-									return params +"  "+ option.series[0].data[i].value+"道";
-							}
+				x: 'right',
+				y: 'center',
+				itemGap: 18,
+				data: sdata,
+				align: 'left',
+				formatter: function (params) {
+					for (var i = 0; i < option.series[0].data.length; i++) {
+						if (option.series[0].data[i].name == params) {
+							return params + "  " + option.series[0].data[i].value + "道";
+						}
+					}
+				},
+				orient: 'vertical',
+				type: 'plain',
+			},
+			calculable: true,
+			series: [
+				{
+					name: '错题量',
+					type: 'pie',
+					radius: ['20', '63%'],
+					center: ['25%', '50%'],
+					roseType: 'radius',
+					label: {
+						normal: {
+							show: true
+						},
+						emphasis: {
+							show: true
 						}
 					},
-					orient:'vertical',
-					type:'plain',
-			},
-			calculable : true,  
-			series : [
-					{
-							name:'错题量',
-							type:'pie',
-							radius: ['20', '63%'],
-							center : ['25%', '50%'],
-							roseType : 'radius',
-							label: {
-									normal: {
-											show: true
-									},
-									emphasis: {
-											show: true
-									}
-							},
-							lableLine: {
-									normal: {
-											show: false
-									},
-									emphasis: {
-											show: true
-									}
-							},
-							// data:[
-							// 		{value:0, name:'一年级',itemStyle:{color:'#21A2F4'}},
-							// 		{value:0,  name:'二年级', itemStyle:{color:'#B8A5DF'}},
-							// 		{value:0, name:'三年级',itemStyle:{color:'#36C9CB'}},
-							// 		{value:0, name:'四年级',itemStyle:{color:'#FBD437'}},
-							// 		{value:0, name:'五年级',itemStyle:{color:'#DA7F85'}}
-							// ]
-							data:sdata
+					lableLine: {
+						normal: {
+							show: false
+						},
+						emphasis: {
+							show: true
+						}
 					},
+					// data:[
+					// 		{value:0, name:'一年级',itemStyle:{color:'#21A2F4'}},
+					// 		{value:0,  name:'二年级', itemStyle:{color:'#B8A5DF'}},
+					// 		{value:0, name:'三年级',itemStyle:{color:'#36C9CB'}},
+					// 		{value:0, name:'四年级',itemStyle:{color:'#FBD437'}},
+					// 		{value:0, name:'五年级',itemStyle:{color:'#DA7F85'}}
+					// ]
+					data: sdata
+				},
 
 			]
 		};
 
-		if(!chartBox) return
-		if(chartBox.offsetWidth<=600||winWidth<=1366){
+		if (!chartBox) return
+		if (chartBox.offsetWidth <= 600 || winWidth <= 1366) {
 
-			option.legend.y='bottom'
-			option.legend.x='center'
-			option.legend.orient='horizontal'
+			option.legend.y = 'bottom'
+			option.legend.x = 'center'
+			option.legend.orient = 'horizontal'
 			option.series[0].center = ['50%', '50%']
-		}else{
-			option.legend.y='center'
-			option.legend.x='right'
-			option.legend.orient='vertical'
+		} else {
+			option.legend.y = 'center'
+			option.legend.x = 'right'
+			option.legend.orient = 'vertical'
 			option.series[0].center = ['25%', '50%']
-			
+
 		}
-		let obj={
-			chart:myChart1,
-			option:option,
-			id:0
+		let obj = {
+			chart: myChart1,
+			option: option,
+			id: 0
 		}
 		this.resizeChart(obj)
 		myChart1.setOption(option);
-		if(arr.length>1){
-			myChart1.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: 0})
+		if (arr.length > 1) {
+			myChart1.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: 0 })
 		}
-		
+
 	}
 
-	renderUserCount(data){
-		if(!this.state.updatePei) return
+	renderUserCount(data) {
+		if (!this.state.updatePei) return
 		let myChart = echarts.init(document.getElementById('main1'));
 		const chartBox = document.getElementById('main1');
-		if(JSON.stringify(data)==='{}'){
-			chartBox.style.display='none'
+		if (JSON.stringify(data) === '{}') {
+			chartBox.style.display = 'none'
 			return
-		}else{
-			chartBox.style.display='block'
+		} else {
+			chartBox.style.display = 'block'
 		}
-		const winWidth=document.body.offsetWidth
+		const winWidth = document.body.offsetWidth
 		var arr = Object.getOwnPropertyNames(data)
-		var arr1=arr.map(function(i){return data[i]})
-		let sdata=[]
-		for(let i=0;i<arr.length;i++){
-			let scolor=''
-			if(i===0){
-				scolor='#21A2F4'
-			}else if(i===1){
-				scolor='#B8A5DF'
-			}else if(i===2){
-				scolor='#36C9CB'
-			}else if(i===3){
-				scolor='#FBD437'
-			}else if(i===4){
-				scolor='#DA7F85'
+		var arr1 = arr.map(function (i) { return data[i] })
+		let sdata = []
+		for (let i = 0; i < arr.length; i++) {
+			let scolor = ''
+			if (i === 0) {
+				scolor = '#21A2F4'
+			} else if (i === 1) {
+				scolor = '#B8A5DF'
+			} else if (i === 2) {
+				scolor = '#36C9CB'
+			} else if (i === 3) {
+				scolor = '#FBD437'
+			} else if (i === 4) {
+				scolor = '#DA7F85'
 			}
-			sdata.push({name:arr[i],value:arr1[i],itemStyle:{color:scolor},icon:'circle'})
+			sdata.push({ name: arr[i], value: arr1[i], itemStyle: { color: scolor }, icon: 'circle' })
 		}
-	
+
 		let option = {
-			title:{
-				
+			title: {
+
 			},
 			tooltip: {
-					trigger: 'item',
-					formatter: "{a} <br/>{b}: {c} ({d}%)"
+				trigger: 'item',
+				formatter: "{a} <br/>{b}: {c} ({d}%)"
 			},
 			legend: {
-				x : 'right',
-				y : 'center',
-				itemGap:18,
-				data:sdata,
-				orient:'vertical',
+				x: 'right',
+				y: 'center',
+				itemGap: 18,
+				data: sdata,
+				orient: 'vertical',
 				align: 'left',
-					formatter: function (params) {
-						for (var i = 0; i < option.series[0].data.length; i++) {
-							if (option.series[0].data[i].name == params) {
-									return params +"  "+ option.series[0].data[i].value+"人";
+				formatter: function (params) {
+					for (var i = 0; i < option.series[0].data.length; i++) {
+						if (option.series[0].data[i].name == params) {
+							return params + "  " + option.series[0].data[i].value + "人";
+						}
+					}
+				},
+			},
+			series: [
+				{
+					name: '使用人数',
+					type: 'pie',
+					radius: ['50%', '65%'],
+					center: ['25%', '50%'],
+					avoidLabelOverlap: false,
+					label: {
+						normal: {
+							show: false,
+							position: 'center'
+						},
+						emphasis: {
+							show: true,
+							textStyle: {
+								fontSize: '30',
+								fontWeight: 'bold'
 							}
 						}
 					},
-			},
-			series: [
-					{
-							name:'使用人数',
-							type:'pie',
-							radius: ['50%', '65%'],
-							center : ['25%', '50%'],
-							avoidLabelOverlap: false,
-							label: {
-									normal: {
-											show: false,
-											position: 'center'
-									},
-									emphasis: {
-											show: true,
-											textStyle: {
-													fontSize: '30',
-													fontWeight: 'bold'
-											}
-									}
-							},
-							labelLine: {
-									normal: {
-											show: false
-									}
-							},
-							data:sdata
-					}
+					labelLine: {
+						normal: {
+							show: false
+						}
+					},
+					data: sdata
+				}
 			]
 		};
-		if(chartBox.offsetWidth<=600||winWidth<=1366){
-			option.legend.y='bottom'
-			option.legend.x='center'
-			option.legend.orient='horizontal'
+		if (chartBox.offsetWidth <= 600 || winWidth <= 1366) {
+			option.legend.y = 'bottom'
+			option.legend.x = 'center'
+			option.legend.orient = 'horizontal'
 			option.series[0].center = ['50%', '50%']
 			option.series[0].radius = ['40%', '55%']
-		}else{	
-			option.legend.y='center'
-			option.legend.x='right'
-			option.legend.orient='vertical'
+		} else {
+			option.legend.y = 'center'
+			option.legend.x = 'right'
+			option.legend.orient = 'vertical'
 			option.series[0].center = ['25%', '50%']
 			option.series[0].radius = ['50%', '65%']
-			
+
 		}
-		let obj={
-			chart:myChart,
-			option:option,
-			id:1
+		let obj = {
+			chart: myChart,
+			option: option,
+			id: 1
 		}
 		this.resizeChart(obj)
-		let index=0
+		let index = 0
 		myChart.setOption(option);
-		if(arr.length>1){
-			myChart.dispatchAction({        
-				type: "highlight",        
-				seriesIndex: index,        
-				dataIndex: index      
-			});  
+		if (arr.length > 1) {
+			myChart.dispatchAction({
+				type: "highlight",
+				seriesIndex: index,
+				dataIndex: index
+			});
 		}
-		    
-		myChart.on("mouseover", function(e) {        
-			if (e.dataIndex != index) {         
-				 myChart.dispatchAction({            
-					 type: "downplay",            
-					 seriesIndex: 0,            
-					 dataIndex: index          
-					});        }      
-			});      
+
+		myChart.on("mouseover", function (e) {
+			if (e.dataIndex != index) {
+				myChart.dispatchAction({
+					type: "downplay",
+					seriesIndex: 0,
+					dataIndex: index
+				});
+			}
+		});
 	}
-	renderTeacherUserCount(){
-		let data=this.props.state.searchData
+	renderTeacherUserCount() {
+		let data = this.props.state.searchData
 		const columns = [
-      {
-        title: '序号',
-        dataIndex: 'number',
-        key: 'number',
-        
+			{
+				title: '序号',
+				dataIndex: 'number',
+				key: 'number',
+
 			},
 			{
-        title: '教师',
-        dataIndex: 'adminName',
-        key: 'adminName',
-			},
-      {
-        title: '学科',
-        dataIndex: 'subjectName',
-        key: 'subjectName',
-        
+				title: '教师',
+				dataIndex: 'adminName',
+				key: 'adminName',
 			},
 			{
-        title: '班级',
-        dataIndex: 'className',
-        key: 'className',
-        
+				title: '学科',
+				dataIndex: 'subjectName',
+				key: 'subjectName',
+
 			},
 			{
-        title: '组卷次数',
-        dataIndex: 'assembleTimes',
+				title: '班级',
+				dataIndex: 'className',
+				key: 'className',
+
+			},
+			{
+				title: '组卷次数',
+				dataIndex: 'assembleTimes',
 				key: 'assembleTimes',
 				defaultSortOrder: 'descend',
-    		sorter: (a, b) => a.assembleTimes - b.assembleTimes,
-        // sorter: (a, b) => a.address.length - b.address.length,
-        // sortOrder: sortedInfo.columnKey === 'assembleTimes' && sortedInfo.order,
-       
+				sorter: (a, b) => a.assembleTimes - b.assembleTimes,
+				// sorter: (a, b) => a.address.length - b.address.length,
+				// sortOrder: sortedInfo.columnKey === 'assembleTimes' && sortedInfo.order,
+
 			},
 			{
-        title: '视频讲解个数',
-        dataIndex: 'videoExplain',
+				title: '视频讲解个数',
+				dataIndex: 'videoExplain',
 				key: 'videoExplain',
 				defaultSortOrder: 'descend',
-    		sorter: (a, b) => a.videoExplain - b.videoExplain,
-        // sorter: (a, b) => a.videoExplain.length - b.videoExplain.length,
+				sorter: (a, b) => a.videoExplain - b.videoExplain,
+				// sorter: (a, b) => a.videoExplain.length - b.videoExplain.length,
 				// sortOrder: sortedInfo.columnKey === 'videoExplain' && sortedInfo.order,
 				// onFilter: (value, record) => record.videoExplain.includes(value),
 			},
 			// {
-      //   title: '视频点赞数',
-      //   dataIndex: 'address',
+			//   title: '视频点赞数',
+			//   dataIndex: 'address',
 			// 	key: 'address2',
 			// 	filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
-      //   filteredValue: filteredInfo.address || null,
-      //   onFilter: (value, record) => record.address.includes(value),
-      //   sorter: (a, b) => a.address.length - b.address.length,
-      //   sortOrder: sortedInfo.columnKey === 'className' && sortedInfo.order,
-       
-      // },
-		]; 
-		return(
+			//   filteredValue: filteredInfo.address || null,
+			//   onFilter: (value, record) => record.address.includes(value),
+			//   sorter: (a, b) => a.address.length - b.address.length,
+			//   sortOrder: sortedInfo.columnKey === 'className' && sortedInfo.order,
+
+			// },
+		];
+		return (
 			<div className={style.cagtable}>
-					<Table  bordered columns={columns}  dataSource={data} pagination={false} />
+				<Table bordered columns={columns} dataSource={data} pagination={false} />
 			</div>
-			
+
 		)
 	}
-	renderClassData(udata,wdata){
+	renderClassData(udata, wdata) {
 		let myChart = echarts.init(document.getElementById('main3'));
 		const chartBox = document.getElementById('main3');
-		if(udata===undefined||udata.length===0||wdata.length===0){
-			chartBox.style.display='none'
+		if (udata === undefined || udata.length === 0 || wdata.length === 0) {
+			chartBox.style.display = 'none'
 			return
-		}else{
-			chartBox.style.display='block'
+		} else {
+			chartBox.style.display = 'block'
 		}
-		
-		let classList=[]
+
+		let classList = []
 		for (let i = 0; i < udata.length; i++) {
 			classList.push(udata[i].className)
 		}
 
-		let userList=[]
+		let userList = []
 		for (let i = 0; i < udata.length; i++) {
 			userList.push(udata[i].num)
 		}
 
-		let wrongList=[]
+		let wrongList = []
 		for (let i = 0; i < udata.length; i++) {
 			wrongList.push(wdata[i].num)
-			
+
 		}
 
-		let option3 =  {
+		let option3 = {
 			title: {
 				text: '',
 				subtext: '',
-				x:'left',
-				textStyle:{
-						fontSize:14,
-						fontWeight:'normal'
+				x: 'left',
+				textStyle: {
+					fontSize: 14,
+					fontWeight: 'normal'
 				}
 			},
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
-						
+
 				},
-				formatter:function(params){       
-					var relVal = params[0].name;   
-					let str=''          
-					for (var i = 0, l = params.length; i < l; i++) {  
-						
-						if(params[i].seriesName==='错题量')   {
-							str='道'
-						}else{
-							str='人'
-						}             
-						relVal += '<br/>' +params[i].marker+ params[i].seriesName + ' : ' + params[i].value+str;              
-					}             
-						return relVal;          
+				formatter: function (params) {
+					var relVal = params[0].name;
+					let str = ''
+					for (var i = 0, l = params.length; i < l; i++) {
+
+						if (params[i].seriesName === '错题量') {
+							str = '道'
+						} else {
+							str = '人'
+						}
+						relVal += '<br/>' + params[i].marker + params[i].seriesName + ' : ' + params[i].value + str;
 					}
+					return relVal;
+				}
 			},
-	
+
 			legend: {
-					data:['错题量','人数'],
-					itemGap:16,
+				data: ['错题量', '人数'],
+				itemGap: 16,
 			},
 			grid: {
 				left: '2%',
@@ -479,562 +481,581 @@ class HomeworkCenter extends React.Component {
 				containLabel: true
 			},
 			xAxis: [
-					{
-							type: 'category',
-							data: classList,
-							axisPointer: {
-									type: 'shadow'
-							},
-							axisTick:{
-								show:false
-							},
-							axisLabel: {  
-								interval: 0,  
-								formatter:function(value)  
-								{  
-										// debugger  
-										var ret = "";
-										var maxLength = 6;
-										var valLength = value.length; 
-										var rowN = Math.ceil(valLength / maxLength); 
-										if (rowN > 1)
-										{  
-												for (var i = 0; i < rowN; i++) {  
-														var temp = ""; 
-														var start = i * maxLength;
-														var end = start + maxLength;
-														temp = value.substring(start, end) + "\n";  
-														ret += temp; 
-												}  
-												return ret;  
-										}  
-										else {  
-												return value;  
-										}  
-								}  
-						}
-							
-							
-					}
-			],
-			yAxis: [
-				
-					{
-							type: 'value',
-							axisLine:{
-								show: false
-							},
-							axisLabel: {
-									formatter: '{value}'
-							},
-							splitLine:{
-								lineStyle:{
-										type:'dashed',
-										color:'#ccc'
-								}
-							},
-							axisTick:{
-								show:false
-							}
-					},
-					{
-						type: 'value',
-						axisLine:{
-							show: false
-						},
-						axisLabel: {
-								formatter: '{value}'
-						},
-						splitLine:{
-							lineStyle:{
-									type:'dashed',
-									color:'#ccc'
-							}
-						},
-						axisTick:{
-							show:false
-						}
-					}
-			],
-			series: [
-					{
-							name:'错题量',
-							type:'bar',
-							symbol: 'circle',
-							barWidth:'30%',
-							barMaxWidth:'40',
-							symbolSize: 6,
-							lineStyle:{color:'#2FC25B'},
-							itemStyle:{color:"#2FC25B"},
-							data:wrongList
-					},
-	
-					{
-							name:'人数',
-							type:'line',
-							yAxisIndex: 1,
-							data:userList,
-							symbol: 'circle',
-							symbolSize: 6,
-							lineStyle:{color:'#21A2F4'},
-							itemStyle:{color:"#21A2F4"}
-					}
-			]
-			};
-			let obj={
-				chart:myChart,
-				option:option3,
-				id:2
-			}
-			this.resizeChart(obj)
-			myChart.setOption(option3)
-			myChart.resize()
-	}
-
-	renderClassData0(udata,wdata){
-		let cdate= moment(Date.now()).format('YYYY-MM-DD');
-		let myChart = echarts.init(document.getElementById('main2'));
-		var dList = Object.getOwnPropertyNames(udata)
-		const winWidth=document.body.offsetWidth
-		let gright='2%'
-		if(winWidth<=1400){
-			gright='3%'
-		}
-		let dateArr=[]
-		for (let index = 0; index < dList.length; index++) {
-			const element = dList[index]
-			if(moment(cdate)>=moment(element)){
-				dateArr.push(element)
-			}			
-		}
-		let _axisLabelRotate=0
-		if(dateArr.length>20){
-			_axisLabelRotate=40
-		}
-		let dateList=dateArr
-		var userList=dateList.map(function(i){return udata[i]})
-
-		var wList = Object.getOwnPropertyNames(wdata)
-		var wrongList=wList.map(function(i){return wdata[i]})
-		
-		let option2 =  {
-			title: {
-					text: ''
-			},
-			tooltip: {
-					trigger: 'axis',
-					formatter:function(params){       
-						var relVal = params[0].name;   
-						let str=''          
-						for (var i = 0, l = params.length; i < l; i++) {  
-							
-							if(params[i].seriesName==='错题量')   {
-								str='道'
-							}else{
-								str='人'
-							}             
-							relVal += '<br/>' +params[i].marker+ params[i].seriesName + ' : ' + params[i].value+str;              
-						}             
-							return relVal;          
-						}
-			},
-			legend: {
-				selectedMode:true,
-				data:['错题量','人数'],
-				itemGap:16,
-			},
-			grid: {
-					left: '2%',
-					right: gright,
-					bottom: '1%',
-					containLabel: true
-			},
-			xAxis: {
+				{
 					type: 'category',
-					boundaryGap: false,
-					data: dateList,			
-					axisTick:{
-						show:false
+					data: classList,
+					axisPointer: {
+						type: 'shadow'
 					},
-					axisLabel: {  
-						interval:0,  
-						rotate:_axisLabelRotate  
-				 }  
-			},
-			yAxis: {
-					type: 'value',
-					axisLine:{
+					axisTick: {
 						show: false
 					},
-					splitLine:{
-            lineStyle:{
-                type:'dashed',
-                color:'#ccc'
-            }
+					axisLabel: {
+						interval: 0,
+						formatter: function (value) {
+							// debugger  
+							var ret = "";
+							var maxLength = 6;
+							var valLength = value.length;
+							var rowN = Math.ceil(valLength / maxLength);
+							if (rowN > 1) {
+								for (var i = 0; i < rowN; i++) {
+									var temp = "";
+									var start = i * maxLength;
+									var end = start + maxLength;
+									temp = value.substring(start, end) + "\n";
+									ret += temp;
+								}
+								return ret;
+							}
+							else {
+								return value;
+							}
+						}
+					}
+
+
+				}
+			],
+			yAxis: [
+
+				{
+					type: 'value',
+					axisLine: {
+						show: false
+					},
+					axisLabel: {
+						formatter: '{value}'
+					},
+					splitLine: {
+						lineStyle: {
+							type: 'dashed',
+							color: '#ccc'
+						}
+					},
+					axisTick: {
+						show: false
+					}
 				},
-				axisTick:{
-					show:false
+				{
+					type: 'value',
+					axisLine: {
+						show: false
+					},
+					axisLabel: {
+						formatter: '{value}'
+					},
+					splitLine: {
+						lineStyle: {
+							type: 'dashed',
+							color: '#ccc'
+						}
+					},
+					axisTick: {
+						show: false
+					}
+				}
+			],
+			series: [
+				{
+					name: '错题量',
+					type: 'bar',
+					symbol: 'circle',
+					barWidth: '30%',
+					barMaxWidth: '40',
+					symbolSize: 6,
+					lineStyle: { color: '#2FC25B' },
+					itemStyle: { color: "#2FC25B" },
+					data: wrongList
+				},
+
+				{
+					name: '人数',
+					type: 'line',
+					yAxisIndex: 1,
+					data: userList,
+					symbol: 'circle',
+					symbolSize: 6,
+					lineStyle: { color: '#21A2F4' },
+					itemStyle: { color: "#21A2F4" }
+				}
+			]
+		};
+		let obj = {
+			chart: myChart,
+			option: option3,
+			id: 2
+		}
+		this.resizeChart(obj)
+		myChart.setOption(option3)
+		myChart.resize()
+	}
+
+	renderClassData0(udata, wdata) {
+		let cdate = moment(Date.now()).format('YYYY-MM-DD');
+		let myChart = echarts.init(document.getElementById('main2'));
+		var dList = Object.getOwnPropertyNames(udata)
+		const winWidth = document.body.offsetWidth
+		let gright = '2%'
+		if (winWidth <= 1400) {
+			gright = '3%'
+		}
+		let dateArr = []
+		for (let index = 0; index < dList.length; index++) {
+			const element = dList[index]
+			if (moment(cdate) >= moment(element)) {
+				dateArr.push(element)
+			}
+		}
+		let _axisLabelRotate = 0
+		if (dateArr.length > 20) {
+			_axisLabelRotate = 40
+		}
+		let dateList = dateArr
+		var userList = dateList.map(function (i) { return udata[i] })
+
+		var wList = Object.getOwnPropertyNames(wdata)
+		var wrongList = wList.map(function (i) { return wdata[i] })
+
+		let option2 = {
+			title: {
+				text: ''
+			},
+			tooltip: {
+				trigger: 'axis',
+				formatter: function (params) {
+					var relVal = params[0].name;
+					let str = ''
+					for (var i = 0, l = params.length; i < l; i++) {
+
+						if (params[i].seriesName === '错题量') {
+							str = '道'
+						} else {
+							str = '人'
+						}
+						relVal += '<br/>' + params[i].marker + params[i].seriesName + ' : ' + params[i].value + str;
+					}
+					return relVal;
+				}
+			},
+			legend: {
+				selectedMode: true,
+				data: ['错题量', '人数'],
+				itemGap: 16,
+			},
+			grid: {
+				left: '2%',
+				right: gright,
+				bottom: '1%',
+				containLabel: true
+			},
+			xAxis: {
+				type: 'category',
+				boundaryGap: false,
+				data: dateList,
+				axisTick: {
+					show: false
+				},
+				axisLabel: {
+					interval: 0,
+					rotate: _axisLabelRotate
+				}
+			},
+			yAxis: {
+				type: 'value',
+				axisLine: {
+					show: false
+				},
+				splitLine: {
+					lineStyle: {
+						type: 'dashed',
+						color: '#ccc'
+					}
+				},
+				axisTick: {
+					show: false
 				}
 			},
 			series: [
-					{
-							name:'错题量',
-							type:'line',
-							stack: '总量1',
-							symbol: 'circle',
-            	symbolSize: 6,
-							data:wrongList,
-							lineStyle:{color:'#2FC25B'},
-							itemStyle:{color:"#2FC25B"}
-					},
-					{
-							name:'人数',
-							type:'line',
-							symbol: 'circle',
-            	symbolSize: 6,
-							stack: '总量2',
-							data:userList,
-							lineStyle:{color:'#21A2F4'},
-							itemStyle:{color:"#21A2F4"}
-							
-					}
+				{
+					name: '错题量',
+					type: 'line',
+					stack: '总量1',
+					symbol: 'circle',
+					symbolSize: 6,
+					data: wrongList,
+					lineStyle: { color: '#2FC25B' },
+					itemStyle: { color: "#2FC25B" }
+				},
+				{
+					name: '人数',
+					type: 'line',
+					symbol: 'circle',
+					symbolSize: 6,
+					stack: '总量2',
+					data: userList,
+					lineStyle: { color: '#21A2F4' },
+					itemStyle: { color: "#21A2F4" }
+
+				}
 			],
 			dataZoom: [
-        // {
-        //     type: 'inside'
-        // }
-    ],
-	};
-		let obj={
-			chart:myChart,
-			option:option2,
-			id:2
+				// {
+				//     type: 'inside'
+				// }
+			],
+		};
+		let obj = {
+			chart: myChart,
+			option: option2,
+			id: 2
 		}
 		this.resizeChart(obj)
 		myChart.setOption(option2)
-		
+
 	}
 	getSub() {
-		let subList =  this.props.state.ssubList;
+		let subList = this.props.state.ssubList;
 
-		if(subList && subList.length> 0){
-			return(
-				<Select					
-						style={{ width: 100,marginLeft:20}}
-						placeholder="学科"
-						// optionFilterProp="children"
-						value={this.props.state.subjectId}
-						onChange={(value)=>{
-			
-							this.props.dispatch({
-								type: 'reportChart/subjectId',
-								payload:value
-							});
+		if (subList && subList.length > 0) {
+			return (
+				<Select
+					style={{ width: 100, marginLeft: 20 }}
+					placeholder="学科"
+					// optionFilterProp="children"
+					value={this.props.state.subjectId}
+					onChange={(value) => {
+
+						this.props.dispatch({
+							type: 'reportChart/subjectId',
+							payload: value
+						});
 
 
-							let data={
-								schoolId:store.get('wrongBookNews').schoolId,
-								classId:this.props.state.sclassId,
-								subjectId:value,
-								periodTime:this.props.state.periodTime,
-								timeStamp:this.props.state.timeStamp,
-							}		
-							this.props.dispatch({
-								type: 'reportChart/changeSubList',
-								payload:data
-							});
+						let data = {
+							schoolId: store.get('wrongBookNews').schoolId,
+							classId: this.props.state.sclassId,
+							subjectId: value,
+							periodTime: this.props.state.periodTime,
+							timeStamp: this.props.state.timeStamp,
+						}
+						this.props.dispatch({
+							type: 'reportChart/changeSubList',
+							payload: data
+						});
 
-						}}
-						
+					}}
+
 				>
 					{
-						subList.map((item,i) =>(
+						subList.map((item, i) => (
 							<Option key={i} value={item.id}>{item.name}</Option>
 						))
 					}
-			</Select>
+				</Select>
 			)
-		}else{
+		} else {
 
 		}
-	} 
+	}
 	getClassList() {
-	
-		let classList =  this.props.state.sclassList;
-		if(classList && classList.length> 0){
-			return(
-				<Select					
-						style={{ width: 140,marginLeft:20}}
-						placeholder="班级"
-						value={this.props.state.sclassId}
-						onChange={(value)=>{
-							this.props.dispatch({
-								type: 'reportChart/sclassId',
-								payload:value
-							});
-							this.setState({
-								updatePei:false
-							})
-							let data={
-								schoolId:store.get('wrongBookNews').schoolId,
-								classId:value,
-								periodTime:this.props.state.periodTime,
-								timeStamp:this.props.state.timeStamp,
-							}		
-							this.props.dispatch({
-								type: 'reportChart/getSubList',
-								payload:data
-							});
-						}}
-						
+
+		let classList = this.props.state.sclassList;
+		if (classList && classList.length > 0) {
+			return (
+				<Select
+					style={{ width: 140, marginLeft: 20 }}
+					placeholder="班级"
+					value={this.props.state.sclassId}
+					onChange={(value) => {
+						this.props.dispatch({
+							type: 'reportChart/sclassId',
+							payload: value
+						});
+						this.setState({
+							updatePei: false
+						})
+						let data = {
+							schoolId: store.get('wrongBookNews').schoolId,
+							classId: value,
+							periodTime: this.props.state.periodTime,
+							timeStamp: this.props.state.timeStamp,
+						}
+						this.props.dispatch({
+							type: 'reportChart/getSubList',
+							payload: data
+						});
+					}}
+
 				>
 					{
-						classList.map((item,i) =>(
+						classList.map((item, i) => (
 							<Option key={i} value={item.id}>{item.name}</Option>
 						))
 					}
-			</Select>
+				</Select>
 			)
-		}else{
+		} else {
 
 		}
-	} 
+	}
 	getGradeList() {
-		let gradeList =  this.props.state.sgradeList;
-		if(gradeList && gradeList.length> 0){
-			return(
-				<Select					
-						style={{ width: 100}}
-						placeholder="年级"
-						value={this.props.state.gradeId}
-						onChange={(value)=>{
-							this.props.dispatch({
-								type: 'reportChart/gradeId',
-								payload:value
-							});
-							this.setState({
-								updatePei:false
-							})
-							let data={
-								schoolId:store.get('wrongBookNews').schoolId,
-								classId:this.props.state.sclassId,
-								subjectId:this.props.state.subjectId,
-								periodTime:this.props.state.periodTime,
-								timeStamp:this.props.state.timeStamp,
-								gradeId:value
-							}	
-							this.props.dispatch({
-								type: 'reportChart/getClassList',
-								payload:data
-							});
-							
-						}}
-						
+		let gradeList = this.props.state.sgradeList;
+		if (gradeList && gradeList.length > 0) {
+			return (
+				<Select
+					style={{ width: 100 }}
+					placeholder="年级"
+					value={this.props.state.gradeId}
+					onChange={(value) => {
+						this.props.dispatch({
+							type: 'reportChart/gradeId',
+							payload: value
+						});
+						this.setState({
+							updatePei: false
+						})
+						let data = {
+							schoolId: store.get('wrongBookNews').schoolId,
+							classId: this.props.state.sclassId,
+							subjectId: this.props.state.subjectId,
+							periodTime: this.props.state.periodTime,
+							timeStamp: this.props.state.timeStamp,
+							gradeId: value
+						}
+						this.props.dispatch({
+							type: 'reportChart/getClassList',
+							payload: data
+						});
+
+					}}
+
 				>
 					{
-						gradeList.map((item,i) =>(
+						gradeList.map((item, i) => (
 							<Option key={i} value={item.id}>{item.name}</Option>
 						))
 					}
-			</Select>
+				</Select>
 			)
-		}else{
+		} else {
 
 		}
-	} 
+	}
 
 	render() {
 
-		let timeList=this.props.state.reportTimeList
-		let schoolReport=this.props.state.schoolDataReport
-		setTimeout(() => {		
+		let timeList = this.props.state.reportTimeList
+		let schoolReport = this.props.state.schoolDataReport
+		setTimeout(() => {
 			// if(this.props.state.subjectId!==''){			
-				if(schoolReport.gradeWrongNumMap){
-					this.renderQustionCount(schoolReport.gradeWrongNumMap)
-				}
-				if(schoolReport.gradeUseNumMap){
-					this.renderUserCount(schoolReport.gradeUseNumMap)
-				}
-				if(schoolReport.schoolUserNumData){
-					this.renderClassData0(schoolReport.schoolUserNumData,schoolReport.schoolWrongNumData)
-				}
-				if(schoolReport.classUseData){
-					this.renderClassData(schoolReport.classUseData,schoolReport.classWrongData)
-				}
-				
-			// }else{
-				
+			if (schoolReport.gradeWrongNumMap) {
+				this.renderQustionCount(schoolReport.gradeWrongNumMap)
+			}
+			if (schoolReport.gradeUseNumMap) {
+				this.renderUserCount(schoolReport.gradeUseNumMap)
+			}
+			if (schoolReport.schoolUserNumData) {
+				this.renderClassData0(schoolReport.schoolUserNumData, schoolReport.schoolWrongNumData)
+			}
+			if (schoolReport.classUseData) {
+				this.renderClassData(schoolReport.classUseData, schoolReport.classWrongData)
+			}
+
 			// }
-			
+
 		}, 10);
-		return(
+		return (
 			<Layout>
+				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)',flex: 'none'  }}>
+					<div onClick={() => {
+						this.props.dispatch(
+							routerRedux.push({
+								pathname: '/schoolChart'
+							})
+						)
+					}}
+						style={{width: 120,lineHeight: '34px',background: 'rgba(64,158,255,1)',borderRadius: 3,color: '#fff',textAlign: 'center',margin: '8px 20px',cursor: 'pointer'
+						}}>
+						校级报表
+					</div>
+					<div onClick={() => {
+						this.props.dispatch(
+							routerRedux.push({
+								pathname: '/classChart'
+							})
+						)
+					}}
+						style={{width: 120,lineHeight: '34px',background: '#fff',borderRadius: 3,color: '#606266',textAlign: 'center',margin: '8px 20px',cursor: 'pointer'
+						}}>
+						班级报表
+					</div>
+				</div>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
-				<Content style={{background:'#eee',overflow:'auto',position:'relative'}}>
-							{JSON.stringify(schoolReport) === "none"||JSON.stringify(schoolReport) ==='{}'?noResposeDataCon():
-							<div>
-							<Row style={{marginTop:20}}>
-								<Col  xl={12} md={24} > 
-									<div style={{margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}>
+				<Content style={{ background: '#eee', overflow: 'auto', position: 'relative' }}>
+					{JSON.stringify(schoolReport) === "none" || JSON.stringify(schoolReport) === '{}' ? noResposeDataCon() :
+						<div>
+							<Row style={{ marginTop: 20 }}>
+								<Col xl={12} md={24} >
+									<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 20 }}>
 										<p>错题总量</p>
-										<div id='main' style={{height:400}}>
-																			
-										</div>	
-										{JSON.stringify(schoolReport.gradeWrongNumMap)==='{}'?
-										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}						
+										<div id='main' style={{ height: 400 }}>
+
+										</div>
+										{JSON.stringify(schoolReport.gradeWrongNumMap) === '{}' ?
+											<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
 									</div>
 								</Col>
-								<Col  xl={12} md={24}>
-									<div style={{margin:'0 20px',padding:'20px',backgroundColor:'#fff',marginBottom:20}}>
+								<Col xl={12} md={24}>
+									<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 20 }}>
 										<p>使用人数</p>
-										<div id='main1' style={{height:400}}>
+										<div id='main1' style={{ height: 400 }}>
 										</div>
-										{JSON.stringify(schoolReport.gradeUseNumMap)==='{}'?
-										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}		
+										{JSON.stringify(schoolReport.gradeUseNumMap) === '{}' ?
+											<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
 									</div>
 								</Col>
 							</Row>
 
 							<Row >
-								<Col md={24}> 
-									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:20}}>
+								<Col md={24}>
+									<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden', marginBottom: 20 }}>
 										{this.getGradeList()}
 										{this.getClassList()}
 										{this.getSub()}
-										<div id='main2' className={this.props.state.noClassData?'hidden':''} style={{height:'400px'}}>
+										<div id='main2' className={this.props.state.noClassData ? 'hidden' : ''} style={{ height: '400px' }}>
 										</div>
-										{this.props.state.noClassData===true?<div  style={{height:400}}>{noResposeDataCon()}</div>:''}
-										</div>
+										{this.props.state.noClassData === true ? <div style={{ height: 400 }}>{noResposeDataCon()}</div> : ''}
+									</div>
 								</Col>
 							</Row>
 
 							<Row >
-								<Col md={24}> 
-									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:30}}>
+								<Col md={24}>
+									<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden', marginBottom: 30 }}>
 										<p>班级使用情况</p>
-										<div id='main3' style={{height:400}}>							
+										<div id='main3' style={{ height: 400 }}>
 										</div>
-										{schoolReport.classUseData===undefined||schoolReport.classUseData.length===0?
-										<div  style={{height:400}}>{noResposeDataCon()}</div>:""}	
-										
+										{schoolReport.classUseData === undefined || schoolReport.classUseData.length === 0 ?
+											<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
+
 									</div>
 								</Col>
 							</Row>
 							<Row >
-								<Col md={24}> 
-									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:30}}>
+								<Col md={24}>
+									<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden', marginBottom: 30 }}>
 										<div className={style.searchInput}>
-										<p>教师使用情况</p>
-										<Search
+											<p>教师使用情况</p>
+											<Search
 												placeholder="请输入教师姓名"
 												enterButton="搜索"
-												size="large"
-												style={{width:240,position:'absolute',right:0,top:0}}
-												onSearch={value =>{
-													if(value===''){
+												style={{ width: 240,position: 'absolute', right: 0, top: 0 }}
+												onSearch={value => {
+													if (value === '') {
 														this.props.dispatch({
 															type: 'reportChart/searchData',
-															payload:this.props.state.schoolDataReport.teacherUseDataList
+															payload: this.props.state.schoolDataReport.teacherUseDataList
 														});
-													}else{
-														let arr=[]
+													} else {
+														let arr = []
 														for (let i = 0; i < schoolReport.teacherUseDataList.length; i++) {
 															const ele = schoolReport.teacherUseDataList[i];
-															if(ele.adminName.indexOf(value)>-1){
+															if (ele.adminName.indexOf(value) > -1) {
 																arr.push(ele)
 															}
 														}
 														this.props.dispatch({
 															type: 'reportChart/searchData',
-															payload:arr
+															payload: arr
 														});
 													}
 
 													this.renderTeacherUserCount()
-												} 
-													
+												}
+
 												}
 											/>
 										</div>
-										{schoolReport.teacherUseDataList?
-											this.renderTeacherUserCount():''
+										{schoolReport.teacherUseDataList ?
+											this.renderTeacherUserCount() : ''
 										}
 									</div>
 								</Col>
 							</Row>
-							</div>
-						}	
-							
-						
-					</Content>
+						</div>
+					}
+
+
+				</Content>
 			</Layout>
 
-			
+
 		);
 	}
-	resizeChart(obj){
+	resizeChart(obj) {
 
-		window.addEventListener('resize',function(e){
-			let winWidth=e.target.innerWidth
+		window.addEventListener('resize', function (e) {
+			let winWidth = e.target.innerWidth
 			const chartBox = document.getElementById('main');
 			const chartBox1 = document.getElementById('main1');
 			const chartBox2 = document.getElementById('main2');
 			const chartBox3 = document.getElementById('main3');
-			if(!chartBox) return
-			if(winWidth<=1400){
-				chartBox3.style.width='1000px'
-				chartBox2.style.width='1000px'
-			}else{
+			if (!chartBox) return
+			if (winWidth <= 1400) {
+				chartBox3.style.width = '1000px'
+				chartBox2.style.width = '1000px'
+			} else {
 
-				chartBox3.style.width='100%'
-				chartBox2.style.width='100%'
-				if(obj.id>=2){
+				chartBox3.style.width = '100%'
+				chartBox2.style.width = '100%'
+				if (obj.id >= 2) {
 					obj.chart.resize()
-				 }
+				}
 			}
 
-			if(chartBox.offsetWidth<=600||winWidth<=1366){
-				if(obj.id===0||obj.id===1){
-					chartBox.style.height='500px'
-					chartBox1.style.height='500px'
-					obj.option.legend.y='bottom'
-					obj.option.legend.x='center'
-					obj.option.legend.orient='horizontal'
+			if (chartBox.offsetWidth <= 600 || winWidth <= 1366) {
+				if (obj.id === 0 || obj.id === 1) {
+					chartBox.style.height = '500px'
+					chartBox1.style.height = '500px'
+					obj.option.legend.y = 'bottom'
+					obj.option.legend.x = 'center'
+					obj.option.legend.orient = 'horizontal'
 					obj.option.series[0].center = ['50%', '50%']
 				}
-				
-				if(obj.id===1){
+
+				if (obj.id === 1) {
 					obj.option.series[0].radius = ['40%', '55%']
 				}
-				if(obj.id===0){
+				if (obj.id === 0) {
 					obj.option.series[0].radius = [20, '55%']
 				}
-			}else{
-				if(obj.id===0||obj.id===1){
-					chartBox.style.height='400px'
-					chartBox1.style.height='400px'
-					obj.option.legend.y='center'
-					obj.option.legend.x='right'
-					obj.option.legend.orient='vertical'
+			} else {
+				if (obj.id === 0 || obj.id === 1) {
+					chartBox.style.height = '400px'
+					chartBox1.style.height = '400px'
+					obj.option.legend.y = 'center'
+					obj.option.legend.x = 'right'
+					obj.option.legend.orient = 'vertical'
 					obj.option.series[0].center = ['25%', '50%']
 				}
-				
-				if(obj.id===1){
+
+				if (obj.id === 1) {
 					obj.option.series[0].radius = ['50%', '63%']
 				}
-				if(obj.id===0){
+				if (obj.id === 0) {
 					obj.option.series[0].radius = [20, '60%']
 				}
 			}
 
-			 obj.chart.setOption(obj.option)
-			 if(obj.id===0||obj.id===1){
+			obj.chart.setOption(obj.option)
+			if (obj.id === 0 || obj.id === 1) {
 				obj.chart.resize()
-			 }
-			 
-	 },false);
+			}
+
+		}, false);
 	}
-	componentWillUnmount(){
+	componentWillUnmount() {
 		//清空图表数据
 		this.props.dispatch({
 			type: 'reportChart/schoolDataReport',
@@ -1047,34 +1068,34 @@ class HomeworkCenter extends React.Component {
 		});
 		this.props.dispatch({
 			type: 'reportChart/subjectId',
-			payload:'',
+			payload: '',
 		});
-		window.removeEventListener('resize',function(e){
-			 //卸载resize
-	 },false);
+		window.removeEventListener('resize', function (e) {
+			//卸载resize
+		}, false);
 	}
-	componentDidMount(){
-	
-		const {dispatch} = this.props;
+	componentDidMount() {
+
+		const { dispatch } = this.props;
 		dispatch({
 			type: 'reportChart/getReportTimeList',
-			payload:{
-				classReport:false
+			payload: {
+				classReport: false
 			}
 		});
 
-		let winwidth=document.body.offsetWidth
+		let winwidth = document.body.offsetWidth
 		const chartBox1 = document.getElementById('main2');
 		const chartBox2 = document.getElementById('main3');
-		if(!chartBox1||chartBox2) return
-		if(winwidth<=1400){
-			chartBox1.style.width='1200px'
-			chartBox2.style.width='1200px'
-		}else{
+		if (!chartBox1 || chartBox2) return
+		if (winwidth <= 1400) {
+			chartBox1.style.width = '1200px'
+			chartBox2.style.width = '1200px'
+		} else {
 
-			chartBox1.style.width='100%'
-			chartBox2.style.width='100%'
-		}		
+			chartBox1.style.width = '100%'
+			chartBox2.style.width = '100%'
+		}
 
 	}
 }

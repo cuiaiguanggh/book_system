@@ -54,11 +54,11 @@ function subjectNodeList(payload){
         data:payload
     });
 }
-function kickClass(payload){
-    return request(dataCenter('/user/kickClass'), {
-        data:payload
-    });
-}
+// function kickClass(payload){
+//     return request(dataCenter('/user/kickClass'), {
+//         data:payload
+//     });
+// }
 function getEnableYears(payload){
     return request(dataCenter('/sys/config/getEnableYears'), {
         data:payload

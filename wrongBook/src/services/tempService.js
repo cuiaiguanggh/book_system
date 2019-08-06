@@ -31,12 +31,17 @@ function systemTime(payload){
         data:payload
     });
 }
-
+function getKnowledgeList(payload){
+    return request(dataCenter('/web/report/getKnowledgeList'),{
+        data:payload
+    });
+}
 export {
     queryScoreDetail,
     queryQuestionDetail,
     homeworkDetail,
     getUserSubjectList,
     getQrMonthList,
-    systemTime
+    systemTime,
+    getKnowledgeList
 };

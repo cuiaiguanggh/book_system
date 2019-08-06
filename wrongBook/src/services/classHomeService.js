@@ -86,6 +86,11 @@ function getUserInfo(payload){
         data:payload
     });
 }
+function promotionClass(payload){
+    return request(dataCenter('/user/promotionClass'), {
+        data:payload
+    });
+}
 export {
     pageClass,
     classInfo,
@@ -104,4 +109,5 @@ export {
     kickClass,
     getSubjectList,
     getUserInfo,
+    promotionClass,
 };

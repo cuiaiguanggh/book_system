@@ -4,6 +4,7 @@ import {
 	homeworkDetail,
 	getUserSubjectList,
 	getQrMonthList,
+	getKnowledgeList
 } from '../services/tempService';
 import {
 	pageClass,
@@ -42,9 +43,13 @@ export default {
 		workName: '',
 		workId: '',
 		workDetail: [],
-		subjectId: ''
+		subjectId: '',
+		knowledgeList: [],
 	},
 	reducers: {
+		knowledgeList(state, { payload }) {
+			return { ...state, knowledgeList: payload };
+		},
 		subjectId(state, { payload }) {
 			return { ...state, subjectId: payload };
 		},
@@ -92,6 +97,31 @@ export default {
 	},
 
 	effects: {
+		*getKnowledgeList({ payload }, { put, select }) {
+			let { mouNow, knowledgenow, stbegtoendTime } = yield select(state => state.report);
+			//月份
+			if (mouNow !== 0) {
+				payload.month = mouNow.v
+			}
+			//知识点
+			if (knowledgenow.length !== 0) {
+				payload.knowledgeName = knowledgenow
+			}
+			//时间段
+			if (stbegtoendTime.length > 0) {
+				payload.startTime = stbegtoendTime[0];
+				payload.endTime = stbegtoendTime[1];
+			}
+
+			//知识点筛选
+			let res = yield getKnowledgeList(payload);
+			if (res.data && res.data.result === 0) {
+				yield put({
+					type: 'knowledgeList',
+					payload: res.data
+				})
+			}
+		},
 		*pageClass({ payload }, { put, select }) {
 			// 班级列表
 			yield put({
@@ -179,44 +209,29 @@ export default {
 				classId: payload,
 				year: years
 			};
+			let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
+
 			let res = yield getUserSubjectList(data);
 			if (res.data && res.data.result === 0) {
 				if (res.data.data.length > 0) {
+
 					yield put({
 						type: 'subId',
 						payload: res.data.data[0].v
-					})
+					});
 					yield put({
 						type: 'subName',
 						payload: res.data.data[0].k
-					})
+					});
 					yield put({
 						type: 'subList',
 						payload: res.data
-					})
+					});
 					yield put({
 						type: 'subjectId',
 						payload: res.data.data[0].v
-					})
-					yield put({
-						type: 'report/queryQrStudentCount',
-						payload: {
-							classId: payload,
-							year: years,
-							subjectId: res.data.data[0].v
-						}
-					})
-					yield put({
-						type: 'report/queryQrDetail',
-						payload: {
-							classId: payload,
-							year: years,
-							subjectId: res.data.data[0].v,
-							info: 0,
-							page: 1,
-							pageSize: 50
-						}
-					})
+					});
+					//获取月份
 					yield put({
 						type: 'getQrMonthList',
 						payload: {
@@ -224,16 +239,54 @@ export default {
 							year: years,
 							subjectId: res.data.data[0].v
 						}
-					})
-					yield put({
-						type: 'report/queryHomeworkList',
-						payload: {
-							classId: payload,
-							subjectId: res.data.data[0].v
-						}
-					})
+					});
+          //获取知识点筛选
+          yield put({
+            type: 'getKnowledgeList',
+            payload: {
+              classId: payload,
+              year: years,
+              subjectId: res.data.data[0].v,
+              type:0,
+            }
+          });
+					//刷新时调用对应页面的接口，而不是调用全部接口
+					//班级错题
+					if (hashStrings === '/classReport') {
+						yield put({
+							type: 'report/queryQrDetail',
+							payload: {
+								classId: payload,
+								year: years,
+								subjectId: res.data.data[0].v,
+								info: 0,
+								page: 1,
+								pageSize: 20,
+							}
+						});
+					}
+					//学生错题
+					if (hashStrings === '/stuReport') {
+						yield put({
+							type: 'report/queryQrStudentCount',
+							payload: {
+								classId: payload,
+								year: years,
+								subjectId: res.data.data[0].v,
+							}
+						});
+					}
+					//作业报告
+					if (hashStrings === '/workReport') {
+						yield put({
+							type: 'report/queryHomeworkList',
+							payload: {
+								classId: payload,
+								subjectId: res.data.data[0].v
+							}
+						})
+					}
 				}
-
 			} else {
 				if (res.data.msg == '无效TOKEN!') {
 					yield put(routerRedux.push('/login'))

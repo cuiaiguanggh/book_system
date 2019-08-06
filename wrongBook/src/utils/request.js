@@ -46,8 +46,8 @@ export default function request(url, options) {
   let data = options.data || {};
   let dataBody;
   let loginSession = store.get('wrongBookToken');
-  
-  if(loginSession !== '' && data.token == undefined ){
+ 
+  if(loginSession !== '' && data.token == undefined  ){
       data.token = loginSession;
   }
   dataBody = formatOpt(data);
@@ -55,6 +55,7 @@ export default function request(url, options) {
     dataBody = options.body + '&' + dataBody;
   }
   options.body = dataBody;
+
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON)

@@ -3,6 +3,7 @@ import {
 	getQuestionPdf2,
 	getAllPdfV2ForQrc,
 	getAllPdfV2ForQrs,
+  makeSelectWB,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
 import moment from 'moment';
@@ -86,30 +87,13 @@ export default {
 				}
 			return { ...state, workDownPic:workDownPic};
 		},
-
-
-
-		workDownPic(state, {payload}) {
-			let workDownPic = state.workDownPic
-			workDownPic.push(payload)
-			return { ...state, workDownPic:workDownPic };
-		},
-		delWorkDownPic(state, {payload}) {
-			let workDownPic = state.workDownPic
-				for(let i = 0 ; i < workDownPic.length ; i++){
-					if(workDownPic[i] == payload){
-						workDownPic.splice(i,1)
-					}
-				}
-			return { ...state, workDownPic:workDownPic};
-		},
 		workDown(state, {payload}) {
-				let workDown = state.workDown
-				workDown.push(payload)
+				let workDown = state.workDown;
+				workDown.push(payload);
 			return { ...state, workDown:workDown };
 		},
 		delWorkDown(state, {payload}) {
-			let workDown = state.workDown
+			let workDown = state.workDown;
 				for(let i = 0 ; i < workDown.length ; i++){
 					if(workDown[i] == payload){
 						workDown.splice(i,1)
@@ -206,6 +190,40 @@ export default {
 	},
   
 	effects: {
+	  *makeSelectWB({payload}, {put, select}){
+	    //最新的下载错题
+      let res = yield makeSelectWB(payload);
+      if(res.data && res.data.result === 0){
+        console.log(res.data.data);
+        yield put ({
+          type: 'pdfUrl',
+          payload:{
+            downloadLink:res.data.data.downloadUrl,
+            fileLink:res.data.data.url,
+          }
+        });
+        yield put ({
+          type: 'downQue',
+          payload:false
+        });
+        yield put ({
+          type: 'showPdfModal',
+          payload:true
+        })
+      }
+      else if(res.err){
+        yield put ({
+          type: 'downQue',
+          payload:false
+        })
+      }else{
+        yield put ({
+          type: 'downQue',
+          payload:false
+        });
+        message.error(res.data.msg)
+      }
+    },
 		*downwork({payload}, {put, select}) {
 			// 下载班级错题
 			
@@ -335,4 +353,3 @@ export default {
 	
   
   };
-  

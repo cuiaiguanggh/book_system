@@ -119,14 +119,16 @@ class HomeworkCenter extends React.Component {
 		}	
 	}
 	chooseYear(){
-		const rodeType = store.get('wrongBookNews').rodeType
+		const rodeType = store.get('wrongBookNews').rodeType;
 		if(rodeType <= 20){
 		let yearList = this.props.state.yearList;
 			const children = [];
 			if(yearList.data){
 				for (let i = 0; i < yearList.data.length; i++) {
-					let data = yearList.data[i]
-					children.push(<Option key={data}>{data}</Option>);
+					let data = yearList.data[i];
+					children.push(<Option key={data}>
+            {`${data}-${Number(data) + 1}学年`}
+           </Option>);
 				}
 				return(
 					<Select
@@ -134,7 +136,7 @@ class HomeworkCenter extends React.Component {
 						style={{ width: 200,marginRight:'10px' }}
 						optionFilterProp="children"
 						placeholder='请选择学年'
-						value={this.props.state.nowYear}
+            defaultValue={this.props.state.nowYear}
 						onChange={(value)=>{
 							this.props.dispatch({
 								type: 'classHome/nowYear',
@@ -143,7 +145,7 @@ class HomeworkCenter extends React.Component {
 						}}
 						filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 					>
-						{children}
+           {children}
 					</Select>
 				)
 			}else{
@@ -165,8 +167,6 @@ class HomeworkCenter extends React.Component {
 					</Select>
 				)
 			}
-			
-			
 		}	
 	}
 	render() {

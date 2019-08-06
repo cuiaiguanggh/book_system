@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import 'antd/dist/antd.css';
+import style from './Menus.less';
 import { Menu, Icon, Layout, Popover, Select, message } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import QRCode from 'qrcode.react';
 import { Link } from "dva/router";
 import store from 'store';
-import style from './Menus.less';
 import WrongTop from '../wrongReport/wrongTop/wrongTop';
 import { serverType } from '../../config/dataCenter';
 import moment from 'moment';
@@ -27,16 +27,21 @@ class HomePageLeft extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 'home',
       collapsed: false,
       guideState: true,
     }
   }
-
-  menuClick = (e) => {
-    this.setState({
-      current: e.key,
-    });
+  //延迟改变hash切换组件
+  ycgaihash(hahs) {
+    //延迟跳转的原因：解决menu样式切换卡顿
+    let that = this;
+    setTimeout(function () {
+      that.props.dispatch(
+        routerRedux.push({
+          pathname: hahs
+        })
+      )
+    }, 300)
   }
 
   //返回导航栏目
@@ -84,13 +89,14 @@ class HomePageLeft extends Component {
       }
     }
 
+
     if (memuList !== '') {
       memuList.map((item, i) => {
         // 学校管理模块
         if (item === 100) {
           if (rodeType === 10) {
 
-            menus.push(<Menu.Item key="school">
+            menus.push(<Menu.Item key="school" >
               <Link to='school#page=1' replace>
                 <Icon type="bar-chart" /><span>学校管理</span>
               </Link>
@@ -102,65 +108,67 @@ class HomePageLeft extends Component {
 
         // 作业中心
         if (item === 300 && rodeType != 10) {
-          if (classList.data && classList.data.length > 0) {
-            // menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
-            // 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
-            // 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
-            // </Menu.Item>)
-            menus.push(<Menu.Item key="workDetail1" style={{ cursor: 'pointer' }}>
-              <Link to="/classReport" style={{ cursor: 'pointer' }} replace>
-                <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span></Link>
-            </Menu.Item>)
-            menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }}>
-              <Link to="/stuReport" style={{ cursor: 'pointer' }} replace>
-                <Icon type="solution" /><span style={{ cursor: 'pointer' }}>学生错题</span></Link>
-            </Menu.Item>)
-            menus.push(
-              <Menu.Item key="classChart"><Link key="classChart" to="/classChart" replace>
-                <Icon type="area-chart" /><span>班级报表</span></Link></Menu.Item>
-            )
-            // menus.push(<Menu.Item key="workDetail3" style={{cursor:'pointer'}}>
-            // 	<Link to="/workReport"  style={{cursor:'pointer'}} replace >
-            // 	<Icon type="share-alt" /><span style={{cursor:'pointer'}}>作业报告</span></Link>
-            // </Menu.Item>)
-          }
+          // if (classList.data && classList.data.length > 0) {
+          // menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
+          // 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
+          // 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
+          // </Menu.Item>)
+          menus.push(<Menu.Item key="workDetail1" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/classReport')}>
+            {/* <Link to="/classReport" style={{ cursor: 'pointer' }} replace> */}
+            <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span>
+            {/* </Link> */}
+          </Menu.Item>)
+          menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
+            {/* <Link to="/stuReport" style={{ cursor: 'pointer' }} replace> */}
+            <Icon type="solution" /><span style={{ cursor: 'pointer' }}>学生错题</span>
+            {/* </Link> */}
+          </Menu.Item>)
+          menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
+            {/* <Link to="/workReport" style={{ cursor: 'pointer' }} replace > */}
+            <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
+            {/* </Link> */}
+          </Menu.Item>)
+          // }
         }
         // 班级管理模块
         if (item === 200) {
           if (rodeType > 20) {
-
             // menus.push(<Menu.Item key="grade">
             //   <Link to='grade#page=1' replace>
             //     <Icon type="align-left" /><span>班级管理</span>
             //   </Link>
             // </Menu.Item>)    
-                 menus.push(<Menu.Item key="grade">
-                 <Link to='classUser' replace>
-                   <Icon type="align-left" /><span>班级管理</span>
-                 </Link>
-               </Menu.Item>)
-
+            menus.push(<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
+              {/* <Link to='classUser' replace> */}
+              <Icon type="align-left" /><span>班级管理</span>
+              {/* </Link> */}
+            </Menu.Item>)
 
           } else {
-
             if (rodeType !== 10) {
               menus.push(
-                <Menu.Item><Link key="schoolChart" to="/schoolChart" replace><Icon
-                  type="pie-chart" /><span>校级报表</span></Link></Menu.Item>
+                <Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
+                  {/* <Link to='classUser' replace> */}
+                  <Icon type="team" /><span>班级管理</span>
+                  {/* </Link> */}
+                </Menu.Item>
               )
-            menus.push(
-              <Menu.Item key="grade">
-                <Link to='classUser' replace>
-                  <Icon type="team"/><span>班级管理</span>
-                </Link>
-              </Menu.Item>
-            )
             }
             // menus.push(
             //   <Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle"/><span>批量导入</span></Link></Menu.Item>
             // )
           }
-
+          menus.push(
+            <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
+              {/* <Link to="/schoolChart" replace> */}
+                <Icon type="pie-chart" /><span>使用数据</span>
+              {/* </Link> */}
+            </Menu.Item>
+          )
+          // menus.push(
+          //   <Menu.Item key="classChart"><Link key="classChart" to="/classChart" replace>
+          //     <Icon type="area-chart" /><span>班级报表</span></Link></Menu.Item>
+          // )
         }
       })
       return (menus)
@@ -235,12 +243,13 @@ class HomePageLeft extends Component {
                 pageNum: 1,
                 pageSize: 50,
               }
+              console.log(33333)
               this.props.dispatch({
                 type: 'report/queryQrDetail',
                 payload: data
               });
             }
-          }else if (window.location.href.split('/#/')[1] == 'classChart') {
+          } else if (window.location.href.split('/#/')[1] == 'classChart') {
             if (classId !== '' && subId != '' && year !== '') {
               //重置月份为0
               this.props.dispatch({
@@ -250,12 +259,12 @@ class HomePageLeft extends Component {
               //重新调用接口
               this.props.dispatch({
                 type: 'reportChart/getReportTimeList',
-                payload:{
-                  classReport:true
+                payload: {
+                  classReport: true
                 }
               });
             }
-          }else if (window.location.href.split('/#/')[1] == 'schoolChart') {
+          } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
             if (classId !== '' && subId != '' && year !== '') {
               //重置月份为0
               this.props.dispatch({
@@ -265,8 +274,8 @@ class HomePageLeft extends Component {
               //重新调用接口
               this.props.dispatch({
                 type: 'reportChart/getReportTimeList',
-                payload:{
-                  classReport:false
+                payload: {
+                  classReport: false
                 }
               });
             }
@@ -330,11 +339,14 @@ class HomePageLeft extends Component {
       defaultKey = 'workDetail2'
     } else if (defaultKey.indexOf('workReport') === 0) {
       defaultKey = 'workDetail3'
-    }else if(defaultKey.indexOf('classChart') === 0){
-      defaultKey = 'classChart'
-    } else if(defaultKey.indexOf('classUser') === 0){
+    } else if (defaultKey.indexOf('classChart') === 0) {
+      defaultKey = 'Chart'
+    } if (defaultKey.indexOf('schoolChart') === 0) {
+      defaultKey = 'Chart'
+    } else if (defaultKey.indexOf('classUser') === 0) {
       defaultKey = 'grade'
-    } if (defaultKey == '') {
+    }
+    if (defaultKey == '') {
       if (userNews) {
         if (userNews.rodeType == 10) {
           defaultKey = 'school'
@@ -413,28 +425,26 @@ class HomePageLeft extends Component {
     }
     return (
       <Layout className={style.homePageContaier + ' ' + 'chomePageContaier'}>
-
-        
-          <div style={{ position: 'absolute', width: '1920px', height: '1080px', }}  hidden={this.state.guideState ? false: true} >
-            <img src={ydt}
-              style={{ width: '100%', position: 'absolute', zIndex: '100' }} />
-            <div style={{
-              top: '875px',
-              right: '607px',
-              width: '150px',
-              height: '55px',
-              position: 'absolute',
-              zIndex: '105',
-            }}
-              onClick={() => {
-                this.setState({
-                  guideState: false
-                });
-                localStorage.setItem('guide1', store.get('wrongBookNews').userId)
-              }}>
-            </div>
+        <div style={{ position: 'absolute', width: '1920px', height: '1080px', }} hidden={this.state.guideState ? false : true} >
+          <img src={ydt}
+            style={{ width: '100%', position: 'absolute', zIndex: '100' }} />
+          <div style={{
+            top: '875px',
+            right: '607px',
+            width: '150px',
+            height: '55px',
+            position: 'absolute',
+            zIndex: '105',
+          }}
+            onClick={() => {
+              this.setState({
+                guideState: false
+              });
+              localStorage.setItem('guide1', store.get('wrongBookNews').userId)
+            }}>
           </div>
-         
+        </div>
+
         <Sider
           trigger={null}
           collapsible
@@ -445,15 +455,9 @@ class HomePageLeft extends Component {
             theme="dark"
             mode="inline"
             defaultSelectedKeys={[defaultKey]}
-            onClick={(e) => {
-              this.setState({
-                current: e.key,
-              });
-            }}
           >
             {this.Menus()}
           </Menu>
-
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
@@ -580,7 +584,7 @@ class HomePageLeft extends Component {
 
     dispatch({
       type: 'homePage/getYears',
-    })
+    });
     if (!store.get('wrongBookNews')) {
       this.props.dispatch(
         routerRedux.push({
@@ -598,6 +602,7 @@ class HomePageLeft extends Component {
     dispatch({
       type: 'userInfo/getUserInfo',
     });
+    //调用这个接口时，里面的方法嵌套，获取班级，学科，时间，知识点
     dispatch({
       type: 'temp/getClassList',
     });

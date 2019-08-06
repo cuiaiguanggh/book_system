@@ -59,7 +59,7 @@ class Top extends Component {
 							</span>
 							{
 								this.props.type == 'findPsd' ?'' :
-								<div style={{float:'right',display:"inline-block"}}>
+								<div style={{float:'right',display:"inline-block"}} >
 									<img style={{height:'40px'}} alt='' src={userNews.avatarUrl!= null || userNews.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userNews.avatarUrl  }/>
 									<Popover
 										content={content} 

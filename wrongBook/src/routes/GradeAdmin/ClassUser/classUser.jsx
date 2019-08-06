@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon,Input
+  Layout, Menu, Button, message, Select, Modal, Icon, Input
 } from 'antd';
-import {routerRedux, Link} from "dva/router";
-import {connect} from 'dva';
+import { routerRedux, Link } from "dva/router";
+import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classUser.less';
 import moment from 'moment';
-import {dataCenter} from '../../../config/dataCenter'
+import { dataCenter } from '../../../config/dataCenter'
 import store from 'store';
 import ClassAdmin from '../ClassAdmin/classAdmin'
 //作业中心界面内容
@@ -32,18 +32,20 @@ class StuReport extends React.Component {
       Img: '',
       page: 1,
       next: true,
-      whetherbz:false,
-      nowclassid:''
+      whetherbz: false,
+      nowclassid: '',
+      oldClassName: '',
+      reminder: false
     }
   }
 
   handleScroll(e) {
-    const {clientHeight} = this.refDom;
+    const { clientHeight } = this.refDom;
     hei = clientHeight;
   }
 
   menuClick = (e) => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     let location = this.props.location.hash;
     let hash = location.substr(location.indexOf("sId=") + 4);
     let id = location.substr(location.indexOf("&id=") + 4);
@@ -83,35 +85,34 @@ class StuReport extends React.Component {
   }
 
 
-  loseFocus(e){
-    if(!e.currentTarget.value){
+  loseFocus(e) {
+    if (!e.currentTarget.value) {
       message.warning('班级名称不能为空')
-    }else{
+    } else {
       this.props.dispatch({
         type: 'classHome/className',
-        payload:e.currentTarget.value
+        payload: e.currentTarget.value
       });
       this.props.dispatch({
         type: 'classHome/classId',
-        payload:this.state.nowclassid
+        payload: this.state.nowclassid
       })
       this.props.dispatch({
         type: 'classHome/updateClass',
-      },  this.props.dispatch({
+      }, this.props.dispatch({
         type: 'classHome/pageClass',
         payload: {
-          schoolId:store.get('wrongBookNews').schoolId,
+          schoolId: store.get('wrongBookNews').schoolId,
           pageSize: 9999,
           pageNum: 1
         }
       }))
     }
-   this.setState({
-      whetherbz:false
+    this.setState({
+      whetherbz: false
     })
   }
-
-
+  
   menulist() {
     let userNews = store.get('wrongBookNews')
     let location = this.props.location.hash;
@@ -119,10 +120,10 @@ class StuReport extends React.Component {
     let hash = location.substr(location.indexOf("sId=") + 4);
     let id = location.substr(location.indexOf("&id=") + 4);
 
-//  if(!id && this.props.state.classId){
-//       id= String(this.props.state.classId);
-//     }
-  
+    //  if(!id && this.props.state.classId){
+    //       id= String(this.props.state.classId);
+    //     }
+
     // if(!id && store.get('wrongBookNews').rodeType > 20 && this.props.state.classList1.data){
     //   id= String(this.props.state.classList1.data[0].classId);
     // }
@@ -138,96 +139,108 @@ class StuReport extends React.Component {
     if (classList.data) {
       return (
         <div className={style.leftInfo}>
-          <h3 style={{padding: '10px 24px', borderBottom: '1px solid #ebeef5'}}>
-            {/* <Link to={link}> */}
-              {/* {
-                <div onClick={(e)=>{
-                  this.setState({
-                    whetherbz:true
-                  })
-                }}
-                style={{cursor: 'pointer'}}>
-                 <Icon type="edit" theme="twoTone" style={{fontSize: '16px', marginRight: '5px'}}/> 
-                  <span style={{fontSize: '16px'}}>编辑</span> 
-                </div>
-          
-              } */}
-                &nbsp;
 
-            {/* </Link> */}
-          </h3>
           <Menu
-          onDoubleClick={(e)=>{ this.setState({
-              whetherbz:true
-            })}
-          }
-          onSelect={(item, key, keyPath, selectedKeys )=>{
-            this.setState({
-              nowclassid:item.key
-            })
-            this.props.dispatch({
-              type: 'classHome/classId',
-              payload:item.key
-            })
-          }}
+            onDoubleClick={(e) => {
+              this.setState({
+                whetherbz: true
+              })
+            }
+            }
+            onSelect={(item, key, keyPath, selectedKeys) => {
+              this.setState({
+                nowclassid: item.key
+              })
+              this.props.dispatch({
+                type: 'classHome/classId',
+                payload: item.key
+              })
+            }}
             mode="inline"
             defaultSelectedKeys={[id]}
-            style={{paddingBottom: '50px'}}
+            style={{height: 'calc(100% - 120px)'}}
             className={style.menu}
             onClick={this.menuClick}
-            // defaultSelectedKeys={['sub']}
             defaultOpenKeys={['sub']}
-            // inlineCollapsed={col}
           >
             {
               rodeType <= 20 ?
                 classList.data.list.map((item, i) => {
-                    const {dispatch} = this.props;
-                    return (
-              <Menu.Item key={item.classId}>
-                {this.state.whetherbz? 
-                <Input className={style.classCase} 
-                autoFocus={item.classId==this.state.nowclassid?true:false}
-                onBlur={(e)=>{
-                 this.loseFocus(e)
-                }} defaultValue= {item.className} />: <span> {item.className}</span>  }
-                    
+                  const { dispatch } = this.props;
+                  return (
+                    <Menu.Item key={item.classId} onClick={(e) => {
+                      this.setState({
+                        oldClassName: item.className
+                      })
+                    }
+                    }>
+                      {this.state.whetherbz ?
+                        <Input className={style.classCase}
+                          autoFocus={item.classId == this.state.nowclassid ? true : false}
+                          onBlur={(e) => {
+                            this.loseFocus(e)
+                          }} defaultValue={item.className} /> : <span> {item.className}</span>}
+
                       （ {item.studentNum}人）
                       </Menu.Item>
-                    )
-                  }
+                  )
+                }
                 ) :
                 classList.data.map((item, i) => {
-                    const {dispatch} = this.props;
-                    return (
-                      <Menu.Item key={item.classId}>
-          {this.state.whetherbz? 
-                <Input className={style.classCase} 
-                autoFocus={item.classId==this.state.nowclassid?true:false}
-                onBlur={(e)=>{
-                  this.loseFocus(e)
-                
-                }} defaultValue= {item.className} />: <span> {item.className}</span>  }（ {item.studentNum}人）
+                  const { dispatch } = this.props;
+                  return (
+                    <Menu.Item key={item.classId}>
+                      {this.state.whetherbz ?
+                        <Input className={style.classCase}
+                          autoFocus={item.classId == this.state.nowclassid ? true : false}
+                          onBlur={(e) => {
+                            this.loseFocus(e)
+
+                          }} defaultValue={item.className} /> : <span> {item.className}</span>}（ {item.studentNum}人）
                       </Menu.Item>
-                    )
-                  }
+                  )
+                }
                 )
             }
           </Menu>
 
-          {	store.get('wrongBookNews').rodeType<=20 ?
-              <div className={style.leadClass} onClick={()=>{
-                this.props.dispatch(
-                  routerRedux.push({
-                    pathname: '/addclass',
-                  })
-                )
-              }}>
-                <Icon type="plus-circle" style={{paddingRight:10}}  />导入班级
-              </div>
-              : ''
+          {store.get('wrongBookNews').rodeType <= 20 ?
+            <div className={style.shenjibj} onClick={(e) => {
+              
+              this.props.dispatch({
+                type: 'classHome/upgrade',
+                payload: {
+                  OldClassId:this.state.nowclassid,
+                  className:this.state.oldClassName
+                }
+              });
+
+            }}>
+              一键升级班级
+          <Icon type="question-circle" theme="filled" style={{ marginLeft: 10, color: '#ccc' }}
+                onMouseOver={() => { this.setState({ reminder: true }) }}
+                onMouseOut={() => { this.setState({ reminder: false }) }} />
+
+            </div>
+            : ''
           }
-  
+          {store.get('wrongBookNews').rodeType <= 20 ?
+            <div className={style.daorubj} onClick={() => {
+              this.props.dispatch(
+                routerRedux.push({
+                  pathname: '/addclass',
+                })
+              )
+            }}>
+              <Icon type="plus-circle" style={{ paddingRight: 10 }} />导入班级
+              </div>
+            : ''
+          }
+          {this.state.reminder ?
+            <div className={style.explain}>
+              <img src={require('../../images/explain.png')}></img>
+            </div> : ""
+          }
         </div>
       )
     }
@@ -238,8 +251,8 @@ class StuReport extends React.Component {
     if (detail.length > 0) {
       return (
         <div className={style.outBody}
-             ref={this.Ref}
-             onWheel={(e) => this.handleScroll(e)}>
+          ref={this.Ref}
+          onWheel={(e) => this.handleScroll(e)}>
           {
             detail.map((item, i) => {
               let cls = 'down', name = '加入错题篮'
@@ -253,43 +266,43 @@ class StuReport extends React.Component {
               return (
                 <div key={i} className={style.questionBody}>
                   <div className={style.questionTop}>
-                    <span style={{marginRight: '20px'}}>第{i + 1}题</span>
+                    <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
                     {/* <span>班级错误率：{}%（答错15人）</span> */}
                   </div>
-                  <div style={{padding: '10px', height: '250px', overflow: "hidden"}} onClick={() => {
-                    this.setState({visible: true, Img: item.userAnswerList[0].answer})
+                  <div style={{ padding: '10px', height: '250px', overflow: "hidden" }} onClick={() => {
+                    this.setState({ visible: true, Img: item.userAnswerList[0].answer })
                   }}>
                     {
                       item.userAnswerList[0].answer.split(',').map((item, i) => (
-                        <img key={i} style={{width: '100%'}} src={item}></img>
+                        <img key={i} style={{ width: '100%' }} src={item}></img>
                       ))
                     }
                   </div>
-                  <div style={{overflow: 'hidden', padding: '10px'}}>
-								
-								<span className={cls} onClick={() => {
-                  let dom = document.getElementsByClassName('down');
-                  let downs = this.props.state.stuDown;
-                  if (dom[i].innerHTML == '加入错题篮') {
-                    this.props.dispatch({
-                      type: 'down/stuDown',
-                      payload: item.questionId
-                    });
-                    this.props.dispatch({
-                      type: 'down/stuDownPic',
-                      payload: item.picId
-                    });
-                  } else {
-                    this.props.dispatch({
-                      type: 'down/delstuDown',
-                      payload: item.questionId
-                    });
-                    this.props.dispatch({
-                      type: 'down/delstuDownPic',
-                      payload: item.picId
-                    });
-                  }
-                }}>{name}</span>
+                  <div style={{ overflow: 'hidden', padding: '10px' }}>
+
+                    <span className={cls} onClick={() => {
+                      let dom = document.getElementsByClassName('down');
+                      let downs = this.props.state.stuDown;
+                      if (dom[i].innerHTML == '加入错题篮') {
+                        this.props.dispatch({
+                          type: 'down/stuDown',
+                          payload: item.questionId
+                        });
+                        this.props.dispatch({
+                          type: 'down/stuDownPic',
+                          payload: item.picId
+                        });
+                      } else {
+                        this.props.dispatch({
+                          type: 'down/delstuDown',
+                          payload: item.questionId
+                        });
+                        this.props.dispatch({
+                          type: 'down/delstuDownPic',
+                          payload: item.picId
+                        });
+                      }
+                    }}>{name}</span>
                   </div>
                 </div>
               )
@@ -315,7 +328,7 @@ class StuReport extends React.Component {
         overflow: 'auto',
         position: 'relative'
       }}
-               ref='warpper'
+        ref='warpper'
       >
         <div className={style.layout}>
           <Layout className={style.innerOut}>
@@ -323,7 +336,7 @@ class StuReport extends React.Component {
               {this.menulist()}
             </Sider>
             <Content className={style.content}
-                     ref='warpper'>
+              ref='warpper'>
               <ClassAdmin location={this.props.location}></ClassAdmin>
             </Content>
           </Layout>
@@ -333,15 +346,15 @@ class StuReport extends React.Component {
             className="showques"
             footer={null}
             onOk={() => {
-              this.setState({visible: false})
+              this.setState({ visible: false })
             }}
             onCancel={() => {
-              this.setState({visible: false})
+              this.setState({ visible: false })
             }}
           >
             {
               this.state.Img.split(',').map((item, i) => (
-                <img key={i} style={{width: '100%'}} src={item}></img>
+                <img key={i} style={{ width: '100%' }} src={item}></img>
               ))
             }
           </Modal>
@@ -351,9 +364,9 @@ class StuReport extends React.Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     let hash = this.props.location.hash;
-    let userNews = store.get('wrongBookNews')
+    let userNews = store.get('wrongBookNews');
     if (userNews.rodeType < 20) {
       let ids = hash.substr(hash.indexOf("sId=") + 4);
       let id = ids.split('&id=');
@@ -375,10 +388,11 @@ class StuReport extends React.Component {
         type: 'homePage/infoSchool',
         payload: id[0]
       });
-    } else if(userNews.rodeType == 20){
-      let ids = hash.substr(hash.indexOf("sId=") + 4);
+    } else if (userNews.rodeType == 20) {
+  
+      let ids = hash.substr(hash.indexOf("&id=") + 4);
       let data = {
-        schoolId:userNews.schoolId,
+        schoolId: userNews.schoolId,
         pageSize: 9999,
         pageNum: 1
       }
@@ -389,13 +403,13 @@ class StuReport extends React.Component {
 
       dispatch({
         type: 'homePage/infoClass',
-        payload:ids
+        payload: ids
       });
       dispatch({
         type: 'homePage/infoSchool',
         payload: userNews.schoolId
       });
-    } else{
+    } else {
       let id = hash.substr(hash.indexOf("&id=") + 4);
       dispatch({
         type: 'homePage/infoClass',
@@ -419,12 +433,12 @@ class StuReport extends React.Component {
     //   type: 'homePage/schoolTeacher',
     // });
     // if(this.props.state.infoClass!='' || store.get('wrongBookNews').rodeType <= 20){
-    //   this.props.dispatch({
-    //     type: 'homePage/teacherList',
-    //     payload: {
-    //       type: 1
-    //     }
-    //   });
+    this.props.dispatch({
+      type: 'homePage/teacherList',
+      payload: {
+        type: 1
+      }
+    });
     // }
     this.props.dispatch({
       type: 'homePage/subjectNodeList',
