@@ -2,92 +2,95 @@ import request from '../utils/request';
 import {dataCenter} from '../config/dataCenter';
 
 function pageClass(payload){
-    return request(dataCenter('/user/pageClass'),{
-        data:payload
+    return request(dataCenter('/school/class/list'),{
+        data:payload,
+        method:'get'
     });
 }
 function classInfo(payload){
-    return request(dataCenter('/user/classInfo'),{
-        data:payload
+    return request(dataCenter('/school/class/info'),{
+        data:payload,
+        method:'get'
     });
 }
 function teacherList(payload){
-    return request(dataCenter('/user/memberList'),{
-        data:payload
+    return request(dataCenter('/school/class/members'),{
+        data:payload,
+        method:'get'
     });
 }
 function updateClass(payload){
-    return request(dataCenter('/user/updateClass'),{
+    return request(dataCenter('/school/class/manage/update'),{
         data:payload
     });
 }
 function deleteClass(payload){
-    return request(dataCenter('/user/deleteClass'),{
+    return request(dataCenter('/school/class/manage/delete'),{
         data:payload
     });
 }
 function addClass(payload){
-    return request(dataCenter('/user/addClass'),{
+    return request(dataCenter('/school/class/manage/creat'),{
         data:payload
     });
 }
 function pageUser(payload){
-    return request(dataCenter('/user/pageUser'),{
-        data:payload
+    return request(dataCenter('/school/users/pageUser'),{
+        data:payload,
+        method:'get'
     });
 }
 function updateInfo(payload){
-    return request(dataCenter('/user/updateInfo'),{
-        data:payload
+    return request(dataCenter('/user/userInfo'),{
+        data: payload,
+        headers:{
+            'Content-Type':'application/json'
+        }
     });
 }
 function queryHomeworkList(payload){
-    return request(dataCenter('/web/report/queryHomeworkList'),{
-        data:payload
+    return request(dataCenter('/report/homework/list'),{
+        data:payload,
+        method:'get'
     });
 }
 function getClassList(payload){
-    return request(dataCenter('/user/getClassList'),{
-      data:payload
+    return request(dataCenter('/school/users/class'),{
+      data:payload,
+      method:'get'
     });
 }
 function getYears(payload){
-    return request(dataCenter('/sys/config/getEnableYears'),{
-        data:payload
+    return request(dataCenter('/school/info/years'),{
+        data:payload,
+        method:'get'
     });
 }
 function createSchoolUser(payload){
-    return request(dataCenter('/user/createSchoolUser'),{
+    return request(dataCenter('/school/users/creat'),{
         data:payload
     });
 }
 function subjectNodeList(payload){
-    return request(dataCenter('/sys/config/subjectNodeList'),{
-        data:payload
+    return request(dataCenter('/school/subject/school'),{
+        data:payload,
+        method:'get'
     });
 }
 function administrativeDivision(payload){
-    return request(dataCenter('/sys/config/administrativeDivision'), {
+    return request(dataCenter('/report/sys/administrativeDivision'), {
         data:payload
     });
 }
-function kickClass(payload){
-    return request(dataCenter('/user/kickClass'), {
-        data:payload
-    });
-}
-function getSubjectList(payload){
-    return request(dataCenter('/user/getSubjectList'), {
-        data:payload
-    });
-}
+
 function getUserInfo(payload){
-    return request(dataCenter('/user/getUserInfo'), {
-        data:payload
+    return request(dataCenter('/user/userInfo'), {
+        data:payload,
+        method:'get'
     });
 }
 function promotionClass(payload){
-    return request(dataCenter('/user/promotionClass'), {
+    return request(dataCenter('/school/class/manage/promotion'), {
         data:payload
     });
 }
@@ -106,8 +109,6 @@ export {
     createSchoolUser,
     subjectNodeList,
     administrativeDivision,
-    kickClass,
-    getSubjectList,
     getUserInfo,
     promotionClass,
 };

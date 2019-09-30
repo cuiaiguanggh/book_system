@@ -10,8 +10,9 @@ import {
 	getCorrection,
 	WrongQuestionMarker,
 	CorrectionMarker,
-  homeworkRefresh,
-  remindHomework
+	remindHomework,
+	teacherCollect,
+	yuantu
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -21,8 +22,8 @@ export default {
 
 	namespace: 'report',
 
-	state: {  
-		mouNow: {k:moment().format('MMM'),v:moment().format('YYYY-MM')},
+	state: {
+		mouNow: { k: moment().format('MMM'), v: moment().format('YYYY-MM') },
 		qrdetailList: [],
 		qrdetailList1: [],
 		homeworkList: [],
@@ -43,10 +44,10 @@ export default {
 		begtoendTime: [],
 		stbegtoendTime: [],
 		knowledgenow: [],
-		beforehand:[],
-		beforstuTopic:[],
-		cuowunumber:0,
-		dainumber:0
+		beforehand: [],
+		beforstuTopic: [],
+		cuowunumber: 0,
+		dainumber: 0
 	},
 	reducers: {
 		cuowunumber(state, { payload }) {
@@ -127,9 +128,9 @@ export default {
 				for (let i = 0; i < payload.data.questionList.length; i++) {
 					list.data.questionList.push(payload.data.questionList[i])
 				}
-			}else{
-        list.data.end=false;
-      }
+			} else {
+				list.data.end = false;
+			}
 			//滚动时加载的，加载错题数据
 			return { ...state, qrdetailList1: list };
 		},
@@ -188,50 +189,59 @@ export default {
 	},
 
 	effects: {
-	  *remindHomework({ payload }, { put, select }){
-	    //提醒上交作业
-     let res = yield remindHomework(payload);
-
-      if (res.data && res.data.result === 0) {
-        message.success('发送成功');
-      } else {
-          message.error(res.data.msg)
-        }
-
-    },
-	  *homeworkRefresh({ payload }, { put, select }){
-	    //手动刷新生成作业报告
-      yield homeworkRefresh(payload);
-    },
-		*CorrectionMarker({ payload }, { put, select }){
-	//老师预批改结果
-		 yield CorrectionMarker(payload);
+		*getyuantu({ payload }, { put, select }){
+			let res = yield yuantu(payload);
+			return res.data.data;
 		},
-		*WrongQuestionMarker({ payload }, { put, select }){
+		*teacherCollect({ payload }, { put, select }) {
+			//星标收藏
+			let res = yield teacherCollect(payload);
+
+		},
+		*remindHomework({ payload }, { put, select }) {
+			//提醒上交作业
+			let res = yield remindHomework(payload);
+
+			if (res.data && res.data.result === 0) {
+				message.success('发送成功');
+			} else {
+				message.error(res.data.msg)
+			}
+
+		},
+
+		*CorrectionMarker({ payload }, { put, select }) {
+			//老师预批改结果
+			yield CorrectionMarker(payload);
+		},
+		*WrongQuestionMarker({ payload }, { put, select }) {
 			//匹配错误反馈
 			let res = yield WrongQuestionMarker(payload);
 		},
-		*getCorrection({ payload }, { put, select }){
+		*getCorrection({ payload }, { put, select }) {
 			//获得预批改作业信息
 			let res = yield getCorrection(payload);
-			let beforstuTopic=res.data.data.homeworkCorrectionList;
+			let beforstuTopic=[]
+			if(res.data.data.hasOwnProperty('homeworkCorrectionList')){
+				beforstuTopic = res.data.data.homeworkCorrectionList;
+			}
 			yield put({
 				type: 'beforstuTopic',
 				payload: beforstuTopic
 			})
 			//错误人数和，带批改人数
-			let cuowunumber=0,dainumber=0;
-			for(let i=0;i<beforstuTopic.length;i++){
-				if(beforstuTopic[i].teacherCollect === 1){
+			let cuowunumber = 0, dainumber = 0;
+			for (let i = 0; i < beforstuTopic.length; i++) {
+				if (beforstuTopic[i].teacherCollect === 1) {
 					cuowunumber++;
 				}
-				if(beforstuTopic[i].teacherCollect === 0){
+				if (beforstuTopic[i].teacherCollect === 0) {
 					dainumber++;
 				}
 			}
 			yield put({
 				type: 'cuowunumber',
-				payload:cuowunumber
+				payload: cuowunumber
 			});
 			yield put({
 				type: 'dainumber',
@@ -239,14 +249,22 @@ export default {
 			})
 		},
 		*deleteVidio({ payload }, { put, select }) {
-			let { qrdetailList, qrdetailList1 } = yield select(state => state.report);
+			let { qrdetailList, qrdetailList1, beforehand } = yield select(state => state.report);
 			//班级错题页面错题列表
 			if (qrdetailList.data && qrdetailList.data.questionList[payload]) {
 				delete qrdetailList.data.questionList[payload].teachVideo;
 			}
 			//学生错题页面错题列表
-			if (qrdetailList1.data &&  qrdetailList1.data.questionList[payload]) {
+			if (qrdetailList1.data && qrdetailList1.data.questionList[payload]) {
 				delete qrdetailList1.data.questionList[payload].teachVideo;
+			}
+			//作业报告错题列表
+			if (beforehand.teachVideo) {
+				beforehand.teachVideo = null
+				yield put({
+					type: 'beforehand',
+					payload: beforehand
+				})
 			}
 			yield put({
 				type: 'deleteVidioGai',
@@ -258,7 +276,7 @@ export default {
 
 		},
 		*updataVideo({ payload }, { put, select }) {
-			let { qrdetailList, qrdetailList1 } = yield select(state => state.report);
+			let { qrdetailList, qrdetailList1, beforehand } = yield select(state => state.report);
 			//班级错题页面错题列表
 			if (qrdetailList.data && qrdetailList.data.questionList[payload.key]) {
 				qrdetailList.data.questionList[payload.key].teachVideo = payload.video;
@@ -267,6 +285,16 @@ export default {
 			if (qrdetailList1.data && qrdetailList1.data.questionList[payload.key]) {
 				qrdetailList1.data.questionList[payload.key].teachVideo = payload.video;
 			}
+			//作业报告页面错题列表
+			if (beforehand.teachVideo===null) {
+				beforehand.teachVideo = payload.video;
+				console.log(payload)
+				yield put({
+					type: 'beforehand',
+					payload: beforehand
+				})
+			}
+
 
 			yield put({
 				type: 'updataVideoGai',
@@ -279,12 +307,9 @@ export default {
 
 
 		*searchLink({ payload }, { put, select }) {
-			let res = yield searchLink(payload);
-			window.open(res.data.data.link, '_blank');
-			// var tempwindow=window.open('_blank'); // 先打开页面
-			// tempwindow.location=res.data.data.link; // 后更改页面地址
-			//如果被拦截的备选方案
-			// window.open(`${document.location.protocol}://www.baidu.com/s?wd=${res.data.data.link}`,'_blank');
+			let res = yield searchLink({ picId: payload.picId });
+			// 先打开页面  后更改页面地址,解决移动端上被拦截的问题
+			payload.wi.location.href = res.data.data.link;
 		},
 		*queryQrDetail({ payload }, { put, select }) {
 			let { mouNow, knowledgenow, stbegtoendTime } = yield select(state => state.report)
@@ -301,6 +326,11 @@ export default {
 				payload.startTime = stbegtoendTime[0];
 				payload.endTime = stbegtoendTime[1];
 			}
+			if(!payload.subjectId){
+				message.error('请选择学科');
+				return;
+			}
+
 			//账号科目列表
 			let res = yield queryQrDetail(payload);
 			if (res.data && res.data.result === 0) {
@@ -310,7 +340,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -338,8 +368,7 @@ export default {
 				yield put({
 					type: 'studentList',
 					payload: res.data
-				})
-				console.log(userId)
+				});
 				if (res.data.data.length > 0) {
 					let data = {}
 					if (userId == '') {
@@ -402,7 +431,7 @@ export default {
 
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -422,7 +451,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -442,7 +471,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -461,7 +490,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -518,7 +547,7 @@ export default {
 
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -541,7 +570,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -569,13 +598,10 @@ export default {
 					type: 'visible1',
 					payload: false
 				})
-				yield put({
-					type: 'visible1',
-					payload: false
-				})
+
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -617,7 +643,7 @@ export default {
 					}
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -631,6 +657,7 @@ export default {
 			//上传讲解视频
 			const { num } = yield select(state => state.example)
 			let res = yield uploadVideo(payload);
+			console.log(res)
 			if (res.hasOwnProperty("err")) {
 				yield put(routerRedux.push('/login'))
 			} else
@@ -670,7 +697,7 @@ export default {
 						type: 'toupload',
 						payload: false
 					})
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 

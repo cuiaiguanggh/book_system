@@ -1,9 +1,10 @@
 import React from 'react';
-import { Layout, Input,Modal,Radio,Button,Select } from 'antd';
-import {  Link, } from "dva/router";
+import { Layout, Input, Modal, Radio, Button, Select } from 'antd';
+import { Link, } from "dva/router";
 import { connect } from 'dva';
 import style from './information.less';
 import store from 'store';
+import { dataCenter, dataCen, serverType } from '../../config/dataCenter'
 const { Content } = Layout;
 // const Search = Input.Search;
 const RadioGroup = Radio.Group;
@@ -14,183 +15,183 @@ const Option = Select.Option;
 class HomeworkCenter extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state={
-			changePhone:0,
-			phone:'',
-			name:store.get('wrongBookNews').userName,
-			headUrl:store.get('wrongBookNews').avatarUrl,
-			subjectId:100
+		this.state = {
+			changePhone: 0,
+			phone: '',
+			name: store.get('wrongBookNews').userName,
+			headUrl: store.get('wrongBookNews').avatarUrl,
+			subjectId: 100
 		}
 
 	}
-	getGradeName(){
-		let userData=this.props.state.userData
-		let str=''
-		if(userData.subjectName!=null){
-			str+=userData.subjectName
+	getGradeName() {
+		let userData = this.props.state.userData;
+		let str = ''
+		if (userData.subjectName != null) {
+			str += userData.subjectName
 		}
-		if(userData.gradeName!=null){
-			str+='—'+userData.gradeName
+		if (userData.gradeName != null) {
+			str += '—' + userData.gradeName
 		}
 		return str
-		
-	}
-	getSub() {
-		//return
-		let subList =  this.props.state.allSubList ;
-		this.props.state.userData!==undefined?this.state.subjectId=this.props.state.userData.subjectId:100
-		let subjectId = this.props.state.subjectId;
-		if(subList && subList.length> 0 && subjectId != ''){
-			return(
-				<Select
-						
-						style={{ width: 300}}
-						placeholder="学科"
-						value={subjectId}
-						optionFilterProp="children"
-						onChange={(value)=>{
-							this.props.dispatch({
-								type: 'userInfo/subjectId',
-								payload:value
-							});
-						}}
-						
-				>
-					{
-						subList.map((item,i) =>(
-							<Option key={i} value={item.v}>{item.k}</Option>
-						))
-					}
-			</Select>
-			)
-		}else{
 
-		}
-		} 
+	}
+	// getSub() {
+	// 	//return
+	// 	let subList = this.props.state.allSubList;
+	// 	this.props.state.userData !== undefined ? this.state.subjectId = this.props.state.userData.subjectId : 100
+	// 	let subjectId = this.props.state.subjectId;
+	// 	if (subList && subList.length > 0 && subjectId != '') {
+	// 		return (
+	// 			<Select
+
+	// 				style={{ width: 300 }}
+	// 				placeholder="学科"
+	// 				value={subjectId}
+	// 				optionFilterProp="children"
+	// 				onChange={(value) => {
+	// 					this.props.dispatch({
+	// 						type: 'userInfo/subjectId',
+	// 						payload: value
+	// 					});
+	// 				}}
+
+	// 			>
+	// 				{
+	// 					subList.map((item, i) => (
+	// 						<Option key={i} value={item.k}>{item.v}</Option>
+	// 					))
+	// 				}
+	// 			</Select>
+	// 		)
+	// 	} else {
+
+	// 	}
+	// }
 	render() {
 		let userNews = store.get('wrongBookNews')
 		let classArray = this.props.state.classList1.data
-		let userData=this.props.state.userData
-		 //console.log(userData.phone)
-		// this.setState({
-		// 	phone:userData.phone
-		// })   
-		let originalPhone=userData.phone
-		
-		return(
+		let userData = this.props.state.userData;
+
+		let originalPhone = userData.phone
+
+		return (
 			<Layout>
-				<Content style={{ overflow: 'initial',backgroundColor:'#fff'}} >
-					<h3 style={{ background: '#fff',borderBottom:'1px solid #eee',margin:'0',padding:'10px 24px'}}>个人信息</h3>
-					<div className={style.layout} style={{ padding: 24, background: '#fff',height:735   }}>
+				<Content style={{ overflow: 'initial', backgroundColor: '#fff' }} >
+					<h3 style={{ background: '#fff', borderBottom: '1px solid #eee', margin: '0', padding: '10px 24px' }}>个人信息</h3>
+					<div className={style.layout} style={{ padding: 24, background: '#fff', height: 735 }}>
 						<div className={style.headport_container}>
 							<div className={style.headport}>
 								<div className={style.avater_box}>
-									<img  alt='' src={userData.avatarUrl!= null || userData.avatarUrl != 'null'?'http://images.mizholdings.com/face/default/02.gif': userData.avatarUrl  }/>
+									<img alt='' src={userData.avatarUrl != null || userData.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userData.avatarUrl} />
 								</div>
-								
-								<div className={style.namebox} style={{display:'inline-block',verticalAlign:"bottom"}}>
+								<div className={style.namebox} style={{ display: 'inline-block', verticalAlign: "bottom" }}>
 									<p>{userData.name}</p>
-									{
-										classArray !== undefined&&userData.rodeType==30 ?
-										<div style={{padding:'0 10px'}}>
-										{
-											classArray.map((item,i) =>(
-												<span key={i} style={{}}>{item.className}{item.adminId==userNews.userId?<span className={style.banzhuren_icon}>
-													<img  src={require('../images/banzhuren@2x.png')} alt=""/>
-												</span>:''}{i===classArray.length-1?'':'，'}</span>
-											))
-											
-										}
-										
-									</div>:''
-									}
-								
+									{classArray !== undefined && userData.rodeType == 30 ?
+										<div style={{ padding: '0 10px' }}>
+											{classArray.map((item, i) => (
+												<span key={i} style={{}}>{item.className}{item.adminId == userNews.userId ? <span className={style.banzhuren_icon}>
+													<img src={require('../images/banzhuren@2x.png')} alt="" />
+												</span> : ''}{i === classArray.length - 1 ? '' : '，'}</span>
+											))}
+										</div> : ''}
 								</div>
 								<div className={style.schoolbox}>
-								{
-									userData.rodeType==30?<p><img src={require('../images/nianji@2x.png')} alt=""/><span>
-										{userData!=undefined? this.getGradeName():''}
-									
-									</span></p>:''
-								}
-							
-										
-										<p><img src={require('../images/school@2x.png')} alt=""/><span>{userData.schoolName}</span></p>	
+									{
+										userData.rodeType == 30 ? <p><img src={require('../images/nianji@2x.png')} alt="" /><span>
+											{userData != undefined ? this.getGradeName() : ''}
+
+										</span></p> : ''
+									}
+									<p><img src={require('../images/school@2x.png')} alt="" /><span>{userData.schoolName}</span></p>
 								</div>
 							</div>
 						</div>
-						
-						<div style={{margin:'20px 10px'}}>
-							<h3 style={{marginBottom:'30px',marginTop:'76px'}}>修改信息</h3>
-							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>姓名：</span>
-								<Input maxLength={10} value={this.state.name}  style={{width:'300px'}}
-								onChange={(e)=>{
-									this.setState({name:e.target.value})
-								}}/>
+		
+						<div style={{ margin: '20px 10px' }}>
+							<h3 style={{ marginBottom: '30px', marginTop: '76px' }}>修改信息</h3>
+							<div style={{ marginBottom: '30px' }}>
+								<span style={{ width: "100px", display: 'inline-block' }}>姓名：</span>
+								<Input maxLength={10} value={this.state.name} style={{ width: '300px' }}
+									onChange={(e) => {
+										this.setState({ name: e.target.value })
+									}} />
 							</div>
-							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>电话：</span>
-								<Input  value={this.props.state.phone}
-									onFocus={()=>{
-										if(this.state.changePhone == 0){
+							<div style={{ marginBottom: '30px' }}>
+								<span style={{ width: "100px", display: 'inline-block' }}>电话：</span>
+								<Input value={this.props.state.phone}
+									onFocus={() => {
+										if (this.state.changePhone == 0) {
 											let This = this;
 											confirm({
 												title: '确定修改手机号么?',
 												content: '如果修改手机号您的登陆账号将会变成修改后的账号',
-												okText:'确定',
-												cancelText:'取消',
+												okText: '确定',
+												cancelText: '取消',
 												onOk() {
 													This.setState(
-														{changePhone:1}
+														{ changePhone: 1 }
 													)
 												},
 												onCancel() {
 													This.setState(
-														{changePhone:2}
+														{ changePhone: 2 }
 													)
 												},
-											  });
+											});
 										}
 									}}
-									onBlur={()=>{
-										if(this.state.changePhone !== 1){
+									onBlur={() => {
+										if (this.state.changePhone !== 1) {
 											this.setState({
-												changePhone:0
+												changePhone: 0
 											})
 										}
 									}}
-									style={{width:'300px'}}
-									onChange={(e)=>{
-										if(this.state.changePhone == 1){
+									style={{ width: '300px' }}
+									onChange={(e) => {
+										if (this.state.changePhone == 1) {
 											this.props.dispatch({
 												type: 'userInfo/phone',
-												payload:e.target.value
+												payload: e.target.value
 											})
 										}
-									}}/>
+									}} />
 							</div>
-							<div style={{marginBottom:'30px'}}>						
-								<span style={{width:"100px",display:'inline-block'}}>学科：</span>
+							
+							{/* <div style={{ marginBottom: '30px' }}>
+								<span style={{ width: "100px", display: 'inline-block' }}>学科：</span>
 								{
 									this.getSub()
 								}
-							</div>
-							<Button style={{margin:'10px 100px'}} type="primary"
-								onClick={()=>{
-									let data ={
-										name:this.state.name,																
+							</div> */}
+							<Button style={{ margin: '10px 100px' }} type="primary"
+								onClick={() => {
+									let data = {
+										name: this.state.name,
 									}
-									if(this.state.subjectId!==100){
-										data.subjectId=this.props.state.subjectId
-									}
-								//	console.error('手机号',originalPhone,this.props.state.phone)
-									if(originalPhone!==this.props.state.phone){
-										data.phone=this.props.state.phone
-									}
+									// if (this.state.subjectId !== 100) {
+									// 	data.subjectId = this.props.state.subjectId
+									// }
+									//	console.error('手机号',originalPhone,this.props.state.phone)
+									// if (originalPhone !== this.props.state.phone) {
+										data.phone = this.props.state.phone
+									// }
+									data.id = this.props.state.userData.id;
+									// let token = store.get('wrongBookToken');
+									// fetch(dataCenter('/user/userInfo?token=' + token), {
+									//   method: "POST",
+									//   body: JSON.stringify(data),
+									//   headers: {
+									// 	'Content-Type': 'application/json',
+									// 	"Authorization":token
+									//   },
+			
+									// })
+
 									this.props.dispatch({
-										type: 'userInfo/updateInfo',  
-										payload:data
+										type: 'userInfo/updateInfo',
+										payload: data
 									})
 								}}
 							>确认修改</Button>
@@ -201,18 +202,15 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 
-	componentDidMount(){
-		let schoolId = store.get('wrongBookNews').schoolId
-		let data ={
-			schoolId:schoolId
-		}
-		const {dispatch} = this.props;
+	componentDidMount() {
+
+		const { dispatch } = this.props;
 		dispatch({
 			type: 'classHome/getClassList',
 		});
-		dispatch({
-			type: 'userInfo/getSubjectList',
-		});
+		// dispatch({
+		// 	type: 'userInfo/getSubjectList',
+		// });
 		dispatch({
 			type: 'userInfo/getUserInfo',
 		});

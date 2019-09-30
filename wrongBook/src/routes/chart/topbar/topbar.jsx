@@ -38,14 +38,14 @@ class topbar extends React.Component {
 	}
 	workOnChange = (date) => { 	
 			const dateFormat = 'YYYY-MM-DD';   
-			let startDate= moment(date[0]).format("YYYY-MM-DD")
-			let endDate = moment(date[1]).format("YYYY-MM-DD")
+			let startDate= moment(date[0]).format("YYYY-MM-DD");
+			let endDate = moment(date[1]).format("YYYY-MM-DD");
 
 			if(date.length===0){
 				this.setState({
 					timeIndex:0,
 					date:null		
-				})				
+				});
 				this.props.dispatch({
 					type: 'reportChart/stateTimeIndex',
 					payload:0
@@ -55,7 +55,7 @@ class topbar extends React.Component {
 				this.setState({
 					timeIndex:100,
 					date:[moment(startDate, dateFormat), moment(endDate, dateFormat)]			
-				})
+				});
 				this.props.dispatch({
 					type: 'reportChart/stateTimeIndex',
 					payload:100
@@ -68,12 +68,12 @@ class topbar extends React.Component {
 	render() {
 		const {RangePicker} = DatePicker;
 		
-		let timeList=this.props.timeList
-		let sdate
-		let cdate=this.format(this.state.ctimestamp)
+		let timeList=this.props.timeList;
+		let sdate;
+		let cdate=this.format(this.state.ctimestamp);
 		let defaultDate=[];
 		if(timeList.length>0){
-			sdate=this.format(timeList[0].timeStamp)
+			sdate=this.format(timeList[0].timeStamp);
 			defaultDate=[sdate, cdate]
 		}
 	
@@ -90,11 +90,11 @@ class topbar extends React.Component {
 													this.setState({
 														timeIndex:i,
 														date:[moment(sdate, "YYYY-MM-DD"), moment(cdate, "YYYY-MM-DD")]
-													})
+													});
 													this.props.dispatch({
 														type: 'reportChart/stateTimeIndex',
 														payload:i
-													})
+													});
 													this.handleClick(item);
 												}}>
 											{item.name}</li>

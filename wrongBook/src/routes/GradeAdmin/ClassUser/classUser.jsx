@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Input
+  Layout, Menu, Button, message, Select, Modal, Icon, Input, Checkbox
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -15,6 +15,7 @@ const Option = Select.Option;
 const {
   Header, Footer, Sider, Content,
 } = Layout;
+const CheckboxGroup = Checkbox.Group;
 
 let hei = 0
 
@@ -34,8 +35,12 @@ class StuReport extends React.Component {
       next: true,
       whetherbz: false,
       nowclassid: '',
-      oldClassName: '',
-      reminder: false
+      reminder: false,
+      upgradeClass: false,
+      indeterminate: false,
+      checkAll: false,
+      checkedList: [],
+      plainOptions: []
     }
   }
 
@@ -104,7 +109,8 @@ class StuReport extends React.Component {
         payload: {
           schoolId: store.get('wrongBookNews').schoolId,
           pageSize: 9999,
-          pageNum: 1
+          pageNum: 1,
+          year: this.props.state.years
         }
       }))
     }
@@ -112,7 +118,7 @@ class StuReport extends React.Component {
       whetherbz: false
     })
   }
-  
+
   menulist() {
     let userNews = store.get('wrongBookNews')
     let location = this.props.location.hash;
@@ -140,40 +146,31 @@ class StuReport extends React.Component {
       return (
         <div className={style.leftInfo}>
 
-          <Menu
-            onDoubleClick={(e) => {
-              this.setState({
-                whetherbz: true
-              })
-            }
-            }
-            onSelect={(item, key, keyPath, selectedKeys) => {
-              this.setState({
-                nowclassid: item.key
-              })
-              this.props.dispatch({
-                type: 'classHome/classId',
-                payload: item.key
-              })
-            }}
+          <Menu onSelect={(item, key, keyPath, selectedKeys) => {
+            this.setState({
+              nowclassid: item.key
+            })
+            this.props.dispatch({
+              type: 'classHome/classId',
+              payload: item.key
+            })
+          }}
             mode="inline"
             defaultSelectedKeys={[id]}
-            style={{height: 'calc(100% - 120px)'}}
+            style={{ height: 'calc(100% - 120px)' }}
             className={style.menu}
             onClick={this.menuClick}
-            defaultOpenKeys={['sub']}
-          >
+            defaultOpenKeys={['sub']} >
             {
               rodeType <= 20 ?
                 classList.data.list.map((item, i) => {
-                  const { dispatch } = this.props;
                   return (
-                    <Menu.Item key={item.classId} onClick={(e) => {
-                      this.setState({
-                        oldClassName: item.className
-                      })
-                    }
-                    }>
+                    <Menu.Item key={item.classId}
+                      onDoubleClick={(e) => {
+                        this.setState({
+                          whetherbz: true
+                        })
+                      }}>
                       {this.state.whetherbz ?
                         <Input className={style.classCase}
                           autoFocus={item.classId == this.state.nowclassid ? true : false}
@@ -184,36 +181,49 @@ class StuReport extends React.Component {
                       （ {item.studentNum}人）
                       </Menu.Item>
                   )
-                }
-                ) :
+                }) :
                 classList.data.map((item, i) => {
-                  const { dispatch } = this.props;
                   return (
-                    <Menu.Item key={item.classId}>
+                    <Menu.Item key={item.classId}
+                      onDoubleClick={(e) => {
+                        this.setState({
+                          whetherbz: true
+                        })
+                      }}>
                       {this.state.whetherbz ?
                         <Input className={style.classCase}
                           autoFocus={item.classId == this.state.nowclassid ? true : false}
                           onBlur={(e) => {
                             this.loseFocus(e)
-
                           }} defaultValue={item.className} /> : <span> {item.className}</span>}（ {item.studentNum}人）
                       </Menu.Item>
                   )
-                }
-                )
+                })
             }
           </Menu>
 
-          {store.get('wrongBookNews').rodeType <= 20 ?
+          {store.get('wrongBookNews').rodeType < 20 ?
             <div className={style.shenjibj} onClick={(e) => {
-              
-              this.props.dispatch({
-                type: 'classHome/upgrade',
-                payload: {
-                  OldClassId:this.state.nowclassid,
-                  className:this.state.oldClassName
+              const rodeType = store.get('wrongBookNews').rodeType
+              if (rodeType <= 20) {
+                classList = this.props.state.classList;
+              } else {
+                classList = this.props.state.classList1;
+              }
+
+              if (classList.data.list.length > 0) {
+                let plainOptions = []
+                for (let i = 0; i < classList.data.list.length; i++) {
+                  plainOptions.push({
+                    label: classList.data.list[i].className,
+                    value: classList.data.list[i].classId,
+                  })
                 }
-              });
+                this.setState({
+                  plainOptions,
+                  upgradeClass: true
+                })
+              }
 
             }}>
               一键升级班级
@@ -340,6 +350,77 @@ class StuReport extends React.Component {
               <ClassAdmin location={this.props.location}></ClassAdmin>
             </Content>
           </Layout>
+
+          <Modal
+            title="一键升级班级"
+            visible={this.state.upgradeClass}
+            cancelText='取消'
+            okText='确认'
+            className={'shenji'}
+            width={950}
+            onOk={() => {
+              if(this.state.checkedList.length>0){
+                this.props.dispatch({
+                  type: 'classHome/upgrade',
+                  payload: {
+                    OldClassId: this.state.checkedList,
+                  }
+                });
+                this.setState({
+                  upgradeClass: false,
+                  indeterminate: false,
+                  checkAll: false,
+                  checkedList: [],
+                  plainOptions: []
+                });
+              }else{
+                message.warning('未选中班级')
+              }
+
+            }}
+            onCancel={() => {
+              this.setState({
+                upgradeClass: false,
+                indeterminate: false,
+                checkAll: false,
+                checkedList: [],
+                plainOptions: []
+              });
+            }} >
+            <p className={style.title}>请勾选需要升级的班级（可多选）</p>
+
+            <Checkbox
+              indeterminate={this.state.indeterminate}
+              onChange={(e) => {
+                let all = [];
+                for (let i = 0; i < this.state.plainOptions.length; i++) {
+                  all.push(this.state.plainOptions[i].value)
+                }
+
+                this.setState({
+                  checkedList: e.target.checked ? all : [],
+                  indeterminate: false,
+                  checkAll: e.target.checked,
+                });
+              }}
+              checked={this.state.checkAll}
+            >
+              全选
+          </Checkbox>
+            <CheckboxGroup
+              options={this.state.plainOptions}
+              value={this.state.checkedList}
+              onChange={(checkedList) => {
+                this.setState({
+                  checkedList,
+                  indeterminate: !!checkedList.length && checkedList.length < this.state.plainOptions.length,
+                  checkAll: checkedList.length === this.state.plainOptions.length,
+                });
+              }} />
+
+            <p className={style.bottom}>注：进入新的学年后，可一键升级班级的学年，自动更新班级名称；同时班级内的错题数据仍可查看。</p>
+          </Modal>
+
           <Modal
             visible={this.state.visible}
             width='1000px'
@@ -365,15 +446,27 @@ class StuReport extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+
     let hash = this.props.location.hash;
+
     let userNews = store.get('wrongBookNews');
     if (userNews.rodeType < 20) {
+
       let ids = hash.substr(hash.indexOf("sId=") + 4);
       let id = ids.split('&id=');
+
+      dispatch({
+        type: 'homePage/getEnableYears',
+        payload: {
+          schoolId: id[0]
+        }
+      })
+
       let data = {
         schoolId: id[0],
         pageSize: 9999,
-        pageNum: 1
+        pageNum: 1,
+        year: this.props.state.years
       }
       dispatch({
         type: 'classHome/pageClass',
@@ -389,12 +482,13 @@ class StuReport extends React.Component {
         payload: id[0]
       });
     } else if (userNews.rodeType == 20) {
-  
+
       let ids = hash.substr(hash.indexOf("&id=") + 4);
       let data = {
         schoolId: userNews.schoolId,
         pageSize: 9999,
-        pageNum: 1
+        pageNum: 1,
+        year: this.props.state.years
       }
       dispatch({
         type: 'classHome/pageClass',
@@ -419,11 +513,6 @@ class StuReport extends React.Component {
         type: 'homePage/infoSchool',
         payload: userNews.schoolId
       });
-      let data = {
-        schoolId: userNews.schoolId,
-        pageSize: 9999,
-        pageNum: 1
-      }
       dispatch({
         type: 'classHome/getClassList',
       });
@@ -444,11 +533,24 @@ class StuReport extends React.Component {
       type: 'homePage/subjectNodeList',
     });
   }
+
+  componentWillUnmount() {
+    if (store.get('wrongBookNews').rodeType === 10) {
+      this.props.dispatch({
+        type: 'homePage/yearList',
+        payload: {
+          yearList: []
+        }
+      })
+    }
+  }
+
 }
 
 export default connect((state) => ({
   state: {
     ...state.classHome,
     ...state.homePage,
+    years: state.temp.years
   }
 }))(StuReport);

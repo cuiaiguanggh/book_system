@@ -19,16 +19,16 @@
     .aheadLeft {
         background: #fff;
         padding   : 40px 25px 0;
-        width     : 510px;
+        width     : 30%;
 
         .aheadLeftCon {
-            display   : flex;
-            flex-wrap : wrap;
-            flex      : none;
-            overflow  : auto;
-            height    : auto;
-            max-height: 740px;
-          user-select: text!important;
+            display    : flex;
+            flex-wrap  : wrap;
+            flex       : none;
+            overflow   : auto;
+            height     : auto;
+            max-height : 740px;
+            user-select: text !important;
         }
 
         .aheadbox {
@@ -53,7 +53,7 @@
         background : rgb(255, 255, 255);
         margin-left: 15px;
         padding    : 45px 30px 20px 40px;
-        width      : 100%;
+        width      : 70%;
     }
 
     .aheadRightCon {
@@ -69,7 +69,7 @@
             border       : 1px solid rgba(231, 231, 231, 1);
             border-radius: 2px;
             margin       : 0 0 30px;
-            width        : 500px;
+            width        : 49%;
             min-height   : 260px;
             position     : relative;
             overflow     : hidden;
@@ -107,7 +107,7 @@
 
 
 .redmarkedness {
-    margin-left: 20px;
+    margin-left  : 20px;
     background   : #ffe1e4;
     border-radius: 30px;
     padding      : 0 13px;
@@ -115,13 +115,13 @@
     line-height  : 30px;
     display      : flex;
     align-items  : center;
-    font-size: 16px;
+    font-size    : 16px;
 
 }
 
 :global(.wrongNum) {
     padding       : 0px 15px;
-    font-size     : 16px; 
+    font-size     : 16px;
     // cursor     : pointer;
     display       : inline-block;
     font-family   : MicrosoftYaHei;
@@ -152,23 +152,51 @@
     font-weight: 400;
     color      : rgb(255, 105, 118);
 }
+
 .matchingError {
-  font-size  : 14px;
-  font-family: MicrosoftYaHei;
-  font-weight: 400;
-  color      : rgb(192, 200, 207);
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  cursor     : pointer;
-  display: flex;
-  align-items: center;
+    font-size  : 14px;
+    font-family: MicrosoftYaHei;
+    font-weight: 400;
+    color      : rgb(192, 200, 207);
+    position   : absolute;
+    right      : 15px;
+    top        : 15px;
+    cursor     : pointer;
+    display    : flex;
+    align-items: center;
 }
 
-.hongdian{
-  width: 10px;
-  height: 10px;
-  margin-right: 4px;
-  background: rgb(255, 105, 118);
-  border-radius: 50%;
+.hongdian {
+    width        : 10px;
+    height       : 10px;
+    margin-right : 4px;
+    background   : rgb(255, 105, 118);
+    border-radius: 50%;
+}
+
+.leftneir {
+    overflow  : auto;
+    width     : 100%;
+    max-height: 600px;
+    min-height: 230px;
+
+    img {
+        max-width: 100%;
+        ;
+    }
+}
+
+
+@media screen and (max-width: 1280px) {
+    :global(.mistakesTc) {
+        width: 950px !important;
+
+        .aheadLeft {
+            width: 350px;
+        }
+
+        .rightbox {
+            width: 500px !important;
+        }
+    }
 }

@@ -3,8 +3,8 @@ import {
     teacherList,
 	pageUser,
 	updateInfo,
-	getSubjectList,
 	getUserInfo,
+	subjectNodeList,
 } from '../services/classHomeService';
 import {
 	pageRelevantSchool
@@ -75,7 +75,7 @@ export default {
 	effects: {
 		*getSubjectList({}, {put, select}) {
 			// 返回教师所在班级科目
-			let res = yield getSubjectList();		
+			let res = yield subjectNodeList();		
 			if(res.data && res.data.result === 0){
 				yield put ({
 					type: 'allSubList',
@@ -90,20 +90,27 @@ export default {
 			// 返回教师所在班级科目
 			let res = yield getUserInfo();			
 			if(res.data && res.data.result === 0){
+				let abc=store.get('userData');
+				res.data.data={...res.data.data,...abc}
 				yield put ({
 					type: 'userData',
 					payload:res.data.data
 				})		
-				if( res.data.data.subjectId  !== '')	 {
+				if( res.data.data.subjectId  !== ''){
 					yield put ({
 						type: 'subjectId',
 						payload:res.data.data.subjectId
 					})		
+				}
+				if( res.data.data.phone  !== ''){
 					yield put ({
 						type: 'phone',
 						payload:res.data.data.phone
 					})
 				}
+
+
+
 			}else{
 				message.error(res.data.msg)
 			}		
@@ -115,6 +122,9 @@ export default {
 				payload:payload
 			})
 			let res = yield pageClass(payload);
+			if(!res.data.data.hasOwnProperty('list')){
+				res.data.data.list=[]
+			}
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
 			}else
@@ -125,7 +135,7 @@ export default {
 				})
 			}
 			else{
-				if(res.data.msg == '无效TOKEN!'){
+				if(res.data.result===2){
 					yield put(routerRedux.push('/login'))
 				}else if(res.data.msg == '服务器异常'){
 
@@ -147,7 +157,7 @@ export default {
 				})
 			}
 			else{
-				if(res.data.msg == '无效TOKEN!'){
+				if(res.data.result===2){
 					yield put(routerRedux.push('/login'))
 				}else if(res.data.msg == '服务器异常'){
 
@@ -172,7 +182,7 @@ export default {
 						payload:res.data
 					})
 				}else{
-					if(res.data.msg == '无效TOKEN!'){
+					if(res.data.result===2){
 						yield put(routerRedux.push('/login'))
 					}else if(res.data.msg == '服务器异常'){
 	
@@ -197,7 +207,7 @@ export default {
 						payload:res.data
 					})
 				}else{
-					if(res.data.msg == '无效TOKEN!'){
+					if(res.data.result===2){
 						yield put(routerRedux.push('/login'))
 					}else if(res.data.msg == '服务器异常'){
 	
@@ -211,8 +221,7 @@ export default {
 			let res = yield updateInfo(payload);
 			if(res.hasOwnProperty("err")){
 				yield put(routerRedux.push('/login'))
-			}else
-			if(res.data && res.data.result === 0){
+			}else if(res.data && res.data.result === 0){
 				let news = store.get('wrongBookNews');
 				news.phone = payload.phone;
 				news.userName = payload.name
@@ -224,7 +233,7 @@ export default {
 				message.success('修改成功')
 
 			}else{
-				if(res.data.msg == '无效TOKEN!'){
+				if(res.data.result===2){
 					yield put(routerRedux.push('/login'))
 				}else if(res.data.msg == '服务器异常'){
 					message.error('信息修改失败:'+res.data.msg)

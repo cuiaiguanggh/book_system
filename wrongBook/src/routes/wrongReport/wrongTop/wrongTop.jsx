@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	Layout, Tabs, Input, Modal, Select, Popover, Icon
+	Layout, Tabs, Input, Modal, Select, Popover, message
 } from 'antd';
 import { routerRedux, } from "dva/router";
 import { connect } from 'dva';
@@ -18,20 +18,24 @@ class ClassReport extends React.Component {
 		};
 	}
 	getGrade() {
-		let classList = this.props.state.classList1
+		let classList = this.props.state.classList1;
 		let className = this.props.state.className;
 		if (classList.data && classList.data.length > 0 && className != '') {
 			return (
 				<Select
-					showSearch
+					// showSearch
 					style={{ width: 150, margin: '0 20px' }}
 					placeholder="班级"
-					defaultValue={this.props.state.className}
+					value={this.props.state.className}
 					optionFilterProp="children"
-					onChange={(value) => {
+					onChange={(value, option) => {
 						this.props.dispatch({
 							type: 'temp/classId',
 							payload: value
+						});
+						this.props.dispatch({
+							type: 'temp/className',
+							payload: option.props.children
 						});
 						this.props.dispatch({
 							type: 'report/propsPageNum',
@@ -74,7 +78,7 @@ class ClassReport extends React.Component {
 		if (subList.data && subList.data.length > 0 && subName != '') {
 			return (
 				<Select
-					showSearch
+					// showSearch
 					style={{ width: 150, margin: '0 20px 0 0' }}
 					placeholder="学科"
 					value={this.props.state.subName}
@@ -104,30 +108,30 @@ class ClassReport extends React.Component {
 							type: 'report/propsPageNum',
 							payload: 1
 						});
-            //获取知识点筛选
-            let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
-            if (hashStrings === '/classReport') {
-              this.props.dispatch({
-                type: 'temp/getKnowledgeList',
-                payload: {
-                  classId: this.props.state.classId,
-                  year: this.props.state.years,
-                  subjectId: value,
-                  type:0,
-                }
-              });
-            }else if(hashStrings === '/stuReport'){
-              this.props.dispatch({
-                type: 'temp/getKnowledgeList',
-                payload: {
-                  classId: this.props.state.classId,
-                  year: this.props.state.years,
-                  subjectId: value,
-                  userId : this.props.state.userId,
-                  type:1
-                }
-              });
-            }
+						//获取知识点筛选
+						let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
+						if (hashStrings === '/classReport') {
+							this.props.dispatch({
+								type: 'temp/getKnowledgeList',
+								payload: {
+									classId: this.props.state.classId,
+									year: this.props.state.years,
+									subjectId: value,
+									type: 0,
+								}
+							});
+						} else if (hashStrings === '/stuReport') {
+							this.props.dispatch({
+								type: 'temp/getKnowledgeList',
+								payload: {
+									classId: this.props.state.classId,
+									year: this.props.state.years,
+									subjectId: value,
+									userId: this.props.state.userId,
+									type: 1
+								}
+							});
+						}
 
 						console.log(2222222)
 						this.props.dispatch({
@@ -200,7 +204,7 @@ class ClassReport extends React.Component {
 	}
 	render() {
 		return (
-			<div style={{ height: '50px', lineHeight: '50px',background:'rgba(198,206,218,1)' }}>
+			<div style={{ height: '50px', lineHeight: '50px', background: 'rgba(198,206,218,1)' }}>
 				{this.getGrade()}
 				{this.getSub()}
 			</div>

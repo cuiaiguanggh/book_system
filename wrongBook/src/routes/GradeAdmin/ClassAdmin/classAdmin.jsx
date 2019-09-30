@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	Layout, Menu, Table, Input, message, Modal, Popconfirm, Select, Form,
+	Layout, Menu, Table, Input, message, Modal, Popconfirm, Select, Form, Popover, Button, Spin
 } from 'antd';
 // import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -37,7 +37,10 @@ class HomeworkCenter extends React.Component {
 			phone: '',
 			sub: 0,
 			searchType: 0,
-			teacherName: ''
+			teacherName: '',
+			content: <div style={{ textAlign: "center",width: 300,height:280,display: 'flex',
+			justifyContent: 'center',
+			flexDirection: 'column'  }}> <Spin /> </div>,
 		};
 		this.tea = [{
 			title: '姓名',
@@ -46,16 +49,12 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div
-					// className='space'
-					onClick={() => {
-					}}>
+				<div>
 					{text}
 					{
 						record.OnwerTeacher == 1 ?
-							<span
-								style={{ marginLeft: '5px', padding: '5px 10px', background: '#e7f4ff', color: '#409eff', borderRadius: '3px', border: '1px solid #bde0ff' }}
-							>
+							<span style={{ marginLeft: '5px', padding: '5px 10px', background: '#e7f4ff', 
+							color: '#409eff', borderRadius: '3px', border: '1px solid #bde0ff' }}>
 								班主任
 						</span> : ""
 					}
@@ -84,11 +83,7 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div
-					className='space'
-					onClick={() => {
-						//	alert(1)
-					}}>
+				<div className='space'>
 					{text}
 				</div>
 			)
@@ -100,18 +95,15 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div
-					className='space'
-					onClick={() => {
-					}}>
+				<div className='space'>
 					{text}
 				</div>
 			)
 		},
 		{
 			title: <div className='space'>视频量</div>,
-			dataIndex: 'courseVideoNum',
-			key: 'courseVideoNum',
+			dataIndex: 'teaVideoNum',
+			key: 'teaVideoNum',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
@@ -126,27 +118,55 @@ class HomeworkCenter extends React.Component {
 			editable: true,
 			align: 'center',
 			render: (text, record) => {
-				const rodeType = store.get('wrongBookNews').rodeType
+				const rodeType = store.get('wrongBookNews').rodeType;
 				if (rodeType <= 20) {
 					return (
 						<div>
+							{record.OnwerTeacher == 1 && this.props.state.infoClass ?
+									<Popover placement="leftBottom" title="邀请学生加入班级" trigger="focus" content={this.state.content}>
+										<Button type="primary"
+											onBlur={() => {
+												this.setState({
+													content: <div style={{ textAlign: "center",width: 300,height:280,
+													display: 'flex',
+													justifyContent: 'center',
+													flexDirection: 'column' }}> <Spin /> </div>,
+												})
+											}}
+											onClick={() => {
+												this.props.dispatch({
+													type: 'homePage/wxCode',
+													payload: {
+														classId: this.props.state.infoClass
+													}
+												}).then((res) => {
+													if (res.hasOwnProperty('data')) {
+														this.setState({
+															content: <div style={{ textAlign: "center", borderRadius: '6%', overflow: 'hidden' ,width: 300,height:280}}>
+																<img style={{ width: 300 }} src={res.data.url} />
+															</div>,
+														})
+													}
+												})
+											}}>班级邀请码</Button>
+									</Popover> : ''
+							}
 							{
-
 								record.OnwerTeacher == 1 ?
 									<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#b6bac2', borderRadius: '5px', textAlign: 'center' }}
 									>已任命</span> :
-                  <Popconfirm  title={`是否任命${record.name}为班主任?`}  okText="确认" cancelText="取消" onConfirm={() => {
-                    this.props.dispatch({
-                      type: 'classHome/updateClassAdmin',
-                      payload: {
-                        classId: this.props.state.infoClass,
-                        adminId: record.userId
-                      }
-                    });
-                  }}>
-									<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#1890ff', borderRadius: '5px', textAlign: 'center' }}
-									>任命</span>
-                  </Popconfirm>
+									<Popconfirm title={`是否任命${record.name}为班主任?`} okText="确认" cancelText="取消" onConfirm={() => {
+										this.props.dispatch({
+											type: 'classHome/updateClassAdmin',
+											payload: {
+												classId: this.props.state.infoClass,
+												adminId: record.userId
+											}
+										});
+									}}>
+										<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#1890ff', borderRadius: '5px', textAlign: 'center' }}
+										>任命</span>
+									</Popconfirm>
 							}
 							<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#f56c6c', borderRadius: '5px', textAlign: 'center' }} onClick={() => {
 								let This = this;
@@ -180,13 +200,19 @@ class HomeworkCenter extends React.Component {
 			key: 'name',
 			align: 'center',
 			editable: true,
-			render: (text, record) => (
-				<div
-					className='space'
-					onClick={() => {
-					}}>
-					{text}
-				</div>
+			render: (text, record, index) => (
+				<input style={{ border: 0 }} defaultValue={text}
+					onBlur={(e) => {
+						if (text !== e.currentTarget.value) {
+							this.props.dispatch({
+								type: 'homePage/updateChild',
+								payload: {
+									childId: record.userId,
+									name: e.currentTarget.value,
+								}
+							})
+						}
+					}} />
 			)
 		},
 		{
@@ -196,10 +222,7 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: false,
 			render: (text, record) => (
-				<div
-					className='space'
-					onClick={() => {
-					}}>
+				<div className='space'>
 					{text}
 				</div>
 			)
@@ -270,65 +293,65 @@ class HomeworkCenter extends React.Component {
 		}
 		];
 
-		if (store.get('wrongBookNews').rodeType === 10) {
-			this.tea.push(
-				{
-					title: '编辑',
-					render: (text, record) => (
-						<div
-							style={{ color: '#1890ff', cursor: 'pointer' }}
-							onClick={() => {
-								let This = this;
-								confirm({
-									title: '确定要删除' + record.name + '教师么',
-									onOk() {
-										This.props.dispatch({
-											type: 'homePage/kickClass',
-											payload: {
-												userId: record.key,
-											}
-										});
-									},
-									onCancel() {
-										console.log('Cancel');
-									},
-								});
-							}}>
-							删除
-						</div>
-					)
-				}
-			)
-
-			this.stu.push(
-				{
-					title: '编辑',
-					render: (text, record) => (
-						<div
-							style={{ color: '#1890ff', cursor: 'pointer' }}
-							onClick={() => {
-								let This = this;
-								confirm({
-									title: '确定要将' + record.name + '踢出班级么',
-									onOk() {
-										This.props.dispatch({
-											type: 'homePage/kickClass',
-											payload: {
-												userId: record.userId,
-											}
-										});
-									},
-									onCancel() {
-										console.log('Cancel');
-									},
-								});
-							}}>
-							踢出班级
-						</div>
-					)
-				}
-			)
-		}
+		// if (store.get('wrongBookNews').rodeType === 10) {
+		// 	this.tea.push(
+		// 		{
+		// 			title: '编辑',
+		// 			render: (text, record) => (
+		// 				<div
+		// 					style={{ color: '#1890ff', cursor: 'pointer' }}
+		// 					onClick={() => {
+		// 						let This = this;
+		// 						confirm({
+		// 							title: '确定要删除' + record.name + '教师么',
+		// 							onOk() {
+		// 								This.props.dispatch({
+		// 									type: 'homePage/kickClass',
+		// 									payload: {
+		// 										userId: record.key,
+		// 									}
+		// 								});
+		// 							},
+		// 							onCancel() {
+		// 								console.log('Cancel');
+		// 							},
+		// 						});
+		// 					}}>
+		// 					删除
+		// 				</div>
+		// 			)
+		// 		}
+		// 	)
+		//
+		// 	this.stu.push(
+		// 		{
+		// 			title: '编辑',
+		// 			render: (text, record) => (
+		// 				<div
+		// 					style={{ color: '#1890ff', cursor: 'pointer' }}
+		// 					onClick={() => {
+		// 						let This = this;
+		// 						confirm({
+		// 							title: '确定要将' + record.name + '踢出班级么',
+		// 							onOk() {
+		// 								This.props.dispatch({
+		// 									type: 'homePage/kickClass',
+		// 									payload: {
+		// 										userId: record.userId,
+		// 									}
+		// 								});
+		// 							},
+		// 							onCancel() {
+		// 								console.log('Cancel');
+		// 							},
+		// 						});
+		// 					}}>
+		// 					踢出班级
+		// 				</div>
+		// 			)
+		// 		}
+		// 	)
+		// }
 	}
 
 	isEditing = record => record.key === this.state.editingKey;
@@ -361,7 +384,7 @@ class HomeworkCenter extends React.Component {
 				let det = pageHomeworkDetiles.data[i];
 				if (state.showMen !== '') {
 					if (det.userName && det.userName.indexOf(state.showMen) >= 0) {
-						p["key"] = i;
+						p["key"] = det.userId;
 						p["userId"] = det.userId;
 						p["head"] = det.avatarUrl ? det.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif'
 						p["name"] = det.userName;
@@ -371,10 +394,11 @@ class HomeworkCenter extends React.Component {
 						p['OnwerTeacher'] = det.admin;
 						p['parentPhones'] = det.parentPhones;
 						p['courseVideoNum'] = det.courseVideoNum;
+						p['teaVideoNum'] = det.teaVideoNum;
 						dataSource.push(p);
 					}
 				} else {
-					p["key"] = i;
+					p["key"] =det.userId;
 					p["userId"] = det.userId;
 					p["head"] = det.avatarUrl ? det.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif'
 					p["name"] = det.userName;
@@ -384,13 +408,15 @@ class HomeworkCenter extends React.Component {
 					p['OnwerTeacher'] = det.admin;
 					p['parentPhones'] = det.parentPhones;
 					p['courseVideoNum'] = det.courseVideoNum;
+					p['teaVideoNum'] = det.teaVideoNum;
 					dataSource.push(p);
 				}
 			}
 		} else {
 			dataSource = []
 		}
-		let columns = this.state.current === 'teacher' ? this.tea : this.stu
+
+		let columns = this.state.current === 'teacher' ? this.tea : this.stu;
 
 		let sublist = this.props.state.sublist;
 		const children = [];
@@ -509,7 +535,7 @@ class HomeworkCenter extends React.Component {
 					visible={this.state.visible}
 					onOk={() => {
 						Trim();
-						let hash = this.props.location.hash
+						let hash = this.props.location.hash;
 						if (this.props.state.teacherName.trim() == '' ||
 							this.props.state.phone.trim() == '' ||
 							this.props.state.subjectId.trim() == '') {
@@ -617,8 +643,7 @@ class HomeworkCenter extends React.Component {
 								});
 							}}
 							// defaultValue={classInfo.data.classAdmin}
-							filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-						>
+							filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
 							{children}
 						</Select>
 					</div>
@@ -626,8 +651,7 @@ class HomeworkCenter extends React.Component {
 			</Layout>
 		);
 	}
-	componentDidMount() {
-	}
+
 	componentWillMount() {
 		this.props.dispatch({
 			type: 'homePage/tealist',

@@ -34,18 +34,17 @@ class StuReport extends React.Component {
       loading: false,
       wordUrl: '',
       visible: false,
-      Img: '',
       next: true,
       toupload: false,
       pull: false,
       begtoendTime: [],
       stbegtoendTime: [],
-      timu: '',
-      daan: '',
       topicxy: false,
-      nowqueid: '',
       zoom: false,
-      similarTopic: 1
+      similarTopic: 1,
+      //匹配错误显示
+      pptype:0,
+      nowWindows:{},
     }
   }
 
@@ -73,9 +72,12 @@ class StuReport extends React.Component {
       payload: true
     });
     let token = store.get('wrongBookToken');
-    fetch(dataCenter('/file/uploadFlie?token=' + token), {
+    fetch(dataCenter('/file/uploadFile?token=' + token), {
       method: "POST",
-      body: form
+      body: form,
+      headers:{
+        "Authorization":token
+      }
     })
       .then(response => response.json())
       .then(res => {
@@ -117,7 +119,7 @@ class StuReport extends React.Component {
       timestamp = timestamp.substring(0, timestamp.length - 3);
       var websocket = null;
       //判断当前浏览器是否支持WebSocket
-      let url = dataCen('/wrongManage/teachVideoUpload?userId=' + userId + '&uqId=' + this.props.state.uqId)
+      let url = dataCen('/report/ws/teachVideoUpload?userId=' + userId + '&uqId=' + this.props.state.uqId)
       if ('WebSocket' in window) {
         websocket = new WebSocket(url);
       } else {
@@ -413,6 +415,10 @@ class StuReport extends React.Component {
              className={style.outBody}
              style={{overflow: 'auto'}}
              ref={this.Ref}
+             onScroll={
+              this.rollMistakes.bind(this)
+            }
+            
              onWheel={(e) => this.handleScroll(e)}>
           {
             detail.map((item, i) => {
@@ -440,28 +446,13 @@ class StuReport extends React.Component {
                   </div>
                   <div style={{padding: '20px', height: '250px', overflow: "hidden"}} onClick={() => {
                     this.setState({
+                      nowWindows:item,
                       visible: true,
-                      Img: item.userAnswerList[0].answer,
-                      nowqueid: item.questionId,
-                      timu: item.title,
-                      daan: item.parse,
-                      kaodian: item.knowledgeName
+                      pptype:item.type
                     });
-
-                    // let w = document.getElementsByClassName('wrongNum');
-                    // if (w.length > 0) {
-                    //   for (let j = 0; j < w.length; j++) {
-                    //     w[j].className = 'wrongNum'
-                    //   }
-                    //   w[0].className = 'wrongNum wrongNumOn'
-                    // }
                   }}>
-                    {/* {item.userAnswerList[0].answer ?
-                      item.userAnswerList[0].answer.split(',').map((item, i) => (
-                        <img key={i} style={{ width: '100%' }} src={item}></img>
-                      )) : ''
-                    } */}
-                    {item.title ?
+
+                    {item.title && item.type===0?
                       <div dangerouslySetInnerHTML={{__html: item.title}}/>
                       :
                      <img key={i} style={{width: '100%'}} src={item.questionUrl.split(',')[0]}/>
@@ -814,43 +805,6 @@ class StuReport extends React.Component {
     }
   }
 
-
-  //下载全部的组卷事件
-  // downloadAll() {
-  //
-  //   this.props.dispatch({
-  //     type: 'down/getAllPdfV2ForQrc',
-  //     payload: {
-  //       classId: this.props.state.classId,
-  //       subjectId: this.props.state.subId,
-  //       year: this.props.state.years,
-  //       month: this.props.state.mouNow.v,
-  //       userId: store.get('wrongBookNews').userId,
-  //       clean: 1
-  //     }
-  //   });
-  //
-  //   let qlist = this.props.state.qrdetailList1.data.questionList;
-  //
-  //   this.props.dispatch({
-  //     type: 'down/allStuDown',
-  //     payload: qlist
-  //   });
-  //   this.props.dispatch({
-  //     type: 'report/addStudentUp',
-  //     payload: this.props.state.allStuDown
-  //   })
-  //
-  //   this.props.dispatch({
-  //     type: 'down/toDown',
-  //     payload: true
-  //   });
-  //   this.props.dispatch({
-  //     type: 'down/delAllStuDown',
-  //     payload: true
-  //   });
-  //
-  // }
   //滚动加载错题
   rollMistakes(e) {
     // 知识点样式缩放
@@ -923,12 +877,13 @@ class StuReport extends React.Component {
         that.props.dispatch({
           type: 'report/WrongQuestionMarker',
           payload: {
-            uqId: that.state.nowqueid,
+            uqId: that.state.nowWindows.questionId,
             userId: store.get('wrongBookNews').userId,
             way: 2
           }
         });
         that.setState({topicxy: true})
+        that.state.nowWindows.type=1;
       },
     });
   }
@@ -964,7 +919,7 @@ class StuReport extends React.Component {
               <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
                     onClick={this.alltime.bind(this)}>全部</span>
               {
-                mounthList.data ?
+                mounthList.data && mounthList.data.length>0?
                   mounthList.data.map((item, i) => (
                     <span key={i} className={item.k == this.props.state.mouNow.k ? 'choseMonthOn' : 'choseMonth'}
                           onClick={this.monthtime.bind(this, item)}>{item.k}</span>
@@ -979,7 +934,7 @@ class StuReport extends React.Component {
                 disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
                 onChange={this.quantumtime.bind(this)}/>
               <div style={{float: 'right'}}>
-                {detail.data && detail.data.questionList.length != 0 ?
+                {detail.data && detail.data.questionList.length !== 0 ?
                   <Button
                     style={{
                       background: '#67c23a',
@@ -1066,16 +1021,14 @@ class StuReport extends React.Component {
             }
 
             <Content className={style.content}
-                     style={{display: 'flex', flexDirection: 'column'}}
+                     style={{display: 'flex', flexDirection: 'column',overflow:'hidden'}}
                      ref='warpper'
-                     onScroll={
-                       this.rollMistakes.bind(this)
-                     }>
+                   >
               <div style={{height: 'auto'}}>
                 <div style={
                   this.state.zoom ?
                     {
-                      boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 20px',
+                      boxShadow: 'rgba(0, 0, 0, 0.05) 0px 0px 20px',
                       marginBottom: 10,
                       padding: '0 20px',
                       background: "#fff",
@@ -1098,8 +1051,8 @@ class StuReport extends React.Component {
                     width: 'calc(100% - 60px)',
                     height: 35,
                     overflow: 'hidden'
-                  } : {float: 'left', width: 'calc(100% - 60px)'}}>
-                    <span key={0} className={0 == this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
+                  } : {float: 'left', width: 'calc(100% - 60px)', maxHeight: 352, overflow: 'auto'}}>
+                    <span key={0} className={0 === this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
                           style={{width: 48}}
                           onClick={this.allknowledgenow.bind(this)}>全部</span>
                     {
@@ -1107,7 +1060,7 @@ class StuReport extends React.Component {
                         knowledgeList.data.map((item, i) => {
                           return (
                             <span key={item.knowledgeName}
-                                  className={this.props.state.knowledgenow.includes(item.knowledgeName) ? 'choseMonthOn' : 'choseMonth'}
+                                  className={this.props.state.knowledgenow.indexOf(item.knowledgeName)>-1? 'choseMonthOn' : 'choseMonth'}
                                   onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}>{item.knowledgeName}({item.num})</span>
                           )
                         })
@@ -1134,7 +1087,7 @@ class StuReport extends React.Component {
           </Layout>
           <Modal
             visible={this.state.visible}
-            width='1633px'
+            width={(this.state.nowWindows.title &&this.state.pptype===0 && !this.state.topicxy)?'80%':'50%'}
             className="showques"
             footer={null}
             onOk={() => {
@@ -1144,23 +1097,24 @@ class StuReport extends React.Component {
               this.setState({visible: false, topicxy: false,})
             }}
           >
-            {this.state.timu && !this.state.topicxy?
+            {this.state.nowWindows.title &&this.state.pptype===0 && !this.state.topicxy?
               <div style={{display: 'flex'}}>
-                <div className={style.topicbox} >
+                <div className={style.topicbox} style={{width:'40%'}}>
                   <h3 className={style.fonsfwc} style={{marginBottom: 30}}>题目
                     <span className={style.matchingError} onClick={this.pipeicw.bind(this)}>
-                      <Icon theme='filled' type="exclamation-circle" style={{color: '#C0C8CF'}}/> 题目匹配错题 </span></h3>
+                      <Icon theme='filled' type="exclamation-circle" style={{color: '#C0C8CF'}}/> 题目匹配报错 </span></h3>
 
-                  <div dangerouslySetInnerHTML={{__html: this.state.timu}} className={style.houtaizi}/>
+                  <div dangerouslySetInnerHTML={{__html: this.state.nowWindows.title}} className={style.houtaizi}/>
                   <div style={{
                     color: '#333333',
                     fontFamily: 'MicrosoftYaHei-Bold',
                     fontSize: '16',
                     fontWeight: 'bold',
-                    marginTop: 15
+                    marginTop: 15,
+                    width:'60%'
                   }}>【考点】
                   </div>
-                  <div dangerouslySetInnerHTML={{__html: this.state.kaodian}} className={style.houtaizi}/>
+                  <div dangerouslySetInnerHTML={{__html: this.state.nowWindows.knowledgeName}} className={style.houtaizi}/>
                   <div style={{
                     color: '#333333',
                     fontFamily: 'MicrosoftYaHei-Bold',
@@ -1169,26 +1123,26 @@ class StuReport extends React.Component {
                     marginTop: 15
                   }}> 【答案与解析】
                   </div>
-                  <div dangerouslySetInnerHTML={{__html: this.state.daan}} className={style.houtaizi}/>
+                  <div dangerouslySetInnerHTML={{__html: this.state.nowWindows.parse}} className={style.houtaizi}/>
                 </div>
 
                 <div style={{
                   border: '1px solid  rgba(231,231,231,1)',
                   display: 'flex',
                   flexDirection: 'column',
-                  padding: '25px 82px 36px 30px'
+                  padding: '25px 82px 36px 30px',
+                  width: '58%'
                 }}>
                   <h3 className={style.fonsfwc}>原图</h3>
                   {
-                    this.state.Img.split(',').map((item, i) => (
-                      <img key={i} style={{marginLeft: 14, width: '722px'}}
-                           src={item}></img>
+                    this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
+                      <img key={i} className={style.yuantp}  src={item}></img>
                     ))
                   }
                 </div>
               </div> :
               <div>
-                {this.state.Img.split(',').map((item, i) => (
+                {  this.state.nowWindows.userAnswerList &&  this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
                     <img key={i} style={{width: '100%', margin: 'auto'}}
                          src={item}></img>
                   ))}

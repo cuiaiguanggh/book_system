@@ -48,7 +48,7 @@ class HomeworkCenter extends React.Component {
 		});
 		if (this.props.state.sclassList.length === 0 || this.props.state.ssubList.length === 0) return
 		let cid = this.props.state.sclassList[0].id
-		let sid = this.props.state.ssubList[0].id
+		let sid = this.props.state.ssubList[0].v
 		let data = {
 			schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
@@ -76,8 +76,8 @@ class HomeworkCenter extends React.Component {
 				payload: endDate
 			});
 			if (this.props.state.sclassList.length === 0) return
-			let cid = this.props.state.sclassList[0].id
-			let sid = this.props.state.ssubList[0].id
+			let cid = this.props.state.sclassList[0].id;
+			let sid = this.props.state.ssubList[0].v;
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: cid,
@@ -98,7 +98,7 @@ class HomeworkCenter extends React.Component {
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: this.props.state.sclassId,
-				subjectId: this.props.state.subjectId,
+				subjectId: this.props.state.subId,
 				periodTime: 1,
 				timeStamp: this.props.state.reportTimeList[0].timeStamp,
 			}
@@ -722,6 +722,7 @@ class HomeworkCenter extends React.Component {
 				<Select
 					style={{ width: 100, marginLeft: 20 }}
 					placeholder="学科"
+					getPopupContainer={triggerNode => triggerNode.parentElement}
 					// optionFilterProp="children"
 					value={this.props.state.subjectId}
 					onChange={(value) => {
@@ -749,7 +750,7 @@ class HomeworkCenter extends React.Component {
 				>
 					{
 						subList.map((item, i) => (
-							<Option key={i} value={item.id}>{item.name}</Option>
+							<Option key={i} value={item.v}>{item.k}</Option>
 						))
 					}
 				</Select>
@@ -766,6 +767,7 @@ class HomeworkCenter extends React.Component {
 				<Select
 					style={{ width: 140, marginLeft: 20 }}
 					placeholder="班级"
+					getPopupContainer={triggerNode => triggerNode.parentElement}
 					value={this.props.state.sclassId}
 					onChange={(value) => {
 						this.props.dispatch({
@@ -806,6 +808,7 @@ class HomeworkCenter extends React.Component {
 				<Select
 					style={{ width: 100 }}
 					placeholder="年级"
+					getPopupContainer={triggerNode => triggerNode.parentElement}
 					value={this.props.state.gradeId}
 					onChange={(value) => {
 						this.props.dispatch({
@@ -818,7 +821,7 @@ class HomeworkCenter extends React.Component {
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
 							classId: this.props.state.sclassId,
-							subjectId: this.props.state.subjectId,
+							subjectId: this.props.state.subId,
 							periodTime: this.props.state.periodTime,
 							timeStamp: this.props.state.timeStamp,
 							gradeId: value
@@ -867,7 +870,7 @@ class HomeworkCenter extends React.Component {
 		}, 10);
 		return (
 			<Layout>
-				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)',flex: 'none'  }}>
+				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)', flex: 'none' }}>
 					<div onClick={() => {
 						this.props.dispatch(
 							routerRedux.push({
@@ -875,7 +878,8 @@ class HomeworkCenter extends React.Component {
 							})
 						)
 					}}
-						style={{width: 120,lineHeight: '34px',background: 'rgba(64,158,255,1)',borderRadius: 3,color: '#fff',textAlign: 'center',margin: '8px 20px',cursor: 'pointer'
+						style={{
+							width: 120, lineHeight: '34px', background: 'rgba(64,158,255,1)', borderRadius: 3, color: '#fff', textAlign: 'center', margin: '8px 20px', cursor: 'pointer'
 						}}>
 						校级报表
 					</div>
@@ -886,7 +890,8 @@ class HomeworkCenter extends React.Component {
 							})
 						)
 					}}
-						style={{width: 120,lineHeight: '34px',background: '#fff',borderRadius: 3,color: '#606266',textAlign: 'center',margin: '8px 20px',cursor: 'pointer'
+						style={{
+							width: 120, lineHeight: '34px', background: '#fff', borderRadius: 3, color: '#606266', textAlign: 'center', margin: '8px 20px', cursor: 'pointer'
 						}}>
 						班级报表
 					</div>
@@ -950,7 +955,7 @@ class HomeworkCenter extends React.Component {
 											<Search
 												placeholder="请输入教师姓名"
 												enterButton="搜索"
-												style={{ width: 240,position: 'absolute', right: 0, top: 0 }}
+												style={{ width: 240, position: 'absolute', right: 0, top: 0 }}
 												onSearch={value => {
 													if (value === '') {
 														this.props.dispatch({
@@ -1055,6 +1060,17 @@ class HomeworkCenter extends React.Component {
 
 		}, false);
 	}
+	componentWillMount() {
+
+		let schoolId = store.get('wrongBookNews').schoolId;
+		this.props.dispatch({
+			type: 'homePage/getEnableYears',
+			payload: {
+				schoolId
+			}
+		})
+	}
+
 	componentWillUnmount() {
 		//清空图表数据
 		this.props.dispatch({
@@ -1073,6 +1089,14 @@ class HomeworkCenter extends React.Component {
 		window.removeEventListener('resize', function (e) {
 			//卸载resize
 		}, false);
+		if (store.get('wrongBookNews').rodeType === 10) {
+			this.props.dispatch({
+				type: 'homePage/yearList',
+				payload: {
+					yearList: []
+				}
+			})
+		}
 	}
 	componentDidMount() {
 
@@ -1092,7 +1116,6 @@ class HomeworkCenter extends React.Component {
 			chartBox1.style.width = '1200px'
 			chartBox2.style.width = '1200px'
 		} else {
-
 			chartBox1.style.width = '100%'
 			chartBox2.style.width = '100%'
 		}

@@ -1,8 +1,4 @@
 import {
-	getQuestionDoxc,
-	getQuestionPdf2,
-	getAllPdfV2ForQrc,
-	getAllPdfV2ForQrs,
   makeSelectWB,
 } from '../services/reportService';
 import {routerRedux} from 'dva/router';
@@ -192,7 +188,7 @@ export default {
 	effects: {
 	  *makeSelectWB({payload}, {put, select}){
 	    //最新的下载错题
-      let res = yield makeSelectWB(payload);
+	  let res = yield makeSelectWB(payload);
       if(res.data && res.data.result === 0){
         console.log(res.data.data);
         yield put ({
@@ -224,132 +220,6 @@ export default {
         message.error(res.data.msg)
       }
     },
-		*downwork({payload}, {put, select}) {
-			// 下载班级错题
-			
-			let res = yield getQuestionDoxc(payload);
-			if(res.data && res.data.result === 0){
-				
-			}
-			else if(res.err){
-				// yield put(routerRedux.push('/login'))
-			}else{
-				if(res.data.msg == '无效TOKEN!'){
-					yield put(routerRedux.push('/login'))
-				}else if(res.data.msg == '服务器异常'){
-
-				}else{
-					message.error(res.data.msg)
-				}
-			}
-			
-		},
-		*getQuestionPdf({payload}, {put, select}) {
-			// 下载pdf
-			
-			let res = yield getQuestionPdf2(payload);
-			if(res.data && res.data.result === 0){
-				console.log(res.data.data)
-				yield put ({
-					type: 'pdfUrl',
-					payload:res.data.data
-				})
-				yield put ({
-					type: 'downQue',
-					payload:false
-				})
-				yield put ({
-					type: 'showPdfModal',
-					payload:true
-				})
-				//window.location.href=res.data.data.downloadLink
-			}
-			else if(res.err){
-				yield put ({
-					type: 'downQue',
-					payload:false
-				})
-				// yield put(routerRedux.push('/login'))
-			}else{
-				yield put ({
-					type: 'downQue',
-					payload:false
-				})
-				message.error(res.data.msg)
-			}
-			
-		},
-		*getAllPdfV2ForQrc({payload}, {put, select}) {
-			// 下载班级所有pdf
-			
-			let res = yield getAllPdfV2ForQrc(payload);
-			if(res.data && res.data.result === 0){
-				yield put ({
-					type: 'toDown',
-					payload:false
-				})
-				yield put ({
-					type: 'showPdfModal',
-					payload:true
-				})		
-				yield put ({
-					type: 'pdfUrl',
-					payload:res.data.data
-				})
-				//window.location.href=res.data.data.downloadLink
-			}
-			else if(res.err){
-				yield put ({
-					type: 'toDown',
-					payload:false
-				})
-				// yield put(routerRedux.push('/login'))
-			}else{
-				yield put ({
-					type: 'toDown',
-					payload:false
-				})
-				message.error(res.data.msg)
-			}
-			
-		},
-		*getAllPdfV2ForQrs({payload}, {put, select}) {
-			// 下载学生所有pdf
-			
-			let res = yield getAllPdfV2ForQrs(payload);
-			if(res.data && res.data.result === 0){
-				yield put ({
-					type: 'toDown',
-					payload:false
-				})
-				yield put ({
-					type: 'pdfUrl',
-					payload:res.data.data
-				})
-				yield put ({
-					type: 'showPdfModal',
-					payload:true
-				})	
-				//window.location.href=res.data.data.downloadLink
-			}
-			else if(res.err){
-				yield put ({
-					type: 'toDown',
-					payload:false
-				})
-				// yield put(routerRedux.push('/login'))
-			}else{
-				yield put ({
-					type: 'toDown',
-					payload:false
-				})
-				message.error(res.data.msg)
-			}
-			
-		},
 	},
-
-  
-	
   
   };

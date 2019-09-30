@@ -5,14 +5,15 @@ import {
 import style from './mistakesTc.less';
 
 const {
-   Content,
+  Content,
 } = Layout;
-const {confirm} = Modal;
+const { confirm } = Modal;
 export default class MistakesTC extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      //匹配错误，进行的切换
       topicxy: true
     }
   }
@@ -26,20 +27,42 @@ export default class MistakesTC extends React.Component {
     let wrongQues = [];
     let stutimu = [];
     let tcxuhao = this.props.tcxuhao;
-    if (errorDetails.userAnswerList) {
-      for (let i = 0; i < errorDetails.userAnswerList.length; i++) {
-        if (errorDetails.userAnswerList[i].result == 1) {
-          trueNum.push(errorDetails.userAnswerList[i].userName)
-        } else if (errorDetails.userAnswerList[i].result == 0) {
-          wrongNum.push(errorDetails.userAnswerList[i].userName)
-          wrongQues.push(errorDetails.userAnswerList[i].answer)
+
+    if (errorDetails.uqId) {
+      // 作业报告
+      if (errorDetails.userAnswerList) {
+        for (let i = 0; i < errorDetails.userAnswerList.length; i++) {
+          if (errorDetails.userAnswerList[i].teacherCollect === 2) {
+            trueNum.push(errorDetails.userAnswerList[i].userName)
+          } else if (errorDetails.userAnswerList[i].teacherCollect === 1) {
+            wrongNum.push(errorDetails.userAnswerList[i].userName)
+            wrongQues.push(errorDetails.userAnswerList[i].answer)
+          }
+          if (errorDetails.userAnswerList[i].teacherCollect === 1) {
+            stutimu.push(errorDetails.userAnswerList[i])
+          }
         }
-        if (errorDetails.userAnswerList[i].result == 0) {
-          stutimu.push(errorDetails.userAnswerList[i])
+        if (this.props.tcxuhao < 10) {
+          tcxuhao = `0${tcxuhao}`
         }
       }
-      if (this.props.tcxuhao < 10) {
-        tcxuhao = `0${tcxuhao}`
+    } else {
+      {/*班级错题*/ }
+      if (errorDetails.userAnswerList) {
+        for (let i = 0; i < errorDetails.userAnswerList.length; i++) {
+          if (errorDetails.userAnswerList[i].result === 1) {
+            trueNum.push(errorDetails.userAnswerList[i].userName)
+          } else if (errorDetails.userAnswerList[i].result === 0) {
+            wrongNum.push(errorDetails.userAnswerList[i].userName)
+            wrongQues.push(errorDetails.userAnswerList[i].answer)
+          }
+          if (errorDetails.userAnswerList[i].result === 0) {
+            stutimu.push(errorDetails.userAnswerList[i])
+          }
+        }
+        if (this.props.tcxuhao < 10) {
+          tcxuhao = `0${tcxuhao}`
+        }
       }
     }
     return (
@@ -47,17 +70,17 @@ export default class MistakesTC extends React.Component {
         footer={null}
         visible={this.props.xqtc}
         className='mistakesTc'
-        width='1630px'
+        width='80%'
         onOk={this.props.guanbi}
         onCancel={this.props.guanbi}
         destroyOnClose={true}
       >
-        <div style={{display: 'flex', height: 800}}>
+        <div style={{ display: 'flex', height: 800 }}>
           <div className={style.aheadLeft}>
             <Content className={style.aheadLeftCon}>
               {errorDetails ?
-                (errorDetails.title && this.state.topicxy ?
-                  <div key={errorDetails.questionId} className={style.aheadbox} style={{paddingRight:0}}>
+                (errorDetails.title && errorDetails.type === 0 && this.state.topicxy ?
+                  <div key={errorDetails.questionId} className={style.aheadbox} style={{ paddingRight: 10 }}>
                     <div className={style.bluetriangle}></div>
                     <div className={style.bulesz}>{tcxuhao}</div>
 
@@ -70,31 +93,33 @@ export default class MistakesTC extends React.Component {
                         okType: 'danger',
                         cancelText: '取消',
                         onOk() {
-                          that.setState({topicxy: false});
+                          that.setState({ topicxy: false });
                           let id;
                           if (errorDetails.uqId) {
                             // 作业报告
                             id = errorDetails.uqId.split('uqid-')[1]
                           } else {
-                            id = errorDetails.questionId;
+                            // 班级错题
+                            id = [errorDetails.picId.split('uqid-')[1], errorDetails.questionId]
                           }
+                          errorDetails.type = 1;
                           that.props.pipeicw(id);
                         },
                       });
                     }}>
                       <Icon theme='filled' type="exclamation-circle"
-                            style={{color: '#C0C8CF', fontSize: 16, marginRight: 8}}/> 题目匹配错题
+                        style={{ color: '#C0C8CF', fontSize: 16, marginRight: 8 }} /> 题目匹配报错
                     </div>
-                    <div style={{overflow: 'auto',
-                      width: '100%',
-                      maxHeight: 580}}>
-                    <div className={style.txlefttitle} style={{margin: 0}}>【题目{tcxuhao}】</div>
-                    <div dangerouslySetInnerHTML={{__html: errorDetails.title}}/>
-                    <div className={style.txlefttitle}>【考点】</div>
-                    <div dangerouslySetInnerHTML={{__html: errorDetails.knowledgeName}}/>
-                    <div className={style.txlefttitle}> 【答案与解析】</div>
-                    <div dangerouslySetInnerHTML={{__html: errorDetails.parse}}/>
-                  </div>
+                    <div>
+                      <div className={style.txlefttitle} style={{ margin: 0 }}>【题目{tcxuhao}】</div>
+                      <div className={style.leftneir}>
+                        <div dangerouslySetInnerHTML={{ __html: errorDetails.title }} />
+                        <div className={style.txlefttitle}>【考点】</div>
+                        <div dangerouslySetInnerHTML={{ __html: errorDetails.knowledgeName }} />
+                        <div className={style.txlefttitle}> 【答案与解析】</div>
+                        <div dangerouslySetInnerHTML={{ __html: errorDetails.parse }} />
+                      </div>
+                    </div>
                   </div>
                   :
                   <div className={style.aheadbox}>
@@ -102,16 +127,15 @@ export default class MistakesTC extends React.Component {
                     <div className={style.bulesz}>{tcxuhao}</div>
                     {/*班级错题*/}
                     {errorDetails.questionUrl ?
-                      <img style={{width: '100%'}} src={errorDetails.questionUrl.split(',')[0]}/>
+                      <img style={{ width: '100%' }} src={errorDetails.questionUrl.split(',')[0]} />
                       : ''
                     }
                     {/*作业报告*/}
                     {errorDetails.question ?
-                      <img style={{width: '100%'}} src={errorDetails.question.split(',')[0]}/>
+                      <img style={{ width: '100%' }} src={errorDetails.question.split(',')[0]} />
                       : ''
                     }
                   </div>)
-
                 : ''
               }
             </Content>
@@ -135,19 +159,27 @@ export default class MistakesTC extends React.Component {
                   display: 'flex',
                   alignItems: 'center',
                 }}>
-                  <span >答题统计</span>
+                  <span>答题统计</span>
                   <div className={style.redmarkedness}>
                     <div className={style.hongdian}></div>
                     答错（{wrongNum.length}人）
                   </div>
                 </div>
                 <span className={style.redpercentum}>
-									{(wrongNum.length / (trueNum.length + wrongNum.length) * 100).toFixed(0)}%</span>
+                  {errorDetails.userAnswerList && errorDetails.userAnswerList.length > 0 ?
+                    (wrongNum.length / (errorDetails.userAnswerList.length) * 100).toFixed(0)
+                    : 0
+                  }
+                  {/*{errorDetails.userAnswerList && (wrongNum.length / (errorDetails.userAnswerList.length) * 100).toFixed(0)}*/}
+                  %
+      
+                </span>
               </div>
 
               <div style={{
                 maxHeight: 50,
-                overflow: 'auto'}}>
+                overflow: 'auto'
+              }}>
                 {
                   wrongNum.map((item, i) => (
                     <span key={i} className={'wrongNum'}>{item}</span>
@@ -160,13 +192,11 @@ export default class MistakesTC extends React.Component {
                 stutimu.map((item, i) => (
                   <div key={i} className={style.rightbox}>
                     <div className={style.ylbiaoq}>{item.userName}</div>
-                    <img key={i} style={{width: '100%'}} src={item.answer.split(',')[0]}/>
+                    <img key={i} style={{ width: '100%' }} src={item.answer.split(',')[0]} />
                   </div>
                 )) : ''
               }
-
             </Content>
-
           </div>
 
         </div>

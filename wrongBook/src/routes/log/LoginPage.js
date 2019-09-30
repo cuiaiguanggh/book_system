@@ -60,7 +60,7 @@ class LoginPage extends Component {
 							{/* <a className="login-form-forgot" href="">忘记密码</a> */}
 							<Button type="primary" className="login-form-button" onClick={() => {
 								let data ={
-									username:this.state.name,
+									account:this.state.name,
 									password:this.state.pass,
 								  }
 								  this.props.dispatch({

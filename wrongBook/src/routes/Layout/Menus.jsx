@@ -10,7 +10,7 @@ import store from 'store';
 import WrongTop from '../wrongReport/wrongTop/wrongTop';
 import { serverType } from '../../config/dataCenter';
 import moment from 'moment';
-import ydt from '../images/guideFigure.png';
+// import ydt from '../images/guideFigure.png';
 
 
 
@@ -28,7 +28,7 @@ class HomePageLeft extends Component {
     super(props);
     this.state = {
       collapsed: false,
-      guideState: true,
+      // guideState: true,
     }
   }
   //延迟改变hash切换组件
@@ -45,6 +45,7 @@ class HomePageLeft extends Component {
   }
 
   //返回导航栏目
+
   Menus() {
     let memuList = this.props.state.MenuList;
     let menus = [];
@@ -66,20 +67,22 @@ class HomePageLeft extends Component {
       key = 1
     }
     if (pathname === '/') {
-      if (rodeType === 10)
+      if (rodeType === 10) {
         this.props.dispatch(
           routerRedux.push({
             pathname: '/school',
             hash: `page=1`
           })
         )
-      else if (rodeType === 20)
+      }
+      else if (rodeType === 20) {
         this.props.dispatch(
           routerRedux.push({
             pathname: '/grade',
             hash: `page=1`
           })
         )
+      }
       else if (rodeType === 30 || rodeType === 20) {
         this.props.dispatch(
           routerRedux.push({
@@ -89,86 +92,97 @@ class HomePageLeft extends Component {
       }
     }
 
+    let leftMenus = store.get('leftMenus');
+    // for (let i = 0; i < leftMenus.length; i++) {
+
+    //   switch (leftMenus[i].permission) {
+    //     case '学校管理':
+    //       menus.push(<Menu.Item key="school" >
+    //         <Link to='school#page=1' replace>
+    //           <Icon type="bar-chart" /><span>学校管理</span>
+    //         </Link>
+    //       </Menu.Item>)
+    //       break;
+    //     case '班级错题':
+    //       menus.push(<Menu.Item key="workDetail1" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/classReport')}>
+    //         <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span>
+    //       </Menu.Item>)
+    //       break;
+    //     case '学生错题':
+    //       menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
+    //         <Icon type="solution" /><span style={{ cursor: 'pointer' }}>学生错题</span>
+    //       </Menu.Item>)
+    //       break;
+    //     case '作业报告':
+    //       menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
+    //         <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
+    //       </Menu.Item>)
+    //       break;
+    //     case '班级管理':
+    //       menus.push(<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
+    //         <Icon type="align-left" /><span>班级管理</span>
+    //       </Menu.Item>)
+    //       break;
+    //     case '使用数据':
+    //       menus.push(
+    //         <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
+    //           <Icon type="pie-chart" /><span>使用数据</span>
+    //         </Menu.Item>
+    //       )
+    //       break;
+    //   }
+    // }
+
+    // return menus;
 
     if (memuList !== '') {
       memuList.map((item, i) => {
         // 学校管理模块
         if (item === 100) {
           if (rodeType === 10) {
-
             menus.push(<Menu.Item key="school" >
               <Link to='school#page=1' replace>
                 <Icon type="bar-chart" /><span>学校管理</span>
               </Link>
             </Menu.Item>)
-          } else if (rodeType === 20) {
-            // menus.push(<Menu.Item key="schoolNews"><Link to="/schoolNews" replace><Icon type="bar-chart" />学校详情</Link></Menu.Item>)
           }
         }
 
         // 作业中心
-        if (item === 300 && rodeType != 10) {
-          // if (classList.data && classList.data.length > 0) {
-          // menus.push(<Menu.Item key="workDetail" style={{cursor:'pointer'}}>
-          // 	<Link to="/workDetail"  style={{cursor:'pointer'}} replace >
-          // 	<Icon type="file-text" /><span style={{cursor:'pointer'}}>错题报告</span></Link>
-          // </Menu.Item>)
+        if (item === 300 && rodeType !== 10) {
           menus.push(<Menu.Item key="workDetail1" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/classReport')}>
-            {/* <Link to="/classReport" style={{ cursor: 'pointer' }} replace> */}
             <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span>
-            {/* </Link> */}
           </Menu.Item>)
           menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
-            {/* <Link to="/stuReport" style={{ cursor: 'pointer' }} replace> */}
             <Icon type="solution" /><span style={{ cursor: 'pointer' }}>学生错题</span>
-            {/* </Link> */}
           </Menu.Item>)
           menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
-            {/* <Link to="/workReport" style={{ cursor: 'pointer' }} replace > */}
             <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
-            {/* </Link> */}
           </Menu.Item>)
-          // }
         }
         // 班级管理模块
         if (item === 200) {
           if (rodeType > 20) {
-            // menus.push(<Menu.Item key="grade">
-            //   <Link to='grade#page=1' replace>
-            //     <Icon type="align-left" /><span>班级管理</span>
-            //   </Link>
-            // </Menu.Item>)    
             menus.push(<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
-              {/* <Link to='classUser' replace> */}
               <Icon type="align-left" /><span>班级管理</span>
-              {/* </Link> */}
             </Menu.Item>)
-
           } else {
             if (rodeType !== 10) {
               menus.push(
                 <Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
-                  {/* <Link to='classUser' replace> */}
                   <Icon type="team" /><span>班级管理</span>
-                  {/* </Link> */}
                 </Menu.Item>
               )
             }
-            // menus.push(
-            //   <Menu.Item key="addclass"><Link to="/addclass" replace><Icon type="plus-circle"/><span>批量导入</span></Link></Menu.Item>
-            // )
+
           }
-          menus.push(
-            <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
-              {/* <Link to="/schoolChart" replace> */}
-                <Icon type="pie-chart" /><span>使用数据</span>
-              {/* </Link> */}
-            </Menu.Item>
-          )
-          // menus.push(
-          //   <Menu.Item key="classChart"><Link key="classChart" to="/classChart" replace>
-          //     <Icon type="area-chart" /><span>班级报表</span></Link></Menu.Item>
-          // )
+          if (rodeType !== 10) {
+            menus.push(
+              <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
+                <Icon type="pie-chart"/><span>使用数据</span>
+              </Menu.Item>
+            )
+          }
         }
       })
       return (menus)
@@ -196,6 +210,59 @@ class HomePageLeft extends Component {
           let classId = this.props.state.classId;
           let subId = this.props.state.subId;
           let year = value;
+
+
+          if (store.get('wrongBookNews').rodeType === 10) {
+            //超管页面下的班级管理的左侧班级
+            this.props.dispatch({
+              type: 'classHome/pageClass',
+              payload: {
+                schoolId:store.get('wrongBookNews').schoolId,
+                pageSize: 9999,
+                pageNum: 1,
+                year,
+              }
+            });
+
+             if (window.location.href.split('/#/')[1] == 'classChart') {
+              
+                console.log('classChart')
+                //重置月份为0
+                this.props.dispatch({
+                  type: 'report/changeMouth',
+                  payload: 0
+                })
+                //重新调用接口
+                this.props.dispatch({
+                  type: 'reportChart/getReportTimeList',
+                  payload: {
+                    classReport: true
+                  }
+                });
+           
+            } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
+           
+                console.log('schoolChart')
+                //重置月份为0
+                this.props.dispatch({
+                  type: 'report/changeMouth',
+                  payload: 0
+                })
+                //重新调用接口
+                this.props.dispatch({
+                  type: 'reportChart/getReportTimeList',
+                  payload: {
+                    classReport: false
+                  }
+                });
+     
+            }
+
+            return;
+          }
+
+
+          if (store.get('wrongBookNews').rodeType !== 10) {
           this.props.dispatch({
             type: 'down/showPdfModal',
             payload: false
@@ -207,10 +274,17 @@ class HomePageLeft extends Component {
           this.props.dispatch({
             type: 'temp/updateMonthList',
           });
-
+          //重新获取学科
+          this.props.dispatch({
+            type: 'temp/getUserSubjectList',
+            payload: classId,
+          });
+        }
           if (window.location.href.split('/#/')[1] == 'stuReport') {
+      
             let userId = this.props.state.userId;
             if (classId !== '' && subId != '' && year !== '' && userId != '') {
+              console.log('stuReport')
               //重置月份为0
               this.props.dispatch({
                 type: 'report/changeMouth',
@@ -228,7 +302,9 @@ class HomePageLeft extends Component {
               });
             }
           } else if (window.location.href.split('/#/')[1] == 'classReport') {
+      
             if (classId !== '' && subId != '' && year !== '') {
+              console.log('classReport')
               //重置月份为0
               this.props.dispatch({
                 type: 'report/changeMouth',
@@ -251,6 +327,7 @@ class HomePageLeft extends Component {
             }
           } else if (window.location.href.split('/#/')[1] == 'classChart') {
             if (classId !== '' && subId != '' && year !== '') {
+              console.log('classChart')
               //重置月份为0
               this.props.dispatch({
                 type: 'report/changeMouth',
@@ -266,6 +343,7 @@ class HomePageLeft extends Component {
             }
           } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
             if (classId !== '' && subId != '' && year !== '') {
+              console.log('schoolChart')
               //重置月份为0
               this.props.dispatch({
                 type: 'report/changeMouth',
@@ -282,8 +360,7 @@ class HomePageLeft extends Component {
           }
 
         }}>
-        {
-          yearList.data.map((item, i) => (
+        { yearList.data.map((item, i) => (
             <Option value={item} key={i}>{`${item}-${item + 1}学年`}</Option>
           ))
         }
@@ -331,6 +408,8 @@ class HomePageLeft extends Component {
     let defaultKey = hash.substr(hash.indexOf("/") + 1);
     if (defaultKey.indexOf('school') === 0) {
       defaultKey = 'school'
+    } else if (defaultKey.indexOf('export') === 0) {
+      defaultKey = 'export'
     } else if (defaultKey.indexOf('grade') === 0) {
       defaultKey = 'grade'
     } else if (defaultKey.indexOf('classReport') === 0) {
@@ -406,6 +485,8 @@ class HomePageLeft extends Component {
             type: 'temp/subName',
             payload: ''
           });
+          //退出帐号时候，重新刷新，清空mould。（暂时没有什么好办法）给测试那边切换帐号好测点
+          window.location.reload(true)
         }}>退出</p>
       </div>
     );
@@ -425,25 +506,25 @@ class HomePageLeft extends Component {
     }
     return (
       <Layout className={style.homePageContaier + ' ' + 'chomePageContaier'}>
-        <div style={{ position: 'absolute', width: '1920px', height: '1080px', }} hidden={this.state.guideState ? false : true} >
-          <img src={ydt}
-            style={{ width: '100%', position: 'absolute', zIndex: '100' }} />
-          <div style={{
-            top: '875px',
-            right: '607px',
-            width: '150px',
-            height: '55px',
-            position: 'absolute',
-            zIndex: '105',
-          }}
-            onClick={() => {
-              this.setState({
-                guideState: false
-              });
-              localStorage.setItem('guide1', store.get('wrongBookNews').userId)
-            }}>
-          </div>
-        </div>
+        {/*<div style={{ position: 'absolute', width: '1920px', height: '1080px', }} hidden={this.state.guideState ? false : true} >*/}
+        {/*  <img src={ydt}*/}
+        {/*    style={{ width: '100%', position: 'absolute', zIndex: '100' }} />*/}
+        {/*  <div style={{*/}
+        {/*    top: '875px',*/}
+        {/*    right: '607px',*/}
+        {/*    width: '150px',*/}
+        {/*    height: '55px',*/}
+        {/*    position: 'absolute',*/}
+        {/*    zIndex: '105',*/}
+        {/*  }}*/}
+        {/*    onClick={() => {*/}
+        {/*      this.setState({*/}
+        {/*        guideState: false*/}
+        {/*      });*/}
+        {/*      // localStorage.setItem('guide1', store.get('wrongBookNews').userId)*/}
+        {/*    }}>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
         <Sider
           trigger={null}
@@ -506,7 +587,6 @@ class HomePageLeft extends Component {
                           {/* <img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/> */}
                           <img alt=''
                             src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
-
                           <Popover
                             content={content}
                             // trigger="click"
@@ -542,21 +622,20 @@ class HomePageLeft extends Component {
 
   componentWillMount() {
     //判断引导图是否出现。切换版本的时修改判断的缓存key来重新显示流程图
-
-    if (localStorage.getItem('guide1')) {
-      let guide = localStorage.getItem('guide1');
-      if (guide == store.get('wrongBookNews').userId) {
-        //不显示流程图
-        this.setState({
-          guideState: false
-        })
-      }
-    } else {
-      //显示流程图
-      this.setState({
-        guideState: true
-      })
-    }
+    // if (localStorage.getItem('guide1')) {
+    //   let guide = localStorage.getItem('guide1');
+    //   if (guide == store.get('wrongBookNews').userId) {
+    //     //不显示流程图
+    //     this.setState({
+    //       guideState: false
+    //     })
+    //   }
+    // } else {
+    //   //显示流程图
+    //   this.setState({
+    //     guideState: true
+    //   })
+    // }
 
     // 9月1号 之前，是2018-2019学年，9月1号之后，是2019-2020学年 moment().format('YYYY')
     if (Number(moment().format('MM')) < 9) {
@@ -575,23 +654,16 @@ class HomePageLeft extends Component {
   }
 
   componentDidMount() {
-    let logTime = store.get('logTime');
-    if (!logTime && logTime == '') {
-      let nowTime = new Date() - 10800000;
-    }
 
     const { dispatch } = this.props;
-
-    dispatch({
-      type: 'homePage/getYears',
-    });
     if (!store.get('wrongBookNews')) {
       this.props.dispatch(
         routerRedux.push({
           pathname: '/login'
         })
       )
-    } else {
+    } else if (store.get('wrongBookNews').rodeType !== 10) {
+
       dispatch({
         type: 'homePage/getEnableYears',
         payload: {
@@ -599,13 +671,16 @@ class HomePageLeft extends Component {
         }
       })
     }
+
     dispatch({
       type: 'userInfo/getUserInfo',
     });
+
     //调用这个接口时，里面的方法嵌套，获取班级，学科，时间，知识点
     dispatch({
       type: 'temp/getClassList',
     });
+
     dispatch({
       type: 'homePage/functionList'
     });

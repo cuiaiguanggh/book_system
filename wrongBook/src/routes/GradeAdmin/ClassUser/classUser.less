@@ -19,12 +19,12 @@
     }
 
     .sider {
-        background: #fff;
-        box-shadow: 0 1px 3px #1a1a1a1a;
+        background   : #fff;
+        box-shadow   : 0 1px 3px #1a1a1a1a;
         // overflow  : hidden;
-        position  : relative; 
+        position     : relative;
 
-        .leftInfo { 
+        .leftInfo {
             position: absolute;
             top     : 0;
             bottom  : 0;
@@ -83,10 +83,10 @@
     color        : #fff;
 }
 
-:global(.choseMonth):hover {
-    background: #1890ff;
-    color     : #fff;
-}
+// :global(.choseMonth):hover {
+//     background: #1890ff;
+//     color     : #fff;
+// }
 
 // :global(.down) {
 //     float           : right;
@@ -115,7 +115,7 @@
     float           : right;
     background      : #b8c3d1;
     line-height     : 41px;
-    color           : #ffff;
+    color           : #fff;
     display         : inline-block;
     font-weight     : 400;
     text-align      : center;
@@ -128,9 +128,9 @@
     padding         : 0 15px;
     font-size       : 14px;
     border-radius   : 4px;
-    height          :41px;
-    border-radius: 0;
-    width: 63px;
+    height          : 41px;
+    border-radius   : 0;
+    width           : 63px;
 }
 
 /* 定义滚动条 */
@@ -194,12 +194,35 @@
     border       : 1px solid #409EFF;
     background   : transparent;
     border-radius: 5px;
-    
+
 }
 
-.explain{
+.explain {
     position: absolute;
-    z-index: 1000;
-    bottom: 45px;
-    left: 185px;
+    z-index : 1000;
+    bottom  : 45px;
+    left    : 185px;
+}
+
+:global(.shenji) {
+    :global(.ant-modal-header) {
+        border: 0;
+    }
+
+    :global(.ant-modal-footer) {
+        border: 0;
+    }
+
+    .title {
+        font-size  : 14px;
+        font-weight: 400;
+        color      : rgba(96, 98, 102, 1);
+    }
+
+    .bottom {
+        font-size  : 14px;
+        font-weight: 400;
+        color      : rgba(153, 153, 153, 1);
+        margin: 25px 0 0 0;
+    }
 }

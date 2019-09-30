@@ -2,18 +2,22 @@
 
 // const host = '192.168.10.239:80'
 // 测试服务器
-const url = "https://hw-mz-test.mizholdings.com/wrongManage";
-const host1 = "wss://hw-mz-test.mizholdings.com";
+const url = "https://develop.kacha.xin";
+const host1 = "wss://develop.kacha.xin";
 const serverType=0;
+
+
 // 预备服务器
-//  const url = 'https://login.kacha.xin/wrongManage-bate';
-// const host1 = "wss://login.kacha.xin";
+//  const url = 'https://pre.kacha.xin';
+// const host1 = "wss://pre.kacha.xin";
 // const serverType=1;
 
+
 // 正式服务器
-//  const url = 'https://login.kacha.xin/wrongManage';
-// const host1 = "wss://login.kacha.xin";
+//  const url = 'https://api.kacha.xin';
+// const host1 = "wss://api.kacha.xin";
 // const serverType=1;
+
 
 // const url = host+'/wrongManage';// test
 // const url = 'http://hw-pre.mizholdings.com/wrongManage';// true

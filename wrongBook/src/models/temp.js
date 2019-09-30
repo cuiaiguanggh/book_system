@@ -1,5 +1,5 @@
 import {
-	queryScoreDetail,
+
 	queryQuestionDetail,
 	homeworkDetail,
 	getUserSubjectList,
@@ -7,7 +7,6 @@ import {
 	getKnowledgeList
 } from '../services/tempService';
 import {
-	pageClass,
 	classInfo,
 	teacherList,
 	updateClass,
@@ -15,11 +14,11 @@ import {
 	addClass,
 	queryHomeworkList,
 	getClassList,
-	getYears,
 } from '../services/classHomeService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
 import { message } from 'antd';
+import store from "store";
 export default {
 
 	namespace: 'temp',
@@ -112,7 +111,10 @@ export default {
 				payload.startTime = stbegtoendTime[0];
 				payload.endTime = stbegtoendTime[1];
 			}
-
+			if(!payload.subjectId){
+				// message.error('请选择学科');
+				return;
+			}
 			//知识点筛选
 			let res = yield getKnowledgeList(payload);
 			if (res.data && res.data.result === 0) {
@@ -122,53 +124,13 @@ export default {
 				})
 			}
 		},
-		*pageClass({ payload }, { put, select }) {
-			// 班级列表
-			yield put({
-				type: 'classInfoPayload',
-				payload: payload
-			})
-			let res = yield pageClass(payload);
-			if (res.data && res.data.result === 0) {
-
-				yield put({
-					type: 'className',
-					payload: res.data.data.list[0].className
-				})
-				yield put({
-					type: 'classId',
-					payload: res.data.data.list[0].classId
-				})
-
-				// yield put ({
-				// 	type: 'report/queryHomeworkList',
-				// 	payload:{
-				// 		classId:res.data.data.list[0].classId,
-				// 	}
-				// })
-
-				yield put({
-					type: 'classList',
-					payload: res.data
-				})
-			}
-			else {
-				if (res.data.msg == '无效TOKEN!') {
-					yield put(routerRedux.push('/login'))
-				} else if (res.data.msg == '服务器异常') {
-
-				} else {
-					message.error(res.data.msg)
-				}
-
-			}
-		},
 
 		*getClassList({ payload }, { put, select }) {
 			// 返回教师所在班级列表
 			let res = yield getClassList(payload);
 			if (res.data && res.data.result === 0) {
 				if (res.data.data.length > 0) {
+
 					yield put({
 						type: 'className',
 						payload: res.data.data[0].className
@@ -191,7 +153,7 @@ export default {
 
 
 			} else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -201,7 +163,73 @@ export default {
 			}
 
 		},
+		*zybgSubjectList({ payload }, { put, select }) {
+			let res = yield getUserSubjectList(payload);
+			if (res.data && res.data.result === 0) {
+				if (res.data.data.length > 0) {
+					yield put({
+						type: 'subId',
+						payload: res.data.data[0].v
+					});
+					yield put({
+						type: 'subName',
+						payload: res.data.data[0].k
+					});
+					yield put({
+						type: 'subList',
+						payload: res.data
+					});
+					yield put({
+						type: 'subjectId',
+						payload: res.data.data[0].v
+					});
+					//切换班级后获取到学科信息调用接口获取数据
+					let { classId } = yield select(state => state.temp);
+					let { stateTimeIndex, startTime, endTime, periodTime, timeStamp } = yield select(state => state.reportChart);
+					let data = {
+						schoolId: store.get('wrongBookNews').schoolId,
+						classId,
+						subjectId: res.data.data[0].v,
+					};
+					if (stateTimeIndex === 100) {
+						data.startTime = startTime;
+						data.endTime = endTime;
+						data.timeStamp = 0
+					} else {
+						data.periodTime = periodTime;
+						data.timeStamp = timeStamp;
+					};
+					yield put({
+						type: 'reportChart/getClassDataReport',
+						payload: data
+					});
+				} else {
+					yield put({
+						type: 'subList',
+						payload: []
+					});
 
+					yield put({
+						type: 'reportChart/classDataReport',
+						payload:{
+							studentWrongNum:[],
+							classUserNumData:[],
+							classWrongNumData:[],
+							teacherUseDataList:[]
+						}
+					  })
+
+				}
+			} else {
+				if (res.data.result===2) {
+					yield put(routerRedux.push('/login'))
+				} else if (res.data.msg == '服务器异常') {
+
+				} else {
+					message.error(res.data.msg)
+				}
+			}
+		},
 		*getUserSubjectList({ payload }, { put, select }) {
 			// 返回教师所在班级科目
 			let { years } = yield select(state => state.temp);
@@ -240,16 +268,16 @@ export default {
 							subjectId: res.data.data[0].v
 						}
 					});
-          //获取知识点筛选
-          yield put({
-            type: 'getKnowledgeList',
-            payload: {
-              classId: payload,
-              year: years,
-              subjectId: res.data.data[0].v,
-              type:0,
-            }
-          });
+					//获取知识点筛选
+					yield put({
+						type: 'getKnowledgeList',
+						payload: {
+							classId: payload,
+							year: years,
+							subjectId: res.data.data[0].v,
+							type: 0,
+						}
+					});
 					//刷新时调用对应页面的接口，而不是调用全部接口
 					//班级错题
 					if (hashStrings === '/classReport') {
@@ -286,9 +314,51 @@ export default {
 							}
 						})
 					}
+				} else {
+					//班级对应的学科为空时候，清空所有对应数据
+					//公用的月份，知识点，学科
+					yield put({
+						type: 'mounthList',
+						payload: []
+					})
+					yield put({
+						type: 'knowledgeList',
+						payload: []
+					})
+					yield put({
+						type: 'subList',
+						payload: []
+					});
+					//班级错题
+					yield put({
+						type: 'report/qrdetailList',
+						payload: []
+					})
+					//学生错题
+					yield put({
+						type: 'report/studentList',
+						payload: []
+					});
+					yield put({
+						type: 'report/qrStudentDetailList',
+						payload: []
+					})
+					//作业报告
+					yield put({
+						type: 'report/homeworkList',
+						payload: []
+					})
+					yield put({
+						type: 'report/studentList',
+						payload: []
+					});
+					yield put({
+						type: 'report/scoreDetail',
+						payload: []
+					})
 				}
 			} else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -323,7 +393,7 @@ export default {
 					payload: res.data
 				})
 			} else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -344,7 +414,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -368,7 +438,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 

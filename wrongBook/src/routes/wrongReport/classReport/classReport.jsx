@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  Button, message, Layout, Modal, Select, Icon, Spin, Checkbox, Row, Col, DatePicker
+  Button, message, Layout, Modal, Select, Icon, Spin, Checkbox, Row, Col, DatePicker, Popover
 } from 'antd';
 import { dataCenter, dataCen, serverType } from '../../../config/dataCenter'
-import { routerRedux, } from "dva/router";
+// import { routerRedux, } from "dva/router";
 import { connect } from 'dva';
 import QRCode from 'qrcode.react';
 import moment from 'moment';
@@ -16,6 +16,7 @@ import TracksVideo from '../TracksVideo/TracksVideo';
 import store from 'store';
 import commonCss from '../../css/commonCss.css';
 import MistakesTC from '../../components/mistakesTC/mistakesTC';
+import Guidance from '../../components/guidance/guidance';
 //作业中心界面内容
 const Option = Select.Option;
 const confirm = Modal.confirm;
@@ -54,9 +55,10 @@ class wrongTop extends React.Component {
 
   //搜索题目跳转链接
   tiaoz(picId) {
+    let wi = window.open('about:blank', '_blank');
     this.props.dispatch({
       type: 'report/searchLink',
-      payload: { picId },
+      payload: { picId,wi },
     });
   }
 
@@ -70,9 +72,9 @@ class wrongTop extends React.Component {
     return (
       <div className={style.outBody}
         onWheel={(e) => this.handleScroll(e)}
+           style={{position: 'relative'}}
         ref={this.Ref}
       >
-        <div style={{ overflow: 'auto' }}>
           {
             ques.questionList.map((item, i) => {
               let ans = []
@@ -98,15 +100,17 @@ class wrongTop extends React.Component {
                 <div key={i} className={style.questionBody}>
                   <div className={style.questionTop}>
                     <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
-                    <span>答错<span
-                      style={{ color: "#409EFF" }}>{item.wrongNum}</span>人</span>
+                    <span>答错<span style={{ color: "#409EFF" }}>{item.wrongNum}</span>人</span>
                     {
                       item.num != 0 ?
                         <span style={{ marginLeft: '10px', borderLeft: '1px solid #ccc', paddingLeft: '10px' }}>已出卷<span
                           style={{ color: "#409EFF" }}>{item.num}</span>次</span>
                         : ''
                     }
+                    <div style={{float:'right',position: 'relative',zIndex: 1}}>
                     <TracksVideo type={item} num={j}></TracksVideo>
+                    {i===1?<Guidance title='录视频' content='微信扫码，可录制或上传讲解视频'/>:''}
+                  </div>
                   </div>
                   <div style={{ padding: '20px', height: '217px', overflow: 'hidden' }} onClick={() => {
                     if (item.wrongScore != 0) {
@@ -116,16 +120,17 @@ class wrongTop extends React.Component {
                     }
                   }}>
 
-                    {item.title ?
+                    {item.title  && item.type===0?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
-                      item.questionUrl.split(',').map((item, i) => (
+                      item.questionUrl && item.questionUrl.split(',').map((item, i) => (
                         <img key={i} style={{ width: '100%' }} src={item}></img>
                       ))
                     }
                   </div>
                   <div style={{ overflow: 'hidden', paddingLeft: '10px', }}>
                     <span className={style.wrongbluezi}
+                    style={item.wrongScore===0?{cursor:'no-drop'}:{cursor: 'pointer'}} 
                       onClick={() => {
                         if (item.wrongScore != 0) {
                           let tcxuhao = i + 1;
@@ -139,7 +144,9 @@ class wrongTop extends React.Component {
                       className={style.wrongbluezi}
                       onClick={this.tiaoz.bind(this, item.picId)}>
                       <img src={require('../../images/seek.png')} style={{ marginRight: '6px' }} />
-                      搜索题目</span>
+                      搜索题目
+                      {i===0?<Guidance title='搜索题目' content='点击可自动复制题目并跳转网页搜题'    />:''}
+                    </span>
 
                     <span className={cls} onClick={() => {
                       let dom = document.getElementsByClassName('down');
@@ -182,11 +189,9 @@ class wrongTop extends React.Component {
               )
             })
           }
-        </div>
       </div>
     )
   }
-
   onImportExcel = file => {
     let form = new FormData();
     let fil = document.getElementById("file").files[0];
@@ -200,6 +205,8 @@ class wrongTop extends React.Component {
       return false
     }
     form.append('file', document.getElementById("file").files[0]);
+
+
     var url = URL.createObjectURL(document.getElementById("file").files[0]);
     var audioElement = new Audio(url);
     var duration;
@@ -212,9 +219,12 @@ class wrongTop extends React.Component {
       payload: true
     });
     let token = store.get('wrongBookToken');
-    fetch(dataCenter('/file/uploadFlie?token=' + token), {
+    fetch(dataCenter('/file/uploadFile?token=' + token), {
       method: "POST",
-      body: form
+      body: form,
+      headers:{
+        "Authorization":token
+      }
     })
       .then(response => response.json())
       .then(res => {
@@ -222,9 +232,8 @@ class wrongTop extends React.Component {
           This.props.dispatch({
             type: 'report/uploadVideo',
             payload: {
-              uqId: This.props.state.uqId,
+              uqId: This.props.state.questionId,
               url: res.data.path,
-              // authorId:store.get('wrongBookNews').userId,
               duration: parseInt(duration)
             }
           });
@@ -247,7 +256,7 @@ class wrongTop extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    value += 'video?uqId=' + this.props.state.uqId + '&authorId=' + userId
+    value += 'video?uqId=' + this.props.state.questionId + '&authorId=' + userId
     let This = this;
     // console.log(this.props.state.visible1,this.props.state.toupload )
     if (!this.props.state.visible1 && !this.props.state.toupload) {
@@ -255,7 +264,7 @@ class wrongTop extends React.Component {
       timestamp = timestamp.substring(0, timestamp.length - 3);
       var websocket = null;
       //判断当前浏览器是否支持WebSocket
-      let url = dataCen('/wrongManage/teachVideoUpload?userId=' + userId + '&uqId=' + this.props.state.uqId)
+      let url = dataCen('/report/ws/teachVideoUpload?userId=' + userId + '&uqId=' + this.props.state.questionId)
       if ('WebSocket' in window) {
         websocket = new WebSocket(url);
       } else {
@@ -359,7 +368,7 @@ class wrongTop extends React.Component {
                       <input
                         type='file'
                         id='file'
-                        accept='.mp4'
+                        accept='video/mp4'
                         style={{ display: 'none' }}
                         onChange={this.onImportExcel}
                       />
@@ -418,9 +427,12 @@ class wrongTop extends React.Component {
 
   //点击时间全部事件
   alltime() {
-    //滚动条回滚到顶部
+    //滚动条回滚到顶部,知识点展开
     if (document.getElementById('gundt')) {
       document.getElementById('gundt').scrollTop = 0;
+      this.setState({
+        zoom: false
+      })
     }
     this.props.dispatch({
       type: 'report/begtoendTime',
@@ -467,9 +479,12 @@ class wrongTop extends React.Component {
   }
   //点击不同月份的事件
   monthtime(item) {
-    //滚动条回滚到顶部
+    //滚动条回滚到顶部,知识点展开
     if (document.getElementById('gundt')) {
       document.getElementById('gundt').scrollTop = 0;
+      this.setState({
+        zoom: false
+      })
     }
 
     this.props.dispatch({
@@ -523,9 +538,12 @@ class wrongTop extends React.Component {
   }
   //时间框
   quantumtime(date, dateString) {
-    //滚动条回滚到顶部
+    //滚动条回滚到顶部,知识点展开
     if (document.getElementById('gundt')) {
       document.getElementById('gundt').scrollTop = 0;
+      this.setState({
+        zoom: false
+      })
     }
     this.props.dispatch({
       type: 'report/changeMouth',
@@ -679,46 +697,16 @@ class wrongTop extends React.Component {
     }
   }
 
-  //下载全部的组卷事件
-  // downloadAll() {
-  //   this.props.dispatch({
-  //     type: 'down/getAllPdfV2ForQrc',
-  //     payload: {
-  //       classId: this.props.state.classId,
-  //       subjectId: this.props.state.subId,
-  //       year: this.props.state.years,
-  //       month: this.props.state.mouNow.v,
-  //       clean: 1
-  //     }
-  //   });
-  //   // 添加导出次数
-  //   let qlist = this.props.state.qrdetailList.data.questionList;
-  //   this.props.dispatch({
-  //     type: 'down/allClassDown',
-  //     payload: qlist
-  //   });
-
-  //   this.props.dispatch({
-  //     type: 'report/addClassup',
-  //     payload: this.props.state.allClassDown
-  //   })
-
-  //   this.props.dispatch({
-  //     type: 'down/toDown',
-  //     payload: true
-  //   });
-  //   this.props.dispatch({
-  //     type: 'down/delAllClassDown',
-  //     payload: true
-  //   });
-  // }
 
   //点击知识点全部事件
   allknowledgenow() {
 
-    //滚动条回滚到顶部
+    //滚动条回滚到顶部,知识点展开
     if (document.getElementById('gundt')) {
       document.getElementById('gundt').scrollTop = 0;
+      this.setState({
+        zoom: false
+      })
     }
     this.props.dispatch({
       type: 'report/knowledgenow',
@@ -789,7 +777,7 @@ class wrongTop extends React.Component {
       <Content style={{ position: 'relative' }}>
         <iframe style={{ display: 'none' }} src={this.state.wordUrl} />
         <Layout className={style.layout}>
-          <Header className={style.layoutHead} style={{zIndex:1}}>
+          <Header className={style.layoutHead} style={{zIndex:2}}>
             <span style={{
               fontSize: 14,
               fontFamily: 'MicrosoftYaHei-Bold',
@@ -799,7 +787,7 @@ class wrongTop extends React.Component {
             <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
               style={{ marginLeft: 24 }} onClick={this.alltime.bind(this)}>全部</span>
             {
-              mounthList.data ?
+              mounthList.data && mounthList.data.length>0?
                 mounthList.data.map((item, i) => {
                   return (
                     <span key={i} className={item.k == this.props.state.mouNow.k ? 'choseMonthOn' : 'choseMonth'}
@@ -819,8 +807,8 @@ class wrongTop extends React.Component {
               onChange={
                 this.quantumtime.bind(this)
               } />
-            <div style={{ float: 'right' }}>
-              {QuestionDetail.data && QuestionDetail.data.questionList.length > 0 ?
+            <div style={{ float: 'right',position: 'relative' }}>
+              {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
                 <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none',width:140 }}
                   loading={this.props.state.downQue}
                   disabled={this.props.state.classDown.length === 0 && !this.props.state.downQue}
@@ -829,8 +817,13 @@ class wrongTop extends React.Component {
                     src={require('../../images/xc-cl-n.png')}></img>
                   下载错题({this.props.state.classDown.length})
               </Button> : ''}
+              {/*引导流程*/}
+              {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
+              <Guidance title='下载错题' content='选择组卷后，可选择下载错题或优选错题'/>
+              : ''}
               {this.state.pull ?
                 <div className={style.buttonPull}
+                     style={{right:0}}
                   onClick={(e) => {
                     if(this.state.similarTopic===1){
                       this.setState({
@@ -863,37 +856,30 @@ class wrongTop extends React.Component {
                   </Row>
                 </div> : ''}
             </div>
-            {/* {
-              (this.props.state.AllPdf && 0 != this.props.state.mouNow && QuestionDetail.data && QuestionDetail.data.questionList.length > 0) ?
-                <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none', marginRight: '10px' }}
-                  loading={this.props.state.toDown}
-                  onClick={this.downloadAll.bind(this)}>
-                  {
-                    this.props.state.toDown ?
-                      '组卷中' : '下载全部'
-                  }
-                </Button> : ''
-            } */}
           </Header>
           <Header className={style.layoutHead}
-            style={this.state.zoom ? { lineHeight: 3, height: 50,boxShadow: 'rgba(0, 0, 0, 0.1) 0px 0px 20px',marginBottom: 10,overflow:'hidden' } : { lineHeight: 1.5, height: 'auto' }}>
+            style={this.state.zoom ? { lineHeight: 3, height: 50,boxShadow: 'rgba(0, 0, 0, 0.05) 0px 0px 20px',marginBottom: 10,overflow:'hidden' } :
+              { lineHeight: 1.5, height: 'auto',}}>
             <span style={{
               fontSize: 14,
               fontFamily: 'MicrosoftYaHei-Bold',
               fontWeight: 'bold',
               color: 'rgba(96,98,102,1)',
             }}>知识点：</span>
+            <div className={this.state.zoom ? `xiaoshi` :''} style={{float: 'right', maxHeight: 350,overflow: 'auto',width: 'calc(100% - 56px)',paddingBottom: 15}}>
             <span key={0} className={0 == this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
               onClick={this.allknowledgenow.bind(this)}>全部</span>
             {knowledgeList.data ?
                 knowledgeList.data.map((item, i) => {
                   return (
-                    <span key={item.knowledgeName} className={this.props.state.knowledgenow.includes(item.knowledgeName) ? 'choseMonthOn' : 'choseMonth'}
-                      onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}>{item.knowledgeName}({item.num})</span>
+                    <span key={item.knowledgeName} className={this.props.state.knowledgenow.indexOf(item.knowledgeName)>-1 ? 'choseMonthOn' : 'choseMonth'}
+                        onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}
+                    >{item.knowledgeName}({item.num})</span>
                   )
                 })
                 : ''
             }
+            </div>
           </Header>
 
           <Content id='gundt'
@@ -901,7 +887,7 @@ class wrongTop extends React.Component {
             ref='warpper'
             onScroll={(e) => { this.pageScroll(e) }}
           >
-            { this.props.state.qrdetailList.data && this.props.state.qrdetailList.data.questionList.length != 0 ?
+            { this.props.state.qrdetailList.data && this.props.state.qrdetailList.data.questionList && this.props.state.qrdetailList.data.questionList.length !== 0 ?
                 this.quesList() :
                 <div style={{ textAlign: 'center', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }}>
                   <img src={require('../../images/wsj-n.png')}></img>

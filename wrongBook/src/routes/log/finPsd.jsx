@@ -151,11 +151,11 @@ class HomePage extends Component {
                   message.warning('手机号或验证码不能为空')
                 }else{
                   let data ={
-                    phone:this.props.state.phone,
-                    vc:this.state.code,
+                        phone:this.props.state.phone,
+                       random:this.state.code,
                   }
                   this.props.dispatch({
-                    type : 'login/checkVC',
+                    type : 'login/checkVC', 
                     payload:data
                   });
                 }
@@ -169,8 +169,10 @@ class HomePage extends Component {
                     this.props.dispatch({
                       type : 'login/updateInfo',
                       payload:{
-                        password:this.state.pass,
-                        token:this.props.state.token,
+                        newPwd:this.state.pass,
+                        phone:this.props.state.phone,
+                          random:this.state.code,
+                        // token:this.props.state.token,
                       }
                     });
                   }else{

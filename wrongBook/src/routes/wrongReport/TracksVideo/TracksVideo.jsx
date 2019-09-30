@@ -50,7 +50,7 @@ class ClassReport extends React.Component {
             <div style={{float:'right'}}>
                 {this.props.type.teachVideo != null ?
                 <span >
-                    <Tooltip placement="bottom" title="讲解视频">
+                    <Tooltip placement="bottom" title="讲解视频" overlayStyle={{zIndex: 100}}>
                         <span style={{padding:'2px 10px',background:"#52a5fa",color:'#fff',borderRadius:'3px',cursor:'pointer'}} onClick={()=>{
                             this.props.dispatch({
                                 type: 'report/visible',
@@ -73,9 +73,7 @@ class ClassReport extends React.Component {
                                 payload:this.props.num
                             });
                         }}>
-                            <Icon type="play-circle"  theme="filled" style={{marginRight:'10px',cursor:"pointer",fontSize: 15}} title=""  onClick={()=>{
-                               
-                            }}/>
+                            <Icon type="play-circle"  theme="filled" style={{marginRight:'10px',cursor:"pointer",fontSize: 15}} />
                                 {time}
                         </span>
                     </Tooltip>
@@ -95,8 +93,6 @@ class ClassReport extends React.Component {
                                         }
                                     });
                                 },
-                                onCancel() {
-                                },
                             });
                         }}/>
                     </Tooltip>
@@ -114,15 +110,24 @@ class ClassReport extends React.Component {
                             type: 'report/toupload',
                             payload:false
                         });
-                        
-                        this.props.dispatch({
-                            type: 'example/uqId',
-                            payload:this.props.type.questionId
-                        });
-                        this.props.dispatch({
-                            type: 'example/userId',
-                            payload:'4259550296541184'
-                        });
+         
+                        try{
+                            this.props.dispatch({
+                                type: 'example/uqId',
+                                payload:this.props.type.picId.split('-')[1]
+                            });
+                        }catch(e){
+                            this.props.dispatch({
+                                type: 'example/uqId',
+                                payload:this.props.type.uqId.split('-')[1]
+                            });
+
+                        }
+
+                        // this.props.dispatch({
+                        //     type: 'example/userId',
+                        //     payload:'4259550296541184'
+                        // });
                         this.props.dispatch({
                             type: 'example/questionId',
                             payload:this.props.type.questionId

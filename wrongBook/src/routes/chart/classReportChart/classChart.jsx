@@ -41,8 +41,8 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload: item.timeStamp
 		});
-		let cid = this.state.cclassId;
-		let sid = this.state.csubjectId;
+		let cid = this.state.classId;
+		let sid = this.state.subId;
 		let data = {
 			schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
@@ -50,7 +50,6 @@ class HomeworkCenter extends React.Component {
 			classId: cid,
 			subjectId: sid,
 		};
-
 		this.dispatch({
 			type: 'reportChart/getClassDataReport',
 			payload: data
@@ -59,8 +58,8 @@ class HomeworkCenter extends React.Component {
 	}
 
 	onChangeDate(startDate, endDate) {
-		if (this.state.classList1.data.length === 0 || this.state.subList.data.length === 0) return
-		let data = {}
+		if (this.state.classList1.data.length === 0 || this.state.subList.data.length === 0) return false;
+		let data = {};
 		if (startDate !== '') {
 			this.dispatch({
 				type: 'reportChart/startTime',
@@ -70,8 +69,8 @@ class HomeworkCenter extends React.Component {
 				type: 'reportChart/endTime',
 				payload: endDate
 			});
-			let cid = this.state.cclassId
-			let sid = this.state.csubjectId
+			let cid = this.state.classId;
+			let sid = this.state.subId;
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				timeStamp: 0,
@@ -90,8 +89,8 @@ class HomeworkCenter extends React.Component {
 				type: 'reportChart/timeStamp',
 				payload: this.state.reportTimeList[0].timeStamp
 			});
-			let cid = this.state.cclassId
-			let sid = this.state.csubjectId
+			let cid = this.state.classId;
+			let sid = this.state.subId;
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: cid,
@@ -107,36 +106,48 @@ class HomeworkCenter extends React.Component {
 	}
 	getSub() {
 		let subList = this.props.state.subList.data;
+		//如果是超级管理员的话
+		if (store.get('wrongBookNews').rodeType === 10) {
+			subList = this.props.state.ssubList;
+		}
 		if (subList && subList.length > 0) {
 			return (
 				<Select
 					style={{ width: 100 }}
 					placeholder="学科"
-					value={this.props.state.csubjectId}
+					getPopupContainer={triggerNode => triggerNode.parentElement}
+					value={this.props.state.subName}
 					onChange={(value) => {
+						// this.props.dispatch({
+						// 	type: 'reportChart/csubjectId',
+						// 	payload: value
+						// });
 						this.props.dispatch({
-							type: 'reportChart/csubjectId',
+							type: 'temp/subId',
 							payload: value
 						});
-						let cid = this.props.state.cclassId
-						let sid = value
+						// let cid = this.props.state.cclassId;
+						let cid = this.props.state.classId;
+						let sid = value;
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
 							classId: cid,
 							subjectId: sid,
-						}
+						};
 						if (this.props.state.stateTimeIndex === 100) {
-							data.startTime = this.props.state.startTime
-							data.endTime = this.props.state.endTime
+							data.startTime = this.props.state.startTime;
+							data.endTime = this.props.state.endTime;
 							data.timeStamp = 0
 						} else {
-							data.periodTime = this.props.state.periodTime
+							data.periodTime = this.props.state.periodTime;
 							data.timeStamp = this.props.state.timeStamp
 						}
-						this.props.dispatch({
-							type: 'reportChart/getClassDataReport',
-							payload: data
-						});
+					
+							this.props.dispatch({
+								type: 'reportChart/getClassDataReport',
+								payload: data
+							})
+
 					}}
 
 				>
@@ -153,49 +164,47 @@ class HomeworkCenter extends React.Component {
 	}
 	getClassList() {
 		let classList = this.props.state.classList1.data;
+		//如果是超级管理员的话
+		if (store.get('wrongBookNews').rodeType === 10) {
+			classList = this.props.state.sclassList;
+		}
 		if (classList && classList.length > 0) {
 			return (
 				<Select
 					style={{ width: 140, marginRight: 20 }}
 					placeholder="班级"
-					value={this.props.state.cclassId}
-					onChange={(value) => {
+					getPopupContainer={triggerNode => triggerNode.parentElement}
+					value={this.props.state.className}
+					onChange={(value, option) => {
+						// this.props.dispatch({
+						// 	type: 'reportChart/cclassId',
+						// 	payload: value
+						// });
 						this.props.dispatch({
-							type: 'reportChart/cclassId',
+							type: 'temp/classId',
 							payload: value
 						});
-
-						let cid = value
-						let sid = this.props.state.csubjectId
-						let data = {
-							schoolId: store.get('wrongBookNews').schoolId,
-							classId: cid,
-							subjectId: sid,
-						}
-						if (this.props.state.stateTimeIndex === 100) {
-							data.startTime = this.props.state.startTime
-							data.endTime = this.props.state.endTime
-							data.timeStamp = 0
-						} else {
-							data.periodTime = this.props.state.periodTime
-							data.timeStamp = this.props.state.timeStamp
-						}
 						this.props.dispatch({
-							type: 'reportChart/getClassDataReport',
-							payload: data
+							type: 'temp/className',
+							payload: option.props.children
+						});
+						let cid = value;
+
+						this.props.dispatch({
+							type: 'temp/zybgSubjectList',
+							payload: {
+								classId: cid,
+								year: this.props.state.years
+							}
 						});
 					}}
-
 				>
-					{
-						classList.map((item, i) => (
-							<Option key={i} value={item.classId}>{item.className}</Option>
-						))
+					{classList.map((item, i) => (
+						<Option key={i} value={store.get('wrongBookNews').rodeType === 10 ? item.id : item.classId}>{store.get('wrongBookNews').rodeType === 10 ? item.name : item.className}</Option>
+					))
 					}
 				</Select>
 			)
-		} else {
-
 		}
 	}
 	renderTeacherUserCount() {
@@ -535,7 +544,7 @@ class HomeworkCenter extends React.Component {
 		}, 10);
 		return (
 			<Layout>
-				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)',flex: 'none' }}>
+				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)', flex: 'none' }}>
 					<div onClick={() => {
 						this.props.dispatch(
 							routerRedux.push({
@@ -568,7 +577,7 @@ class HomeworkCenter extends React.Component {
 						<Row style={{ marginTop: 20 }}>
 							<Col md={24}>
 								<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden' }}>
-									<div className={{}}>
+									<div>
 										{this.getClassList()}
 										{this.getSub()}
 									</div>
@@ -645,7 +654,7 @@ class HomeworkCenter extends React.Component {
 	nodata() {
 		return (
 			<div style={{ textAlign: 'center', position: 'absolute', top: '40%', width: '100%', display: 'flex', justifyContent: 'center' }}>
-				<img src={require('../../images/wsj-n.png')}/>
+				<img src={require('../../images/wsj-n.png')} />
 				<span style={{
 					fontSize: '20px', color: "#434e59", height: 195,
 					lineHeight: '195px',
@@ -678,6 +687,17 @@ class HomeworkCenter extends React.Component {
 
 		}, false);
 	}
+	componentWillMount() {
+
+		let schoolId = store.get('wrongBookNews').schoolId;
+		this.props.dispatch({
+			type: 'homePage/getEnableYears',
+			payload: {
+				schoolId
+			}
+		})
+	}
+
 	componentWillUnmount() {
 		this.props.dispatch({
 			type: 'periodTime',
@@ -686,6 +706,14 @@ class HomeworkCenter extends React.Component {
 		window.removeEventListener('resize', function (e) {
 			//卸载resize
 		}, false);
+		if (store.get('wrongBookNews').rodeType === 10) {
+			this.props.dispatch({
+				type: 'homePage/yearList',
+				payload: {
+					yearList: []
+				}
+			})
+		}
 	}
 	componentDidMount() {
 		const { dispatch } = this.props;
@@ -713,7 +741,7 @@ class HomeworkCenter extends React.Component {
 
 export default connect((state) => ({
 	state: {
-		...state.reportChart,
 		...state.temp,
+		...state.reportChart,
 	}
 }))(HomeworkCenter);

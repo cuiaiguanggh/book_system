@@ -99,15 +99,20 @@ export default {
 		//一键升级班级
 		*upgrade({ payload }, { put, select }) {
 			let res = yield promotionClass(payload);
+			let { years} = yield select(state => state.temp)
 			if (res.data && res.data.result === 0) {
 				yield put({
 					type: 'pageClass',
 					payload: {
 						schoolId: store.get('wrongBookNews').schoolId,
 						pageSize: 9999,
-						pageNum: 1
+						pageNum: 1,
+						year:years
 					}
 				})
+				message.success('一键升级班级成功')
+			} else {
+				message.error(res.data.msg)
 			}
 		},
 
@@ -124,7 +129,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -141,6 +146,9 @@ export default {
 				payload: payload
 			})
 			let res = yield pageClass(payload);
+			if(!res.data.data.hasOwnProperty('list')){
+				res.data.data.list=[]
+			}
 			if (res.data.result != 0) {
 				// yield put(routerRedux.push('/login'))
 			}
@@ -151,7 +159,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -181,7 +189,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -211,7 +219,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -247,7 +255,7 @@ export default {
 					}
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -284,7 +292,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -320,7 +328,7 @@ export default {
 					}
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -343,7 +351,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -368,7 +376,7 @@ export default {
 						payload: res.data
 					})
 				} else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -390,7 +398,7 @@ export default {
 						payload: res.data
 					})
 				} else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -401,10 +409,10 @@ export default {
 		},
 		*getClassList({ payload }, { put, select }) {
 			// 返回教师所在班级列表
-			yield put({
-				type: 'classListPayload',
-				payload: payload
-			})
+			// yield put({
+			// 	type: 'classListPayload',
+			// 	payload: payload
+			// })
 			let res = yield getClassList(payload);
 			if (res.data.result != 0) {
 				// yield put(routerRedux.push('/login'))
@@ -422,7 +430,7 @@ export default {
 					payload: res.data
 				})
 			} else {
-				if (res.data.msg == '无效TOKEN!') {
+				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -448,7 +456,7 @@ export default {
 						payload: res.data.data[0]
 					})
 				} else {
-					if (res.data.msg == '无效TOKEN!') {
+					if (res.data.result===2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 

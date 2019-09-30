@@ -84,6 +84,10 @@ const ClassChart = Loadable({
   loader: () => import('./routes/chart/classReportChart/classChart'),
   loading: () => <List/>,
 });
+const WrongTopic = Loadable({
+  loader: () => import('./routes/SchoolAdmin/wrongTopic/wrongTopic'),
+  loading: () => <List/>,
+});
 function RouterConfig({ history }) {
   
   return (
@@ -103,6 +107,7 @@ function RouterConfig({ history }) {
             <Route path="/addclass" component={AddClass} />
             <Route path="/school" component={SchoolAdmin} />
             <Route path="/schoolNews" component={SchoolNews} />
+            <Route path="/wrongTopic" component={WrongTopic} />
             <Route path="/user" component={UserList} />
             <Route path="/classReport" component={ClassReport} />
             <Route path="/stuReport" component={StuReport} />

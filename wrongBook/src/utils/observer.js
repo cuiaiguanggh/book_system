@@ -1,18 +1,18 @@
 
 class observ {
   constructor() {
-    this.handle = {};
+    this.subscribe = {};
   }
 
   //订阅
   addSubscribe(eventName, callback) {
-    this.handle[eventName] = callback
+    this.subscribe[eventName] = callback
   };
 
   //发布
-  publish(eventName, parameter) {
-    if (this.handle.hasOwnProperty([eventName])){
-      this.handle[eventName](parameter)
+  publish(eventName, ...parameter) {
+    if (this.subscribe.hasOwnProperty([eventName])){
+      this.subscribe[eventName](...parameter)
     }
   };
 }

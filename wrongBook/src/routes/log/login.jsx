@@ -112,7 +112,7 @@ class Login extends Component {
             <div className={style.chooseType}>
               {
                 loginType.map((item,i)=>(
-                  <span className={item.key == 0 ? cl1:cl2} onClick={()=>{
+                  <span key={i} className={item.key == 0 ? cl1:cl2} onClick={()=>{
                     if(item.cho){
                       this.getCode()
                     }
@@ -140,9 +140,9 @@ class Login extends Component {
                           cookie.remove('catchyPass', { path: '/' })
                         }
                         let data ={
-                          username:this.state.name,
+                          account:this.state.name,
                           password:this.state.pass,
-                          rem:this.state.checked,
+                          // rem:this.state.checked,
                         }
                         if( this.state.name.replace(/(^\s*)|(\s*$)/g, "") == '' && this.state.pass == '') {
                           message.warning("账号或密码不能为空")
@@ -175,9 +175,9 @@ class Login extends Component {
                           cookie.remove('catchyPass', { path: '/' })
                         }
                         let data ={
-                          username:this.state.name,
+                          account:this.state.name,
                           password:this.state.pass,
-                          rem:this.state.checked,
+                          // rem:this.state.checked,
                         }
                         if( this.state.name.replace(/(^\s*)|(\s*$)/g, "") == '' && this.state.pass == '') {
                           message.warning("账号或密码不能为空")
@@ -203,9 +203,8 @@ class Login extends Component {
               cookie.remove('catchyPass', { path: '/' })
             }
             let data ={
-              username:this.state.name,
+              account:this.state.name,
               password:this.state.pass,
-              rem:this.state.checked,
             }
             if( this.state.name.replace(/(^\s*)|(\s*$)/g, "") == '' || this.state.pass == '') {
               message.warning("账号或密码不能为空")
@@ -264,13 +263,13 @@ class Login extends Component {
     this.props.dispatch({
       type : 'login/vcOk',
     });
-    if(flag){
-      this.props.dispatch(
-        routerRedux.push({
-          pathname: '/login',
-          })
-      )
-    }else{
+    if(!flag){
+    //   this.props.dispatch(
+    //     routerRedux.push({
+    //       pathname: '/login',
+    //       })
+    //   )
+    // }else{
       this.props.dispatch(
         routerRedux.push({
           pathname: '/loginPhone',

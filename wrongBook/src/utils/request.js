@@ -41,21 +41,32 @@ export default function request(url, options) {
   options = options || {};
   options.method = options.method || 'post';
   options.mode = options.mode || 'cors';
-  options.headers = options.headers || {};
+  options.headers = options.headers || {userType:1,version:'d1.0.0'};
   options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/x-www-form-urlencoded';
   let data = options.data || {};
   let dataBody;
   let loginSession = store.get('wrongBookToken');
  
-  if(loginSession !== '' && data.token == undefined  ){
-      data.token = loginSession;
+  // if(loginSession !== '' && data.token == undefined  ){
+  //     data.token = loginSession;
+  // }
+   if(loginSession !== '' && data.token == undefined  ){
+    options.headers.Authorization = loginSession;
   }
   dataBody = formatOpt(data);
   if(options.body && dataBody) {
     dataBody = options.body + '&' + dataBody;
   }
-  options.body = dataBody;
 
+  if( options.method==='post'){
+  options.body = dataBody;
+  }else {
+    url=`${url}?${dataBody}`
+  }
+  if(options.headers['Content-Type']==='application/json'){
+    options.body = JSON.stringify(data);
+  }
+  
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON)
