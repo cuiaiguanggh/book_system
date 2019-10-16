@@ -8,6 +8,11 @@ function loginTiku(payload){
         data:payload
     });
 }
+function loginForGZ(payload){
+    return request(dataCenter('/auth/loginForGZ/kcsj'),{
+        data:payload
+    });
+}
 function getVC(payload){
     return request(dataCenter('/user/phone/random'),{
         data:payload,
@@ -26,7 +31,8 @@ function updateInfo(payload){
 }
 function webchatLoginForWeb(payload){
     return request(dataCenter('/auth/webchatLogin/kcsj'),{
-        data:payload
+        data:payload,
+        headers : {userType:3,version:'d1.0.0'}
     });
 }
 function info(payload){
@@ -50,4 +56,5 @@ export {
     checkVC,
     updateInfo,
     webchatLoginForWeb,
+    loginForGZ
 };

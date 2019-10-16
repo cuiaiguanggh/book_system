@@ -706,6 +706,11 @@ class StuReport extends React.Component {
       data.startTime = this.props.state.stbegtoendTime[0];
       data.endTime = this.props.state.stbegtoendTime[1];
     }
+  
+    if(!data.subjectId){
+      message.error('请选择学科');
+      return;
+    }
     this.props.dispatch({
       type: 'report/userQRdetail',
       payload: data
@@ -773,10 +778,12 @@ class StuReport extends React.Component {
         type: 'down/downQue',
         payload: true
       });
+      console.log(this.props.state)
       //下载pdf
       let downparameters={
         uqIdsStr: this.props.state.stuDownPic.join(','),
         childId:this.props.state.userId,
+        operationClass:this.props.state.classId,
       };
       if(this.state.similarTopic===1){
         downparameters.practise=0

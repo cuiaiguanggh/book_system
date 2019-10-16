@@ -360,6 +360,10 @@ export default {
 				payload.startTime = stbegtoendTime[0];
 				payload.endTime = stbegtoendTime[1];
 			}
+			if(!payload.subjectId){
+				message.error('请选择学科');
+				return;
+			}
 			//查询班级学生列表
 			let res = yield queryQrStudentCount(payload);
 			if (res.hasOwnProperty("err")) {
@@ -414,6 +418,7 @@ export default {
 						data.startTime = payload.startTime;
 						data.endTime = payload.endTime;
 					}
+	
 					yield put({
 						type: 'userQRdetail',
 						payload: data

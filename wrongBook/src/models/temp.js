@@ -126,11 +126,10 @@ export default {
 		},
 
 		*getClassList({ payload }, { put, select }) {
-			// 返回教师所在班级列表
+			// 返回教师所在班级列表	
 			let res = yield getClassList(payload);
 			if (res.data && res.data.result === 0) {
 				if (res.data.data.length > 0) {
-
 					yield put({
 						type: 'className',
 						payload: res.data.data[0].className
@@ -148,9 +147,61 @@ export default {
 						type: 'getUserSubjectList',
 						payload: res.data.data[0].classId
 					})
+				}else{
+					//班级为空时清空所有对应数据
+					yield put({
+						type: 'classId',
+						payload: ''
+					})
+					yield put({
+						type: 'classList1',
+						payload: []
+					})
+					yield put({
+						type: 'report/classList1',
+						payload: []
+					})
+					yield put({
+						type: 'mounthList',
+						payload: []
+					})
+					yield put({
+						type: 'knowledgeList',
+						payload: []
+					})
+					yield put({
+						type: 'subList',
+						payload: []
+					});
+					//班级错题
+					yield put({
+						type: 'report/qrdetailList',
+						payload: []
+					})
+					//学生错题
+					yield put({
+						type: 'report/studentList',
+						payload: []
+					});
+					yield put({
+						type: 'report/qrStudentDetailList',
+						payload: []
+					})
+					//作业报告
+					yield put({
+						type: 'report/homeworkList',
+						payload: []
+					})
+					yield put({
+						type: 'report/studentList',
+						payload: []
+					});
+					yield put({
+						type: 'report/scoreDetail',
+						payload: []
+					})
+
 				}
-
-
 
 			} else {
 				if (res.data.result===2) {
@@ -325,6 +376,10 @@ export default {
 						type: 'knowledgeList',
 						payload: []
 					})
+					yield put({
+						type: 'subId',
+						payload:''
+					});
 					yield put({
 						type: 'subList',
 						payload: []

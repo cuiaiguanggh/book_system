@@ -25,9 +25,10 @@ class HomeworkCenter extends React.Component {
 			file: [],
 			schoolId: '',
 			year: '',
-			uploadFile: {}
+			uploadFile: {},
+			dianji: false
 		};
-		this.dianjis = 0;
+
 	}
 	onImportExcel = file => {
 		const { files } = file.target;
@@ -83,6 +84,7 @@ class HomeworkCenter extends React.Component {
 						data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
 					}
 				}
+				console.log(data)
 				this.setState({ fileArr: data })
 			} catch (e) {
 				message.warning('文件类型不正确')
@@ -147,7 +149,7 @@ class HomeworkCenter extends React.Component {
 						style={{ width: 200, marginRight: '10px' }}
 						optionFilterProp="children"
 						placeholder='请选择学年'
-						defaultValue={this.props.state.nowYear}
+						value={this.props.state.nowYear}
 						onChange={(value) => {
 							this.props.dispatch({
 								type: 'classHome/nowYear',
@@ -187,7 +189,7 @@ class HomeworkCenter extends React.Component {
 				title: '班级名称',
 				dataIndex: 'name',
 				key: 'name',
-				width: '20%',
+				// width: '20%',
 				render: (text, record) => (
 					<div
 						className='space'
@@ -201,7 +203,7 @@ class HomeworkCenter extends React.Component {
 				title: '年级',
 				dataIndex: 'grade',
 				key: 'grade',
-				width: '16%',
+				// width: '16%',
 				render: (text, record) => (
 					<div
 						className='space'>
@@ -210,10 +212,21 @@ class HomeworkCenter extends React.Component {
 				)
 			},
 			{
+				title: '身份',
+				dataIndex: 'identity',
+				key: 'identity',
+				// width: '20%',
+				render: (text, record) => (
+					<div>
+						{text}
+					</div>
+				)
+			},
+			{
 				title: '教师姓名',
 				dataIndex: 'teacher',
 				key: 'teacher',
-				width: '20%',
+				// width: '20%',
 				render: (text, record) => (
 					<div>
 						{text}
@@ -221,21 +234,10 @@ class HomeworkCenter extends React.Component {
 				)
 			},
 			{
-				title: '班主任',
-				dataIndex: 'teacherName',
-				key: 'teacherName',
-				width: '20%',
-				render: (text, record) => (
-					<div>
-						{text}
-					</div>
-				)
-			},
-			{
-				title: '学科',
+				title: '任教学科',
 				dataIndex: 'sub',
 				key: 'sub',
-				width: '20%',
+				// width: '20%',
 				render: (text, record) => (
 					<div>
 						{text}
@@ -243,10 +245,10 @@ class HomeworkCenter extends React.Component {
 				)
 			},
 			{
-				title: '手机',
+				title: '教师手机号',
 				dataIndex: 'phone',
 				key: 'phone',
-				width: '20%',
+				// width: '20%',
 				render: (text, record) => (
 					<div>
 						{text}
@@ -261,13 +263,24 @@ class HomeworkCenter extends React.Component {
 			for (let i = 0; i < fileArr.length; i++) {
 				let det = fileArr[i]
 				let p = {};
+				try {
+					if (det.hasOwnProperty('年级')) {
+						p["grade"] = det.年级;
+						p["name"] = det.班级名称;
+					} else {
+						p["grade"] = dataSource[i - 1].grade;
+						p["name"] = dataSource[i - 1].name;
+					}
+
+				} catch (e) {
+					console.error('表格数据不对')
+				}
+
 				p["key"] = i;
-				p["name"] = det.班级名称;
-				p["teacher"] = det.姓名;
-				p["teacherName"] = det.班主任;
-				p["sub"] = det.学科;
-				p["phone"] = det.手机号;
-				p["grade"] = det.年级;
+				p["teacher"] = det.教师姓名;
+				p["sub"] = det.任教学科;
+				p["phone"] = det.教师手机号;
+				p["identity"] = det.身份;
 				dataSource[i] = p;
 			}
 		}
@@ -280,9 +293,9 @@ class HomeworkCenter extends React.Component {
 							{/*{this.chooseSchool()}*/}
 							{this.chooseYear()}
 							<Button onClick={() => {
-								// window.open("http://homework.mizholdings.com/qiniu/31000/7511/D0539650-0039-4CAF-9CE5-7845AFD8ABED/教师信息采集模板.XLSX",'_blank');
-								//下面暂时别发正式
-								window.open("https://homework.mizholdings.com/qiniu/88908000/88888888/18E383AF-E059-4934-8B24-EB0B257FB15C/教师信息采集模板.XLSX", '_blank');
+
+								window.open("http://homework.mizholdings.com/kacha/wx/fd0b1355853af771/班级导入模板.XLSX", '_blank');
+								// window.open("https://homework.mizholdings.com/qiniu/88908000/88888888/18E383AF-E059-4934-8B24-EB0B257FB15C/教师信息采集模板.XLSX", '_blank');
 							}}>下载模板</Button>
 							{
 								dataSource != '' ?
@@ -291,19 +304,25 @@ class HomeworkCenter extends React.Component {
 										style={{ marginLeft: '10px' }}
 										onClick={(e) => {
 											//限制连续点击
-											if (this.dianjis === 1) {
-												setTimeout(()=>{ this.dianjis = 0}, 3000);
+											if (this.state.dianji) {
+												setTimeout(() => {
+													this.setState({
+														dianji: false
+													})
+												}, 5000);
 												return;
 											}
-											this.dianjis++;
+
+											this.setState({
+												dianji: true
+											})
+
 											// let fileObj = document.getElementById('file').files[0];
 											let fileObj = this.state.uploadFile;
 											console.log(fileObj)
 											let form = new FormData();
 											form.append('excelFile', fileObj);
-
 											let token = store.get('wrongBookToken');
-
 											// let schoolId ='';
 											// if(rodeType === 10){
 											// 	schoolId=this.state.schoolId

@@ -207,6 +207,9 @@ class HomeworkCenter extends React.Component {
 		const { dispatch } = this.props;
 		dispatch({
 			type: 'classHome/getClassList',
+			payload: {
+				year:this.props.state.years
+			  }
 		});
 		// dispatch({
 		// 	type: 'userInfo/getSubjectList',
@@ -221,5 +224,6 @@ export default connect((state) => ({
 	state: {
 		...state.userInfo,
 		...state.classHome,
+		years: state.temp.years
 	}
 }))(HomeworkCenter);

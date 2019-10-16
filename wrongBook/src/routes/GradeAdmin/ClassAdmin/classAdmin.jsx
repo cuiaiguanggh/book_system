@@ -1,11 +1,13 @@
 import React from 'react';
 import {
-	Layout, Menu, Table, Input, message, Modal, Popconfirm, Select, Form, Popover, Button, Spin
+	Layout, Menu, Table, Input, message, Modal, Popconfirm, Select, Form, Popover, Button, Spin, Switch, Tooltip
 } from 'antd';
 // import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
 import style from './classAdmin.less';
 import store from 'store';
+import observer from '../../../utils/observer'
+
 // import * as XLSX from 'xlsx';
 const confirm = Modal.confirm;
 const { Content } = Layout;
@@ -38,10 +40,24 @@ class HomeworkCenter extends React.Component {
 			sub: 0,
 			searchType: 0,
 			teacherName: '',
-			content: <div style={{ textAlign: "center",width: 300,height:280,display: 'flex',
-			justifyContent: 'center',
-			flexDirection: 'column'  }}> <Spin /> </div>,
+			content: <div style={{
+				textAlign: "center", width: 300, height: 280, display: 'flex',
+				justifyContent: 'center',
+				flexDirection: 'column'
+			}}> <Spin /> </div>,
+			pitchOn: ''
 		};
+		observer.addSubscribe('fuyuan', () => {
+			this.setState({
+				content: <div style={{
+					textAlign: "center", width: 300, height: 280,
+					display: 'flex',
+					justifyContent: 'center',
+					flexDirection: 'column'
+				}}> <Spin /> </div>,
+			})
+		})
+
 		this.tea = [{
 			title: '姓名',
 			dataIndex: 'name',
@@ -51,25 +67,25 @@ class HomeworkCenter extends React.Component {
 			render: (text, record) => (
 				<div>
 					{text}
-					{
-						record.OnwerTeacher == 1 ?
-							<span style={{ marginLeft: '5px', padding: '5px 10px', background: '#e7f4ff', 
-							color: '#409eff', borderRadius: '3px', border: '1px solid #bde0ff' }}>
-								班主任
+					{record.OnwerTeacher == 1 ?
+						<span style={{
+							marginLeft: '5px', padding: '5px 10px', background: '#e7f4ff',
+							color: '#409eff', borderRadius: '3px', border: '1px solid #bde0ff'
+						}}>
+							班主任
 						</span> : ""
 					}
 				</div>
 			)
 		},
 		{
-			title: <div className='space'>手机号</div>,
+			title: <div className={style.space}>手机号</div>,
 			dataIndex: 'phone',
 			key: 'phone',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div
-					className='space'
+				<div className={style.space}
 					onClick={() => {
 					}}>
 					{text}
@@ -77,44 +93,44 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title: <div className='space'>学科</div>,
+			title: <div className={style.space}>学科</div>,
 			dataIndex: 'subJec',
 			key: 'subJec',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div className='space'>
+				<div className={style.space}>
 					{text}
 				</div>
 			)
 		},
 		{
-			title: <div className='space'>错题量</div>,
+			title: <div className={style.space}>错题量</div>,
 			dataIndex: 'wrongNum',
 			key: 'wrongNum',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div className='space'>
+				<div className={style.space}>
 					{text}
 				</div>
 			)
 		},
 		{
-			title: <div className='space'>视频量</div>,
+			title: <div className={style.space}>视频量</div>,
 			dataIndex: 'teaVideoNum',
 			key: 'teaVideoNum',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
 				<div
-					className='space'>
+					className={style.space}>
 					{text}
 				</div>
 			)
 		},
 		{
-			title: <div className='space'>操作</div>,
+			title: <div className={style.space}>操作</div>,
 			editable: true,
 			align: 'center',
 			render: (text, record) => {
@@ -123,33 +139,25 @@ class HomeworkCenter extends React.Component {
 					return (
 						<div>
 							{record.OnwerTeacher == 1 && this.props.state.infoClass ?
-									<Popover placement="leftBottom" title="邀请学生加入班级" trigger="focus" content={this.state.content}>
-										<Button type="primary"
-											onBlur={() => {
-												this.setState({
-													content: <div style={{ textAlign: "center",width: 300,height:280,
-													display: 'flex',
-													justifyContent: 'center',
-													flexDirection: 'column' }}> <Spin /> </div>,
-												})
-											}}
-											onClick={() => {
-												this.props.dispatch({
-													type: 'homePage/wxCode',
-													payload: {
-														classId: this.props.state.infoClass
-													}
-												}).then((res) => {
-													if (res.hasOwnProperty('data')) {
-														this.setState({
-															content: <div style={{ textAlign: "center", borderRadius: '6%', overflow: 'hidden' ,width: 300,height:280}}>
-																<img style={{ width: 300 }} src={res.data.url} />
-															</div>,
-														})
-													}
-												})
-											}}>班级邀请码</Button>
-									</Popover> : ''
+								<Popover placement="leftBottom" title="邀请学生加入班级" trigger="focus" content={this.state.content}>
+									<Button type="primary"
+										onClick={() => {
+											this.props.dispatch({
+												type: 'homePage/wxCode',
+												payload: {
+													classId: this.props.state.infoClass
+												}
+											}).then((res) => {
+												if (res.hasOwnProperty('data')) {
+													this.setState({
+														content: <div style={{ textAlign: "center", borderRadius: '6%', overflow: 'hidden', width: 300, height: 280 }}>
+															<img style={{ width: 300 }} src={res.data.url} />
+														</div>,
+													})
+												}
+											})
+										}}>班级邀请码</Button>
+								</Popover> : ''
 							}
 							{
 								record.OnwerTeacher == 1 ?
@@ -164,11 +172,10 @@ class HomeworkCenter extends React.Component {
 											}
 										});
 									}}>
-										<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#1890ff', borderRadius: '5px', textAlign: 'center' }}
-										>任命</span>
+										<span style={{ background: '#1890ff' }} className={style.annniu}>任命</span>
 									</Popconfirm>
 							}
-							<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#f56c6c', borderRadius: '5px', textAlign: 'center' }} onClick={() => {
+							<span style={{ background: 'rgb(245, 108, 108)' }} className={style.annniu} onClick={() => {
 								let This = this;
 								confirm({
 									title: `确定删除${record.name}么?`,
@@ -200,42 +207,50 @@ class HomeworkCenter extends React.Component {
 			key: 'name',
 			align: 'center',
 			editable: true,
-			render: (text, record, index) => (
-				<input style={{ border: 0 }} defaultValue={text}
-					onBlur={(e) => {
-						if (text !== e.currentTarget.value) {
-							this.props.dispatch({
-								type: 'homePage/updateChild',
-								payload: {
-									childId: record.userId,
-									name: e.currentTarget.value,
-								}
-							})
-						}
-					}} />
-			)
+			render: (text, record, index) => {
+				return record.userId === this.state.pitchOn ? <input defaultValue={text} onBlur={(e) => {
+					record.nowname = e.currentTarget.value;
+				}} /> : <div className={style.space}>
+						{text}
+					</div>
+			}
 		},
 		{
-			title: <div className='space'>错题量</div>,
+			title: '账号',
+			dataIndex: 'account',
+			key: 'account',
+			align: 'center',
+			editable: true,
+			render: (text, record, index) => (
+				Number(text) ?
+					<div className={style.space}>
+						{text}
+					</div> :
+					<div> </div>
+			)
+
+		},
+		{
+			title: <div className={style.space}>错题量</div>,
 			dataIndex: 'wrongNum',
 			key: 'wrongNum',
 			align: 'center',
 			editable: false,
 			render: (text, record) => (
-				<div className='space'>
+				<div className={style.space}>
 					{text}
 				</div>
 			)
 		},
 		{
-			title: <div className='space'>联系电话</div>,
+			title: <div className={style.space}>联系电话</div>,
 			dataIndex: 'parentPhones',
 			key: 'parentPhones',
 			align: 'center',
 			editable: false,
 			render: (text, record) => (
 				<div
-					className='space'
+					className={style.space}
 					onClick={() => {
 					}}>
 					{text}
@@ -243,14 +258,14 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title: <div className='space'>视频数量</div>,
+			title: <div className={style.space}>视频数量</div>,
 			dataIndex: 'courseVideoNum',
 			key: 'courseVideoNum',
 			align: 'center',
 			editable: false,
 			render: (text, record) => (
 				<div
-					className='space'
+					className={style.space}
 					onClick={() => {
 					}}>
 					{text}
@@ -258,15 +273,39 @@ class HomeworkCenter extends React.Component {
 			)
 		},
 		{
-			title: <div className='space'>操作</div>,
+			title: <div className={style.space}>操作</div>,
 			editable: true,
 			align: 'center',
-			render: (text, record) => {
+			render: (text, record, index) => {
 				const rodeType = store.get('wrongBookNews').rodeType
 				if (rodeType <= 20) {
 					return (
 						<div>
-							<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#f56c6c', borderRadius: '5px', textAlign: 'center' }} onClick={() => {
+							{record.userId === this.state.pitchOn ? <span style={{ background: '#85CE61' }} className={style.annniu} onClick={() => {
+								this.setState({ pitchOn: '' });
+								if (record.nowname) {
+									this.props.dispatch({
+										type: 'homePage/updateChild',
+										payload: {
+											childId: record.userId,
+											name: record.nowname,
+										}
+									}).then(() => {
+										this.props.dispatch({
+											type: 'homePage/teacherList',
+											payload: {
+												type: 3
+											}
+										})
+									})
+								}
+							}}>确认</span> :
+								<span style={{ background: 'rgb(24, 144, 255)' }} className={style.annniu} onClick={() => {
+									this.setState({ pitchOn: record.userId });
+								}}>编辑</span>
+							}
+
+							<span style={{ background: 'rgb(245, 108, 108)' }} className={style.annniu} onClick={() => {
 								let This = this;
 								confirm({
 									title: `确定删除${record.name}么?`,
@@ -290,68 +329,49 @@ class HomeworkCenter extends React.Component {
 					)
 				}
 			}
-		}
-		];
+		}];
 
-		// if (store.get('wrongBookNews').rodeType === 10) {
-		// 	this.tea.push(
-		// 		{
-		// 			title: '编辑',
-		// 			render: (text, record) => (
-		// 				<div
-		// 					style={{ color: '#1890ff', cursor: 'pointer' }}
-		// 					onClick={() => {
-		// 						let This = this;
-		// 						confirm({
-		// 							title: '确定要删除' + record.name + '教师么',
-		// 							onOk() {
-		// 								This.props.dispatch({
-		// 									type: 'homePage/kickClass',
-		// 									payload: {
-		// 										userId: record.key,
-		// 									}
-		// 								});
-		// 							},
-		// 							onCancel() {
-		// 								console.log('Cancel');
-		// 							},
-		// 						});
-		// 					}}>
-		// 					删除
-		// 				</div>
-		// 			)
-		// 		}
-		// 	)
-		//
-		// 	this.stu.push(
-		// 		{
-		// 			title: '编辑',
-		// 			render: (text, record) => (
-		// 				<div
-		// 					style={{ color: '#1890ff', cursor: 'pointer' }}
-		// 					onClick={() => {
-		// 						let This = this;
-		// 						confirm({
-		// 							title: '确定要将' + record.name + '踢出班级么',
-		// 							onOk() {
-		// 								This.props.dispatch({
-		// 									type: 'homePage/kickClass',
-		// 									payload: {
-		// 										userId: record.userId,
-		// 									}
-		// 								});
-		// 							},
-		// 							onCancel() {
-		// 								console.log('Cancel');
-		// 							},
-		// 						});
-		// 					}}>
-		// 					踢出班级
-		// 				</div>
-		// 			)
-		// 		}
-		// 	)
-		// }
+		if (store.get('wrongBookNews').rodeType <= 20) {
+			this.stu.splice(5, 0, {
+				title: <div className={style.space}>优选错题推送</div>,
+				dataIndex: 'isPush',
+				key: 'isPush',
+				align: 'center',
+				editable: false,
+				render: (text, record) => {
+					return this.props.state.infoClass ?
+						<div className={style.space}>
+							<Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={Boolean(text)} disabled={!Boolean(this.props.state.infoClass)}
+								onChange={(checked) => {
+									this.props.dispatch({
+										type: 'homePage/ifpush',
+										payload: {
+											userId: record.userId,
+											classId: this.props.state.infoClass,
+											isPush: Number(checked)
+										}
+									});
+								}} />
+						</div>
+						: <Tooltip title="请选择班级">
+							<div className={style.space}>
+								<Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={Boolean(text)} disabled={!Boolean(this.props.state.infoClass)}
+									onChange={(checked) => {
+										this.props.dispatch({
+											type: 'homePage/ifpush',
+											payload: {
+												userId: record.userId,
+												classId: this.props.state.infoClass,
+												isPush: Number(checked)
+											}
+										});
+									}} />
+							</div>
+						</Tooltip>
+				}
+			})
+		}
+
 	}
 
 	isEditing = record => record.key === this.state.editingKey;
@@ -360,13 +380,6 @@ class HomeworkCenter extends React.Component {
 		this.setState({ editingKey: '' });
 	};
 
-	save(form, key) {
-		form.validateFields((error, row) => {
-			console.log(row)
-			message.warning('修改功能暂未开放');
-			this.setState({ editingKey: '' });
-		});
-	}
 
 	edit(key) {
 		this.setState({ editingKey: key });
@@ -395,10 +408,12 @@ class HomeworkCenter extends React.Component {
 						p['parentPhones'] = det.parentPhones;
 						p['courseVideoNum'] = det.courseVideoNum;
 						p['teaVideoNum'] = det.teaVideoNum;
+						p['account'] = det.account;
+						p['isPush'] = det.isPush;
 						dataSource.push(p);
 					}
 				} else {
-					p["key"] =det.userId;
+					p["key"] = det.userId;
 					p["userId"] = det.userId;
 					p["head"] = det.avatarUrl ? det.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif'
 					p["name"] = det.userName;
@@ -409,6 +424,8 @@ class HomeworkCenter extends React.Component {
 					p['parentPhones'] = det.parentPhones;
 					p['courseVideoNum'] = det.courseVideoNum;
 					p['teaVideoNum'] = det.teaVideoNum;
+					p['account'] = det.account;
+					p['isPush'] = det.isPush;
 					dataSource.push(p);
 				}
 			}
@@ -430,8 +447,7 @@ class HomeworkCenter extends React.Component {
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
 					<div className={style.gradeboder} >
-						<Menu
-							className={style.menu}
+						<Menu className={style.menu}
 							onClick={(e) => {
 								this.setState({ current: e.key })
 								this.props.dispatch({
@@ -505,14 +521,10 @@ class HomeworkCenter extends React.Component {
 										}
 									}}
 								/>
-								{
-									rodeType <= 20 && this.state.current === 'teacher' ?
-										<span className={style.addGrade} onClick={() => {
-											this.setState({ visible: true })
-											// Modal.warning({
-											// 	title: '添加教师功能暂未开放',
-											// });
-										}}>添加</span> : ''
+								{rodeType <= 20 && this.state.current === 'teacher' ?
+									<span className={style.addGrade} onClick={() => {
+										this.setState({ visible: true })
+									}}>添加</span> : ''
 								}
 							</div>
 							<div className={style.table}>
@@ -662,8 +674,8 @@ class HomeworkCenter extends React.Component {
 			type: 'homePage/showMen',
 			payload: ''
 		});
-
 	}
+
 }
 
 export default connect((state) => ({

@@ -20,7 +20,7 @@ function queryHomeworkList(payload) {
     });
 }
 function queryHomeworkScoreDetail(payload) {
-    return request(dataCenter('/report/homework/score/detail'), {
+    return request(dataCenter('/report/homework/score/detail/ps'), {
         data: payload,
         method: 'get'
     });
@@ -83,7 +83,7 @@ function uploadVideo(payload) {
     });
 }
 function getCorrection(payload) {
-    return request(dataCenter('/report/questions/correction'), {
+    return request(dataCenter('/report/questions/correction/ps'), {
         data: payload,
         method: 'get'
     });

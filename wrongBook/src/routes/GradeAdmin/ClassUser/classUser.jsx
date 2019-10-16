@@ -10,6 +10,8 @@ import moment from 'moment';
 import { dataCenter } from '../../../config/dataCenter'
 import store from 'store';
 import ClassAdmin from '../ClassAdmin/classAdmin'
+import observer from '../../../utils/observer'
+
 //作业中心界面内容
 const Option = Select.Option;
 const {
@@ -126,16 +128,6 @@ class StuReport extends React.Component {
     let hash = location.substr(location.indexOf("sId=") + 4);
     let id = location.substr(location.indexOf("&id=") + 4);
 
-    //  if(!id && this.props.state.classId){
-    //       id= String(this.props.state.classId);
-    //     }
-
-    // if(!id && store.get('wrongBookNews').rodeType > 20 && this.props.state.classList1.data){
-    //   id= String(this.props.state.classList1.data[0].classId);
-    // }
-    // let head = hash.split('&id=');
-    // let ha = store.get('wrong_hash');
-    // let link = `/grade#${ha.substr(ha.indexOf("#") + 1)}`
     const rodeType = store.get('wrongBookNews').rodeType
     if (rodeType <= 20) {
       classList = this.props.state.classList;
@@ -154,6 +146,8 @@ class StuReport extends React.Component {
               type: 'classHome/classId',
               payload: item.key
             })
+            //清空班级邀请码
+            observer.publish('fuyuan')
           }}
             mode="inline"
             defaultSelectedKeys={[id]}
@@ -328,9 +322,6 @@ class StuReport extends React.Component {
   }
 
   render() {
-    let mounthList = this.props.state.mounthList;
-    let studentList = this.props.state.studentList;
-    let detail = this.props.state.qrdetailList1;
     return (
       <Content style={{
         background: '#fff',
@@ -451,10 +442,8 @@ class StuReport extends React.Component {
 
     let userNews = store.get('wrongBookNews');
     if (userNews.rodeType < 20) {
-
       let ids = hash.substr(hash.indexOf("sId=") + 4);
       let id = ids.split('&id=');
-
       dispatch({
         type: 'homePage/getEnableYears',
         payload: {
@@ -515,6 +504,9 @@ class StuReport extends React.Component {
       });
       dispatch({
         type: 'classHome/getClassList',
+        payload: {
+          year:this.props.state.years
+        }
       });
     }
 

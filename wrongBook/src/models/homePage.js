@@ -17,6 +17,7 @@ import {
 	getEnableYears,
 	updateChild,
 	wxCode,
+	pushMarker,
 } from '../services/homePageService';
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
@@ -182,6 +183,10 @@ export default {
 	},
 
 	effects: {
+		*ifpush({ payload }, { put, select }){
+
+			yield pushMarker(payload);
+		},
 		*wxCode({ payload }, { put, select }){
 			let res = yield wxCode(payload);
 			return res.data
@@ -474,7 +479,7 @@ export default {
 				} else if (res.data.msg == '服务器异常') {
 
 				} else {
-					message.error(res.data.msg)
+					message.error(res.data.message)
 				}
 			}
 

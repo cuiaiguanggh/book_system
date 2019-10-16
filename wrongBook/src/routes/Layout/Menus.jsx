@@ -179,7 +179,7 @@ class HomePageLeft extends Component {
           if (rodeType !== 10) {
             menus.push(
               <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
-                <Icon type="pie-chart"/><span>使用数据</span>
+                <Icon type="pie-chart" /><span>使用数据</span>
               </Menu.Item>
             )
           }
@@ -206,26 +206,25 @@ class HomePageLeft extends Component {
             type: 'temp/years',
             payload: value
           });
-          //学年改变，重新渲染调用接口
-          let classId = this.props.state.classId;
-          let subId = this.props.state.subId;
-          let year = value;
 
+            //学年改变，重新渲染调用接口
+            let classId = this.props.state.classId;
+            let subId = this.props.state.subId;
+            let year = value;
 
-          if (store.get('wrongBookNews').rodeType === 10) {
-            //超管页面下的班级管理的左侧班级
-            this.props.dispatch({
-              type: 'classHome/pageClass',
-              payload: {
-                schoolId:store.get('wrongBookNews').schoolId,
-                pageSize: 9999,
-                pageNum: 1,
-                year,
-              }
-            });
+            if (store.get('wrongBookNews').rodeType === 10) {
+              //超管页面下的班级管理的左侧班级
+              this.props.dispatch({
+                type: 'classHome/pageClass',
+                payload: {
+                  schoolId: store.get('wrongBookNews').schoolId,
+                  pageSize: 9999,
+                  pageNum: 1,
+                  year,
+                }
+              });
 
-             if (window.location.href.split('/#/')[1] == 'classChart') {
-              
+              if (window.location.href.split('/#/')[1] == 'classChart') {
                 console.log('classChart')
                 //重置月份为0
                 this.props.dispatch({
@@ -239,9 +238,7 @@ class HomePageLeft extends Component {
                     classReport: true
                   }
                 });
-           
-            } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
-           
+              } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
                 console.log('schoolChart')
                 //重置月份为0
                 this.props.dispatch({
@@ -255,114 +252,115 @@ class HomePageLeft extends Component {
                     classReport: false
                   }
                 });
-     
-            }
-
-            return;
-          }
-
-
-          if (store.get('wrongBookNews').rodeType !== 10) {
-          this.props.dispatch({
-            type: 'down/showPdfModal',
-            payload: false
-          });
-          this.props.dispatch({
-            type: 'report/propsPageNum',
-            payload: 1
-          });
-          this.props.dispatch({
-            type: 'temp/updateMonthList',
-          });
-          //重新获取学科
-          this.props.dispatch({
-            type: 'temp/getUserSubjectList',
-            payload: classId,
-          });
-        }
-          if (window.location.href.split('/#/')[1] == 'stuReport') {
-      
-            let userId = this.props.state.userId;
-            if (classId !== '' && subId != '' && year !== '' && userId != '') {
-              console.log('stuReport')
-              //重置月份为0
-              this.props.dispatch({
-                type: 'report/changeMouth',
-                payload: 0
-              })
-              //重新调用接口
-              let data = {
-                classId: classId,
-                year: year,
-                subjectId: this.props.state.subId,
               }
-              this.props.dispatch({
-                type: 'report/queryQrStudentCount',
-                payload: data
-              });
+              return;
             }
-          } else if (window.location.href.split('/#/')[1] == 'classReport') {
-      
-            if (classId !== '' && subId != '' && year !== '') {
-              console.log('classReport')
-              //重置月份为0
-              this.props.dispatch({
-                type: 'report/changeMouth',
-                payload: 0
-              })
-              //重新调用接口
-              let data = {
-                classId: classId,
-                year: year,
-                subjectId: this.props.state.subId,
-                info: 0,
-                pageNum: 1,
-                pageSize: 50,
-              }
-              console.log(33333)
-              this.props.dispatch({
-                type: 'report/queryQrDetail',
-                payload: data
-              });
+          //切换学年重头重新调用
+          this.props.dispatch({
+            type: 'temp/getClassList',
+            payload: {
+              year
             }
-          } else if (window.location.href.split('/#/')[1] == 'classChart') {
-            if (classId !== '' && subId != '' && year !== '') {
-              console.log('classChart')
-              //重置月份为0
+          })
+            if (store.get('wrongBookNews').rodeType !== 10) {
               this.props.dispatch({
-                type: 'report/changeMouth',
-                payload: 0
-              })
-              //重新调用接口
-              this.props.dispatch({
-                type: 'reportChart/getReportTimeList',
-                payload: {
-                  classReport: true
-                }
+                type: 'down/showPdfModal',
+                payload: false
               });
-            }
-          } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
-            if (classId !== '' && subId != '' && year !== '') {
-              console.log('schoolChart')
-              //重置月份为0
               this.props.dispatch({
-                type: 'report/changeMouth',
-                payload: 0
-              })
-              //重新调用接口
-              this.props.dispatch({
-                type: 'reportChart/getReportTimeList',
-                payload: {
-                  classReport: false
-                }
+                type: 'report/propsPageNum',
+                payload: 1
               });
+              // if (!classId) return false;
+              // //更新月份
+              // this.props.dispatch({
+              //   type: 'temp/updateMonthList',
+              // });
+              // //重新获取学科
+              // this.props.dispatch({
+              //   type: 'temp/getUserSubjectList',
+              //   payload: classId,
+              // });
             }
-          }
 
+            if (window.location.href.split('/#/')[1] == 'stuReport') {
+              // let userId = this.props.state.userId;
+              // if (classId !== '' && subId != '' && year !== '' && userId != '') {
+                console.log('stuReport')
+                //重置月份为0
+                // this.props.dispatch({
+                //   type: 'report/changeMouth',
+                //   payload: 0
+                // })
+                // //重新调用接口
+                // this.props.dispatch({
+                //   type: 'report/queryQrStudentCount',
+                //   payload: {
+                //     classId: classId,
+                //     year: year,
+                //     subjectId: this.props.state.subId,
+                //   }
+                // });
+              // }
+            } else if (window.location.href.split('/#/')[1] == 'classReport') {
+              // if (classId !== '' && subId != '' && year !== '') {
+                console.log('classReport')
+                // //重置月份为0
+                // this.props.dispatch({
+                //   type: 'report/changeMouth',
+                //   payload: 0
+                // })
+                // //重新调用接口
+                // this.props.dispatch({
+                //   type: 'report/queryQrDetail',
+                //   payload: {
+                //     classId: classId,
+                //     year: year,
+                //     subjectId: this.props.state.subId,
+                //     info: 0,
+                //     pageNum: 1,
+                //     pageSize: 50,
+                //   }
+                // });
+              // }
+            } else if (window.location.href.split('/#/')[1] == 'classChart') {
+              if (classId !== '' && subId != '' && year !== '') {
+                console.log('classChart')
+                //重置月份为0
+                this.props.dispatch({
+                  type: 'report/changeMouth',
+                  payload: 0
+                })
+                //重新调用接口
+                this.props.dispatch({
+                  type: 'reportChart/getReportTimeList',
+                  payload: {
+                    classReport: true
+                  }
+                });
+              }
+            } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
+              if (classId !== '' && subId != '' && year !== '') {
+                console.log('schoolChart')
+                //重置月份为0
+                this.props.dispatch({
+                  type: 'report/changeMouth',
+                  payload: 0
+                })
+                //重新调用接口
+                this.props.dispatch({
+                  type: 'reportChart/getReportTimeList',
+                  payload: {
+                    classReport: false
+                  }
+                });
+              }
+            }
+          
         }}>
-        { yearList.data.map((item, i) => (
-            <Option value={item} key={i}>{`${item}-${item + 1}学年`}</Option>
-          ))
+        {yearList.data.map((item, i) => (
+          <Option value={item} key={i}>{`${item}-${item + 1}学年`}</Option>
+        ))
         }
       </Select>)
   }
@@ -553,25 +551,6 @@ class HomePageLeft extends Component {
               {
                 userNews == undefined ? '' :
                   <div>
-                    {/*{*/}
-                    {/*  rodeType === 10 ? '' :*/}
-                    {/*    <Popover*/}
-                    {/*      content={code}*/}
-                    {/*      trigger="click"*/}
-                    {/*      type="primary"*/}
-                    {/*      placement="bottom"*/}
-                    {/*    >*/}
-                    {/*      <div*/}
-                    {/*        className={style.classcode}*/}
-                    {/*        type="primary">*/}
-                    {/*        <img src={require('../images/ma-sj-n.png')}></img>*/}
-                    {/*        <span>*/}
-                    {/*				班级邀请码*/}
-                    {/*				</span>*/}
-                    {/*      </div>*/}
-                    {/*    </Popover>*/}
-
-                    {/*}*/}
                     {
                       this.props.state.yearList.data ?
                         this.getyear() : ''
@@ -679,6 +658,9 @@ class HomePageLeft extends Component {
     //调用这个接口时，里面的方法嵌套，获取班级，学科，时间，知识点
     dispatch({
       type: 'temp/getClassList',
+      payload: {
+        year: this.props.state.years
+      }
     });
 
     dispatch({

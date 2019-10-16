@@ -7,6 +7,7 @@ import {
 	webchatLoginForWeb,
 	info,
 	schools,
+	loginForGZ
 } from '../services/loginService';
 import { routerRedux } from 'dva/router';
 import store from 'store';
@@ -194,7 +195,7 @@ export default {
 			}
 		},
 		*codelog({ payload }, { put, select }) {
-			// code登陆
+			// code微信扫码登陆
 			let res = yield webchatLoginForWeb(payload);
 			// if(!res.hasOwnProperty("err")){
 			if (res.data.result === 0) {
@@ -202,16 +203,78 @@ export default {
 					type: 'codeType',
 					payload: false
 				})
-				let data = res.data
+				let data = res.data;
 				data.data.userId = data.data.id;
+				store.set('wrongBookToken', data.data.token)
+
+				let rodeType;
+				//获取权限
+				let quanx = yield info({});
+				if(!quanx.data.data.hasOwnProperty('roleId')){
+					message.error('没有权限');
+					//跳转到关联页面
+					store.set('wrongBookNews', data.data)
+					yield put(routerRedux.push('/getPhone'))
+					return false;
+				}
+				switch (quanx.data.data.roleId[0]) {
+					// 2超管 3校管 4班主任 5任课老师 6校长
+					case 2:
+						//总管
+						rodeType = 10;
+						data.data.rodeType = 10;
+						break;
+					case 3:
+						//校管
+						rodeType = 20;
+						data.data.rodeType = 20;
+						break;
+					case 4:
+						rodeType = 30;
+						data.data.rodeType = 30;
+						break;
+					case 5:
+						rodeType = 40;
+						data.data.rodeType = 40;
+						break;
+					case 6:
+						rodeType = 50;
+						data.data.rodeType = 50;
+						break;
+				}
+				store.set('leftMenus', quanx.data.data.permissionList);
+
+				if (rodeType !== 10) {
+					//学校用户信息
+					let usermessage = yield schools({
+						roleId: quanx.data.data.roleId[0]
+					});
+					if(usermessage.data.data.length === 0){
+						message.error('用户暂未加入学校');
+						return false;
+					}
+
+					try {
+						data.data.schoolId = usermessage.data.data[0].schoolId;
+					} catch (err) {
+						console.log('学校id赋值错误')
+					}
+					try {
+						//主要给个人信息页面用的数据
+						usermessage.data.data[0].userClass[0] = { ...usermessage.data.data[0].userClass[0], rodeType, schoolName: usermessage.data.data[0].schoolName };
+						store.set('userData', usermessage.data.data[0].userClass[0])
+					} catch (err) {
+						console.log('userClass字段没有'+err)
+					}
+
+				}
+
 				store.set('wrongBookNews', data.data)
 
-				store.set('accessToken', data.data.accessToken)
-				store.set('wrongBookToken', data.data.token)
-				if (data.data.phone == '' || data.data.phone == null) {
-					yield put(routerRedux.push('/getPhone'))
-				} else {
-					let rodeType = data.data.rodeType;
+				// if (data.data.phone == '' || data.data.phone == null) {
+				// 	yield put(routerRedux.push('/getPhone'))
+				// } else {
+					// let rodeType = data.data.rodeType;
 					yield put({
 						type: 'temp/classList1',
 						payload: []
@@ -236,26 +299,82 @@ export default {
 							pathname: '/classReport',
 						}))
 					}
-				}
+				// }
 			} else {
 				message.error(res.data.msg)
 			}
 		},
 		*phoneLogin({ payload }, { put, select }) {
-			// login登陆
-			let res = yield loginTiku(payload);
+			// 点击关联login登陆
+			payload.openId=store.get('wrongBookNews').openIdForGZ;
+			payload.unionId=store.get('wrongBookNews').unionId;
+			let res = yield loginForGZ(payload);
 			// if(!res.hasOwnProperty("err")){
 			if (res.data.result === 0) {
-				let data = res.data
-				if (payload.rem) {
-					let tim = new Date() * 1
-					store.set('logTime', tim)
-				} else {
-					store.set('logTime', '')
+				let data = res.data;
+				data.data.userId = data.data.id;
+				store.set('wrongBookToken', data.data.token);
+
+				let rodeType;
+				//获取权限
+				let quanx = yield info({});
+				if(!quanx.data.data.hasOwnProperty('roleId')){
+					message.error('没有权限');
+					return false
 				}
-				store.set('wrongBookNews', data.data)
-				store.set('wrongBookToken', data.data.token)
-				let rodeType = data.data.rodeType;
+				switch (quanx.data.data.roleId[0]) {
+					// 2超管 3校管 4班主任 5任课老师 6校长
+					case 2:
+						//总管
+						rodeType = 10;
+						data.data.rodeType = 10;
+						break;
+					case 3:
+						//校管
+						rodeType = 20;
+						data.data.rodeType = 20;
+						break;
+					case 4:
+						rodeType = 30;
+						data.data.rodeType = 30;
+						break;
+					case 5:
+						rodeType = 40;
+						data.data.rodeType = 40;
+						break;
+					case 6:
+						rodeType = 50;
+						data.data.rodeType = 50;
+						break;
+				}
+				store.set('leftMenus', quanx.data.data.permissionList);
+
+				if (rodeType !== 10) {
+					//学校用户信息
+					let usermessage = yield schools({
+						roleId: quanx.data.data.roleId[0]
+					});
+					if(usermessage.data.data.length === 0){
+						message.error('用户暂未加入学校');
+						return false;
+					}
+
+					try {
+						data.data.schoolId = usermessage.data.data[0].schoolId;
+					} catch (err) {
+						console.log('学校id赋值错误')
+					}
+					try {
+						//主要给个人信息页面用的数据
+						usermessage.data.data[0].userClass[0] = { ...usermessage.data.data[0].userClass[0], rodeType, schoolName: usermessage.data.data[0].schoolName };
+						store.set('userData', usermessage.data.data[0].userClass[0])
+					} catch (err) {
+						console.log('userClass字段没有'+err)
+					}
+
+
+				}
+				store.set('wrongBookNews', data.data);
 
 				yield put({
 					type: 'temp/classList1',
@@ -273,14 +392,15 @@ export default {
 					}))
 				} else if (rodeType === 20) {
 					yield put(routerRedux.push({
-						pathname: '/grade',
-						hash: 'page=1'
+						pathname: '/classReport',
+						// hash:'page=1'
 					}))
-				} else if (rodeType === 30 || rodeType === 40) {
+				} else if (rodeType === 30 || rodeType === 40|| rodeType === 50) {
 					yield put(routerRedux.push({
 						pathname: '/classReport',
 					}))
 				}
+
 			} else {
 				if (res.data.result===2) {
 					yield put(routerRedux.push('/login'))

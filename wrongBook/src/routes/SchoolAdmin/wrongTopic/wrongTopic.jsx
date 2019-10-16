@@ -130,6 +130,17 @@ class WrongTopic extends React.Component {
                 startDate: dateString[0],
                 endDate: dateString[1],
               })
+              if(!this.state.classId && !this.state.subjectId) return false;
+              
+              this.props.dispatch({
+                type: 'homePage/membersForSA',
+                payload: {
+                  classId: this.state.classId,
+                  subjectId: this.state.subjectId,
+                  startTime: dateString[0],
+                  endTime: dateString[1],
+                }
+              })
             }}
           />
           <Button type="primary" style={{ marginLeft: 20 }}

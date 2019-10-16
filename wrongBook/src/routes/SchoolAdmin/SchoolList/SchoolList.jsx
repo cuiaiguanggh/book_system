@@ -274,9 +274,10 @@ class HomeworkCenter extends React.Component {
   
                     this.setState({
                       morexg: cun,
-                      dateString: [morexg.effStart, morexg.effEnd]
+    
                     })
-                  }else if(morexg &&  morexg.effStart){
+                  }
+                   if(morexg &&  morexg.effStart){
                     this.setState({
                       dateString: [morexg.effStart, morexg.effEnd]
                     })
@@ -486,8 +487,8 @@ class HomeworkCenter extends React.Component {
                     }
                     if (this.state.provinces !== '') {
                       data.province = this.state.provinces
-                      if (this.state.citys !== '') {
-                        data.city = this.state.citys
+                      if (this.state.city !== '') {
+                        data.city = this.state.city
                         if (this.state.areas !== '') {
                           data.area = this.state.areas
                         }
@@ -526,8 +527,8 @@ class HomeworkCenter extends React.Component {
                   }
                   if (this.state.provinces !== '') {
                     data.province = this.state.provinces
-                    if (this.state.citys !== '') {
-                      data.city = this.state.citys
+                    if (this.state.city !== '') {
+                      data.city = this.state.city
                       if (this.state.areas !== '') {
                         data.area = this.state.areas
                       }
@@ -580,6 +581,16 @@ class HomeworkCenter extends React.Component {
                     if (this.state.SearchValue && this.state.SearchValue !== '') {
                       data.schoolName = this.state.SearchValue;
                     }
+                    if (this.state.provinces !== '') {
+                      data.province = this.state.provinces
+                      if (this.state.city !== '') {
+                        data.city = this.state.city
+                        if (this.state.areas !== '') {
+                          data.area = this.state.areas
+                        }
+                      }
+                    }
+                    
                     dispatch({
                       type: 'homePage/pageRelevantSchool',
                       payload: data
@@ -596,6 +607,7 @@ class HomeworkCenter extends React.Component {
             onCancel={this.handleCancel}
             okText='确定'
             cancelText='取消'
+            destroyOnClose={true}
             bodyStyle={{ height: '540px' }}
             width={960}>
 
@@ -733,6 +745,7 @@ class HomeworkCenter extends React.Component {
                         dateString
                       })
                     }}
+                    allowClear={false}
                     format={'YYYY/MM/DD'} />
                 </div>
                 {this.state.morexg.map((duix, index) => {
@@ -997,6 +1010,7 @@ class HomeworkCenter extends React.Component {
                       dateString
                     })
                   }}
+                  allowClear={false}
                   format={'YYYY/MM/DD'} />
               </div>
               <div style={{ marginBottom: '30px' }}>

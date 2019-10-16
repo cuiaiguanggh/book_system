@@ -103,6 +103,7 @@ class HomeworkCenter extends React.Component {
 				timeStamp: this.props.state.reportTimeList[0].timeStamp,
 			}
 		}
+		if (data.classId || data.subjectId) return false;
 
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',

@@ -55,7 +55,8 @@ class HomePage extends Component {
                   <div className={style.loginPass}>
                     <div className={style.inputOut}>
                       <p style={{color:'#00b1ff',margin:0}}>教师密码</p>
-                      <Input value={this.state.code} style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} maxLength={6} onChange={(e)=>{
+                      <Input value={this.state.code} type={'password'}
+                      style={{border:'none',padding:'0 10px',width:'100%',height:'42px'}} maxLength={6} onChange={(e)=>{
                         if(/^[0-9]+$/.test(e.target.value)  || e.target.value == ''){
                           this.setState({code:e.target.value})
                         }
@@ -70,7 +71,7 @@ class HomePage extends Component {
                   message.warning('手机号或密码不能为空')
                 }else{
                   let data ={
-                    username:this.props.state.phone,
+                    account:this.props.state.phone,
                     password:this.state.code,
                   }
                   this.props.dispatch({

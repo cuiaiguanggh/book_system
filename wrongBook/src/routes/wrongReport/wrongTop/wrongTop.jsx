@@ -108,51 +108,7 @@ class ClassReport extends React.Component {
 							type: 'report/propsPageNum',
 							payload: 1
 						});
-						//获取知识点筛选
-						let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
-						if (hashStrings === '/classReport') {
-							this.props.dispatch({
-								type: 'temp/getKnowledgeList',
-								payload: {
-									classId: this.props.state.classId,
-									year: this.props.state.years,
-									subjectId: value,
-									type: 0,
-								}
-							});
-						} else if (hashStrings === '/stuReport') {
-							this.props.dispatch({
-								type: 'temp/getKnowledgeList',
-								payload: {
-									classId: this.props.state.classId,
-									year: this.props.state.years,
-									subjectId: value,
-									userId: this.props.state.userId,
-									type: 1
-								}
-							});
-						}
 
-						console.log(2222222)
-						this.props.dispatch({
-							type: 'report/queryQrDetail',
-							payload: {
-								classId: this.props.state.classId,
-								year: this.props.state.years,
-								subjectId: value,
-								info: 0,
-								pageSize: 50,
-								pageNum: 1
-							}
-						});
-						this.props.dispatch({
-							type: 'temp/subId',
-							payload: value
-						});
-						// this.props.dispatch({
-						// 	type: 'report/userId',
-						// 	payload:''
-						// })
 						this.props.dispatch({
 							type: 'report/studentList',
 							payload: []
@@ -165,14 +121,7 @@ class ClassReport extends React.Component {
 							type: 'report/qrStudentDetailList',
 							payload: []
 						})
-						this.props.dispatch({
-							type: 'report/queryQrStudentCount',
-							payload: {
-								classId: this.props.state.classId,
-								year: this.props.state.years,
-								subjectId: value
-							}
-						});
+
 						this.props.dispatch({
 							type: 'temp/getQrMonthList',
 							payload: {
@@ -181,13 +130,67 @@ class ClassReport extends React.Component {
 								subjectId: value
 							}
 						});
+						
+						let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
+						if (hashStrings === '/classReport') {
+							//处在班级错题页面
+							this.props.dispatch({
+								type: 'temp/getKnowledgeList',
+								payload: {
+									classId: this.props.state.classId,
+									year: this.props.state.years,
+									subjectId: value,
+									type: 0,
+								}
+							});
+							this.props.dispatch({
+								type: 'report/queryQrDetail',
+								payload: {
+									classId: this.props.state.classId,
+									year: this.props.state.years,
+									subjectId: value,
+									info: 0,
+									pageSize: 50,
+									pageNum: 1
+								}
+							});
+						} else if (hashStrings === '/stuReport') {
+							//处在学生错题页面
+							this.props.dispatch({
+								type: 'temp/getKnowledgeList',
+								payload: {
+									classId: this.props.state.classId,
+									year: this.props.state.years,
+									subjectId: value,
+									userId: this.props.state.userId,
+									type: 1
+								}
+							});
+							this.props.dispatch({
+								type: 'report/queryQrStudentCount',
+								payload: {
+									classId: this.props.state.classId,
+									year: this.props.state.years,
+									subjectId: value
+								}
+							});
+						} else if (hashStrings === '/workReport') {
+							//处在作业报告页面
+							this.props.dispatch({
+								type: 'report/queryHomeworkList',
+								payload: {
+									classId: this.props.state.classId,
+									subjectId: value
+								}
+							});
+						}
+
+						console.log(2222222)
 						this.props.dispatch({
-							type: 'report/queryHomeworkList',
-							payload: {
-								classId: this.props.state.classId,
-								subjectId: value
-							}
+							type: 'temp/subId',
+							payload: value
 						});
+
 					}}
 					filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
 				>
@@ -231,7 +234,6 @@ class ClassReport extends React.Component {
 		// dispatch({
 		// 	type: 'temp/getClassList',
 		// });
-
 	}
 }
 

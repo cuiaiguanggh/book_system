@@ -106,9 +106,14 @@
     :global(.ant-pagination){
         display:block!important;
     }
+    :global(.ant-table-bordered)  :global(.ant-table-thead) > tr > th, :global(.ant-table-bordered)  :global(.ant-table-tbody) > tr > td{
+        padding: 13px 16px;
+    }
+
+
 }
 
-:global(.space) {
+.space{
     text-align: center;
 }
 /* 定义滚动条 */
@@ -140,4 +145,16 @@
 {
     border-radius: 8px;
     background-color: rgba(0,0,0,0.2);
+}
+
+
+.annniu{
+    color: rgb(255, 255, 255);
+    display: inline-block;
+    width: 60px;
+    cursor: pointer;
+    margin: 0px 10px;
+    padding: 5px 0px;
+    border-radius: 5px;
+    text-align: center;
 }

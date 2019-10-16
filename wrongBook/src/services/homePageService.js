@@ -98,8 +98,13 @@ function wxCode(payload){
         data:payload,
     });
 }
-
+function pushMarker(payload){
+    return request(dataCenter('/school/class/manage/user/pushMarker'),{
+        data:payload,
+    });
+}
 export {
+    pushMarker,
     wxCode,
     updateChild,
     makeUserDateWB,

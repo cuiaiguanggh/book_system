@@ -14,6 +14,9 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import TracksVideo from '../TracksVideo/TracksVideo';
 import QRCode from 'qrcode.react';
 import { dataCenter, dataCen, serverType } from '../../../config/dataCenter'
+
+import PhotoLayer from '../../components/photoLayer/photoLayer';
+
 //作业中心界面内容 
 const Option = Select.Option;
 const {
@@ -98,7 +101,8 @@ class WorkReport extends React.Component {
       //预批改弹窗滚动条是否出现
       gundt: false,
       //预批改是否收藏
-      collect: 1
+      collect: 1,
+      masters:[]
     };
     observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
@@ -346,7 +350,7 @@ class WorkReport extends React.Component {
       return false;
     }
     let list = this.props.state.scoreDetail.data.questionScoreList;
-    let uqId, timunumber, collect;
+    let uqId, timunumber, collect, uqIds = [];
     //没有题目可以给批改时，不给点击
     if (this.props.state.scoreDetail.data.collectNum === this.props.state.scoreDetail.data.allQuestionNum) {
       return false;
@@ -358,7 +362,13 @@ class WorkReport extends React.Component {
           type: 'report/beforehand',
           payload: list[i],
         });
-        uqId = list[i].uqId.split('uqid-')[1];
+        // uqId = list[i].uqId.split('uqid-')[1];
+
+        let cun = list[i].userAnswerList
+        for (let i = 0; cun.length > i; i++) {
+          uqIds.push(cun[i].uqId)
+        }
+
         timunumber = i + 1;
         collect = list[i].isMarker;
         break;
@@ -379,12 +389,14 @@ class WorkReport extends React.Component {
       timunumber = `0${timunumber}`
     }
     //调用对应的学生错题
-    if (uqId) {
+    if (uqIds) {
+
       this.props.dispatch({
         type: 'report/getCorrection',
         payload: {
-          uqId,
-          classId: this.props.state.classId,
+          uqIds
+          // uqId,
+          // classId: this.props.state.classId,
         }
       });
     }
@@ -408,7 +420,7 @@ class WorkReport extends React.Component {
       type: 'report/beforehand',
       payload: list[number],
     });
-    uqId = list[number].uqId.split('uqid-')[1];
+    // uqId = list[number].uqId.split('uqid-')[1];
     timunumber = number + 1;
     collect = list[number].isMarker;
 
@@ -423,12 +435,18 @@ class WorkReport extends React.Component {
     if (timunumber < 10) {
       timunumber = `0${timunumber}`
     }
+    let cun = list[number].userAnswerList
+    let uqIds = [];
+    for (let i = 0; cun.length > i; i++) {
+      uqIds.push(cun[i].uqId)
+    }
     //调用对应的学生错题
     this.props.dispatch({
       type: 'report/getCorrection',
       payload: {
-        uqId,
-        classId: this.props.state.classId,
+        uqIds: uqIds
+        // uqId,
+        // classId: this.props.state.classId,
       }
     })
     this.setState({
@@ -452,6 +470,7 @@ class WorkReport extends React.Component {
       let downparameters = {
         uqIdsStr: this.props.state.workDownPic.join(','),
         classId: this.props.state.classId,
+        operationClass: this.props.state.classId,
       };
       if (this.state.similarTopic === 1) {
         downparameters.practise = 0
@@ -857,14 +876,21 @@ class WorkReport extends React.Component {
       } else {
         //否则自动显示下一个未批改的题目
         let list = this.props.state.scoreDetail.data.questionScoreList;
-        let uqId, timunumber = Number(this.state.timunumber), leftdaipi = this.state.leftdaipi;
+        let uqId, timunumber = Number(this.state.timunumber), leftdaipi = this.state.leftdaipi, uqIds = [];
         for (let i = timunumber; i < list.length; i++) {
           if (list.length >= i && list[i].isAllCollect === 0) {
             this.props.dispatch({
               type: 'report/beforehand',
               payload: list[i],
             });
-            uqId = list[i].uqId.split('uqid-')[1];
+            // uqId = list[i].uqId.split('uqid-')[1];
+
+            let cun = list[i].userAnswerList
+
+            for (let i = 0; cun.length > i; i++) {
+              uqIds.push(cun[i].uqId)
+            }
+
             timunumber = i + 1;
             break;
           }
@@ -880,11 +906,13 @@ class WorkReport extends React.Component {
           type: 'report/beforstuTopic',
           payload: [],
         });
+
         this.props.dispatch({
           type: 'report/getCorrection',
           payload: {
-            uqId,
-            classId: this.props.state.classId,
+            uqIds
+            // uqId,
+            // classId: this.props.state.classId,
           }
         });
         this.setState({
@@ -929,13 +957,13 @@ class WorkReport extends React.Component {
       topicxy: true,
       collect: 1
     }, () => {
-      //关闭弹窗时，重新调用接口
-      this.props.dispatch({
-        type: 'report/queryHomeworkScoreDetail',
-        payload: {
-          homeworkId: this.props.state.homeworkId
-        }
-      });
+      // //关闭弹窗时，重新调用接口
+      // this.props.dispatch({
+      //   type: 'report/queryHomeworkScoreDetail',
+      //   payload: {
+      //     homeworkId: this.props.state.homeworkId
+      //   }
+      // });
       //关闭弹窗时，清空有关弹窗数据
       this.props.dispatch({
         type: 'report/beforehand',
@@ -975,23 +1003,29 @@ class WorkReport extends React.Component {
           return (
             <div className='space' style={{ cursor: 'pointer', textAlign: 'center' }}
               onClick={() => {
-  
+
                 this.props.dispatch({
-                  type:'report/getyuantu',
-                  payload:{
-                    homeworkId:this.props.state.homeworkId,
-                    userId:record.userId
+                  type: 'report/getyuantu',
+                  payload: {
+                    homeworkId: this.props.state.homeworkId,
+                    userId: record.userId
                   }
-                }).then((res)=>{
-                  Modal.info({
-                    title: '学生拍摄原图',
-                    className:'yuantu',
-                    centered:true,
-                    maskClosable:true,
-                    content: (
-                      <img src={res[0].imageUrl} style={{width:`${window.innerHeight * 0.6}px`}} />
-                    ),
-                  });
+                }).then((res) => {
+                  // let content = res[0].imageUrl.indexOf('?imageMogr2') > -1 ?
+                  //   <img src={`${res[0].imageUrl}/thumbnail/1000x`} style={{ width: `${window.innerHeight * 0.6}px` }} />
+                  //   : <img src={`${res[0].imageUrl}?imageMogr2/thumbnail/1000x`} style={{ width: `${window.innerHeight * 0.6}px` }} />
+
+         
+                  this.setState({
+                    masters:res
+                  })
+                //   Modal.info({
+                //     title: '学生拍摄原图',
+                //     className: 'yuantu',
+                //     centered: true,
+                //     maskClosable: true,
+                //     content,
+                //   });
                 })
 
               }}>
@@ -1264,11 +1298,16 @@ class WorkReport extends React.Component {
                       type: collect
                     }
                   }).then(function (res) {
-
                     if (collect === 0) {
                       message.success('题目收藏成功！');
                     }
-
+                  }).then(() => {
+                    this.props.dispatch({
+                      type: 'report/queryHomeworkScoreDetail',
+                      payload: {
+                        homeworkId: this.props.state.homeworkId
+                      }
+                    })
                   })
 
                 }}>
@@ -1353,9 +1392,7 @@ class WorkReport extends React.Component {
                           let one = beforstuTopic[(2 * index)],
                             two = beforstuTopic[(2 * index + 1)],
                             hanggao;
-                          console.log(index)
-                          console.log(one)
-                          console.log(two)
+
                           try {
                             //取同一行中高度值最高的进行计算
                             if (two && one.height / one.width < two.height / two.width) {
@@ -1463,7 +1500,11 @@ class WorkReport extends React.Component {
           }}>
           {this.props.state.visible ? this.addVie() : ''}
         </Modal>
-
+        <PhotoLayer masters={this.state.masters}  clearMasters={()=>{
+          this.setState({
+            masters:[]
+          })
+        }}/>
       </Content>
     );
   }

@@ -424,7 +424,6 @@ export default {
 				// 		classId:res.data.data[0].classId
 				// 	}
 				// })
-
 				yield put({
 					type: 'classList1',
 					payload: res.data

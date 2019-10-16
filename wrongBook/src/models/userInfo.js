@@ -91,7 +91,9 @@ export default {
 			let res = yield getUserInfo();			
 			if(res.data && res.data.result === 0){
 				let abc=store.get('userData');
-				res.data.data={...res.data.data,...abc}
+
+				res.data.data={name:res.data.data.nickName,...res.data.data,...abc,}
+
 				yield put ({
 					type: 'userData',
 					payload:res.data.data

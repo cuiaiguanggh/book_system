@@ -667,6 +667,7 @@ class wrongTop extends React.Component {
       let downparameters={
         uqIdsStr: this.props.state.classDownPic.join(','),
         classId:this.props.state.classId,
+        operationClass:this.props.state.classId,
       };
       console.log(this.state.similarTopic);
       if(this.state.similarTopic===1){
