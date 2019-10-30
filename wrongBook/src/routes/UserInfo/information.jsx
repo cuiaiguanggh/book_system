@@ -20,22 +20,24 @@ class HomeworkCenter extends React.Component {
 			phone: '',
 			name: store.get('wrongBookNews').userName,
 			headUrl: store.get('wrongBookNews').avatarUrl,
-			subjectId: 100
+			subjectId: 100,
+			classTeacher: []
 		}
 
 	}
-	getGradeName() {
-		let userData = this.props.state.userData;
-		let str = ''
-		if (userData.subjectName != null) {
-			str += userData.subjectName
-		}
-		if (userData.gradeName != null) {
-			str += '—' + userData.gradeName
-		}
-		return str
+	// getGradeName() {
+	// 	let userData = this.props.state.userData;
+	// 	console.log(userData)
+	// 	let str = ''
+	// 	if (userData.subjectName != null) {
+	// 		str += userData.subjectName
+	// 	}
+	// 	if (userData.gradeName != null) {
+	// 		str += '—' + userData.gradeName
+	// 	}
+	// 	return str
 
-	}
+	// }
 	// getSub() {
 	// 	//return
 	// 	let subList = this.props.state.allSubList;
@@ -87,27 +89,48 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div className={style.namebox} style={{ display: 'inline-block', verticalAlign: "bottom" }}>
 									<p>{userData.name}</p>
-									{classArray !== undefined && userData.rodeType == 30 ?
+									{/* {classArray !== undefined && userData.rodeType == 30 ?
 										<div style={{ padding: '0 10px' }}>
 											{classArray.map((item, i) => (
 												<span key={i} style={{}}>{item.className}{item.adminId == userNews.userId ? <span className={style.banzhuren_icon}>
 													<img src={require('../images/banzhuren@2x.png')} alt="" />
 												</span> : ''}{i === classArray.length - 1 ? '' : '，'}</span>
 											))}
-										</div> : ''}
+										</div> : ''} */}
+									{/* 班级 */}
+
+									{this.state.classTeacher.length > 0 && this.state.classTeacher[0].className ?
+										this.state.classTeacher.map((item, i) => (
+											<div style={{ padding: '0 10px' }}>
+												{item.className}
+												{item.isAdmin === 1 ? <span className={style.banzhuren_icon}>
+													<img src={require('../images/banzhuren@2x.png')} />
+												</span> : ''
+												}
+												&nbsp;
+											</div>
+										)) : ''
+									}
 								</div>
 								<div className={style.schoolbox}>
-									{
+									{/* 学科 */}
+									{/* {
 										userData.rodeType == 30 ? <p><img src={require('../images/nianji@2x.png')} alt="" /><span>
 											{userData != undefined ? this.getGradeName() : ''}
-
 										</span></p> : ''
+									} */}
+									{this.state.classTeacher.length > 0 && this.state.classTeacher[0].subjectName ?
+										<p>
+											<img src={require('../images/nianji@2x.png')} />
+											<span>{this.state.classTeacher[0].subjectName}</span>
+										</p> : ''
 									}
+
 									<p><img src={require('../images/school@2x.png')} alt="" /><span>{userData.schoolName}</span></p>
 								</div>
 							</div>
 						</div>
-		
+
 						<div style={{ margin: '20px 10px' }}>
 							<h3 style={{ marginBottom: '30px', marginTop: '76px' }}>修改信息</h3>
 							<div style={{ marginBottom: '30px' }}>
@@ -119,28 +142,27 @@ class HomeworkCenter extends React.Component {
 							</div>
 							<div style={{ marginBottom: '30px' }}>
 								<span style={{ width: "100px", display: 'inline-block' }}>电话：</span>
-								<Input value={this.props.state.phone}
-									onFocus={() => {
-										if (this.state.changePhone == 0) {
-											let This = this;
-											confirm({
-												title: '确定修改手机号么?',
-												content: '如果修改手机号您的登陆账号将会变成修改后的账号',
-												okText: '确定',
-												cancelText: '取消',
-												onOk() {
-													This.setState(
-														{ changePhone: 1 }
-													)
-												},
-												onCancel() {
-													This.setState(
-														{ changePhone: 2 }
-													)
-												},
-											});
-										}
-									}}
+								<Input value={this.props.state.phone} onFocus={() => {
+									if (this.state.changePhone == 0) {
+										let This = this;
+										confirm({
+											title: '确定修改手机号么?',
+											content: '如果修改手机号您的登陆账号将会变成修改后的账号',
+											okText: '确定',
+											cancelText: '取消',
+											onOk() {
+												This.setState(
+													{ changePhone: 1 }
+												)
+											},
+											onCancel() {
+												This.setState(
+													{ changePhone: 2 }
+												)
+											},
+										});
+									}
+								}}
 									onBlur={() => {
 										if (this.state.changePhone !== 1) {
 											this.setState({
@@ -158,7 +180,7 @@ class HomeworkCenter extends React.Component {
 										}
 									}} />
 							</div>
-							
+
 							{/* <div style={{ marginBottom: '30px' }}>
 								<span style={{ width: "100px", display: 'inline-block' }}>学科：</span>
 								{
@@ -170,24 +192,9 @@ class HomeworkCenter extends React.Component {
 									let data = {
 										name: this.state.name,
 									}
-									// if (this.state.subjectId !== 100) {
-									// 	data.subjectId = this.props.state.subjectId
-									// }
-									//	console.error('手机号',originalPhone,this.props.state.phone)
-									// if (originalPhone !== this.props.state.phone) {
-										data.phone = this.props.state.phone
-									// }
+
+									data.phone = this.props.state.phone
 									data.id = this.props.state.userData.id;
-									// let token = store.get('wrongBookToken');
-									// fetch(dataCenter('/user/userInfo?token=' + token), {
-									//   method: "POST",
-									//   body: JSON.stringify(data),
-									//   headers: {
-									// 	'Content-Type': 'application/json',
-									// 	"Authorization":token
-									//   },
-			
-									// })
 
 									this.props.dispatch({
 										type: 'userInfo/updateInfo',
@@ -204,19 +211,34 @@ class HomeworkCenter extends React.Component {
 
 	componentDidMount() {
 
-		const { dispatch } = this.props;
-		dispatch({
-			type: 'classHome/getClassList',
-			payload: {
-				year:this.props.state.years
-			  }
-		});
+		if (store.get('wrongBookNews').rodeType !== 10) {
+			this.props.dispatch({
+				type: 'userInfo/teachingClasses',
+				payload: {
+					year: this.props.state.years,
+					schoolId: store.get('wrongBookNews').schoolId,
+				}
+			}).then((res) => {
+
+				this.setState({
+					classTeacher: res.data.data
+				})
+			})
+		}
+		// const { dispatch } = this.props;
+		// dispatch({
+		// 	type: 'classHome/getClassList',
+		// 	payload: {
+		// 		year: this.props.state.years,
+		// 		schoolId: store.get('wrongBookNews').schoolId
+		// 	}
+		// });
 		// dispatch({
 		// 	type: 'userInfo/getSubjectList',
 		// });
-		dispatch({
-			type: 'userInfo/getUserInfo',
-		});
+		// dispatch({
+		// 	type: 'userInfo/getUserInfo',
+		// });
 	}
 }
 

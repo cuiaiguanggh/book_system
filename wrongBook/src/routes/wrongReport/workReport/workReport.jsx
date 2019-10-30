@@ -64,13 +64,18 @@ class ItemRenderer extends React.Component {
               {nowvalue.name}
               {nowvalue.questionUrl.height}
             </div>
-            {nowvalue.collect === 1 ?
-              <div className={style.buhui}>不会</div> : ''}
+
+            {nowvalue.collect === 1 ? <div className={style.buhui}>不懂</div> : ''}
+
             {nowvalue.teacherCollect !== 0 ?
               (nowvalue.teacherCollect === 1 ?
-                <div className={style.cuowuhong}>错误</div> :
-                <div className={style.truelv}>正确 </div>) :
-              <div className={style.cuowuhui}>错误</div>}
+                <>  <div className={style.cuowuhui} style={{ right: 94 }}>   <img src={require('../../images/dui.png')} /></div>
+                  <div className={style.cuowuhong}> <img src={require('../../images/cuo.png')} /></div></> :
+                <><div className={style.truelv} style={{ right: 94 }}>   <img src={require('../../images/dui.png')} /> </div>
+                  <div className={style.cuowuhui}>  <img src={require('../../images/cuo.png')} /></div></>) :
+              <> <div className={style.cuowuhui} style={{ right: 94 }}>  <img src={require('../../images/dui.png')} /></div>
+                <div className={style.cuowuhui}>  <img src={require('../../images/cuo.png')} /></div></>}
+
             <img style={{ width: '100%', height: 'auto' }} src={nowvalue.questionUrl} />
           </div>
         </div>)
@@ -102,7 +107,9 @@ class WorkReport extends React.Component {
       gundt: false,
       //预批改是否收藏
       collect: 1,
-      masters:[]
+      masters: [],
+      buttonGo: false,
+      cqxq: false,
     };
     observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
@@ -349,8 +356,13 @@ class WorkReport extends React.Component {
     if (this.props.state.scoreDetail.length === 0) {
       return false;
     }
+    //标记是从预批改按钮进入
+    this.setState({
+      buttonGo: true
+    })
+
     let list = this.props.state.scoreDetail.data.questionScoreList;
-    let uqId, timunumber, collect, uqIds = [];
+    let timunumber, collect, uqIds = [];
     //没有题目可以给批改时，不给点击
     if (this.props.state.scoreDetail.data.collectNum === this.props.state.scoreDetail.data.allQuestionNum) {
       return false;
@@ -362,9 +374,8 @@ class WorkReport extends React.Component {
           type: 'report/beforehand',
           payload: list[i],
         });
-        // uqId = list[i].uqId.split('uqid-')[1];
 
-        let cun = list[i].userAnswerList
+        let cun = list[i].userAnswerList;
         for (let i = 0; cun.length > i; i++) {
           uqIds.push(cun[i].uqId)
         }
@@ -389,14 +400,11 @@ class WorkReport extends React.Component {
       timunumber = `0${timunumber}`
     }
     //调用对应的学生错题
-    if (uqIds) {
-
+    if (uqIds.length > 0) {
       this.props.dispatch({
         type: 'report/getCorrection',
         payload: {
           uqIds
-          // uqId,
-          // classId: this.props.state.classId,
         }
       });
     }
@@ -441,14 +449,16 @@ class WorkReport extends React.Component {
       uqIds.push(cun[i].uqId)
     }
     //调用对应的学生错题
-    this.props.dispatch({
-      type: 'report/getCorrection',
-      payload: {
-        uqIds: uqIds
-        // uqId,
-        // classId: this.props.state.classId,
-      }
-    })
+    if (uqIds.length > 0) {
+      this.props.dispatch({
+        type: 'report/getCorrection',
+        payload: {
+          uqIds: uqIds
+          // uqId,
+          // classId: this.props.state.classId,
+        }
+      })
+    }
     this.setState({
       aheadSelect: true,
       timunumber,
@@ -540,16 +550,17 @@ class WorkReport extends React.Component {
               float: 'right',
               marginTop: "9px",
               border: 'none',
-              width: 140
+              width: 140,
+              padding: '0 15px'
             }}
               loading={this.props.state.downQue}
               disabled={this.props.state.workDown.length === 0 && !this.props.state.downQue}
               onClick={() => {
                 this.setState({ pull: !this.state.pull })
               }}>
-              <img style={{ margin: ' 0 5px 4px 0', height: '15px' }}
+              <img style={{ margin: '0 3px 4px 2px', height: '15px' }}
                 src={require('../../images/xc-cl-n.png')}></img>
-              下载错题({this.props.state.workDown.length})
+              下载组卷({this.props.state.workDown.length})
             </Button>
             {this.state.pull ?
               <div className={style.buttonPull}
@@ -876,21 +887,18 @@ class WorkReport extends React.Component {
       } else {
         //否则自动显示下一个未批改的题目
         let list = this.props.state.scoreDetail.data.questionScoreList;
-        let uqId, timunumber = Number(this.state.timunumber), leftdaipi = this.state.leftdaipi, uqIds = [];
+        let timunumber = Number(this.state.timunumber), leftdaipi = this.state.leftdaipi, uqIds = [];
         for (let i = timunumber; i < list.length; i++) {
           if (list.length >= i && list[i].isAllCollect === 0) {
             this.props.dispatch({
               type: 'report/beforehand',
               payload: list[i],
             });
-            // uqId = list[i].uqId.split('uqid-')[1];
 
             let cun = list[i].userAnswerList
-
             for (let i = 0; cun.length > i; i++) {
               uqIds.push(cun[i].uqId)
             }
-
             timunumber = i + 1;
             break;
           }
@@ -906,15 +914,14 @@ class WorkReport extends React.Component {
           type: 'report/beforstuTopic',
           payload: [],
         });
-
-        this.props.dispatch({
-          type: 'report/getCorrection',
-          payload: {
-            uqIds
-            // uqId,
-            // classId: this.props.state.classId,
-          }
-        });
+        if (uqIds.length > 0) {
+          this.props.dispatch({
+            type: 'report/getCorrection',
+            payload: {
+              uqIds
+            }
+          });
+        }
         this.setState({
           timunumber,
           leftdaipi
@@ -957,13 +964,18 @@ class WorkReport extends React.Component {
       topicxy: true,
       collect: 1
     }, () => {
-      // //关闭弹窗时，重新调用接口
-      // this.props.dispatch({
-      //   type: 'report/queryHomeworkScoreDetail',
-      //   payload: {
-      //     homeworkId: this.props.state.homeworkId
-      //   }
-      // });
+      //如果从预批改按钮进入，关闭弹窗时，重新调用接口
+      if (this.state.buttonGo) {
+        this.props.dispatch({
+          type: 'report/queryHomeworkScoreDetail',
+          payload: {
+            homeworkId: this.props.state.homeworkId
+          }
+        });
+      }
+      this.setState({
+        buttonGo: false
+      })
       //关闭弹窗时，清空有关弹窗数据
       this.props.dispatch({
         type: 'report/beforehand',
@@ -1001,34 +1013,7 @@ class WorkReport extends React.Component {
         className: 'padb0',
         render: (text, record, index) => {
           return (
-            <div className='space' style={{ cursor: 'pointer', textAlign: 'center' }}
-              onClick={() => {
-
-                this.props.dispatch({
-                  type: 'report/getyuantu',
-                  payload: {
-                    homeworkId: this.props.state.homeworkId,
-                    userId: record.userId
-                  }
-                }).then((res) => {
-                  // let content = res[0].imageUrl.indexOf('?imageMogr2') > -1 ?
-                  //   <img src={`${res[0].imageUrl}/thumbnail/1000x`} style={{ width: `${window.innerHeight * 0.6}px` }} />
-                  //   : <img src={`${res[0].imageUrl}?imageMogr2/thumbnail/1000x`} style={{ width: `${window.innerHeight * 0.6}px` }} />
-
-         
-                  this.setState({
-                    masters:res
-                  })
-                //   Modal.info({
-                //     title: '学生拍摄原图',
-                //     className: 'yuantu',
-                //     centered: true,
-                //     maskClosable: true,
-                //     content,
-                //   });
-                })
-
-              }}>
+            <div className='space' style={{ textAlign: 'center' }}>
               {text}
             </div>
           )
@@ -1069,19 +1054,19 @@ class WorkReport extends React.Component {
       {
         title: <div style={{ lineHeight: '17px', minWidth: 400 }}>
           <span style={{ color: 'rgb(144, 147, 153)', fontWeight: 'bold', paddingLeft: 15 }}>题目详情</span>
-          <span style={{ position: 'absolute', right: '260px', fontSize: '14px' }}>
+          <span style={{ position: 'absolute', right: '400px', fontSize: '14px' }}>
             <img className={style.tabletu} src={require('../../images/gou.png')}></img>
             <span className={style.tablezi}>正确</span>
           </span>
-          <span style={{ position: 'absolute', right: '200px', fontSize: '14px' }}>
+          <span style={{ position: 'absolute', right: '340px', fontSize: '14px' }}>
             <img className={style.tabletu} src={require('../../images/cha.png')}></img>
             <span className={style.tablezi}>错误</span>
           </span>
-          <span style={{ position: 'absolute', right: '125px', fontSize: '14px' }}>
+          <span style={{ position: 'absolute', right: '265px', fontSize: '14px' }}>
             <div className={style.baiyuan}></div>
             <span className={style.tablezi}>未批改</span>
           </span>
-          <span style={{ position: 'absolute', right: '20px', fontSize: '14px' }}>
+          <span style={{ position: 'absolute', right: '160px', fontSize: '14px' }}>
             <Icon type="exclamation-circle" theme='filled' style={{
               color: '#F3F3F4',
               marginRight: '5px',
@@ -1106,6 +1091,30 @@ class WorkReport extends React.Component {
             )
           }
           return <div style={{ display: 'flex', flexWrap: 'wrap' }}>{arr}</div>
+        }
+      }, {
+        title: <div style={{ color: 'rgb(144, 147, 153)', fontWeight: 'bold' }}>操作</div>,
+        width: '140px',
+        className: 'padb0',
+        align: 'center',
+        render: (text, record) => {
+          return (
+            <div style={{ textAlign: 'center', color: 'rgba(64,158,255,1)', cursor: 'pointer' }} onClick={() => {
+              this.props.dispatch({
+                type: 'report/getyuantu',
+                payload: {
+                  homeworkId: this.props.state.homeworkId,
+                  userId: record.userId
+                }
+              }).then((res) => {
+                this.setState({
+                  masters: res
+                })
+              })
+            }}>
+              查看原图
+            </div>
+          );
         }
       }];
     const dataSource = [];
@@ -1149,94 +1158,135 @@ class WorkReport extends React.Component {
             {homeworkList.data && homeworkList.data.length ? this.getGrade() : ''}
           </Header>
           <Content style={{ overflow: 'auto', padding: '20px' }} id='bigwai'>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-              <div className={style.kuang}>
+            <div style={{ display: 'flex', marginBottom: 20, flexWrap: 'wrap' }}>
+              <div className={style.kuang} style={document.documentElement.clientWidth <= 1200 ? {} : { minWidth: 470 }}>
                 <div className={style.kuangtop}>
                   班级平均错误率
                 </div>
-                <div style={{ paddingLeft: 55 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 21, color: '#333333', margin: '30px 0 27px' }}> 错误率
-                      {classWrongScore ? Math.floor(classWrongScore * 100) : '0'}%
-										</span>
+
+                <div style={document.documentElement.clientWidth <= 1200 ? { paddingLeft: '2%', position: 'relative' } : { paddingLeft: '15%', position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className={style.leftText}>
+                      错误率
+                        </span>
+                    <span className={style.right} >
+                      <span className={style.number}>{classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}
+                      </span>%
+                    </span>
                   </div>
-                  <div className={style.longellipse}>
-                    <div className={style.jindu}
-                      style={classWrongScore ? { width: `${Math.floor(classWrongScore * 100)}%` } : { width: 0 }}>
-                    </div>
+                  <div className={style.textzytg}>
+
+                    比上一份作业{this.props.state.improveRate < 0 ? '降低' : '提高'}
+                    <img style={this.props.state.improveRate < 0 ? { transform: 'rotate(180deg)', position: 'relative', top: -3 } : { position: 'relative', top: -3 }} src={require('../../images/uParrow.png')} />
+                    {Math.round(Math.abs(this.props.state.improveRate * 100))}%
                   </div>
+
+                  <div className={style.yuanzuo} style={document.documentElement.clientWidth <= 1200 ? { right: '32%' } : {}}>
+                    {classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}%
+                  </div>
+                  <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
+                    <div className={style.centerCircle}></div>
+                    <div className={style.annulusOuter}></div>
+                    {classWrongScore > 0.5 ?
+                      <div className={style.leftRectangle} style={{ transform: `rotate(${180 * classWrongScore}deg)` }}></div> :
+                      <div className={style.leftRectangle} ></div>}
+                    {classWrongScore < 0.5 ?
+                      <div className={style.rightRectangle} style={{ transform: `rotate(${360 * classWrongScore}deg)` }}></div>
+                      : <div className={style.rightRectangle}></div>}
+                    {/*加下面一个div是因为hidde在移动端失效导致样式不对*/}
+                    <div className={style.repairAnnulus}></div>
+                  </div>
+
                 </div>
               </div>
-              <div className={style.kuang} style={{ position: 'relative', margin: '0 10px', zIndex: 21 }}>
+              <div className={style.kuang} style={document.documentElement.clientWidth <= 1200 ? { position: 'relative', zIndex: 25 } : { position: 'relative', zIndex: 25, minWidth: 470 }} >
                 <div className={style.kuangtop}>
                   已批改题目
                 </div>
 
-                <div style={{ fontSize: 21, color: '#333333', margin: '40px 0 0 0', textAlign: 'center' }}>
-                  <img src={require('../../images/pentu.png')} style={{
-                    margin: '-3px 10px 0 0',
-                    width: 22
-                  }} />
-                  <span style={{ color: '#409EFF' }}>已批{scoreDetail.data ? scoreDetail.data.collectNum : '0'} 题次</span>
-                  （已提交{scoreDetail.data ? scoreDetail.data.allQuestionNum : '0'}题次）
+                <div style={document.documentElement.clientWidth <= 1200 ? { display: 'flex', alignItems: 'center', paddingLeft: '5%' }
+                  : { display: 'flex', alignItems: 'center', paddingLeft: '18%' }}>
+                  <span className={style.leftText}>
+                    已批改
+                   </span>
+                  <span className={style.right}>
+                    <span className={style.number}>{scoreDetail.data ? scoreDetail.data.collectNum : '0'}
+                    </span>题
+                    </span>
                 </div>
+
+                <div className={style.texttj}
+                  style={document.documentElement.clientWidth <= 1200 ? { paddingLeft: '5%' } : {}}>
+                  共提交{scoreDetail.data ? scoreDetail.data.allQuestionNum : '0'}题次
+                  </div>
+
                 <div className={style.longellipse}
-                  style={scoreDetail.data ?
-                    {
-                      width: `${scoreDetail.data.allQuestionNum / scoreDetail.data.totalNum * 58}%`,
-                      position: 'absolute',
-                      bottom: 52,
-                      left: '22%'
-                    }
-                    : { width: '58%', position: 'absolute', bottom: 52, left: '22%' }
+                  style={scoreDetail.data ? { width: `${scoreDetail.data.allQuestionNum / scoreDetail.data.totalNum * 30}%` } : { width: '30%' }
                   }>
                 </div>
                 <div className={style.jindublue}
-                  style={scoreDetail.data ? { width: `${scoreDetail.data.collectNum / scoreDetail.data.totalNum * 58}%`, }
-                    : { width: 0 }}>
+                  style={scoreDetail.data ? { width: `${scoreDetail.data.collectNum / scoreDetail.data.totalNum * 30}%` } : { width: 0 }}>
                 </div>
                 <div className={style.gopigai} onClick={this.beforehandgai.bind(this)}
                   style={!scoreDetail.data || (scoreDetail.data && scoreDetail.data.collectNum === scoreDetail.data.allQuestionNum) ? {
                     background: '#ccc',
-                    cursor: 'no-drop'
+                    cursor: 'no-drop',
                   } : {}}>
                   预批改
+
+                  {scoreDetail.data ? <Guidance title='预批改' content='通过标记错误，快速批改学生作业，及时了解全班作业详情' /> : ''}
                 </div>
-                {scoreDetail.data ? <Guidance title='预批改' content='通过标记错误，快速批改学生作业，及时了解全班作业详情' /> : ''}
+
               </div>
-              <div className={style.kuang} style={{ zIndex: 22, position: 'relative', }}>
+              <div className={style.kuang} style={document.documentElement.clientWidth <= 1200 ? { zIndex: 22, position: 'relative' } : { minWidth: 470, zIndex: 22, position: 'relative', }} >
                 <div className={style.kuangtop}>
                   未提交人数
-                  <div className={style.remind}
-                    onClick={() => {
-                      if (scoreDetail.data) {
-                        this.props.dispatch({
-                          type: 'report/remindHomework',
-                          payload: {
-                            userId: scoreDetail.data.unCommitId,
-                            subjectId: this.props.state.subId,
-                          }
-                        })
-                      }
-                    }}>提醒上交作业
-                    {scoreDetail.data ? <Guidance title='未交作业一键提醒' content='点击可通过公众号提醒家长及时上交作业' /> : ''}
+                  <div className={style.chakanxq} onClick={() => { this.setState({ cqxq: true }) }}>
+                    查看详情
                   </div>
                 </div>
-                <div className={style.wtjrs} style={{ padding: ' 0 20px 5px' }}>
-                  <div style={{ fontSize: 21, color: '#333333', margin: '25px 0px 20px' }}>
-                    {scoreDetail.data && scoreDetail.data.unCommit ? `未提交${scoreDetail.data.unCommit}人` : '全部提交'}
-                  </div>
-                  <div
-                    style={{ lineHeight: '26px' }} className={style.mzall}>
-                    {scoreDetail.data && scoreDetail.data.hasOwnProperty('unCommitName') && scoreDetail.data.unCommitName.length > 0 ?
-                      scoreDetail.data.unCommitName.map((item, i) => {
-                        return <span key={i} className={style.notsubmit}>
-                          {item}
-                        </span>
-                      }) : ''
+
+                <div style={document.documentElement.clientWidth <= 1200 ? { display: 'flex', alignItems: 'center', paddingLeft: '5%' } : { display: 'flex', alignItems: 'center', paddingLeft: '18%' }}>
+                  <span className={style.leftText}>
+                    未提交
+                   </span>
+
+                  <span className={style.right}>
+                    <span className={style.number}>  {scoreDetail.data ? scoreDetail.data.unCommit : 0}</span>人
+                    </span>
+                </div>
+
+                <div className={style.longellipse}> </div>
+                <div className={style.jindublue} style={scoreDetail.data ?
+                  { width: `${scoreDetail.data.allQuestionNum / (scoreDetail.data.unCommit + scoreDetail.data.allQuestionNum) * 30}%`, background: 'rgba(89,215,80,1)' } : { width: 0, background: 'rgba(89,215,80,1)' }}>
+                </div>
+
+
+                <div className={style.texttj} style={document.documentElement.clientWidth <= 1200 ? { paddingLeft: '5%' } : {}}>
+                  已提交作业{scoreDetail.data ? scoreDetail.data.commit : 0}人
+                </div>
+
+                <div className={style.remind} style={document.documentElement.clientWidth <= 1200 ? { left: '50%' } : {}}
+                  onClick={() => {
+                    if (scoreDetail.length === 0) {
+                      return false
                     }
-                  </div>
+                    if (scoreDetail.data && scoreDetail.data.unCommitId.length > 0) {
+                      this.props.dispatch({
+                        type: 'report/remindHomework',
+                        payload: {
+                          userId: scoreDetail.data.unCommitId,
+                          subjectId: this.props.state.subId,
+                        }
+                      })
+                    } else {
+                      message.info('已全部提交')
+                    }
+                  }}>提醒上交作业
+                    {scoreDetail.data ? <Guidance title='未交作业一键提醒' content='点击可通过公众号提醒家长及时上交作业' /> : ''}
                 </div>
+
+
               </div>
             </div>
 
@@ -1363,7 +1413,6 @@ class WorkReport extends React.Component {
                         <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
                       </div>
 
-
                       {beforehand.question ?
                         <img style={{ width: '100%' }} src={beforehand.question.split(',')[0]} />
                         : ''
@@ -1374,40 +1423,39 @@ class WorkReport extends React.Component {
               </Content>
             </div>
             <div className={style.aheadRight} style={{ width: 'calc(100% - 380px)' }}>
-              <div style={{ height: 75, background: '#409EFF', color: '#fff', lineHeight: '75px', fontSize: 18 }}>
-                <span className={style.yupitctopzi}
-                  style={{ marginLeft: 45 }}>{this.props.state.homeworkName}  &nbsp; 预批改</span>
 
-                <span style={{ margin: '0px 5% 0px 7%' }}> 点击标记错题，则其余未批题目默认判对  </span>
-                <span>待批{this.props.state.dainumber}人 </span>
+              <div className={style.yupitctopzi}>{this.props.state.homeworkName}  &nbsp; 预批改</div>
+              <div style={{ fontSize: 18, padding: '0 40px 0 50px', color: 'rgba(85,91,108,1)' }}>
+                <span style={{ position: 'absolute' }}>答题列表：待批{this.props.state.dainumber}人 </span>
+                <span style={{ display: 'block', textAlign: 'center' }}>点击标记错题 </span>
               </div>
-              <div style={{ padding: '30px 30px 20px 40px' }}>
+
+              <div style={{ padding: '10px 30px 20px 40px' }}>
                 {beforstuTopic.length > 0 ?
                   <AutoSizer>
                     {({ height, width }) => (
                       <VariableSizeGrid
-                        height={660}
-                        columnWidth={() => '48%'}
+                        height={650}
+                        columnWidth={() => '50%'}
                         rowHeight={index => {
                           let one = beforstuTopic[(2 * index)],
                             two = beforstuTopic[(2 * index + 1)],
                             hanggao;
-
                           try {
                             //取同一行中高度值最高的进行计算
                             if (two && one.height / one.width < two.height / two.width) {
-                              hanggao = (645 * two.height) / two.width + 60;
+                              hanggao = (610 * two.height) / two.width + 60;
                             } else {
-                              hanggao = (645 * one.height) / one.width + 60;
+                              hanggao = (610 * one.height) / one.width + 60;
                             }
                           } catch (e) {
                             console.error('虚拟滚动高度计算')
                           }
                           //设置最小高度
-                          if (hanggao > 200) {
+                          if (hanggao > 150) {
                             return hanggao
                           } else {
-                            return 200;
+                            return 150;
                           }
                         }}
                         width={window.screen.width <= 1280 ? 680 : width}
@@ -1422,7 +1470,7 @@ class WorkReport extends React.Component {
                   </AutoSizer> : ''
                 }
                 {beforstuTopic.length > 0 ?
-                  <div style={{ width: '100%', textAlign: 'right', padding: '15px 15px 0 0', bottom: '-670px', position: 'relative' }}>
+                  <div style={{ width: '100%', textAlign: 'right', bottom: '-670px', position: 'relative' }}>
                     <div className={style.jindukang}>
                       <span className={style.jinduerr}
                         style={
@@ -1430,11 +1478,13 @@ class WorkReport extends React.Component {
                             { width: `${Math.floor((this.props.state.cuowunumber / (beforstuTopic.length - 1)) * 100)}%` } :
                             { width: `${Math.floor((this.props.state.cuowunumber / beforstuTopic.length) * 100)}%` }
                         }>
-                        <span className={style.jinduzi}>错误{this.props.state.cuowunumber}人</span>
                       </span>
+                      <span className={style.jinduzi}>错误{this.props.state.cuowunumber}人
+                      <span style={{ color: '#A7ABAF' }}>
+                          （共{beforstuTopic[beforstuTopic.length - 1].true ? beforstuTopic.length - 1 : beforstuTopic.length}人）</span></span>
+
                     </div>
-                    <Button type="primary"
-                      style={{ width: 183, lineHeight: '44px', height: 44, fontSize: 16, borderRadius: 3 }}
+                    <Button type="primary" style={{ width: 183, lineHeight: '44px', height: 44, fontSize: 16, borderRadius: 3 }}
                       onClick={this.allOther.bind(this)}>完成</Button>
                   </div> : ''
                 }
@@ -1500,25 +1550,68 @@ class WorkReport extends React.Component {
           }}>
           {this.props.state.visible ? this.addVie() : ''}
         </Modal>
-        <PhotoLayer masters={this.state.masters}  clearMasters={()=>{
+
+        <Modal
+          footer={null}
+          title={false}
+          visible={this.state.cqxq}
+          width='60%'
+          onCancel={() => {
+            this.setState({
+              cqxq: false
+            })
+          }}>
+          <p style={{ fontSize: 18, color: 'rgba(48, 49, 51, 1)', margin: '0 0 30px 0' }}>提交详情</p>
+          <p style={{ fontSize: 13, color: '#606266', borderBottom: '1px dashed #ECEDEE' }}>未提交<span style={{ fontSize: 16, color: '#409EFF' }}>
+            &nbsp; {scoreDetail.data ? scoreDetail.data.unCommit : 0}人</span> </p>
+          <div style={{ lineHeight: '26px', padding: '0 30px' }} >
+            {scoreDetail.data && scoreDetail.data.hasOwnProperty('unCommitName') && scoreDetail.data.unCommitName.length > 0 ?
+              scoreDetail.data.unCommitName.map((item, i) => {
+                return <span key={i} className={style.notsubmit}>
+                  {item}
+                </span>
+              }) : ''
+            }
+          </div>
+          <p style={{ fontSize: 13, color: '#606266', borderBottom: '1px dashed #ECEDEE', marginTop: 50 }}>已提交<span style={{ fontSize: 16, color: '#409EFF' }}>
+            &nbsp; {scoreDetail.data ? scoreDetail.data.commit : 0}人</span> </p>
+          <div style={{ lineHeight: '26px', padding: '0 30px' }} >
+            {scoreDetail.data && scoreDetail.data.commitName.length > 0 ?
+              scoreDetail.data.commitName.map((item, i) => {
+                return <span key={i} className={style.notsubmit}>
+                  {item}
+                </span>
+              }) : ''
+            }
+          </div>
+        </Modal>
+
+
+        <PhotoLayer masters={this.state.masters} clearMasters={() => {
           this.setState({
-            masters:[]
+            masters: []
           })
-        }}/>
-      </Content>
+        }} />
+      </Content >
     );
   }
 
   componentDidMount() {
 
+    //监听切换作业报告
+    this.props.dispatch({
+      type: 'report/rate',
+    })
+
     if (this.props.state.classId != '' && this.props.state.subId != '') {
+      console.log(111)
       this.props.dispatch({
         type: 'report/queryHomeworkList',
         payload: {
           classId: this.props.state.classId,
           subjectId: this.props.state.subId
         }
-      });
+      })
     }
 
     this.props.dispatch({
@@ -1528,7 +1621,6 @@ class WorkReport extends React.Component {
     // 使用滚动时自动加载更多
     const loadMoreFn = this.props.loadMoreFn
     const wrapper = this.refs.wrapper
-    let timeoutId
 
     function callback() {
       const top = wrapper.getBoundingClientRect().top

@@ -19,7 +19,6 @@ const {
   Header, Footer, Sider, Content,
 } = Layout;
 const SubMenu = Menu.SubMenu;
-const userNews = store.get('wrongBookNews')
 const MenuItemGroup = Menu.ItemGroup;
 
 //主界面内容
@@ -207,123 +206,89 @@ class HomePageLeft extends Component {
             payload: value
           });
 
-            //学年改变，重新渲染调用接口
-            let classId = this.props.state.classId;
-            let subId = this.props.state.subId;
-            let year = value;
+          //学年改变，重新渲染调用接口
+          let classId = this.props.state.classId;
+          let subId = this.props.state.subId;
+          let year = value;
 
-            if (store.get('wrongBookNews').rodeType === 10) {
-              //超管页面下的班级管理的左侧班级
+          if (store.get('wrongBookNews').rodeType === 10) {
+            //超管页面下的班级管理的左侧班级
+            this.props.dispatch({
+              type: 'classHome/pageClass',
+              payload: {
+                schoolId: store.get('wrongBookNews').schoolId,
+                pageSize: 9999,
+                pageNum: 1,
+                year,
+              }
+            });
+
+            if (window.location.href.split('/#/')[1] == 'classChart') {
+              console.log('classChart')
+              //重置月份为0
               this.props.dispatch({
-                type: 'classHome/pageClass',
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              this.props.dispatch({
+                type: 'reportChart/getReportTimeList',
                 payload: {
-                  schoolId: store.get('wrongBookNews').schoolId,
-                  pageSize: 9999,
-                  pageNum: 1,
-                  year,
+                  classReport: true
                 }
               });
-
-              if (window.location.href.split('/#/')[1] == 'classChart') {
-                console.log('classChart')
-                //重置月份为0
-                this.props.dispatch({
-                  type: 'report/changeMouth',
-                  payload: 0
-                })
-                //重新调用接口
-                this.props.dispatch({
-                  type: 'reportChart/getReportTimeList',
-                  payload: {
-                    classReport: true
-                  }
-                });
-              } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
-                console.log('schoolChart')
-                //重置月份为0
-                this.props.dispatch({
-                  type: 'report/changeMouth',
-                  payload: 0
-                })
-                //重新调用接口
-                this.props.dispatch({
-                  type: 'reportChart/getReportTimeList',
-                  payload: {
-                    classReport: false
-                  }
-                });
-              }
-              return;
+            } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
+              console.log('schoolChart')
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              this.props.dispatch({
+                type: 'reportChart/getReportTimeList',
+                payload: {
+                  classReport: false
+                }
+              });
             }
+            return;
+          }
           //切换学年重头重新调用
           this.props.dispatch({
             type: 'temp/getClassList',
             payload: {
-              year
+              year,
+              schoolId: store.get('wrongBookNews').schoolId
             }
           })
-            if (store.get('wrongBookNews').rodeType !== 10) {
-              this.props.dispatch({
-                type: 'down/showPdfModal',
-                payload: false
-              });
-              this.props.dispatch({
-                type: 'report/propsPageNum',
-                payload: 1
-              });
-              // if (!classId) return false;
-              // //更新月份
-              // this.props.dispatch({
-              //   type: 'temp/updateMonthList',
-              // });
-              // //重新获取学科
-              // this.props.dispatch({
-              //   type: 'temp/getUserSubjectList',
-              //   payload: classId,
-              // });
-            }
+          if (store.get('wrongBookNews').rodeType !== 10) {
+            this.props.dispatch({
+              type: 'down/showPdfModal',
+              payload: false
+            });
+            this.props.dispatch({
+              type: 'report/propsPageNum',
+              payload: 1
+            });
+          }
+          if (window.location.href.split('/#/')[1] == 'classUser') {
+            console.log('classUser')
+            this.props.dispatch({
+              type: 'classHome/getClassList',
+              payload: {
+                year,
+                schoolId: store.get('wrongBookNews').schoolId
+              }
+            });
 
-            if (window.location.href.split('/#/')[1] == 'stuReport') {
-              // let userId = this.props.state.userId;
-              // if (classId !== '' && subId != '' && year !== '' && userId != '') {
-                console.log('stuReport')
-                //重置月份为0
-                // this.props.dispatch({
-                //   type: 'report/changeMouth',
-                //   payload: 0
-                // })
-                // //重新调用接口
-                // this.props.dispatch({
-                //   type: 'report/queryQrStudentCount',
-                //   payload: {
-                //     classId: classId,
-                //     year: year,
-                //     subjectId: this.props.state.subId,
-                //   }
-                // });
-              // }
-            } else if (window.location.href.split('/#/')[1] == 'classReport') {
-              // if (classId !== '' && subId != '' && year !== '') {
-                console.log('classReport')
-                // //重置月份为0
-                // this.props.dispatch({
-                //   type: 'report/changeMouth',
-                //   payload: 0
-                // })
-                // //重新调用接口
-                // this.props.dispatch({
-                //   type: 'report/queryQrDetail',
-                //   payload: {
-                //     classId: classId,
-                //     year: year,
-                //     subjectId: this.props.state.subId,
-                //     info: 0,
-                //     pageNum: 1,
-                //     pageSize: 50,
-                //   }
-                // });
-              // }
-            } else if (window.location.href.split('/#/')[1] == 'classChart') {
+            this.props.dispatch({
+              type: 'homePage/teacherList',
+              payload: {
+                type: 1
+              }
+            })
+          } else if (window.location.href.split('/#/')[1] == 'classChart') {
               if (classId !== '' && subId != '' && year !== '') {
                 console.log('classChart')
                 //重置月份为0
@@ -356,7 +321,7 @@ class HomePageLeft extends Component {
                 });
               }
             }
-          
+
         }}>
         {yearList.data.map((item, i) => (
           <Option value={item} key={i}>{`${item}-${item + 1}学年`}</Option>
@@ -376,11 +341,105 @@ class HomePageLeft extends Component {
     return name
   }
 
+  //切换学校
+  switchSchool(value, option) {
+    //替换学校name和id
+    let wrongBookNews = store.get('wrongBookNews');
+    let userData = store.get('userData');
+    wrongBookNews.schoolId = value;
+    wrongBookNews.schoolName = option.props.children;
+    userData.schoolId = value;
+    userData.schoolName = option.props.children;
+    store.set('wrongBookNews', wrongBookNews);
+    store.set('userData', userData)
+
+
+    this.props.dispatch({
+      type: 'homePage/getEnableYears',
+      payload: {
+        schoolId: value
+      }
+    }).then(() => {
+      let classId = this.props.state.classId;
+      let subId = this.props.state.subId;
+      let year = this.props.state.years;
+
+      let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
+
+      //切换学校重头重新调用
+      this.props.dispatch({
+        type: 'temp/getClassList',
+        payload: {
+          year,
+          schoolId: value
+        }
+      })
+
+      if (hashStrings == '/classUser') {
+        console.log('classUser')
+        this.props.dispatch({
+          type: 'classHome/getClassList',
+          payload: {
+            year,
+            schoolId: value
+          }
+        });
+
+        this.props.dispatch({
+          type: 'homePage/infoSchool',
+          payload: value
+        })
+        this.props.dispatch({
+          type: 'homePage/teacherList',
+          payload: {
+            type: 1
+          }
+        })
+
+      } else if (hashStrings == '/classChart') {
+        if (classId !== '' && subId != '' && year !== '') {
+          console.log('classChart')
+          //重置月份为0
+          this.props.dispatch({
+            type: 'report/changeMouth',
+            payload: 0
+          })
+          //重新调用接口
+          this.props.dispatch({
+            type: 'reportChart/getReportTimeList',
+            payload: {
+              classReport: true
+            }
+          });
+        }
+      } else if (hashStrings == '/schoolChart') {
+        if (classId !== '' && subId != '' && year !== '') {
+          console.log('schoolChart')
+          //重置月份为0
+          this.props.dispatch({
+            type: 'report/changeMouth',
+            payload: 0
+          })
+          //重新调用接口
+          this.props.dispatch({
+            type: 'reportChart/getReportTimeList',
+            payload: {
+              classReport: false
+            }
+          });
+        }
+      }
+    })
+
+  }
+
   render() {
     let value = ''
     let userNews = store.get('wrongBookNews')
-    let rodeType = ''
+    let moreschool = store.get('moreschool')
+    let rodeType = '';
     let user = this.props.state.userData;
+
     if (!store.get('wrongBookNews') || store.get('wrongBookNews') == undefined) {
       this.props.dispatch(
         routerRedux.push({
@@ -548,41 +607,44 @@ class HomePageLeft extends Component {
             />
             <div className="navClass">
 
-              {
-                userNews == undefined ? '' :
-                  <div>
-                    {
-                      this.props.state.yearList.data ?
-                        this.getyear() : ''
-                    }
+              {userNews == undefined ? '' :
+                <div>
+                  {this.props.state.yearList.data ? this.getyear() : ''}
 
-                    <span className={style.usinfo}>
-                      {leftName}
-                    </span>
-                    {
-                      this.props.type == 'findPsd' ? '' :
-                        <div className={style.usinfo}>
+                  {userNews && userNews.rodeType > 10 ?
+                    <Select defaultValue={userNews.schoolId} className={style.moreschool}
+                      onChange={this.switchSchool.bind(this)}>
+                      {moreschool && moreschool.map((item) => (
+                        <Option value={item.schoolId} key={item.schoolId}>{item.schoolName}</Option>
+                      ))}
+                    </Select> : ''
+                  }
 
-                          {/* <img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/> */}
-                          <img alt=''
-                            src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
-                          <Popover
-                            content={content}
-                            // trigger="click"
-                            type="primary"
-                            placement="bottom"
-                          >
-                            <div
-                              className="btnBack"
-                              type="primary">
-                              {/* {user != '' ?this.getUserPosition(rodeType,user.name):''} */}
-                              <span>{user != '' ? user.name : ''}</span>
-                              <Icon type="caret-down" style={{ color: "#e1e1e1" }} />
-                            </div>
-                          </Popover>
+                  {/* <span className={style.usinfo}>
+                    {leftName}
+                  </span> */}
+
+                  {this.props.type == 'findPsd' ? '' :
+                    <div className={style.usinfo}>
+
+                      {/* <img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/> */}
+                      <img alt=''
+                        src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
+                      <Popover
+                        content={content}
+                        // trigger="click"
+                        type="primary"
+                        placement="bottom">
+                        <div className="btnBack"
+                          type="primary">
+                          {/* {user != '' ?this.getUserPosition(rodeType,user.name):''} */}
+                          <span>{user != '' ? user.name : ''}</span>
+                          <Icon type="caret-down" style={{ color: "#e1e1e1" }} />
                         </div>
-                    }
-                  </div>
+                      </Popover>
+                    </div>
+                  }
+                </div>
               }
 
             </div>
@@ -648,6 +710,15 @@ class HomePageLeft extends Component {
         payload: {
           schoolId: store.get('wrongBookNews').schoolId
         }
+      }).then(() => {
+        //调用这个接口时，里面的方法嵌套，获取班级，学科，时间，知识点
+        dispatch({
+          type: 'temp/getClassList',
+          payload: {
+            year: this.props.state.years,
+            schoolId: store.get('wrongBookNews').schoolId
+          }
+        });
       })
     }
 
@@ -655,13 +726,6 @@ class HomePageLeft extends Component {
       type: 'userInfo/getUserInfo',
     });
 
-    //调用这个接口时，里面的方法嵌套，获取班级，学科，时间，知识点
-    dispatch({
-      type: 'temp/getClassList',
-      payload: {
-        year: this.props.state.years
-      }
-    });
 
     dispatch({
       type: 'homePage/functionList'

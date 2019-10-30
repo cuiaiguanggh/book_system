@@ -73,7 +73,7 @@ class WrongTopic extends React.Component {
             showSearch
             style={{ width: 110, marginRight: 10 }}
             placeholder="班级"
-            onChange={(value,option) => {
+            onChange={(value, option) => {
 
               this.setState({
                 classId: value,
@@ -104,6 +104,8 @@ class WrongTopic extends React.Component {
                 subjectId: value,
                 subjectNmae: option.props.children
               })
+              if (this.state.classId === '' || this.state.startDate === '') return false;
+
               this.props.dispatch({
                 type: 'homePage/membersForSA',
                 payload: {
@@ -130,8 +132,9 @@ class WrongTopic extends React.Component {
                 startDate: dateString[0],
                 endDate: dateString[1],
               })
-              if(!this.state.classId && !this.state.subjectId) return false;
-              
+
+              if (this.state.classId === '' || this.state.subjectId === '' || dateString[0] === '') return false;
+
               this.props.dispatch({
                 type: 'homePage/membersForSA',
                 payload: {
@@ -166,8 +169,8 @@ class WrongTopic extends React.Component {
                 } else {
                   downame = `${this.state.classNmae}-${this.state.selectedRows[0].name}-${this.state.subjectNmae}(${this.state.startDate} ~ ${this.state.endDate}).pdf`
                 }
-                
-                window.location.href =`${res.downloadLink}${downame}`
+
+                window.location.href = `${res.downloadLink}${downame}`
                 this.setState({
                   selectedRowKeys: [],
                   selectedRows: [],

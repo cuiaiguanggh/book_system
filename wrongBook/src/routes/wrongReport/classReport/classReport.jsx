@@ -538,6 +538,11 @@ class wrongTop extends React.Component {
   }
   //时间框
   quantumtime(date, dateString) {
+
+    if(date.length===0){
+      this.alltime()
+      return;
+    }
     //滚动条回滚到顶部,知识点展开
     if (document.getElementById('gundt')) {
       document.getElementById('gundt').scrollTop = 0;
@@ -810,13 +815,13 @@ class wrongTop extends React.Component {
               } />
             <div style={{ float: 'right',position: 'relative' }}>
               {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
-                <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none',width:140 }}
+                <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none',width:140,padding: '0 15px' }}
                   loading={this.props.state.downQue}
                   disabled={this.props.state.classDown.length === 0 && !this.props.state.downQue}
                  onClick={() => {this.setState({ pull: !this.state.pull })}}>
-                  <img style={{ margin: ' 0 5px 4px 0', height: '15px' }}
+                  <img style={{ margin: '0 3px 4px 2px', height: '15px' }}
                     src={require('../../images/xc-cl-n.png')}></img>
-                  下载错题({this.props.state.classDown.length})
+                  下载组卷({this.props.state.classDown.length})
               </Button> : ''}
               {/*引导流程*/}
               {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
@@ -969,7 +974,7 @@ class wrongTop extends React.Component {
       payload: 1
     });
     if (classId !== '' && subId !== '' && year !== '') {
-          //获取知识点筛选
+      //获取知识点筛选
     this.props.dispatch({
       type: 'temp/getKnowledgeList',
       payload: {

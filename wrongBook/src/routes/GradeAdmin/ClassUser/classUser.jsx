@@ -61,7 +61,6 @@ class StuReport extends React.Component {
     let userNews = store.get('wrongBookNews')
     if (e.key !== id) {
       if (userNews.rodeType === 10) {
-
         dispatch({
           type: 'homePage/infoClass',
           payload: e.key
@@ -122,10 +121,8 @@ class StuReport extends React.Component {
   }
 
   menulist() {
-    let userNews = store.get('wrongBookNews')
     let location = this.props.location.hash;
     let classList = [];
-    let hash = location.substr(location.indexOf("sId=") + 4);
     let id = location.substr(location.indexOf("&id=") + 4);
 
     const rodeType = store.get('wrongBookNews').rodeType
@@ -350,7 +347,7 @@ class StuReport extends React.Component {
             className={'shenji'}
             width={950}
             onOk={() => {
-              if(this.state.checkedList.length>0){
+              if (this.state.checkedList.length > 0) {
                 this.props.dispatch({
                   type: 'classHome/upgrade',
                   payload: {
@@ -364,7 +361,7 @@ class StuReport extends React.Component {
                   checkedList: [],
                   plainOptions: []
                 });
-              }else{
+              } else {
                 message.warning('未选中班级')
               }
 
@@ -505,7 +502,8 @@ class StuReport extends React.Component {
       dispatch({
         type: 'classHome/getClassList',
         payload: {
-          year:this.props.state.years
+          year: this.props.state.years,
+          schoolId: store.get('wrongBookNews').schoolId
         }
       });
     }
@@ -535,6 +533,11 @@ class StuReport extends React.Component {
         }
       })
     }
+    this.props.dispatch({
+      type: 'homePage/memType',
+      payload: 1
+    });
+
   }
 
 }

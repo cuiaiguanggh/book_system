@@ -12,7 +12,8 @@ import {
 	CorrectionMarker,
 	remindHomework,
 	teacherCollect,
-	yuantu
+	yuantu,
+	rate
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -47,9 +48,13 @@ export default {
 		beforehand: [],
 		beforstuTopic: [],
 		cuowunumber: 0,
-		dainumber: 0
+		dainumber: 0,
+		improveRate: 0,
 	},
 	reducers: {
+		improveRate(state, { payload }) {
+			return { ...state, improveRate: payload };
+		},
 		cuowunumber(state, { payload }) {
 			return { ...state, cuowunumber: payload };
 		},
@@ -184,12 +189,37 @@ export default {
 		},
 	},
 	subscriptions: {
-		setup({ dispatch, history }) {
-		},
+		// setup({ dispatch, history }) {
+		// },
 	},
 
 	effects: {
-		*getyuantu({ payload }, { put, select }){
+		*rate({ payload }, { put, select, take }) {
+			//当调用作业报告数据时，调用作业提高率
+			while (true) {
+				yield take('queryHomeworkScoreDetail')
+				let { homeworkId } = yield select(state => state.report);
+				let { classId, subId } = yield select(state => state.temp);
+				if (classId && homeworkId && subId) {
+					let data = {};
+					data.homeworkId = homeworkId;
+					data.classId = classId;
+					data.subjectId = subId; 
+					let res = yield rate(data);
+					try {
+						yield put({
+							type: 'improveRate',
+							payload: res.data.data.classWrongScoreRate
+						})
+
+					}catch(e){
+						console.error('查询提高率失败')
+					}
+			
+				}
+			}
+		},
+		*getyuantu({ payload }, { put, select }) {
 			let res = yield yuantu(payload);
 			return res.data.data;
 		},
@@ -221,8 +251,8 @@ export default {
 		*getCorrection({ payload }, { put, select }) {
 			//获得预批改作业信息
 			let res = yield getCorrection(payload);
-			let beforstuTopic=[]
-			if(res.data.data.hasOwnProperty('homeworkCorrectionList')){
+			let beforstuTopic = []
+			if (res.data.data.hasOwnProperty('homeworkCorrectionList')) {
 				beforstuTopic = res.data.data.homeworkCorrectionList;
 			}
 			yield put({
@@ -286,7 +316,7 @@ export default {
 				qrdetailList1.data.questionList[payload.key].teachVideo = payload.video;
 			}
 			//作业报告页面错题列表
-			if (beforehand.teachVideo===null) {
+			if (beforehand.teachVideo === null) {
 				beforehand.teachVideo = payload.video;
 				console.log(payload)
 				yield put({
@@ -326,7 +356,7 @@ export default {
 				payload.startTime = stbegtoendTime[0];
 				payload.endTime = stbegtoendTime[1];
 			}
-			if(!payload.subjectId){
+			if (!payload.subjectId) {
 				message.error('请选择学科');
 				return;
 			}
@@ -360,7 +390,7 @@ export default {
 				payload.startTime = stbegtoendTime[0];
 				payload.endTime = stbegtoendTime[1];
 			}
-			if(!payload.subjectId){
+			if (!payload.subjectId) {
 				message.error('请选择学科');
 				return;
 			}
@@ -418,7 +448,7 @@ export default {
 						data.startTime = payload.startTime;
 						data.endTime = payload.endTime;
 					}
-	
+
 					yield put({
 						type: 'userQRdetail',
 						payload: data

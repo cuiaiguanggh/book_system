@@ -48,7 +48,13 @@ function schools(payload){
         method:'get'
     });
 }
+function tokenLogin(payload){
+    return request(dataCenter('/auth/tokenLogin'),{
+        data:payload,
+    });
+}
 export {
+    tokenLogin,
     info,
     schools,
     loginTiku,

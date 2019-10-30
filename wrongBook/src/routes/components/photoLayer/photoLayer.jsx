@@ -46,7 +46,7 @@ export default class PhotoLayer extends React.Component {
                 }
 
 
-                <img src={this.props.masters[this.state.nownum].imageUrl} style={{ height: '80vh' }} onClick={(e) => {
+                <img src={this.props.masters[this.state.nownum].imageUrl.indexOf('?') > 0 ? `${this.props.masters[this.state.nownum].imageUrl}/thumbnail/1000x` : `${this.props.masters[this.state.nownum].imageUrl}?imageMogr2/thumbnail/1000x`} style={{ height: '80vh' }} onClick={(e) => {
                     e.stopPropagation()
                 }} />
                 {this.props.masters.length > 1 ?

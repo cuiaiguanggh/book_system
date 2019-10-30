@@ -211,17 +211,17 @@ class HomeworkCenter extends React.Component {
 					</div>
 				)
 			},
-			{
-				title: '身份',
-				dataIndex: 'identity',
-				key: 'identity',
-				// width: '20%',
-				render: (text, record) => (
-					<div>
-						{text}
-					</div>
-				)
-			},
+			// {
+			// 	title: '身份',
+			// 	dataIndex: 'identity',
+			// 	key: 'identity',
+			// 	// width: '20%',
+			// 	render: (text, record) => (
+			// 		<div>
+			// 			{text}
+			// 		</div>
+			// 	)
+			// },
 			{
 				title: '教师姓名',
 				dataIndex: 'teacher',
@@ -280,7 +280,7 @@ class HomeworkCenter extends React.Component {
 				p["teacher"] = det.教师姓名;
 				p["sub"] = det.任教学科;
 				p["phone"] = det.教师手机号;
-				p["identity"] = det.身份;
+				// p["identity"] = det.身份;
 				dataSource[i] = p;
 			}
 		}
@@ -294,7 +294,10 @@ class HomeworkCenter extends React.Component {
 							{this.chooseYear()}
 							<Button onClick={() => {
 
-								window.open("http://homework.mizholdings.com/kacha/wx/fd0b1355853af771/班级导入模板.XLSX", '_blank');
+
+								window.open("http://homework.mizholdings.com/kacha/kcct/0747024f4a95a473/班级导入模板.XLSX", '_blank');
+
+								// window.open("http://homework.mizholdings.com/kacha/wx/fd0b1355853af771/班级导入模板.XLSX", '_blank');
 								// window.open("https://homework.mizholdings.com/qiniu/88908000/88888888/18E383AF-E059-4934-8B24-EB0B257FB15C/教师信息采集模板.XLSX", '_blank');
 							}}>下载模板</Button>
 							{

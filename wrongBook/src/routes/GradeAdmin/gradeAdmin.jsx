@@ -626,8 +626,6 @@ class EditableTable extends React.Component {
 								payload: ''
 							});
 						}
-
-
 					}}
 					onCancel={() => {
 						this.setState({
@@ -639,8 +637,7 @@ class EditableTable extends React.Component {
 						});
 					}}
 					okText='确定'
-					cancelText='取消'
-				>
+					cancelText='取消'>
 					<div>
 						<div style={{ marginBottom: '10px' }}>
 							<span style={{ width: "80px", display: 'inline-block' }} >班级</span>
@@ -719,7 +716,8 @@ class EditableTable extends React.Component {
 			dispatch({
 				type: 'classHome/getClassList',
 				payload: {
-					year: this.props.state.years
+					year: this.props.state.years,
+					schoolId: store.get('wrongBookNews').schoolId
 				}
 			});
 		}

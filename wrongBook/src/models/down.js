@@ -181,8 +181,8 @@ export default {
 		},
 	},
 	subscriptions: {
-	  setup({ dispatch, history }) {  // eslint-disable-line
-	  },
+	//   setup({ dispatch, history }) {  // eslint-disable-line
+	//   },
 	},
   
 	effects: {

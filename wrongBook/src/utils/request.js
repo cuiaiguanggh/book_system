@@ -7,9 +7,9 @@ function parseJSON(response) {
 
 function formatOpt(data) {
   let arr = [];
-  if(data) {
-    for(let name in data) {
-      if(data[name] !== undefined) {
+  if (data) {
+    for (let name in data) {
+      if (data[name] !== undefined) {
         arr.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
       }
     };
@@ -21,7 +21,7 @@ function formatOpt(data) {
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status <= 500) {
-  // if (response.status >= 200 && response.status < 300) {
+    // if (response.status >= 200 && response.status < 300) {
     return response;
   }
 
@@ -41,32 +41,32 @@ export default function request(url, options) {
   options = options || {};
   options.method = options.method || 'post';
   options.mode = options.mode || 'cors';
-  options.headers = options.headers || {userType:1,version:'d1.0.0'};
+  options.headers = options.headers || { userType: 1, version: 'd1.0.0' };
   options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/x-www-form-urlencoded';
   let data = options.data || {};
   let dataBody;
   let loginSession = store.get('wrongBookToken');
- 
+
   // if(loginSession !== '' && data.token == undefined  ){
   //     data.token = loginSession;
   // }
-   if(loginSession !== '' && data.token == undefined  ){
+  if (loginSession !== '' && data.token == undefined) {
     options.headers.Authorization = loginSession;
-  }
+  } 
   dataBody = formatOpt(data);
-  if(options.body && dataBody) {
+  if (options.body && dataBody) {
     dataBody = options.body + '&' + dataBody;
   }
 
-  if( options.method==='post'){
-  options.body = dataBody;
-  }else {
-    url=`${url}?${dataBody}`
+  if (options.method === 'post') {
+    options.body = dataBody;
+  } else {
+    url = `${url}?${dataBody}`
   }
-  if(options.headers['Content-Type']==='application/json'){
+  if (options.headers['Content-Type'] === 'application/json') {
     options.body = JSON.stringify(data);
   }
-  
+
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON)

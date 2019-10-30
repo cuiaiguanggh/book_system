@@ -57,7 +57,7 @@ export default class Guidance extends React.Component {
         return (<div></div>)
       }
     } else if (this.props.title === '预批改') {
-      wz1 = { right: '-150px', top: 205 };
+      wz1 = { right: '-135px', top: 45 };
       wz2 = {
         left: 185,
         top: '-190px',

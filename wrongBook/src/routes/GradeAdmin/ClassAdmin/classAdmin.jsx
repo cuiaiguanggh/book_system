@@ -67,14 +67,9 @@ class HomeworkCenter extends React.Component {
 			render: (text, record) => (
 				<div>
 					{text}
-					{record.OnwerTeacher == 1 ?
-						<span style={{
-							marginLeft: '5px', padding: '5px 10px', background: '#e7f4ff',
-							color: '#409eff', borderRadius: '3px', border: '1px solid #bde0ff'
-						}}>
-							班主任
-						</span> : ""
-					}
+					{record.admin == 1 && <span className={style.banzhuren}>班主任</span>}
+					{record.admin == 2 && <span className={style.banzhuren}>年级组长</span>}
+					{record.admin == 3 && <span className={style.banzhuren}>校长</span>}
 				</div>
 			)
 		},
@@ -136,45 +131,98 @@ class HomeworkCenter extends React.Component {
 			render: (text, record) => {
 				const rodeType = store.get('wrongBookNews').rodeType;
 				if (rodeType <= 20) {
+					let hash = this.props.location.hash;
+					let schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
+					const content = (
+						<div style={{ width: 82, height: 81, position: 'relative' }}>
+							<p className={style.hoverGray} style={{ top: -12 }} onClick={(schooId) => {
+								if (!this.props.state.infoClass) {
+									message.warning('未选中班级')
+									return;
+								}
+								let hash = this.props.location.hash;
+								let schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
+								this.props.dispatch({
+									type: 'homePage/assign',
+									payload: {
+										classId: this.props.state.infoClass,
+										schoolId,
+										year: this.props.state.years,
+										userId: record.userId,
+										roleName: 'headteacher'
+									}
+								});
+							}}>班主任</p>
+							<p className={style.hoverGray} style={{ top: 23 }} onClick={() => {
+								let hash = this.props.location.hash;
+								let schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
+								this.props.dispatch({
+									type: 'homePage/assign',
+									payload: {
+										schoolId,
+										year: this.props.state.years,
+										userId: record.userId,
+										roleName: 'gradeLeader'
+
+									}
+								});
+							}}>年级组长</p>
+							<p className={style.hoverGray} style={{ bottom: -12 }} onClick={() => {
+								let hash = this.props.location.hash;
+								let schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
+								this.props.dispatch({
+									type: 'homePage/assign',
+									payload: {
+										schoolId,
+										year: this.props.state.years,
+										userId: record.userId,
+										roleName: 'headmaster'
+									}
+								});
+							}}>校长</p>
+						</div>
+					);
 					return (
 						<div>
-							{record.OnwerTeacher == 1 && this.props.state.infoClass ?
-								<Popover placement="leftBottom" title="邀请学生加入班级" trigger="focus" content={this.state.content}>
-									<Button type="primary"
-										onClick={() => {
-											this.props.dispatch({
-												type: 'homePage/wxCode',
-												payload: {
-													classId: this.props.state.infoClass
-												}
-											}).then((res) => {
-												if (res.hasOwnProperty('data')) {
-													this.setState({
-														content: <div style={{ textAlign: "center", borderRadius: '6%', overflow: 'hidden', width: 300, height: 280 }}>
-															<img style={{ width: 300 }} src={res.data.url} />
-														</div>,
-													})
-												}
-											})
-										}}>班级邀请码</Button>
-								</Popover> : ''
+							{record.admin === 0 ? <Popover content={content} placement="left" trigger="hover" className={'abc'} style={{ padding: 0 }}>
+								<span style={{ background: '#1890ff' }} className={style.annniu}>任命</span>
+							</Popover> : <span style={{ background: 'rgba(182,186,194,1)' }} onClick={() => {
+								let hash = this.props.location.hash;
+								let schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
+								let data = {
+									schoolId,
+									year: this.props.state.years,
+									userId: record.userId,
+								}
+								// if (record.admin === 1 && !this.props.state.infoClass) {
+								// 	message.warning('未选中班级')
+								// 	return;
+								// }
+								if (record.admin === 1 ) {
+									message.info('取消班主任功能稍后完成')
+									return;
+								}
+								switch (record.admin) {
+									case 1:
+										data.roleName = 'headteacher';
+										data.classId = this.props.state.infoClass;
+										break;
+									case 2:
+										data.roleName = 'gradeLeader'
+										break;
+									case 3:
+										data.roleName = 'headmaster'
+										break;
+								}
+								this.props.dispatch({
+									type: 'homePage/remove',
+									payload: data
+								});
+							}} className={style.annniu}>取消</span>
 							}
-							{
-								record.OnwerTeacher == 1 ?
-									<span style={{ color: '#fff', display: "inline-block", width: '60px', cursor: 'pointer', margin: '0 10px', padding: '5px 0px', background: '#b6bac2', borderRadius: '5px', textAlign: 'center' }}
-									>已任命</span> :
-									<Popconfirm title={`是否任命${record.name}为班主任?`} okText="确认" cancelText="取消" onConfirm={() => {
-										this.props.dispatch({
-											type: 'classHome/updateClassAdmin',
-											payload: {
-												classId: this.props.state.infoClass,
-												adminId: record.userId
-											}
-										});
-									}}>
-										<span style={{ background: '#1890ff' }} className={style.annniu}>任命</span>
-									</Popconfirm>
-							}
+
+
+
 							<span style={{ background: 'rgb(245, 108, 108)' }} className={style.annniu} onClick={() => {
 								let This = this;
 								confirm({
@@ -404,7 +452,7 @@ class HomeworkCenter extends React.Component {
 						p['subJec'] = det.subject;
 						p['phone'] = det.phone;
 						p['wrongNum'] = det.questionNum;
-						p['OnwerTeacher'] = det.admin;
+						p['admin'] = det.admin;
 						p['parentPhones'] = det.parentPhones;
 						p['courseVideoNum'] = det.courseVideoNum;
 						p['teaVideoNum'] = det.teaVideoNum;
@@ -420,7 +468,7 @@ class HomeworkCenter extends React.Component {
 					p['wrongNum'] = det.questionNum;
 					p['subJec'] = det.subject;
 					p['phone'] = det.phone;
-					p['OnwerTeacher'] = det.admin;
+					p['admin'] = det.admin;
 					p['parentPhones'] = det.parentPhones;
 					p['courseVideoNum'] = det.courseVideoNum;
 					p['teaVideoNum'] = det.teaVideoNum;
@@ -524,8 +572,31 @@ class HomeworkCenter extends React.Component {
 								{rodeType <= 20 && this.state.current === 'teacher' ?
 									<span className={style.addGrade} onClick={() => {
 										this.setState({ visible: true })
-									}}>添加</span> : ''
+									}}>添加老师</span> : ''
 								}
+
+								{this.props.state.infoClass ?
+									<Popover placement="bottom" trigger="focus" content={this.state.content}>
+										<Button className={style.yqma} onClick={() => {
+											this.props.dispatch({
+												type: 'homePage/wxCode',
+												payload: {
+													classId: this.props.state.infoClass
+												}
+											}).then((res) => {
+												if (res.hasOwnProperty('data')) {
+													this.setState({
+														content: <div style={{ textAlign: "center", borderRadius: '6%', overflow: 'hidden', width: 300, height: 280 }}>
+															<img style={{ width: 300 }} src={res.data.url} />
+														</div>,
+													})
+												}
+											})
+										}}>班级邀请码</Button >
+									</Popover> : ''
+								}
+
+
 							</div>
 							<div className={style.table}>
 								<Table
@@ -558,6 +629,11 @@ class HomeworkCenter extends React.Component {
 								phone: this.props.state.phone,
 								classId: hash.substr(hash.indexOf("&id=") + 4),
 								subjectId: this.props.state.subjectId
+							}
+
+							if (!data.classId || data.classId.indexOf('=') > 0) {
+								message.warning('班级未选中');
+								return;
 							}
 							this.props.dispatch({
 								type: 'homePage/createSchoolUser',
@@ -680,6 +756,7 @@ class HomeworkCenter extends React.Component {
 
 export default connect((state) => ({
 	state: {
-		...state.homePage
+		...state.homePage,
+		years: state.temp.years
 	}
 }))(HomeworkCenter);

@@ -66,6 +66,7 @@ class HomeworkCenter extends React.Component {
 			updatePei: true
 		})
 		let data = {}
+
 		if (startDate !== '') {
 			this.props.dispatch({
 				type: 'reportChart/startTime',
@@ -103,8 +104,8 @@ class HomeworkCenter extends React.Component {
 				timeStamp: this.props.state.reportTimeList[0].timeStamp,
 			}
 		}
-		if (data.classId || data.subjectId) return false;
-
+	
+		if ( !data.classId || !data.subjectId) return false;
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload: data

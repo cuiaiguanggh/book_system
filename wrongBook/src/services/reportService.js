@@ -120,7 +120,14 @@ function yuantu(payload) {
         method: 'get'
     });
 }
+function rate(payload) {
+    return request(dataCenter('/report/homework/score/detail/rate'), {
+        data: payload,
+        method: 'get'
+    });
+}
 export {
+    rate,
     yuantu,
     teacherCollect,
     remindHomework,

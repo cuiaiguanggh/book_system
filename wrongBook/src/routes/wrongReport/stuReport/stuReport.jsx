@@ -508,6 +508,10 @@ class StuReport extends React.Component {
 
   //时间框
   quantumtime(date, dateString) {
+    if(date.length===0){
+      this.alltime()
+      return;
+    }
     //滚动条回滚到顶部
     if (document.getElementById('stugdt')) {
       document.getElementById('stugdt').scrollTop = 0;
@@ -949,16 +953,17 @@ class StuReport extends React.Component {
                       float: 'right',
                       marginTop: "9px",
                       border: 'none',
-                      width: 140
+                      width: 140,
+                      padding: '0 15px' 
                     }}
                     loading={this.props.state.downQue}
                     disabled={this.props.state.stuDown.length === 0 && !this.props.state.downQue}
                     onClick={() => {
                       this.setState({pull: !this.state.pull})
                     }}>
-                    <img style={{margin: ' 0 5px 0 0', height: '15px', marginBottom: '4px'}}
+                    <img style={{margin: '0 3px 4px 2px', height: '15px', marginBottom: '4px'}}
                          src={require('../../images/xc-cl-n.png')}></img>
-                    下载错题({this.props.state.stuDown.length})
+                    下载组卷({this.props.state.stuDown.length})
                   </Button> : ''}
                 {this.state.pull ?
                   <div className={style.buttonPull}
