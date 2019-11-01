@@ -194,14 +194,11 @@ class HomeworkCenter extends React.Component {
 									year: this.props.state.years,
 									userId: record.userId,
 								}
-								// if (record.admin === 1 && !this.props.state.infoClass) {
-								// 	message.warning('未选中班级')
-								// 	return;
-								// }
-								if (record.admin === 1 ) {
-									message.info('取消班主任功能稍后完成')
+								if (record.admin === 1 && !this.props.state.infoClass) {
+									message.warning('未选中班级')
 									return;
 								}
+
 								switch (record.admin) {
 									case 1:
 										data.roleName = 'headteacher';

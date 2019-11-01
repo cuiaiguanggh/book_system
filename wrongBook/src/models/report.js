@@ -194,17 +194,17 @@ export default {
 	},
 
 	effects: {
-		*rate({ payload }, { put, select, take }) {
+		*rate({ payload }, { put, select, takeLatest }) {
 			//当调用作业报告数据时，调用作业提高率
-			while (true) {
-				yield take('queryHomeworkScoreDetail')
+		
+			yield takeLatest('report/queryHomeworkScoreDetail', function* () {
 				let { homeworkId } = yield select(state => state.report);
 				let { classId, subId } = yield select(state => state.temp);
 				if (classId && homeworkId && subId) {
 					let data = {};
 					data.homeworkId = homeworkId;
 					data.classId = classId;
-					data.subjectId = subId; 
+					data.subjectId = subId;
 					let res = yield rate(data);
 					try {
 						yield put({
@@ -212,12 +212,11 @@ export default {
 							payload: res.data.data.classWrongScoreRate
 						})
 
-					}catch(e){
+					} catch (e) {
 						console.error('查询提高率失败')
 					}
-			
 				}
-			}
+			})
 		},
 		*getyuantu({ payload }, { put, select }) {
 			let res = yield yuantu(payload);
