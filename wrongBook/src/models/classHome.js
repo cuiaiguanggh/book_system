@@ -99,7 +99,7 @@ export default {
 		//一键升级班级
 		*upgrade({ payload }, { put, select }) {
 			let res = yield promotionClass(payload);
-			let { years} = yield select(state => state.temp)
+			let { years } = yield select(state => state.temp)
 			if (res.data && res.data.result === 0) {
 				yield put({
 					type: 'pageClass',
@@ -107,7 +107,7 @@ export default {
 						schoolId: store.get('wrongBookNews').schoolId,
 						pageSize: 9999,
 						pageNum: 1,
-						year:years
+						year: years
 					}
 				})
 				message.success('一键升级班级成功')
@@ -129,7 +129,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -146,8 +146,8 @@ export default {
 				payload: payload
 			})
 			let res = yield pageClass(payload);
-			if(!res.data.data.hasOwnProperty('list')){
-				res.data.data.list=[]
+			if (!res.data.data.hasOwnProperty('list')) {
+				res.data.data.list = []
 			}
 			if (res.data.result != 0) {
 				// yield put(routerRedux.push('/login'))
@@ -157,9 +157,27 @@ export default {
 					type: 'classList',
 					payload: res.data
 				})
+				//切换学年时的班级与当前选中的班级相同时，不清空选中班级的id
+
+				let { infoClass } = yield select(state => state.homePage)
+				let panduan = true;
+				for (let i = 0; i < res.data.data.list.length; i++) {
+					if (res.data.data.list[i].classId == infoClass) {
+						panduan = false;
+						break;
+					}
+				}
+			
+				if (panduan) {
+					yield put({
+						type: 'homePage/infoClass',
+						payload: ''
+					})
+				}
+
 			}
 			else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -189,7 +207,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -219,7 +237,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -255,7 +273,7 @@ export default {
 					}
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -292,7 +310,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -328,7 +346,7 @@ export default {
 					}
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -351,7 +369,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -376,7 +394,7 @@ export default {
 						payload: res.data
 					})
 				} else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -398,7 +416,7 @@ export default {
 						payload: res.data
 					})
 				} else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 
@@ -429,7 +447,7 @@ export default {
 					payload: res.data
 				})
 			} else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -455,7 +473,7 @@ export default {
 						payload: res.data.data[0]
 					})
 				} else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 

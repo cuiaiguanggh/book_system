@@ -14,6 +14,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import TracksVideo from '../TracksVideo/TracksVideo';
 import QRCode from 'qrcode.react';
 import { dataCenter, dataCen, serverType } from '../../../config/dataCenter'
+// import { Spring, animated, interpolate } from 'react-spring/renderprops'
 
 import PhotoLayer from '../../components/photoLayer/photoLayer';
 
@@ -25,6 +26,8 @@ const {
 let hei = 0;
 const { confirm } = Modal;
 const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />;
+
+
 //预批改弹窗右边的学生题目
 class ItemRenderer extends React.Component {
   render() {
@@ -1170,8 +1173,17 @@ class WorkReport extends React.Component {
                       错误率
                         </span>
                     <span className={style.right} >
+
+                      {/* <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
+                        {props => (<animated.span className={style.number}>
+                          {props.number.interpolate(x => (x * 100).toFixed(0))}
+                        </animated.span>
+                        )}
+                      </Spring> */}
+
                       <span className={style.number}>{classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}
-                      </span>%
+                      </span> 
+                      %
                     </span>
                   </div>
                   <div className={style.textzytg}>
@@ -1184,6 +1196,7 @@ class WorkReport extends React.Component {
                   <div className={style.yuanzuo} style={document.documentElement.clientWidth <= 1200 ? { right: '32%' } : {}}>
                     {classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}%
                   </div>
+
                   <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
                     <div className={style.centerCircle}></div>
                     <div className={style.annulusOuter}></div>
@@ -1192,10 +1205,11 @@ class WorkReport extends React.Component {
                       <div className={style.leftRectangle} ></div>}
                     {classWrongScore < 0.5 ?
                       <div className={style.rightRectangle} style={{ transform: `rotate(${360 * classWrongScore}deg)` }}></div>
-                      : <div className={style.rightRectangle}></div>}
+                      : <div className={style.rightRectangle} style={{ background: '#FF7F69' }} ></div>}
                     {/*加下面一个div是因为hidde在移动端失效导致样式不对*/}
                     <div className={style.repairAnnulus}></div>
                   </div>
+
 
                 </div>
               </div>
@@ -1564,7 +1578,7 @@ class WorkReport extends React.Component {
           <p style={{ fontSize: 18, color: 'rgba(48, 49, 51, 1)', margin: '0 0 30px 0' }}>提交详情</p>
           <p style={{ fontSize: 13, color: '#606266', borderBottom: '1px dashed #ECEDEE' }}>未提交<span style={{ fontSize: 16, color: '#409EFF' }}>
             &nbsp; {scoreDetail.data ? scoreDetail.data.unCommit : 0}人</span> </p>
-          <div style={{ lineHeight: '26px', padding: '0 30px' }} >
+          <div style={{ lineHeight: '26px', padding: '0 28px', maxHeight: 380, overflow: 'auto' }} >
             {scoreDetail.data && scoreDetail.data.hasOwnProperty('unCommitName') && scoreDetail.data.unCommitName.length > 0 ?
               scoreDetail.data.unCommitName.map((item, i) => {
                 return <span key={i} className={style.notsubmit}>

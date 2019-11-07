@@ -2,12 +2,12 @@ import React from 'react';
 import {
   Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin, DatePicker
 } from 'antd';
-import {routerRedux, Link} from "dva/router";
-import {connect} from 'dva';
+import { routerRedux, Link } from "dva/router";
+import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './stuReport.less';
 import moment from 'moment';
-import {dataCen, dataCenter, serverType} from '../../../config/dataCenter'
+import { dataCen, dataCenter, serverType } from '../../../config/dataCenter'
 import store from 'store';
 import commonCss from '../../css/commonCss.css'
 import TracksVideo from "../TracksVideo/TracksVideo";
@@ -15,11 +15,11 @@ import QRCode from "qrcode.react";
 import 'moment/locale/zh-cn';
 //作业中心界面内容
 const Option = Select.Option;
-const {RangePicker} = DatePicker;
+const { RangePicker } = DatePicker;
 const {
   Header, Footer, Sider, Content,
 } = Layout;
-const antIcon = <Icon type="loading" style={{fontSize: 50}} spin/>;
+const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />;
 const confirm = Modal.confirm;
 let hei = 200;
 
@@ -43,8 +43,8 @@ class StuReport extends React.Component {
       zoom: false,
       similarTopic: 1,
       //匹配错误显示
-      pptype:0,
-      nowWindows:{},
+      pptype: 0,
+      nowWindows: {},
     }
   }
 
@@ -75,8 +75,8 @@ class StuReport extends React.Component {
     fetch(dataCenter('/file/uploadFile?token=' + token), {
       method: "POST",
       body: form,
-      headers:{
-        "Authorization":token
+      headers: {
+        "Authorization": token
       }
     })
       .then(response => response.json())
@@ -193,15 +193,15 @@ class StuReport extends React.Component {
     }
     let questionNews = this.props.state.questionNews;
     return (
-      <div className={style.codeFram} style={{textAlign: 'center', overflow: "hidden"}}>
+      <div className={style.codeFram} style={{ textAlign: 'center', overflow: "hidden" }}>
         <div className={style.questionBody}>
           {/*<div className={style.questionTop}>*/}
           {/*  <span>答错<span style={{color: "#1890ff", fontWeight: 'bold', padding: '0 5px'}}>{questionNews.wrongNum}</span>人</span>*/}
           {/*</div>*/}
-          <div style={{padding: '10px', height: '250px', overflow: 'hidden'}}>
+          <div style={{ padding: '10px', height: '250px', overflow: 'hidden' }}>
             {
               questionNews.questionUrl.split(',').map((item, i) => (
-                <img key={i} style={{width: '100%'}} src={item}></img>
+                <img key={i} style={{ width: '100%' }} src={item}></img>
               ))
             }
           </div>
@@ -213,33 +213,33 @@ class StuReport extends React.Component {
                 {
                   !this.props.state.toupload ?
                     <div>
-                      <QRCode className='qrcode' size={150} value={value}/>
-                      <p style={{marginTop: 20, fontSize: '16px', color: '#606266'}}>手机微信扫码，录制视频讲解</p>
+                      <QRCode className='qrcode' size={150} value={value} />
+                      <p style={{ marginTop: 20, fontSize: '16px', color: '#606266' }}>手机微信扫码，录制视频讲解</p>
 
                       <label htmlFor="file">
                         <span
                           className={style.addButon}
                         >本地上传</span>
-                        <p style={{margin: '10px 0'}}>支持文件类型:mp4 </p>
-                        <p style={{margin: '10px 0'}}>文件大小限制:50MB</p>
+                        <p style={{ margin: '10px 0' }}>支持文件类型:mp4 </p>
+                        <p style={{ margin: '10px 0' }}>文件大小限制:50MB</p>
                       </label>
                       <input
                         type='file'
                         id='file'
                         accept='.mp4'
-                        style={{display: 'none'}}
+                        style={{ display: 'none' }}
                         onChange={this.onImportExcel}
                       />
                     </div> :
                     <div>
-                      <Spin style={{height: '155px', marginLeft: '-24px', lineHeight: "150px"}} indicator={antIcon}/>
+                      <Spin style={{ height: '155px', marginLeft: '-24px', lineHeight: "150px" }} indicator={antIcon} />
                       {/* <Icon type="loading" style={{ fontSize: 24 }} spin /> */}
-                      <p style={{marginTop: 20, fontSize: '16px', color: '#606266'}}>正在上传...</p>
+                      <p style={{ marginTop: 20, fontSize: '16px', color: '#606266' }}>正在上传...</p>
                       <span
                         className={style.addButon}
                       >本地上传</span>
-                      <p style={{margin: '10px 0'}}>支持文件类型：mp4 </p>
-                      <p style={{margin: '10px 0'}}>文件大小限制：50MB</p>
+                      <p style={{ margin: '10px 0' }}>支持文件类型：mp4 </p>
+                      <p style={{ margin: '10px 0' }}>文件大小限制：50MB</p>
                     </div>
                 }
               </div>
@@ -249,7 +249,7 @@ class StuReport extends React.Component {
                   id="video"
                   controls="controls"
                   width="100%"
-                  style={{height: '210px'}}
+                  style={{ height: '210px' }}
                   src={this.props.state.videlUrl}
                   controls>
                 </video>
@@ -285,7 +285,7 @@ class StuReport extends React.Component {
   }
 
   handleScroll(e) {
-    const {scrollHeight} = this.refDom;
+    const { scrollHeight } = this.refDom;
     hei = scrollHeight;
   }
 
@@ -322,7 +322,7 @@ class StuReport extends React.Component {
         year: this.props.state.years,
         subjectId: this.props.state.subId,
         userId: e.key,
-        type:1
+        type: 1
       }
     });
 
@@ -363,8 +363,8 @@ class StuReport extends React.Component {
   menulist() {
     let studentList = this.props.state.studentList;
     let current = this.props.state.userId;
-    if(!current){
-        current = studentList.data[0].userId;
+    if (!current) {
+      current = studentList.data[0].userId;
     }
 
     if (studentList.data.length > 0) {
@@ -377,8 +377,8 @@ class StuReport extends React.Component {
           >
             {
               studentList.data.map((item, i) => (
-                <Menu.Item key={item.userId} style={{cursor: 'pointer'}} title={item.userName}>
-                  <div style={{overflow: 'hidden'}}>
+                <Menu.Item key={item.userId} style={{ cursor: 'pointer' }} title={item.userName}>
+                  <div style={{ overflow: 'hidden' }}>
                     <span style={{
                       float: 'left',
                       width: "70%",
@@ -386,7 +386,7 @@ class StuReport extends React.Component {
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap'
                     }}>{item.userName}</span>
-                    <span style={{float: 'right'}}>{item.wrongNum}道</span>
+                    <span style={{ float: 'right' }}>{item.wrongNum}道</span>
                   </div>
                 </Menu.Item>
               ))
@@ -412,14 +412,14 @@ class StuReport extends React.Component {
     if (detail.length > 0) {
       return (
         <div id='stugdt'
-             className={style.outBody}
-             style={{overflow: 'auto'}}
-             ref={this.Ref}
-             onScroll={
-              this.rollMistakes.bind(this)
-            }
-            
-             onWheel={(e) => this.handleScroll(e)}>
+          className={style.outBody}
+          style={{ overflow: 'auto' }}
+          ref={this.Ref}
+          onScroll={
+            this.rollMistakes.bind(this)
+          }
+
+          onWheel={(e) => this.handleScroll(e)}>
           {
             detail.map((item, i) => {
               let downs = this.props.state.stuDown;
@@ -434,32 +434,32 @@ class StuReport extends React.Component {
               return (
                 <div key={i} className={style.questionBody}>
                   <div className={style.questionTop}>
-                    <span style={{marginRight: '20px'}}>第{i + 1}题</span>
+                    <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
                     {/* <span>班级错误率：{}%（答错15人）</span> */}
                     {
                       item.num != 0 ?
-                        <span style={{borderLeft: '1px solid #ccc', paddingLeft: '20px'}}>已出卷<span
-                          style={{color: "#1890ff"}}>{item.num}</span>次</span>
+                        <span style={{ borderLeft: '1px solid #ccc', paddingLeft: '20px' }}>已出卷<span
+                          style={{ color: "#1890ff" }}>{item.num}</span>次</span>
                         : ''
                     }
                     <TracksVideo type={item} num={j}></TracksVideo>
                   </div>
-                  <div style={{padding: '20px', height: '250px', overflow: "hidden"}} onClick={() => {
+                  <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
                     this.setState({
-                      nowWindows:item,
+                      nowWindows: item,
                       visible: true,
-                      pptype:item.type
+                      pptype: item.type
                     });
                   }}>
 
-                    {item.title && item.type===0?
-                      <div dangerouslySetInnerHTML={{__html: item.title}}/>
+                    {item.title && item.type === 0 ?
+                      <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
-                     <img key={i} style={{width: '100%'}} src={item.questionUrl.split(',')[0]}/>
+                      <img key={i} style={{ width: '100%' }} src={item.questionUrl.split(',')[0]} />
                     }
                   </div>
 
-                  <div style={{overflow: 'hidden', paddingLeft: '10px', paddingTop: '20px'}}>
+                  <div style={{ overflow: 'hidden', paddingLeft: '10px', paddingTop: '20px' }}>
                     <span className={cls} onClick={() => {
                       let dom = document.getElementsByClassName('down');
                       let downs = this.props.state.stuDown;
@@ -485,10 +485,10 @@ class StuReport extends React.Component {
                     }}>
                       {
                         name == '选题' ?
-                          <img style={{marginTop: '-4px', marginRight: '4px'}}
-                               src={require('../../images/sp-xt-n.png')}/> :
-                          <img style={{marginTop: '-4px', marginRight: '4px'}}
-                               src={require('../../images/sp-yc-n.png')}/>
+                          <img style={{ marginTop: '-4px', marginRight: '4px' }}
+                            src={require('../../images/sp-xt-n.png')} /> :
+                          <img style={{ marginTop: '-4px', marginRight: '4px' }}
+                            src={require('../../images/sp-yc-n.png')} />
 
                       }
                       {name}</span>
@@ -508,7 +508,7 @@ class StuReport extends React.Component {
 
   //时间框
   quantumtime(date, dateString) {
-    if(date.length===0){
+    if (date.length === 0) {
       this.alltime()
       return;
     }
@@ -546,7 +546,7 @@ class StuReport extends React.Component {
         startTime: dateString[0],
         endTime: dateString[1],
         userId: this.props.state.userId,
-        type:1
+        type: 1
       }
     });
     this.props.dispatch({
@@ -602,7 +602,7 @@ class StuReport extends React.Component {
         year: this.props.state.years,
         subjectId: this.props.state.subId,
         userId: this.props.state.userId,
-        type:1
+        type: 1
       }
     });
     let data = {
@@ -655,7 +655,7 @@ class StuReport extends React.Component {
         year: this.props.state.years,
         subjectId: this.props.state.subId,
         userId: this.props.state.userId,
-        type:1
+        type: 1
       }
     });
     let data = {
@@ -710,8 +710,8 @@ class StuReport extends React.Component {
       data.startTime = this.props.state.stbegtoendTime[0];
       data.endTime = this.props.state.stbegtoendTime[1];
     }
-  
-    if(!data.subjectId){
+
+    if (!data.subjectId) {
       message.error('请选择学科');
       return;
     }
@@ -784,15 +784,15 @@ class StuReport extends React.Component {
       });
       console.log(this.props.state)
       //下载pdf
-      let downparameters={
+      let downparameters = {
         uqIdsStr: this.props.state.stuDownPic.join(','),
-        childId:this.props.state.userId,
-        operationClass:this.props.state.classId,
+        childId: this.props.state.userId,
+        operationClass: this.props.state.classId,
       };
-      if(this.state.similarTopic===1){
-        downparameters.practise=0
-      }else{
-        downparameters.practise=1
+      if (this.state.similarTopic === 1) {
+        downparameters.practise = 0
+      } else {
+        downparameters.practise = 1
       };
       this.props.dispatch({
         type: 'down/makeSelectWB',
@@ -835,7 +835,7 @@ class StuReport extends React.Component {
         let subId = this.props.state.subId;
         let year = this.props.state.years;
         page++;
-        this.setState({next: false});
+        this.setState({ next: false });
         this.props.dispatch({
           type: 'report/propsPageNum',
           payload: page
@@ -869,7 +869,7 @@ class StuReport extends React.Component {
         });
         let This = this;
         setTimeout(function () {
-          This.setState({next: true})
+          This.setState({ next: true })
         }, 1000)
       }
     }
@@ -893,8 +893,8 @@ class StuReport extends React.Component {
             way: 2
           }
         });
-        that.setState({topicxy: true})
-        that.state.nowWindows.type=1;
+        that.setState({ topicxy: true })
+        that.state.nowWindows.type = 1;
       },
     });
   }
@@ -915,12 +915,12 @@ class StuReport extends React.Component {
         overflow: 'auto',
         position: 'relative'
       }}
-          ref='warpper'
+        ref='warpper'
       >
         <div className={style.layout}>
-          <iframe style={{display: 'none'}} src={this.state.wordUrl}/>
-          <div style={{height: '50px', lineHeight: '50px'}}>
-            <div style={{padding: '0 20px', background: "#fff", borderBottom: '1px solid #ccc'}}>
+          <iframe style={{ display: 'none' }} src={this.state.wordUrl} />
+          <div style={{ height: '50px', lineHeight: '50px' }}>
+            <div style={{ padding: '0 20px', background: "#fff", borderBottom: '1px solid #ccc' }}>
               <span style={{
                 fontSize: 14,
                 fontFamily: 'MicrosoftYaHei-Bold',
@@ -928,23 +928,23 @@ class StuReport extends React.Component {
                 color: 'rgba(96,98,102,1)',
               }}>时间：</span>
               <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
-                    onClick={this.alltime.bind(this)}>全部</span>
+                onClick={this.alltime.bind(this)}>全部</span>
               {
-                mounthList.data && mounthList.data.length>0?
+                mounthList.data && mounthList.data.length > 0 ?
                   mounthList.data.map((item, i) => (
                     <span key={i} className={item.k == this.props.state.mouNow.k ? 'choseMonthOn' : 'choseMonth'}
-                          onClick={this.monthtime.bind(this, item)}>{item.k}</span>
+                      onClick={this.monthtime.bind(this, item)}>{item.k}</span>
                   ))
                   : ''
               }
               <RangePicker
-                style={{width: 220}}
+                style={{ width: 220 }}
                 format="YYYY-MM-DD"
                 placeholder={['开始时间', '结束时间']}
                 value={this.props.state.begtoendTime}
                 disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
-                onChange={this.quantumtime.bind(this)}/>
-              <div style={{float: 'right'}}>
+                onChange={this.quantumtime.bind(this)} />
+              <div style={{ float: 'right' }}>
                 {detail.data && detail.data.questionList.length !== 0 ?
                   <Button
                     style={{
@@ -954,47 +954,47 @@ class StuReport extends React.Component {
                       marginTop: "9px",
                       border: 'none',
                       width: 140,
-                      padding: '0 15px' 
+                      padding: '0 15px'
                     }}
                     loading={this.props.state.downQue}
                     disabled={this.props.state.stuDown.length === 0 && !this.props.state.downQue}
                     onClick={() => {
-                      this.setState({pull: !this.state.pull})
+                      this.setState({ pull: !this.state.pull })
                     }}>
-                    <img style={{margin: '0 3px 4px 2px', height: '15px', marginBottom: '4px'}}
-                         src={require('../../images/xc-cl-n.png')}></img>
+                    <img style={{ margin: '0 3px 4px 2px', height: '15px', marginBottom: '4px' }}
+                      src={require('../../images/xc-cl-n.png')}></img>
                     下载组卷({this.props.state.stuDown.length})
                   </Button> : ''}
                 {this.state.pull ?
                   <div className={style.buttonPull}
-                       onClick={(e) => {
-                         if (this.state.similarTopic === 1) {
-                           this.setState({
-                             similarTopic: 2
-                           })
-                         } else if (this.state.similarTopic === 2) {
-                           this.setState({
-                             similarTopic: 1
-                           })
-                         }
-                       }}>
+                    onClick={(e) => {
+                      if (this.state.similarTopic === 1) {
+                        this.setState({
+                          similarTopic: 2
+                        })
+                      } else if (this.state.similarTopic === 2) {
+                        this.setState({
+                          similarTopic: 1
+                        })
+                      }
+                    }}>
                     <Row className={style.downloadrow}>
                       {this.state.similarTopic === 1 ?
-                        <img style={{margin: '0 9px 0 15px', height: '14px'}}
-                             src={require('../../images/lvxz.png')}></img> :
-                        <img style={{margin: '0 9px 0 15px', height: '14px'}}
-                             src={require('../../images/lvwxz.png')}></img>}
+                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
+                          src={require('../../images/lvxz.png')}></img> :
+                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
+                          src={require('../../images/lvwxz.png')}></img>}
                       <span className={style.inputk} value="1">下载原错题</span>
                     </Row>
-                    <Row className={style.downloadrow} style={{lineHeight: 1, textAlign: 'left'}}>
+                    <Row className={style.downloadrow} style={{ lineHeight: 1, textAlign: 'left' }}>
                       {this.state.similarTopic === 2 ?
-                        <img style={{margin: '0 9px 0 15px', height: '14px'}}
-                             src={require('../../images/lvxz.png')}></img> :
-                        <img style={{margin: '0 9px 0 15px', height: '14px'}}
-                             src={require('../../images/lvwxz.png')}></img>}
+                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
+                          src={require('../../images/lvxz.png')}></img> :
+                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
+                          src={require('../../images/lvwxz.png')}></img>}
                       <span className={style.inputk} value="1">
-                      <p style={{margin: '15px 0 0 0'}}>下载原错题＋</p>
-                      <p style={{margin: 0}}>优选练习</p> </span>
+                        <p style={{ margin: '15px 0 0 0' }}>下载原错题＋</p>
+                        <p style={{ margin: 0 }}>优选练习</p> </span>
                     </Row>
                     <Row>
                       <div className={style.yulangbutton} onClick={this.downloadPitch.bind(this)}>
@@ -1033,10 +1033,10 @@ class StuReport extends React.Component {
             }
 
             <Content className={style.content}
-                     style={{display: 'flex', flexDirection: 'column',overflow:'hidden'}}
-                     ref='warpper'
-                   >
-              <div style={{height: 'auto'}}>
+              style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+              ref='warpper'
+            >
+              <div style={{ height: 'auto' }}>
                 <div style={
                   this.state.zoom ?
                     {
@@ -1048,7 +1048,7 @@ class StuReport extends React.Component {
                       width: '100%',
                       overflow: 'hidden'
                     } :
-                    {padding: '0 20px', background: "#fff", float: 'left', width: '100%'}
+                    { padding: '0 20px', background: "#fff", float: 'left', width: '100%' }
                 }>
                   <span style={{
                     fontSize: 14,
@@ -1063,17 +1063,17 @@ class StuReport extends React.Component {
                     width: 'calc(100% - 60px)',
                     height: 35,
                     overflow: 'hidden'
-                  } : {float: 'left', width: 'calc(100% - 60px)', maxHeight: 352, overflow: 'auto'}}>
+                  } : { float: 'left', width: 'calc(100% - 60px)', maxHeight: 352, overflow: 'auto' }}>
                     <span key={0} className={0 === this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
-                          style={{width: 48}}
-                          onClick={this.allknowledgenow.bind(this)}>全部</span>
+                      style={{ width: 48 }}
+                      onClick={this.allknowledgenow.bind(this)}>全部</span>
                     {
                       knowledgeList.data ?
                         knowledgeList.data.map((item, i) => {
                           return (
                             <span key={item.knowledgeName}
-                                  className={this.props.state.knowledgenow.indexOf(item.knowledgeName)>-1? 'choseMonthOn' : 'choseMonth'}
-                                  onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}>{item.knowledgeName}({item.num})</span>
+                              className={this.props.state.knowledgenow.indexOf(item.knowledgeName) > -1 ? 'choseMonthOn' : 'choseMonth'}
+                              onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}>{item.knowledgeName}({item.num})</span>
                           )
                         })
                         : ''
@@ -1092,72 +1092,73 @@ class StuReport extends React.Component {
                   }}>
                     <img src={require('../../images/wsj-n.png')}></img>
                     <span
-                      style={{fontSize: '30px', marginLeft: '50px', fontWeight: 'bold', color: "#434e59"}}>暂无数据</span>
+                      style={{ fontSize: '30px', marginLeft: '50px', fontWeight: 'bold', color: "#434e59" }}>暂无数据</span>
                   </div>
               }
             </Content>
           </Layout>
           <Modal
             visible={this.state.visible}
-            width={(this.state.nowWindows.title &&this.state.pptype===0 && !this.state.topicxy)?'80%':'50%'}
+            width={(this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy) ? '80%' : '50%'}
             className="showques"
             footer={null}
             onOk={() => {
-              this.setState({visible: false, topicxy: false,})
+              this.setState({ visible: false, topicxy: false, })
             }}
             onCancel={() => {
-              this.setState({visible: false, topicxy: false,})
+              this.setState({ visible: false, topicxy: false, })
             }}
           >
-            {this.state.nowWindows.title &&this.state.pptype===0 && !this.state.topicxy?
-              <div style={{display: 'flex'}}>
-                <div className={style.topicbox} style={{width:'40%'}}>
-                  <h3 className={style.fonsfwc} style={{marginBottom: 30}}>题目
+            {this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy ?
+              <div style={{ display: 'flex' }}>
+                <div className={style.topicbox} style={{ width: '40%' }}>
+                  <h3 className={style.fonsfwc} style={{ marginBottom: 20 }}>题目
                     <span className={style.matchingError} onClick={this.pipeicw.bind(this)}>
-                      <Icon theme='filled' type="exclamation-circle" style={{color: '#C0C8CF'}}/> 题目匹配报错 </span></h3>
-
-                  <div dangerouslySetInnerHTML={{__html: this.state.nowWindows.title}} className={style.houtaizi}/>
-                  <div style={{
-                    color: '#333333',
-                    fontFamily: 'MicrosoftYaHei-Bold',
-                    fontSize: '16',
-                    fontWeight: 'bold',
-                    marginTop: 15,
-                    width:'60%'
-                  }}>【考点】
+                      <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错 </span></h3>
+                  <div style={{ overflow: 'auto', maxHeight: '600px', minHeight: '230px' }}>
+                    <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.title }} />
+                    <div style={{
+                      color: '#333333',
+                      fontFamily: 'MicrosoftYaHei-Bold',
+                      fontSize: '16',
+                      fontWeight: 'bold',
+                      marginTop: 15,
+                      width: '60%'
+                    }}>【考点】
                   </div>
-                  <div dangerouslySetInnerHTML={{__html: this.state.nowWindows.knowledgeName}} className={style.houtaizi}/>
-                  <div style={{
-                    color: '#333333',
-                    fontFamily: 'MicrosoftYaHei-Bold',
-                    fontSize: '16',
-                    fontWeight: 'bold',
-                    marginTop: 15
-                  }}> 【答案与解析】
+                    <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.knowledgeName }} />
+                    <div style={{
+                      color: '#333333',
+                      fontFamily: 'MicrosoftYaHei-Bold',
+                      fontSize: '16',
+                      fontWeight: 'bold',
+                      marginTop: 15
+                    }}> 【答案与解析】
                   </div>
-                  <div dangerouslySetInnerHTML={{__html: this.state.nowWindows.parse}} className={style.houtaizi}/>
+                    <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.parse }} />
+                  </div>
                 </div>
 
                 <div style={{
                   border: '1px solid  rgba(231,231,231,1)',
                   display: 'flex',
                   flexDirection: 'column',
-                  padding: '25px 82px 36px 30px',
+                  padding: '20px 25px 35px 30px',
                   width: '58%'
                 }}>
                   <h3 className={style.fonsfwc}>原图</h3>
                   {
                     this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
-                      <img key={i} className={style.yuantp}  src={item}></img>
+                      <img key={i} className={style.yuantp} src={item}></img>
                     ))
                   }
                 </div>
               </div> :
               <div>
-                {  this.state.nowWindows.userAnswerList &&  this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
-                    <img key={i} style={{width: '100%', margin: 'auto'}}
-                         src={item}></img>
-                  ))}
+                {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
+                  <img key={i} style={{ width: '100%', margin: 'auto' }}
+                    src={item}></img>
+                ))}
               </div>
             }
           </Modal>
@@ -1203,8 +1204,8 @@ class StuReport extends React.Component {
             okText='下载'
             className={commonCss.pdfModal}
           >
-            <div style={{height: '700px'}}>
-              <iframe src={fileLink} title='下载预览' style={{width: '100%', height: '100%', border: 0}}></iframe>
+            <div style={{ height: '700px' }}>
+              <iframe src={fileLink} title='下载预览' style={{ width: '100%', height: '100%', border: 0 }}></iframe>
             </div>
 
           </Modal>
@@ -1235,7 +1236,7 @@ class StuReport extends React.Component {
           year,
           subjectId: this.props.state.subId,
           userId,
-          type:1
+          type: 1
         }
       });
 

@@ -223,6 +223,12 @@ class HomePageLeft extends Component {
               }
             });
 
+            this.props.dispatch({
+              type: 'homePage/teacherList',
+              payload: {
+                type: 1
+              }
+            })
             if (window.location.href.split('/#/')[1] == 'classChart') {
               console.log('classChart')
               //重置月份为0
@@ -272,7 +278,7 @@ class HomePageLeft extends Component {
               payload: 1
             });
           }
-          if (window.location.href.split('/#/')[1] == 'classUser') {
+          if (window.location.href.split('/#/')[1].includes('classUser')) {
             console.log('classUser')
             this.props.dispatch({
               type: 'classHome/getClassList',
@@ -289,38 +295,38 @@ class HomePageLeft extends Component {
               }
             })
           } else if (window.location.href.split('/#/')[1] == 'classChart') {
-              if (classId !== '' && subId != '' && year !== '') {
-                console.log('classChart')
-                //重置月份为0
-                this.props.dispatch({
-                  type: 'report/changeMouth',
-                  payload: 0
-                })
-                //重新调用接口
-                this.props.dispatch({
-                  type: 'reportChart/getReportTimeList',
-                  payload: {
-                    classReport: true
-                  }
-                });
-              }
-            } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
-              if (classId !== '' && subId != '' && year !== '') {
-                console.log('schoolChart')
-                //重置月份为0
-                this.props.dispatch({
-                  type: 'report/changeMouth',
-                  payload: 0
-                })
-                //重新调用接口
-                this.props.dispatch({
-                  type: 'reportChart/getReportTimeList',
-                  payload: {
-                    classReport: false
-                  }
-                });
-              }
+            if (classId !== '' && subId != '' && year !== '') {
+              console.log('classChart')
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              this.props.dispatch({
+                type: 'reportChart/getReportTimeList',
+                payload: {
+                  classReport: true
+                }
+              });
             }
+          } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
+            if (classId !== '' && subId != '' && year !== '') {
+              console.log('schoolChart')
+              //重置月份为0
+              this.props.dispatch({
+                type: 'report/changeMouth',
+                payload: 0
+              })
+              //重新调用接口
+              this.props.dispatch({
+                type: 'reportChart/getReportTimeList',
+                payload: {
+                  classReport: false
+                }
+              });
+            }
+          }
 
         }}>
         {yearList.data.map((item, i) => (
@@ -374,14 +380,24 @@ class HomePageLeft extends Component {
           schoolId: value
         }
       })
-
-      if (hashStrings == '/classUser') {
+      if (hashStrings.includes('/classUser')) {
         console.log('classUser')
         this.props.dispatch({
           type: 'classHome/getClassList',
           payload: {
             year,
             schoolId: value
+          }
+        });
+
+
+        this.props.dispatch({
+          type: 'classHome/pageClass',
+          payload: {
+            schoolId: value,
+            pageSize: 9999,
+            pageNum: 1,
+            year: this.props.state.years
           }
         });
 
@@ -395,6 +411,8 @@ class HomePageLeft extends Component {
             type: 1
           }
         })
+
+
 
       } else if (hashStrings == '/classChart') {
         if (classId !== '' && subId != '' && year !== '') {
