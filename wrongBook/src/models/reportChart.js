@@ -189,6 +189,7 @@ export default {
           type: 'sgradeList',
           payload: glist
         })
+
         if (gradeData.data.data.length === 0) {
           yield put({
             type: 'schoolDataReport',
@@ -287,6 +288,12 @@ export default {
             type: 'noClassData',
             payload: false
           })
+          console.log(2222)
+          yield put({
+            type: 'schoolDataReport',
+            payload:{}
+          })
+
         }
         yield put({
           type: 'ssubList',
@@ -333,7 +340,6 @@ export default {
 
     * getSchoolDataReport({ payload }, { put, select }) {
       let schoolRes = yield querySchoolDataReport(payload);
-
       if (schoolRes.data.result === 0) {
         yield put({
           type: 'schoolDataReport',
@@ -408,13 +414,13 @@ export default {
 
         yield put({
           type: 'classDataReport',
-          payload:{
-            studentWrongNum:[],
-            classUserNumData:[],
-            classWrongNumData:[],
-            teacherUseDataList:[]
+          payload: {
+            studentWrongNum: [],
+            classUserNumData: [],
+            classWrongNumData: [],
+            teacherUseDataList: []
           }
-          })
+        })
 
       }
 

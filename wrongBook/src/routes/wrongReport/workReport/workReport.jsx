@@ -14,7 +14,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import TracksVideo from '../TracksVideo/TracksVideo';
 import QRCode from 'qrcode.react';
 import { dataCenter, dataCen, serverType } from '../../../config/dataCenter'
-// import { Spring, animated, interpolate } from 'react-spring/renderprops'
+import { Spring, animated } from 'react-spring/renderprops'
 
 import PhotoLayer from '../../components/photoLayer/photoLayer';
 
@@ -79,7 +79,7 @@ class ItemRenderer extends React.Component {
               <> <div className={style.cuowuhui} style={{ right: 94 }}>  <img src={require('../../images/dui.png')} /></div>
                 <div className={style.cuowuhui}>  <img src={require('../../images/cuo.png')} /></div></>}
 
-            <img style={{ width: '100%', height: 'auto' }} src={nowvalue.questionUrl} />
+            <img style={{ width: '100%', height: 'auto' }} src={nowvalue.questionUrl.indexOf('?') > 0 ? `${nowvalue.questionUrl}/thumbnail/1000x` : `${nowvalue.questionUrl}?imageMogr2/thumbnail/1000x`} />
           </div>
         </div>)
     }
@@ -269,7 +269,8 @@ class WorkReport extends React.Component {
           <div style={{ padding: '10px', height: '250px', overflow: 'hidden' }}>
             {
               questionNews.question.split(',').map((item, i) => (
-                <img key={i} style={{ width: '100%' }} src={item}></img>
+                <img key={i} style={{ width: '100%' }}
+                  src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`} ></img>
               ))
             }
           </div>
@@ -653,7 +654,8 @@ class WorkReport extends React.Component {
                     {item.title && item.type === 0 ?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
-                      <img key={i} style={{ width: '100%' }} src={item.question.split(',')[0]}></img>
+                      <img key={i} style={{ width: '100%' }}
+                        src={item.question.split(',')[0].indexOf('?') > 0 ? `${item.question.split(',')[0]}/thumbnail/1000x` : `${item.question.split(',')[0]}?imageMogr2/thumbnail/1000x`}></img>
                     }
                   </div>
                   <div style={{ overflow: 'hidden', paddingLeft: '10px', }}>
@@ -1174,15 +1176,15 @@ class WorkReport extends React.Component {
                         </span>
                     <span className={style.right} >
 
-                      {/* <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
+                      <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
                         {props => (<animated.span className={style.number}>
                           {props.number.interpolate(x => (x * 100).toFixed(0))}
                         </animated.span>
                         )}
-                      </Spring> */}
+                      </Spring>
 
-                      <span className={style.number}>{classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}
-                      </span> 
+                      {/* <span className={style.number}>{classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}
+                      </span> */}
                       %
                     </span>
                   </div>
@@ -1190,14 +1192,51 @@ class WorkReport extends React.Component {
 
                     比上一份作业{this.props.state.improveRate < 0 ? '降低' : '提高'}
                     <img style={this.props.state.improveRate < 0 ? { transform: 'rotate(180deg)', position: 'relative', top: -3 } : { position: 'relative', top: -3 }} src={require('../../images/uParrow.png')} />
-                    {Math.round(Math.abs(this.props.state.improveRate * 100))}%
+
+                    <Spring native to={{ number: this.props.state.improveRate ? this.props.state.improveRate : 0 }}>
+                      {props => (<animated.span>
+                        {props.number.interpolate(x => Math.abs(x * 100).toFixed(0))}
+                      </animated.span>
+                      )}
+                    </Spring>
+
+                    {/* {Math.round(Math.abs(this.props.state.improveRate * 100))} */}
+                    %
                   </div>
 
                   <div className={style.yuanzuo} style={document.documentElement.clientWidth <= 1200 ? { right: '32%' } : {}}>
-                    {classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}%
+
+                    <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
+                      {props => (<animated.span>
+                        {props.number.interpolate(x => (x * 100).toFixed(0))}
+                      </animated.span>
+                      )}
+                    </Spring>
+
+                    {/* {classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'} */}
+                    %
                   </div>
 
+
                   <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
+                    <div className={style.centerCircle}></div>
+                    <div className={style.annulusOuter}></div>
+                    <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
+                      {props => <>
+                        <animated.div className={style.leftRectangle} style={{
+                          transform: props.number.interpolate(x => (x > 0.5 ? `rotate(${180 * x}deg)` : 'rotate(0deg)'))
+                        }}></animated.div>
+                        <animated.div className={style.rightRectangle} style={{
+                          transform: props.number.interpolate(x => (x < 0.5 ? `rotate(${360 * x}deg)` : 'rotate(0deg)')),
+                          background: props.number.interpolate(x => (x > 0.5 ? '#FF7F69' : '#EDEDED'))
+                        }} ></animated.div>
+                      </>}
+                    </Spring>
+                    <div className={style.repairAnnulus}></div>
+                  </div>
+
+
+                  {/* <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
                     <div className={style.centerCircle}></div>
                     <div className={style.annulusOuter}></div>
                     {classWrongScore > 0.5 ?
@@ -1206,9 +1245,10 @@ class WorkReport extends React.Component {
                     {classWrongScore < 0.5 ?
                       <div className={style.rightRectangle} style={{ transform: `rotate(${360 * classWrongScore}deg)` }}></div>
                       : <div className={style.rightRectangle} style={{ background: '#FF7F69' }} ></div>}
-                    {/*加下面一个div是因为hidde在移动端失效导致样式不对*/}
+
                     <div className={style.repairAnnulus}></div>
-                  </div>
+                  </div> */}
+
 
 
                 </div>
@@ -1224,23 +1264,51 @@ class WorkReport extends React.Component {
                     已批改
                    </span>
                   <span className={style.right}>
-                    <span className={style.number}>{scoreDetail.data ? scoreDetail.data.collectNum : '0'}
-                    </span>题
+
+                    <Spring native to={{ number: scoreDetail.data ? scoreDetail.data.collectNum : 0 }}>
+                      {props => (<animated.span className={style.number}>
+                        {props.number.interpolate(x => x.toFixed(0))}
+                      </animated.span>
+                      )}
+                    </Spring>
+
+                    {/* <span className={style.number}>{scoreDetail.data ? scoreDetail.data.collectNum : '0'}
+                    </span> */}
+                    题
                     </span>
                 </div>
 
                 <div className={style.texttj}
                   style={document.documentElement.clientWidth <= 1200 ? { paddingLeft: '5%' } : {}}>
-                  共提交{scoreDetail.data ? scoreDetail.data.allQuestionNum : '0'}题次
+                  共提交    <Spring native to={{ number: scoreDetail.data ? scoreDetail.data.allQuestionNum : 0 }}>
+                    {props => (<animated.span className={style.number}>
+                      {props.number.interpolate(x => x.toFixed(0))}
+                    </animated.span>
+                    )}
+                  </Spring>
+                  {/* {scoreDetail.data ? scoreDetail.data.allQuestionNum : '0'} */}
+                  题次
                   </div>
 
-                <div className={style.longellipse}
+                <Spring native to={{ number: scoreDetail.data ? (scoreDetail.data.allQuestionNum / scoreDetail.data.totalNum * 30) : 30 }}>
+                  {props => (<animated.div className={style.longellipse} style={{ width: props.number.interpolate(x => `${x}%`) }}>
+                  </animated.div>
+                  )}
+                </Spring>
+                <Spring native to={{ number: scoreDetail.data ? (scoreDetail.data.collectNum / scoreDetail.data.totalNum * 30) : 0 }}>
+                  {props => (<animated.div className={style.jindublue} style={{ width: props.number.interpolate(x => `${x}%`) }}>
+                  </animated.div>
+                  )}
+                </Spring>
+                {/* <div className={style.longellipse}
                   style={scoreDetail.data ? { width: `${scoreDetail.data.allQuestionNum / scoreDetail.data.totalNum * 30}%` } : { width: '30%' }
                   }>
                 </div>
+
                 <div className={style.jindublue}
                   style={scoreDetail.data ? { width: `${scoreDetail.data.collectNum / scoreDetail.data.totalNum * 30}%` } : { width: 0 }}>
-                </div>
+                </div> */}
+
                 <div className={style.gopigai} onClick={this.beforehandgai.bind(this)}
                   style={!scoreDetail.data || (scoreDetail.data && scoreDetail.data.collectNum === scoreDetail.data.allQuestionNum) ? {
                     background: '#ccc',
@@ -1266,18 +1334,42 @@ class WorkReport extends React.Component {
                    </span>
 
                   <span className={style.right}>
-                    <span className={style.number}>  {scoreDetail.data ? scoreDetail.data.unCommit : 0}</span>人
+                    <span className={style.number}>
+                      <Spring native to={{ number: scoreDetail.data ? scoreDetail.data.unCommit : 0 }}>
+                        {props => (<animated.span className={style.number}>
+                          {props.number.interpolate(x => x.toFixed(0))}
+                        </animated.span>
+                        )}
+                      </Spring>
+                      {/* {scoreDetail.data ? scoreDetail.data.unCommit : 0} */}
+                    </span>人
                     </span>
                 </div>
 
                 <div className={style.longellipse}> </div>
-                <div className={style.jindublue} style={scoreDetail.data ?
+
+
+                <Spring native to={{ number: scoreDetail.data ? (scoreDetail.data.allQuestionNum / (scoreDetail.data.unCommit + scoreDetail.data.allQuestionNum) * 30) : 0 }}>
+                  {props => (
+                    <animated.div className={style.jindublue} style={{ width: props.number.interpolate(x => `${x}%`), background: 'rgba(89,215,80,1)' }}>
+                    </animated.div>
+                  )}
+                </Spring>
+
+                {/* <div className={style.jindublue} style={scoreDetail.data ?
                   { width: `${scoreDetail.data.allQuestionNum / (scoreDetail.data.unCommit + scoreDetail.data.allQuestionNum) * 30}%`, background: 'rgba(89,215,80,1)' } : { width: 0, background: 'rgba(89,215,80,1)' }}>
-                </div>
+                </div> */}
 
 
                 <div className={style.texttj} style={document.documentElement.clientWidth <= 1200 ? { paddingLeft: '5%' } : {}}>
-                  已提交作业{scoreDetail.data ? scoreDetail.data.commit : 0}人
+                  已提交作业 <Spring native to={{ number: scoreDetail.data ? scoreDetail.data.commit : 0 }}>
+                    {props => (<animated.span className={style.number}>
+                      {props.number.interpolate(x => x.toFixed(0))}
+                    </animated.span>
+                    )}
+                  </Spring>
+                  {/* {scoreDetail.data ? scoreDetail.data.commit : 0} */}
+                  人
                 </div>
 
                 <div className={style.remind} style={document.documentElement.clientWidth <= 1200 ? { left: '50%' } : {}}
@@ -1338,8 +1430,7 @@ class WorkReport extends React.Component {
           visible={this.state.aheadSelect}
           className='aheadTc'
           width={window.screen.width <= 1280 ? '1180px' : '90%'}
-          onCancel={this.yptcCancel.bind(this)}
-        >
+          onCancel={this.yptcCancel.bind(this)} >
           <div style={{ display: 'flex', height: 850 }}>
             <div className={style.aheadLeft}>
               <p className={style.aheadTitle}>
@@ -1428,7 +1519,8 @@ class WorkReport extends React.Component {
                       </div>
 
                       {beforehand.question ?
-                        <img style={{ width: '100%' }} src={beforehand.question.split(',')[0]} />
+                        <img style={{ width: '100%' }}
+                          src={beforehand.question.split(',')[0].indexOf('?') > 0 ? `${beforehand.question.split(',')[0]}/thumbnail/1000x` : `${beforehand.question.split(',')[0]}?imageMogr2/thumbnail/1000x`} />
                         : ''
                       }
                     </div>)
@@ -1537,8 +1629,7 @@ class WorkReport extends React.Component {
           closable={false}
           cancelText='取消'
           okText='下载'
-          className={commonCss.pdfModal}
-        >
+          className={commonCss.pdfModal} >
           <div style={{ height: '700px' }}>
             <iframe src={fileLink} title='下载预览' style={{ width: '100%', height: '100%', border: 0 }}></iframe>
           </div>
@@ -1611,11 +1702,6 @@ class WorkReport extends React.Component {
   }
 
   componentDidMount() {
-
-    //监听切换作业报告
-    this.props.dispatch({
-      type: 'report/rate',
-    })
 
     if (this.props.state.classId != '' && this.props.state.subId != '') {
       console.log(111)

@@ -10,6 +10,7 @@ import store from 'store';
 import echarts from 'echarts';
 import { routerRedux } from 'dva/router';
 import { noResposeDataCon } from '../../../utils/common';
+import { join } from 'path';
 moment.locale('zh-cn');
 
 const { Content } = Layout;
@@ -104,8 +105,8 @@ class HomeworkCenter extends React.Component {
 				timeStamp: this.props.state.reportTimeList[0].timeStamp,
 			}
 		}
-	
-		if ( !data.classId || !data.subjectId) return false;
+
+		if (!data.classId || !data.subjectId) return false;
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload: data
@@ -776,8 +777,9 @@ class HomeworkCenter extends React.Component {
 							type: 'reportChart/sclassId',
 							payload: value
 						});
+						//更新图表
 						this.setState({
-							updatePei: false
+							updatePei: true
 						})
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
@@ -789,9 +791,7 @@ class HomeworkCenter extends React.Component {
 							type: 'reportChart/getSubList',
 							payload: data
 						});
-					}}
-
-				>
+					}}>
 					{
 						classList.map((item, i) => (
 							<Option key={i} value={item.id}>{item.name}</Option>
@@ -817,8 +817,9 @@ class HomeworkCenter extends React.Component {
 							type: 'reportChart/gradeId',
 							payload: value
 						});
+							//更新图表
 						this.setState({
-							updatePei: false
+							updatePei: true
 						})
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
@@ -833,9 +834,7 @@ class HomeworkCenter extends React.Component {
 							payload: data
 						});
 
-					}}
-
-				>
+					}} >
 					{
 						gradeList.map((item, i) => (
 							<Option key={i} value={item.id}>{item.name}</Option>
@@ -850,8 +849,9 @@ class HomeworkCenter extends React.Component {
 
 	render() {
 
-		let timeList = this.props.state.reportTimeList
-		let schoolReport = this.props.state.schoolDataReport
+		let timeList = this.props.state.reportTimeList;
+		let schoolReport = this.props.state.schoolDataReport;
+
 		setTimeout(() => {
 			// if(this.props.state.subjectId!==''){			
 			if (schoolReport.gradeWrongNumMap) {
@@ -900,9 +900,9 @@ class HomeworkCenter extends React.Component {
 				</div>
 				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
 				<Content style={{ background: '#eee', overflow: 'auto', position: 'relative' }}>
-					{JSON.stringify(schoolReport) === "none" || JSON.stringify(schoolReport) === '{}' ? noResposeDataCon() :
+					{this.props.state.sgradeList.length === 0 && (schoolReport === "none" || JSON.stringify(schoolReport) === '{}') ? noResposeDataCon() :
 						<div>
-							<Row style={{ marginTop: 20 }}>
+							<Row style={{ marginTop: 20 }} >
 								<Col xl={12} md={24} >
 									<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 20 }}>
 										<p>错题总量</p>

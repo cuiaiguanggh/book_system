@@ -201,7 +201,7 @@ class StuReport extends React.Component {
           <div style={{ padding: '10px', height: '250px', overflow: 'hidden' }}>
             {
               questionNews.questionUrl.split(',').map((item, i) => (
-                <img key={i} style={{ width: '100%' }} src={item}></img>
+                <img key={i} style={{ width: '100%' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
               ))
             }
           </div>
@@ -455,7 +455,8 @@ class StuReport extends React.Component {
                     {item.title && item.type === 0 ?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
-                      <img key={i} style={{ width: '100%' }} src={item.questionUrl.split(',')[0]} />
+                      <img key={i} style={{ width: '100%' }}
+                        src={item.questionUrl.split(',')[0].indexOf('?') > 0 ? `${item.questionUrl.split(',')[0]}/thumbnail/1000x` : `${item.questionUrl.split(',')[0]}?imageMogr2/thumbnail/1000x`} />
                     }
                   </div>
 
@@ -1149,15 +1150,14 @@ class StuReport extends React.Component {
                   <h3 className={style.fonsfwc}>原图</h3>
                   {
                     this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
-                      <img key={i} className={style.yuantp} src={item}></img>
+                      <img key={i} className={style.yuantp} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                     ))
                   }
                 </div>
               </div> :
               <div>
                 {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
-                  <img key={i} style={{ width: '100%', margin: 'auto' }}
-                    src={item}></img>
+                  <img key={i} style={{ width: '100%', margin: 'auto' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                 ))}
               </div>
             }

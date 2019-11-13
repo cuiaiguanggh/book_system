@@ -194,40 +194,42 @@ export default {
 	},
 
 	effects: {
-		*rate({ payload }, { put, select, takeLatest }) {
-			//当调用作业报告数据时，调用作业提高率
-		
-			yield takeLatest('report/queryHomeworkScoreDetail', function* () {
-				let { homeworkId } = yield select(state => state.report);
-				let { classId, subId } = yield select(state => state.temp);
-				if (classId && homeworkId && subId) {
-					let data = {};
-					data.homeworkId = homeworkId;
-					data.classId = classId;
-					data.subjectId = subId;
-					let res = yield rate(data);
-					try {
-						yield put({
-							type: 'improveRate',
-							payload: res.data.data.classWrongScoreRate
-						})
 
-					} catch (e) {
-						console.error('查询提高率失败')
-					}
+		*rate({ payload }, { put, select, takeLatest, }) {
+			//当调用作业报告数据时，调用作业提高率
+
+			// yield takeLatest('report/queryHomeworkScoreDetail', function* () {
+			let { homeworkId } = yield select(state => state.report);
+			let { classId, subId } = yield select(state => state.temp);
+			if (classId && homeworkId && subId) {
+				let data = {};
+				data.homeworkId = homeworkId;
+				data.classId = classId;
+				data.subjectId = subId;
+				let res = yield rate(data);
+				try {
+					yield put({
+						type: 'improveRate',
+						payload: res.data.data.classWrongScoreRate
+					})
+				} catch (e) {
+					console.error('查询提高率失败')
 				}
-			})
+
+			}
+			// })
+
 		},
-		*getyuantu({ payload }, { put, select }) {
+		* getyuantu({ payload }, { put, select }) {
 			let res = yield yuantu(payload);
 			return res.data.data;
 		},
-		*teacherCollect({ payload }, { put, select }) {
+		* teacherCollect({ payload }, { put, select }) {
 			//星标收藏
 			let res = yield teacherCollect(payload);
 
 		},
-		*remindHomework({ payload }, { put, select }) {
+		* remindHomework({ payload }, { put, select }) {
 			//提醒上交作业
 			let res = yield remindHomework(payload);
 
@@ -239,15 +241,15 @@ export default {
 
 		},
 
-		*CorrectionMarker({ payload }, { put, select }) {
+		* CorrectionMarker({ payload }, { put, select }) {
 			//老师预批改结果
 			yield CorrectionMarker(payload);
 		},
-		*WrongQuestionMarker({ payload }, { put, select }) {
+		* WrongQuestionMarker({ payload }, { put, select }) {
 			//匹配错误反馈
 			let res = yield WrongQuestionMarker(payload);
 		},
-		*getCorrection({ payload }, { put, select }) {
+		* getCorrection({ payload }, { put, select }) {
 			//获得预批改作业信息
 			let res = yield getCorrection(payload);
 			let beforstuTopic = []
@@ -277,7 +279,7 @@ export default {
 				payload: dainumber
 			})
 		},
-		*deleteVidio({ payload }, { put, select }) {
+		* deleteVidio({ payload }, { put, select }) {
 			let { qrdetailList, qrdetailList1, beforehand } = yield select(state => state.report);
 			//班级错题页面错题列表
 			if (qrdetailList.data && qrdetailList.data.questionList[payload]) {
@@ -304,7 +306,7 @@ export default {
 			})
 
 		},
-		*updataVideo({ payload }, { put, select }) {
+		* updataVideo({ payload }, { put, select }) {
 			let { qrdetailList, qrdetailList1, beforehand } = yield select(state => state.report);
 			//班级错题页面错题列表
 			if (qrdetailList.data && qrdetailList.data.questionList[payload.key]) {
@@ -335,12 +337,12 @@ export default {
 		},
 
 
-		*searchLink({ payload }, { put, select }) {
+		* searchLink({ payload }, { put, select }) {
 			let res = yield searchLink({ picId: payload.picId });
 			// 先打开页面  后更改页面地址,解决移动端上被拦截的问题
 			payload.wi.location.href = res.data.data.link;
 		},
-		*queryQrDetail({ payload }, { put, select }) {
+		* queryQrDetail({ payload }, { put, select }) {
 			let { mouNow, knowledgenow, stbegtoendTime } = yield select(state => state.report)
 			//月份
 			if (mouNow !== 0) {
@@ -378,7 +380,7 @@ export default {
 				}
 			}
 		},
-		*queryQrStudentCount({ payload }, { put, select }) {
+		* queryQrStudentCount({ payload }, { put, select }) {
 			let { mouNow, userId, stbegtoendTime, knowledgenow } = yield select(state => state.report);
 			//月份
 			if (mouNow != 0) {
@@ -475,7 +477,7 @@ export default {
 
 			}
 		},
-		*userQRdetail({ payload }, { put, select }) {
+		* userQRdetail({ payload }, { put, select }) {
 			//查询学生作业列表
 			let res = yield queryQrDetail(payload);
 			if (res.data && res.data.result === 0) {
@@ -495,7 +497,7 @@ export default {
 
 			}
 		},
-		*userQRdetail1({ payload }, { put, select }) {
+		* userQRdetail1({ payload }, { put, select }) {
 			//查询学生作业列表
 			let res = yield queryQrDetail(payload);
 			if (res.data && res.data.result === 0) {
@@ -514,7 +516,7 @@ export default {
 				}
 			}
 		},
-		*queryQrDetail1({ payload }, { put, select }) {
+		* queryQrDetail1({ payload }, { put, select }) {
 			//账号科目列表
 			let res = yield queryQrDetail(payload);
 			if (res.data && res.data.result === 0) {
@@ -534,7 +536,7 @@ export default {
 
 			}
 		},
-		*queryHomeworkList({ payload }, { put, select }) {
+		* queryHomeworkList({ payload }, { put, select }) {
 			//返回作业列表
 			let res = yield queryHomeworkList(payload);
 			if (res.data && res.data.result === 0) {
@@ -559,6 +561,10 @@ export default {
 						}
 					})
 				} else {
+					yield put({
+						type: 'improveRate',
+						payload: 0
+					})
 					yield put({
 						type: 'homeworkId',
 						payload: ''
@@ -591,30 +597,29 @@ export default {
 
 			}
 		},
-		*queryHomeworkScoreDetail({ payload }, { put, select }) {
+		* queryHomeworkScoreDetail({ payload }, { put }) {
 			//作业信息详情
 			let res = yield queryHomeworkScoreDetail(payload);
 			if (res.hasOwnProperty("err")) {
 				yield put(routerRedux.push('/login'))
-			} else
-				if (res.data && res.data.result === 0) {
-					yield put({
-						type: 'scoreDetail',
-						payload: res.data
-					})
-				}
-				else {
-					if (res.data.result === 2) {
-						yield put(routerRedux.push('/login'))
-					} else if (res.data.msg == '服务器异常') {
+			} else if (res.data && res.data.result === 0) {
+				yield put({
+					type: 'scoreDetail',
+					payload: res.data
+				})
+				yield put({ type: 'rate' })
+			} else {
+				if (res.data.result === 2) {
+					yield put(routerRedux.push('/login'))
+				} else if (res.data.msg == '服务器异常') {
 
-					} else {
-						message.error(res.data.msg)
-					}
-
+				} else {
+					message.error(res.data.msg)
 				}
+
+			}
 		},
-		*deleteTeachVideo({ payload }, { put, select }) {
+		* deleteTeachVideo({ payload }, { put, select }) {
 			//删除讲解视频
 			let data = {
 				videoId: payload.videoId
@@ -645,7 +650,7 @@ export default {
 
 			}
 		},
-		*queryTeachVideo({ payload }, { put, select }) {
+		* queryTeachVideo({ payload }, { put, select }) {
 			//刷新查看是否上传成功
 			let data = {
 				questionId: payload.questionId
@@ -687,7 +692,7 @@ export default {
 
 				}
 		},
-		*uploadVideo({ payload }, { put, select }) {
+		* uploadVideo({ payload }, { put, select }) {
 			//上传讲解视频
 			const { num } = yield select(state => state.example)
 			let res = yield uploadVideo(payload);

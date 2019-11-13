@@ -139,28 +139,6 @@ class EditableTable extends React.Component {
 				}
 			},
 			{
-				title: '作业数',
-				dataIndex: 'workNum',
-				key: 'workNum',
-				align: 'center',
-				// width: '15%',
-				render: (text, record) => {
-					return (
-						<div style={{ cursor: 'pointer' }} onClick={() => {
-							store.set('wrong_hash', this.props.location.hash)
-							this.props.dispatch(
-								routerRedux.push({
-									pathname: '/classUser',
-									hash: `sId=${this.props.state.schoolId}&id=${record.classId}`
-								})
-							)
-						}}>
-							{text}
-						</div>
-					);
-				}
-			},
-			{
 				title: '操作',
 				dataIndex: 'operation',
 				align: 'center',
@@ -195,31 +173,7 @@ class EditableTable extends React.Component {
 														payload: record.classId
 													});
 													this.edit(record.key)
-												}}
-											// onClick={()=>{
-											// 	this.setState({
-											// 		visible:true,
-											// 		classId:record.key
-											// 	})
-											// 	let data = {
-											// 		classId:record.key
-											// 	}
-											// 	this.props.dispatch({
-											// 		type: 'classHome/classInfo',
-											// 		payload:data
-											// 	});
-
-
-											// 	let data1 = {
-											// 		schoolId:store.get('wrongBookNews').schoolId,
-											// 		type:1
-											// 	}
-											// 	this.props.dispatch({
-											// 		type: 'classHome/teacherList',
-											// 		payload:data1
-											// 	});
-											// }}
-											>编辑</span>
+												}}	>编辑</span>
 
 											<span style={{ color: '#fff', cursor: 'pointer', margin: '0 10px', padding: '5px 15px', background: '#f56c6c', borderRadius: '5px' }} onClick={() => {
 												let This = this;
@@ -364,7 +318,6 @@ class EditableTable extends React.Component {
 					p["stars"] = det.stars;
 					p["teacherName"] = det.classAdmin;
 					p["stuNum"] = det.studentNum;
-					p["workNum"] = det.wqNum;
 					p["list"] = det;
 					dataSource[i] = p;
 				}
@@ -384,7 +337,6 @@ class EditableTable extends React.Component {
 					p["stars"] = det.stars;
 					p["teacherName"] = det.classAdmin;
 					p["stuNum"] = det.studentNum;
-					p["workNum"] = det.workNum;
 					p["list"] = det;
 					dataSource[i] = p;
 				}

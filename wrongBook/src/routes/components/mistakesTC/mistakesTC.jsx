@@ -127,12 +127,14 @@ export default class MistakesTC extends React.Component {
                     <div className={style.bulesz}>{tcxuhao}</div>
                     {/*班级错题*/}
                     {errorDetails.questionUrl ?
-                      <img style={{ width: '100%' }} src={errorDetails.questionUrl.split(',')[0]} />
+                      <img style={{ width: '100%' }}
+                        src={errorDetails.questionUrl.split(',')[0].indexOf('?') > 0 ? `${errorDetails.questionUrl.split(',')[0]}/thumbnail/1000x` : `${errorDetails.questionUrl.split(',')[0]}?imageMogr2/thumbnail/1000x`} />
                       : ''
                     }
                     {/*作业报告*/}
                     {errorDetails.question ?
-                      <img style={{ width: '100%' }} src={errorDetails.question.split(',')[0]} />
+                      <img style={{ width: '100%' }}
+                        src={errorDetails.question.split(',')[0].indexOf('?') > 0 ? `${errorDetails.question.split(',')[0]}/thumbnail/1000x` : `${errorDetails.question.split(',')[0]}?imageMogr2/thumbnail/1000x`} />
                       : ''
                     }
                   </div>)
@@ -172,14 +174,11 @@ export default class MistakesTC extends React.Component {
                   }
                   {/*{errorDetails.userAnswerList && (wrongNum.length / (errorDetails.userAnswerList.length) * 100).toFixed(0)}*/}
                   %
-      
+
                 </span>
               </div>
 
-              <div style={{
-                maxHeight: 50,
-                overflow: 'auto'
-              }}>
+              <div style={{ maxHeight: 50, overflow: 'auto' }}>
                 {
                   wrongNum.map((item, i) => (
                     <span key={i} className={'wrongNum'}>{item}</span>
@@ -192,7 +191,8 @@ export default class MistakesTC extends React.Component {
                 stutimu.map((item, i) => (
                   <div key={i} className={style.rightbox}>
                     <div className={style.ylbiaoq}>{item.userName}</div>
-                    <img key={i} style={{ width: '100%' }} src={item.answer.split(',')[0]} />
+                    <img key={i} style={{ width: '100%' }}
+                      src={item.answer.split(',')[0].indexOf('?') > 0 ? `${item.answer.split(',')[0]}/thumbnail/1000x` : `${item.answer.split(',')[0]}?imageMogr2/thumbnail/1000x`} />
                   </div>
                 )) : ''
               }

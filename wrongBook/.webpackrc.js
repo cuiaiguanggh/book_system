@@ -11,5 +11,10 @@ export default {
     development: {
       extraBabelPlugins: ['dva-hmr'],
     },
-  }
+  },
+
+  "extraBabelIncludes": [
+    "node_modules/react-spring",
+  ]
+
 };

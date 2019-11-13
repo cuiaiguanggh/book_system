@@ -8,10 +8,8 @@ import { connect } from 'dva';
 import QRCode from 'qrcode.react';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './classReport.less';
 
-import { request } from 'http';
 import TracksVideo from '../TracksVideo/TracksVideo';
 import store from 'store';
 import commonCss from '../../css/commonCss.css';
@@ -49,7 +47,7 @@ class wrongTop extends React.Component {
       errorDetails: {},
       tcxuhao: 0,
       zoom: false,
-      similarTopic:1
+      similarTopic: 1
     };
   }
 
@@ -58,7 +56,7 @@ class wrongTop extends React.Component {
     let wi = window.open('about:blank', '_blank');
     this.props.dispatch({
       type: 'report/searchLink',
-      payload: { picId,wi },
+      payload: { picId, wi },
     });
   }
 
@@ -72,123 +70,123 @@ class wrongTop extends React.Component {
     return (
       <div className={style.outBody}
         onWheel={(e) => this.handleScroll(e)}
-           style={{position: 'relative'}}
+        style={{ position: 'relative' }}
         ref={this.Ref}
       >
-          {
-            ques.questionList.map((item, i) => {
-              let ans = []
-              for (let i = 0; i < item.userAnswerList.length; i++) {
-                if (item.userAnswerList[i].result == 0) {
-                  ans.push(item.userAnswerList[i].answer)
-                }
+        {
+          ques.questionList.map((item, i) => {
+            let ans = []
+            for (let i = 0; i < item.userAnswerList.length; i++) {
+              if (item.userAnswerList[i].result == 0) {
+                ans.push(item.userAnswerList[i].answer)
               }
-              let downs = this.props.state.classDown;
-              let cls = 'down', name = '选题';
-              if (this.state.allPdf) {
+            }
+            let downs = this.props.state.classDown;
+            let cls = 'down', name = '选题';
+            if (this.state.allPdf) {
+              cls = 'down ndown';
+              name = '移除';
+            }
+            for (let j = 0; j < downs.length; j++) {
+              if (downs[j] == item.questionId) {
                 cls = 'down ndown';
-                name = '移除';
+                name = '移除'
               }
-              for (let j = 0; j < downs.length; j++) {
-                if (downs[j] == item.questionId) {
-                  cls = 'down ndown';
-                  name = '移除'
-                }
-              }
-              let j = i;
-              return (
-                <div key={i} className={style.questionBody}>
-                  <div className={style.questionTop}>
-                    <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
-                    <span>答错<span style={{ color: "#409EFF" }}>{item.wrongNum}</span>人</span>
-                    {
-                      item.num != 0 ?
-                        <span style={{ marginLeft: '10px', borderLeft: '1px solid #ccc', paddingLeft: '10px' }}>已出卷<span
-                          style={{ color: "#409EFF" }}>{item.num}</span>次</span>
-                        : ''
-                    }
-                    <div style={{float:'right',position: 'relative',zIndex: 1}}>
+            }
+            let j = i;
+            return (
+              <div key={i} className={style.questionBody}>
+                <div className={style.questionTop}>
+                  <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
+                  <span>答错<span style={{ color: "#409EFF" }}>{item.wrongNum}</span>人</span>
+                  {
+                    item.num != 0 ?
+                      <span style={{ marginLeft: '10px', borderLeft: '1px solid #ccc', paddingLeft: '10px' }}>已出卷<span
+                        style={{ color: "#409EFF" }}>{item.num}</span>次</span>
+                      : ''
+                  }
+                  <div style={{ float: 'right', position: 'relative', zIndex: 1 }}>
                     <TracksVideo type={item} num={j}></TracksVideo>
-                    {i===1?<Guidance title='录视频' content='微信扫码，可录制或上传讲解视频'/>:''}
-                  </div>
-                  </div>
-                  <div style={{ padding: '20px', height: '217px', overflow: 'hidden' }} onClick={() => {
-                    if (item.wrongScore != 0) {
-                      let errorDetails = this.props.state.qrdetailList.data.questionList[i];
-                      let tcxuhao = i + 1;
-                      this.setState({ xqtc: true, errorDetails, tcxuhao })
-                    }
-                  }}>
-
-                    {item.title  && item.type===0?
-                      <div dangerouslySetInnerHTML={{ __html: item.title }} />
-                      :
-                      item.questionUrl && item.questionUrl.split(',').map((item, i) => (
-                        <img key={i} style={{ width: '100%' }} src={item}></img>
-                      ))
-                    }
-                  </div>
-                  <div style={{ overflow: 'hidden', paddingLeft: '10px', }}>
-                    <span className={style.wrongbluezi}
-                    style={item.wrongScore===0?{cursor:'no-drop'}:{cursor: 'pointer'}} 
-                      onClick={() => {
-                        if (item.wrongScore != 0) {
-                          let tcxuhao = i + 1;
-                          let errorDetails = this.props.state.qrdetailList.data.questionList[i];
-                          this.setState({ xqtc: true, errorDetails, tcxuhao })
-                        }
-                      }}> <img src={require('../../images/statistics.png')} style={{ marginRight: '6px' }} />
-                      查看统计</span>
-
-                    <span style={{ marginLeft: '24px' }}
-                      className={style.wrongbluezi}
-                      onClick={this.tiaoz.bind(this, item.picId)}>
-                      <img src={require('../../images/seek.png')} style={{ marginRight: '6px' }} />
-                      搜索题目
-                      {i===0?<Guidance title='搜索题目' content='点击可自动复制题目并跳转网页搜题'    />:''}
-                    </span>
-
-                    <span className={cls} onClick={() => {
-                      let dom = document.getElementsByClassName('down');
-                      let downs = this.props.state.classDown;
-                      if (dom[i].innerText == '选题') {
-                        cls = 'down ndown';
-                        name = '移除'
-                        this.props.dispatch({
-                          type: 'down/classDown',
-                          payload: item.questionId
-                        });
-                        this.props.dispatch({
-                          type: 'down/classDownPic',
-                          payload: item.picId
-                        });
-                      } else {
-                        cls = 'down';
-                        name = '选题'
-                        this.props.dispatch({
-                          type: 'down/delClassDown',
-                          payload: item.questionId
-                        });
-                        this.props.dispatch({
-                          type: 'down/delClassDownPic',
-                          payload: item.picId
-                        });
-                      }
-                    }}>
-                      {
-                        name == '选题' ?
-                          <img style={{ marginTop: '-4px', marginRight: '4px' }}
-                            src={require('../../images/sp-xt-n.png')} /> :
-                          <img style={{ marginTop: '-4px', marginRight: '4px' }}
-                            src={require('../../images/sp-yc-n.png')} />
-
-                      }
-                      {name}</span>
+                    {i === 1 ? <Guidance title='录视频' content='微信扫码，可录制或上传讲解视频' /> : ''}
                   </div>
                 </div>
-              )
-            })
-          }
+                <div style={{ padding: '20px', height: '217px', overflow: 'hidden' }} onClick={() => {
+                  if (item.wrongScore != 0) {
+                    let errorDetails = this.props.state.qrdetailList.data.questionList[i];
+                    let tcxuhao = i + 1;
+                    this.setState({ xqtc: true, errorDetails, tcxuhao })
+                  }
+                }}>
+
+                  {item.title && item.type === 0 ?
+                    <div dangerouslySetInnerHTML={{ __html: item.title }} />
+                    :
+                    item.questionUrl && item.questionUrl.split(',').map((item, i) => (
+                      <img key={i} style={{ width: '100%' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
+                    ))
+                  }
+                </div>
+                <div style={{ overflow: 'hidden', paddingLeft: '10px', }}>
+                  <span className={style.wrongbluezi}
+                    style={item.wrongScore === 0 ? { cursor: 'no-drop' } : { cursor: 'pointer' }}
+                    onClick={() => {
+                      if (item.wrongScore != 0) {
+                        let tcxuhao = i + 1;
+                        let errorDetails = this.props.state.qrdetailList.data.questionList[i];
+                        this.setState({ xqtc: true, errorDetails, tcxuhao })
+                      }
+                    }}> <img src={require('../../images/statistics.png')} style={{ marginRight: '6px' }} />
+                    查看统计</span>
+
+                  <span style={{ marginLeft: '24px' }}
+                    className={style.wrongbluezi}
+                    onClick={this.tiaoz.bind(this, item.picId)}>
+                    <img src={require('../../images/seek.png')} style={{ marginRight: '6px' }} />
+                    搜索题目
+                      {i === 0 ? <Guidance title='搜索题目' content='点击可自动复制题目并跳转网页搜题' /> : ''}
+                  </span>
+
+                  <span className={cls} onClick={() => {
+                    let dom = document.getElementsByClassName('down');
+                    let downs = this.props.state.classDown;
+                    if (dom[i].innerText == '选题') {
+                      cls = 'down ndown';
+                      name = '移除'
+                      this.props.dispatch({
+                        type: 'down/classDown',
+                        payload: item.questionId
+                      });
+                      this.props.dispatch({
+                        type: 'down/classDownPic',
+                        payload: item.picId
+                      });
+                    } else {
+                      cls = 'down';
+                      name = '选题'
+                      this.props.dispatch({
+                        type: 'down/delClassDown',
+                        payload: item.questionId
+                      });
+                      this.props.dispatch({
+                        type: 'down/delClassDownPic',
+                        payload: item.picId
+                      });
+                    }
+                  }}>
+                    {
+                      name == '选题' ?
+                        <img style={{ marginTop: '-4px', marginRight: '4px' }}
+                          src={require('../../images/sp-xt-n.png')} /> :
+                        <img style={{ marginTop: '-4px', marginRight: '4px' }}
+                          src={require('../../images/sp-yc-n.png')} />
+
+                    }
+                    {name}</span>
+                </div>
+              </div>
+            )
+          })
+        }
       </div>
     )
   }
@@ -222,8 +220,8 @@ class wrongTop extends React.Component {
     fetch(dataCenter('/file/uploadFile?token=' + token), {
       method: "POST",
       body: form,
-      headers:{
-        "Authorization":token
+      headers: {
+        "Authorization": token
       }
     })
       .then(response => response.json())
@@ -468,7 +466,7 @@ class wrongTop extends React.Component {
         classId: this.props.state.classId,
         year: this.props.state.years,
         subjectId: this.props.state.subId,
-        type:0,
+        type: 0,
       }
     });
     this.props.dispatch({
@@ -515,7 +513,7 @@ class wrongTop extends React.Component {
         classId: this.props.state.classId,
         year: this.props.state.years,
         subjectId: this.props.state.subId,
-        type:0,
+        type: 0,
       }
     });
 
@@ -539,7 +537,7 @@ class wrongTop extends React.Component {
   //时间框
   quantumtime(date, dateString) {
 
-    if(date.length===0){
+    if (date.length === 0) {
       this.alltime()
       return;
     }
@@ -580,7 +578,7 @@ class wrongTop extends React.Component {
         subjectId: this.props.state.subId,
         startTime: dateString[0],
         endTime: dateString[1],
-        type:0,
+        type: 0,
       }
     });
     this.props.dispatch({
@@ -606,7 +604,7 @@ class wrongTop extends React.Component {
       this.setState({
         zoom: true
       })
-    } else if(e.target.clientHeight !== e.target.scrollHeight){
+    } else if (e.target.clientHeight !== e.target.scrollHeight) {
       this.setState({
         zoom: false
       })
@@ -669,16 +667,16 @@ class wrongTop extends React.Component {
         payload: true
       });
       //下载pdf
-      let downparameters={
+      let downparameters = {
         uqIdsStr: this.props.state.classDownPic.join(','),
-        classId:this.props.state.classId,
-        operationClass:this.props.state.classId,
+        classId: this.props.state.classId,
+        operationClass: this.props.state.classId,
       };
       console.log(this.state.similarTopic);
-      if(this.state.similarTopic===1){
-        downparameters.practise=0
-      }else{
-        downparameters.practise=1
+      if (this.state.similarTopic === 1) {
+        downparameters.practise = 0
+      } else {
+        downparameters.practise = 1
       };
       this.props.dispatch({
         type: 'down/makeSelectWB',
@@ -686,7 +684,7 @@ class wrongTop extends React.Component {
       });
       //关闭下拉弹窗
       this.setState({
-        pull:false
+        pull: false
       });
       // 添加导出次数
       this.props.dispatch({
@@ -761,16 +759,16 @@ class wrongTop extends React.Component {
       }
     });
   }
-//匹配错误事件
+  //匹配错误事件
   pipeicw(uqId) {
     this.props.dispatch({
-          type: 'report/WrongQuestionMarker',
-          payload: {
-            uqId: uqId,
-            userId: store.get('wrongBookNews').userId,
-            way: 1
-          }
-        });
+      type: 'report/WrongQuestionMarker',
+      payload: {
+        uqId: uqId,
+        userId: store.get('wrongBookNews').userId,
+        way: 1
+      }
+    });
   }
 
   render() {
@@ -783,7 +781,7 @@ class wrongTop extends React.Component {
       <Content style={{ position: 'relative' }}>
         <iframe style={{ display: 'none' }} src={this.state.wordUrl} />
         <Layout className={style.layout}>
-          <Header className={style.layoutHead} style={{zIndex:2}}>
+          <Header className={style.layoutHead} style={{ zIndex: 2 }}>
             <span style={{
               fontSize: 14,
               fontFamily: 'MicrosoftYaHei-Bold',
@@ -793,7 +791,7 @@ class wrongTop extends React.Component {
             <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
               style={{ marginLeft: 24 }} onClick={this.alltime.bind(this)}>全部</span>
             {
-              mounthList.data && mounthList.data.length>0?
+              mounthList.data && mounthList.data.length > 0 ?
                 mounthList.data.map((item, i) => {
                   return (
                     <span key={i} className={item.k == this.props.state.mouNow.k ? 'choseMonthOn' : 'choseMonth'}
@@ -813,31 +811,31 @@ class wrongTop extends React.Component {
               onChange={
                 this.quantumtime.bind(this)
               } />
-            <div style={{ float: 'right',position: 'relative' }}>
+            <div style={{ float: 'right', position: 'relative' }}>
               {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
-                <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none',width:140,padding: '0 15px' }}
+                <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none', width: 140, padding: '0 15px' }}
                   loading={this.props.state.downQue}
                   disabled={this.props.state.classDown.length === 0 && !this.props.state.downQue}
-                 onClick={() => {this.setState({ pull: !this.state.pull })}}>
+                  onClick={() => { this.setState({ pull: !this.state.pull }) }}>
                   <img style={{ margin: '0 3px 4px 2px', height: '15px' }}
                     src={require('../../images/xc-cl-n.png')}></img>
                   下载组卷({this.props.state.classDown.length})
               </Button> : ''}
               {/*引导流程*/}
               {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
-              <Guidance title='下载错题' content='选择组卷后，可选择下载错题或优选错题'/>
-              : ''}
+                <Guidance title='下载错题' content='选择组卷后，可选择下载错题或优选错题' />
+                : ''}
               {this.state.pull ?
                 <div className={style.buttonPull}
-                     style={{right:0}}
+                  style={{ right: 0 }}
                   onClick={(e) => {
-                    if(this.state.similarTopic===1){
+                    if (this.state.similarTopic === 1) {
                       this.setState({
-                        similarTopic:2
+                        similarTopic: 2
                       })
-                    }else if(this.state.similarTopic===2){
+                    } else if (this.state.similarTopic === 2) {
                       this.setState({
-                        similarTopic:1
+                        similarTopic: 1
                       })
                     }
                   }}>
@@ -847,16 +845,16 @@ class wrongTop extends React.Component {
                       <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvwxz.png')}></img>}
                     <span className={style.inputk} >下载原错题</span>
                   </Row>
-                  <Row className={style.downloadrow} style={{lineHeight: 1,textAlign:'left'}}>
+                  <Row className={style.downloadrow} style={{ lineHeight: 1, textAlign: 'left' }}>
                     {this.state.similarTopic === 2 ?
                       <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvxz.png')}></img> :
                       <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvwxz.png')}></img>}
                     <span className={style.inputk} >
-                      <p style={{ margin: '15px 0 0 0'}}>下载原错题＋</p>
-                      <p style={{ margin:0}}>优选练习</p> </span>
+                      <p style={{ margin: '15px 0 0 0' }}>下载原错题＋</p>
+                      <p style={{ margin: 0 }}>优选练习</p> </span>
                   </Row>
                   <Row>
-                    <div className={style.yulangbutton}  onClick={this.downloadPitch.bind(this)}>
+                    <div className={style.yulangbutton} onClick={this.downloadPitch.bind(this)}>
                       预览
                     </div>
                   </Row>
@@ -864,27 +862,27 @@ class wrongTop extends React.Component {
             </div>
           </Header>
           <Header className={style.layoutHead}
-            style={this.state.zoom ? { lineHeight: 3, height: 50,boxShadow: 'rgba(0, 0, 0, 0.05) 0px 0px 20px',marginBottom: 10,overflow:'hidden' } :
-              { lineHeight: 1.5, height: 'auto',}}>
+            style={this.state.zoom ? { lineHeight: 3, height: 50, boxShadow: 'rgba(0, 0, 0, 0.05) 0px 0px 20px', marginBottom: 10, overflow: 'hidden' } :
+              { lineHeight: 1.5, height: 'auto', }}>
             <span style={{
               fontSize: 14,
               fontFamily: 'MicrosoftYaHei-Bold',
               fontWeight: 'bold',
               color: 'rgba(96,98,102,1)',
             }}>知识点：</span>
-            <div className={this.state.zoom ? `xiaoshi` :''} style={{float: 'right', maxHeight: 350,overflow: 'auto',width: 'calc(100% - 56px)',paddingBottom: 15}}>
-            <span key={0} className={0 == this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
-              onClick={this.allknowledgenow.bind(this)}>全部</span>
-            {knowledgeList.data ?
+            <div className={this.state.zoom ? `xiaoshi` : ''} style={{ float: 'right', maxHeight: 350, overflow: 'auto', width: 'calc(100% - 56px)', paddingBottom: 15 }}>
+              <span key={0} className={0 == this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
+                onClick={this.allknowledgenow.bind(this)}>全部</span>
+              {knowledgeList.data ?
                 knowledgeList.data.map((item, i) => {
                   return (
-                    <span key={item.knowledgeName} className={this.props.state.knowledgenow.indexOf(item.knowledgeName)>-1 ? 'choseMonthOn' : 'choseMonth'}
-                        onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}
+                    <span key={item.knowledgeName} className={this.props.state.knowledgenow.indexOf(item.knowledgeName) > -1 ? 'choseMonthOn' : 'choseMonth'}
+                      onClick={this.knowledgenowPitch.bind(this, item.knowledgeName)}
                     >{item.knowledgeName}({item.num})</span>
                   )
                 })
                 : ''
-            }
+              }
             </div>
           </Header>
 
@@ -893,12 +891,12 @@ class wrongTop extends React.Component {
             ref='warpper'
             onScroll={(e) => { this.pageScroll(e) }}
           >
-            { this.props.state.qrdetailList.data && this.props.state.qrdetailList.data.questionList && this.props.state.qrdetailList.data.questionList.length !== 0 ?
-                this.quesList() :
-                <div style={{ textAlign: 'center', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }}>
-                  <img src={require('../../images/wsj-n.png')}></img>
-                  <span style={{ fontSize: '30px', marginLeft: '50px', fontWeight: 'bold', color: "#434e59" }}>暂无数据</span>
-                </div> }
+            {this.props.state.qrdetailList.data && this.props.state.qrdetailList.data.questionList && this.props.state.qrdetailList.data.questionList.length !== 0 ?
+              this.quesList() :
+              <div style={{ textAlign: 'center', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }}>
+                <img src={require('../../images/wsj-n.png')}></img>
+                <span style={{ fontSize: '30px', marginLeft: '50px', fontWeight: 'bold', color: "#434e59" }}>暂无数据</span>
+              </div>}
           </Content>
         </Layout>
         <Modal
@@ -955,7 +953,7 @@ class wrongTop extends React.Component {
           xqtc={this.state.xqtc}
           guanbi={() => { this.setState({ xqtc: false }) }}
           errorDetails={this.state.errorDetails}
-          pipeicw={this.pipeicw.bind(this)}/>
+          pipeicw={this.pipeicw.bind(this)} />
       </Content>
     );
   }
@@ -975,15 +973,15 @@ class wrongTop extends React.Component {
     });
     if (classId !== '' && subId !== '' && year !== '') {
       //获取知识点筛选
-    this.props.dispatch({
-      type: 'temp/getKnowledgeList',
-      payload: {
-        classId,
-        year,
-        subjectId:subId,
-        type:0,
-      }
-    });
+      this.props.dispatch({
+        type: 'temp/getKnowledgeList',
+        payload: {
+          classId,
+          year,
+          subjectId: subId,
+          type: 0,
+        }
+      });
       let data = {
         classId,
         year: year,

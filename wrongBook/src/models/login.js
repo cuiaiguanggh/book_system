@@ -168,7 +168,7 @@ export default {
 			}
 		},
 		*tokenLogin({ payload }, { put, select }) {
-			//云课token登录
+			//云课token登录,没有权限的话跳官网。
 			try {
 				// 登录
 				store.set('wrongBookToken', '')
@@ -176,15 +176,108 @@ export default {
 
 				if (res.data.result === 0) {
 
+					let data = res.data;
+					data.data.userId = data.data.id;
+					store.set('wrongBookToken', data.data.token);
+
+					let rodeType;
+					//获取权限
+					let quanx = yield info({});
+					if (!quanx.data.data.hasOwnProperty('roleName')) {
+						window.location.href = "http://kacha.xin/";
+						return false
+					}
+					switch (quanx.data.data.roleName[0]) {
+						case 'surpeAdmin':
+							//总管
+							rodeType = 10;
+							data.data.rodeType = 10;
+							break;
+						case 'teacher':
+							//任课老师
+							rodeType = 40;
+							data.data.rodeType = 40;
+							break;
+						case 'headteacher':
+							//班主任 
+							rodeType = 30;
+							data.data.rodeType = 30;
+							break;
+						case 'gradeLeader':
+							//年级组长
+							rodeType = 50;
+							data.data.rodeType = 50;
+							break;
+						case 'schoolManagement':
+							//校管
+							rodeType = 20;
+							data.data.rodeType = 20;
+							break;
+						case 'headmaster':
+							//校长
+							rodeType = 50;
+							data.data.rodeType = 50;
+							break;
+					}
+					store.set('leftMenus', quanx.data.data.permissionList);
+
+					if (rodeType !== 10) {
+						//学校用户信息
+						let usermessage = yield schools({
+							roleName: quanx.data.data.roleName[0]
+						});
+						if (usermessage.data.data.length === 0) {
+							message.error('用户暂未加入学校');
+							return false;
+						}
+						store.set('moreschool', usermessage.data.data)
+
+						try {
+							data.data.schoolId = usermessage.data.data[0].schoolId;
+							data.data.schoolName = usermessage.data.data[0].schoolName;
+						} catch (err) {
+							console.log('学校id赋值错误')
+						}
+						try {
+							//主要给个人信息页面用的数据
+							usermessage.data.data[0].userClass[0] = { rodeType, schoolName: usermessage.data.data[0].schoolName };
+
+							store.set('userData', usermessage.data.data[0].userClass[0])
+						} catch (err) {
+							console.log('userClass字段没有' + err)
+						}
+
+					}
+					console.log(data.data)
+					store.set('wrongBookNews', data.data);
+
 					yield put({
-						type: 'getPower',
-						payload: res
+						type: 'temp/classList1',
+						payload: []
 					})
+					yield put({
+						type: 'report/changeMouth',
+						payload: 0
+					})
+
+					if (rodeType === 10) {
+						yield put(routerRedux.push({
+							pathname: '/school',
+							hash: 'page=1'
+						}))
+					} else {
+						yield put(routerRedux.push({
+							pathname: '/classReport',
+						}))
+					}
+
 
 				} else {
 					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
-					} else if (res.data.msg == '服务器异常') {
+					} else if (res.data.result === -1) {
+						
+						window.location.href = "http://kacha.xin/";
 
 					} else {
 						message.error(res.data.msg)

@@ -150,7 +150,7 @@ class ClassReport extends React.Component {
 									year: this.props.state.years,
 									subjectId: value,
 									info: 0,
-									pageSize: 50,
+									pageSize: 20,
 									pageNum: 1
 								}
 							});
