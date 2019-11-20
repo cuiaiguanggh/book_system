@@ -89,16 +89,8 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div className={style.namebox} style={{ display: 'inline-block', verticalAlign: "bottom" }}>
 									<p>{userData.name}</p>
-									{/* {classArray !== undefined && userData.rodeType == 30 ?
-										<div style={{ padding: '0 10px' }}>
-											{classArray.map((item, i) => (
-												<span key={i} style={{}}>{item.className}{item.adminId == userNews.userId ? <span className={style.banzhuren_icon}>
-													<img src={require('../images/banzhuren@2x.png')} alt="" />
-												</span> : ''}{i === classArray.length - 1 ? '' : '，'}</span>
-											))}
-										</div> : ''} */}
+						
 									{/* 班级 */}
-
 									{this.state.classTeacher.length > 0 && this.state.classTeacher[0].className ?
 										this.state.classTeacher.map((item, i) => (
 											<div style={{ padding: '0 10px' }}>
@@ -114,11 +106,6 @@ class HomeworkCenter extends React.Component {
 								</div>
 								<div className={style.schoolbox}>
 									{/* 学科 */}
-									{/* {
-										userData.rodeType == 30 ? <p><img src={require('../images/nianji@2x.png')} alt="" /><span>
-											{userData != undefined ? this.getGradeName() : ''}
-										</span></p> : ''
-									} */}
 									{this.state.classTeacher.length > 0 && this.state.classTeacher[0].subjectName ?
 										<p>
 											<img src={require('../images/nianji@2x.png')} />

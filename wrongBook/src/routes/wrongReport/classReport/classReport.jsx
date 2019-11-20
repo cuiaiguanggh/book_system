@@ -47,7 +47,8 @@ class wrongTop extends React.Component {
       errorDetails: {},
       tcxuhao: 0,
       zoom: false,
-      similarTopic: 1
+      similarTopic: 1,
+      optimizationcuotiMistakes: []
     };
   }
 
@@ -111,6 +112,21 @@ class wrongTop extends React.Component {
                   </div>
                 </div>
                 <div style={{ padding: '20px', height: '217px', overflow: 'hidden' }} onClick={() => {
+
+                  if (ques.questionList[i].recommendId !== 0) {
+                    this.props.dispatch({
+                      type: 'report/recommend',
+                      payload: {
+                        uqId: ques.questionList[i].recommendId
+                      }
+                    }).then((res) => {
+                      this.setState({
+                        optimizationcuotiMistakes: res
+                      })
+                    })
+                  }
+
+
                   if (item.wrongScore != 0) {
                     let errorDetails = this.props.state.qrdetailList.data.questionList[i];
                     let tcxuhao = i + 1;
@@ -953,6 +969,7 @@ class wrongTop extends React.Component {
           xqtc={this.state.xqtc}
           guanbi={() => { this.setState({ xqtc: false }) }}
           errorDetails={this.state.errorDetails}
+          optimizationcuotiMistakes={this.state.optimizationcuotiMistakes}
           pipeicw={this.pipeicw.bind(this)} />
       </Content>
     );

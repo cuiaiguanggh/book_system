@@ -126,7 +126,22 @@ function rate(payload) {
         method: 'get'
     });
 }
+function recommend(payload) {
+    return request(dataCenter('/report/db/recommend'), {
+        data: payload,
+        method: 'get'
+    });
+}
+
+function videoPrepare(payload) {
+    return request(dataCenter('/report/questions/videoPrepare'), {
+        data: payload,
+    });
+}
+
 export {
+    videoPrepare,
+    recommend,
     rate,
     yuantu,
     teacherCollect,

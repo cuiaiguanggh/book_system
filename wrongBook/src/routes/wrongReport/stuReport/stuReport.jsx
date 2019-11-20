@@ -45,6 +45,7 @@ class StuReport extends React.Component {
       //匹配错误显示
       pptype: 0,
       nowWindows: {},
+      optimizationcuotiMistakes: []
     }
   }
 
@@ -445,6 +446,19 @@ class StuReport extends React.Component {
                     <TracksVideo type={item} num={j}></TracksVideo>
                   </div>
                   <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
+
+                    if (item.recommendId !== 0) {
+                      this.props.dispatch({
+                        type: 'report/recommend',
+                        payload: {
+                          uqId: item.recommendId
+                        }
+                      }).then((res) => {
+                        this.setState({
+                          optimizationcuotiMistakes: res
+                        })
+                      })
+                    }
                     this.setState({
                       nowWindows: item,
                       visible: true,
@@ -1118,25 +1132,27 @@ class StuReport extends React.Component {
                       <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错 </span></h3>
                   <div style={{ overflow: 'auto', maxHeight: '600px', minHeight: '230px' }}>
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.title }} />
-                    <div style={{
-                      color: '#333333',
-                      fontFamily: 'MicrosoftYaHei-Bold',
-                      fontSize: '16',
-                      fontWeight: 'bold',
-                      marginTop: 15,
-                      width: '60%'
-                    }}>【考点】
-                  </div>
+                    <div className={style.leftText}>【考点】 </div>
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.knowledgeName }} />
-                    <div style={{
-                      color: '#333333',
-                      fontFamily: 'MicrosoftYaHei-Bold',
-                      fontSize: '16',
-                      fontWeight: 'bold',
-                      marginTop: 15
-                    }}> 【答案与解析】
-                  </div>
+                    <div className={style.leftText}> 【答案与解析】 </div>
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.parse }} />
+                    <h2 className={style.leftText}>优选错题</h2>
+
+                    {this.state.optimizationcuotiMistakes.length === 0 ?
+                      '暂无优选错题' :
+                      <>
+                        <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].title }} />
+                        <div className={style.leftText}>【知识点】</div>
+                        <div dangerouslySetInnerHTML={{ __html: (this.state.optimizationcuotiMistakes[0].knowledges && this.state.optimizationcuotiMistakes[0].knowledges[0].knowledgeName) || '暂无知识点' }} />
+                        <div className={style.leftText}>【答案】</div>
+                        <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].answer || '暂无答案' }} />
+                        <div className={style.leftText}>【解析】</div>
+                        <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].parse || '暂无解析' }} />
+                      </>
+                    }
+
+
+
                   </div>
                 </div>
 

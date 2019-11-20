@@ -242,57 +242,7 @@ class EditableTable extends React.Component {
 	edit(key) {
 		this.setState({ editingKey: key });
 	}
-	chooseSchool() {
-		const rodeType = store.get('wrongBookNews').rodeType;
-		// if(rodeType === 10){
-		// 	let schoolList = this.props.state.schoolList;
-		// 	const children = [];
-		// 	if(schoolList.data){
-		// 		for (let i = 0; i < schoolList.data.list.length; i++) {
-		// 			let data = schoolList.data.list[i]
-		// 			children.push(<Option key={data.schoolId}>{data.schoolName}</Option>);
-		// 		}
-		// 		return(
-		// 			<Select
-		// 				showSearch
-		// 				style={{ width: 200,marginRight:'10px' }}
-		// 				optionFilterProp="children"
-		// 				placeholder='请选择学校'
-		// 				onChange={(value,e)=>{
-		// 					this.props.dispatch(
-		// 						routerRedux.push({
-		// 							pathname: '/grade',
-		// 							hash:'page=1'
-		// 							})
-		// 					)
-		// 					let data ={
-		// 						schoolId:value,
-		// 						pageNum:1,
-		// 						pageSize:10
-		// 					}
-		// 					this.props.dispatch({
-		// 						type: 'classHome/schoolId',
-		// 						payload:value
-		// 					});
-		// 					this.props.dispatch({
-		// 						type: 'classHome/pageClass',
-		// 						payload:data
-		// 					});
-		// 					this.setState({schoolId:value})
-		// 				}}
-		// 				filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-		// 			>
-		// 				{children}
-		// 			</Select>
-		// 		)
-		// 	}
-		//
-		// }else{
-		return (
-			<span style={{ marginRight: '10px', fontWeight: 'bold' }}>搜索班级</span>
-		)
-		// }
-	}
+
 
 	render() {
 		let state = this.props.state;
@@ -317,7 +267,6 @@ class EditableTable extends React.Component {
 					p["gradeId"] = det.gradeId;
 					p["stars"] = det.stars;
 					p["teacherName"] = det.classAdmin;
-					p["stuNum"] = det.studentNum;
 					p["list"] = det;
 					dataSource[i] = p;
 				}
@@ -336,7 +285,6 @@ class EditableTable extends React.Component {
 					p["gradeId"] = det.gradeId;
 					p["stars"] = det.stars;
 					p["teacherName"] = det.classAdmin;
-					p["stuNum"] = det.studentNum;
 					p["list"] = det;
 					dataSource[i] = p;
 				}
@@ -386,7 +334,7 @@ class EditableTable extends React.Component {
 				<Content style={{ overflow: 'initial', background: '#fff' }}>
 					<div className={style.gradeboder} >
 						<div className={style.gradeTop}>
-							{this.chooseSchool()}
+							<span style={{ marginRight: '10px', fontWeight: 'bold' }}>搜索班级</span>
 							<Search
 								style={{ width: '300px', marginRight: '10px' }}
 								placeholder="班级名称"

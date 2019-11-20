@@ -348,8 +348,7 @@ class HomeworkCenter extends React.Component {
 														headers: {
 															"Authorization": token
 														}
-													})
-														.then(response => response.json())
+													}).then(response => response.json())
 														.then(res => {
 															if (res.result === 0) {
 																message.success('导入成功')

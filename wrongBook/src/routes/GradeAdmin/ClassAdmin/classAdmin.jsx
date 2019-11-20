@@ -67,8 +67,9 @@ class HomeworkCenter extends React.Component {
 			render: (text, record) => (
 				<div>
 					{text}
+
+					{record.isGradeLeader !== 0 && <span className={style.banzhuren}>{record.isGradeLeader}年级组长</span>}
 					{record.isHeadteacher == 1 && <span className={style.banzhuren}>班主任</span>}
-					{record.admin == 1 && <span className={style.banzhuren}>年级组长</span>}
 					{record.admin == 2 && <span className={style.banzhuren}>校长</span>}
 				</div>
 			)
@@ -130,15 +131,26 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			render: (text, record) => {
 				const rodeType = store.get('wrongBookNews').rodeType;
+				let suzu = [];
+
+				if (this.props.state.beginGrade === 0) {
+					for (let i = 1; i <= 12.; i++) {
+						suzu.push(i)
+					}
+				} else {
+					for (let i = this.props.state.beginGrade; i <= this.props.state.beginGrade.endGrade; i++) {
+						suzu.push(i)
+					}
+				}
+
 				if (rodeType <= 20) {
 					const content = (
-						<div style={{ width: 82, height: 81, position: 'relative' }}>
+						<div style={{ width: 82, height: `${suzu.length * 35 + 46}px`, position: 'relative' }}>
 							<p className={style.hoverGray} style={{ top: -12 }} onClick={(schooId) => {
 								if (!this.props.state.infoClass) {
 									message.warning('未选中班级')
 									return;
 								}
-
 								let schoolId;
 								if (store.get('wrongBookNews').rodeType < 20) {
 									let hash = this.props.location.hash;
@@ -146,7 +158,6 @@ class HomeworkCenter extends React.Component {
 								} else {
 									schoolId = store.get('wrongBookNews').schoolId
 								}
-
 								this.props.dispatch({
 									type: 'homePage/assign',
 									payload: {
@@ -158,25 +169,28 @@ class HomeworkCenter extends React.Component {
 									}
 								});
 							}}>班主任</p>
-							<p className={style.hoverGray} style={{ top: 23 }} onClick={() => {
-								let schoolId;
-								if (store.get('wrongBookNews').rodeType < 20) {
-									let hash = this.props.location.hash;
-									schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
-								} else {
-									schoolId = store.get('wrongBookNews').schoolId
-								}
-								this.props.dispatch({
-									type: 'homePage/assign',
-									payload: {
-										schoolId,
-										year: this.props.state.years,
-										userId: record.userId,
-										roleName: 'gradeLeader'
 
+							{suzu.map((item, i) => (
+								<p className={style.hoverGray} key={i} style={{ top: `${23 + 35 * i}px` }} onClick={() => {
+									let schoolId;
+									if (store.get('wrongBookNews').rodeType < 20) {
+										let hash = this.props.location.hash;
+										schoolId = hash.substr(hash.indexOf("sId=") + 4).split('&id=')[0];
+									} else {
+										schoolId = store.get('wrongBookNews').schoolId
 									}
-								});
-							}}>年级组长</p>
+									this.props.dispatch({
+										type: 'homePage/assign',
+										payload: {
+											schoolId,
+											year: this.props.state.years,
+											userId: record.userId,
+											roleName: 'gradeLeader',
+											grade: item
+										}
+									});
+								}}>{item}年级组长</p>
+							))}
 							<p className={style.hoverGray} style={{ bottom: -12 }} onClick={() => {
 								let schoolId;
 								if (store.get('wrongBookNews').rodeType < 20) {
@@ -199,7 +213,7 @@ class HomeworkCenter extends React.Component {
 					);
 					return (
 						<div>
-							{record.admin === 0 && record.isHeadteacher === 0 ? <Popover content={content} placement="left" trigger="hover" className={'abc'} style={{ padding: 0 }}>
+							{record.isGradeLeader === 0 && record.admin === 0 && record.isHeadteacher === 0 ? <Popover content={content} placement="left" trigger="hover" className={'abc'} style={{ padding: 0 }}>
 								<span style={{ background: '#1890ff' }} className={style.annniu}>任命</span>
 							</Popover> : <span style={{ background: 'rgba(182,186,194,1)' }} onClick={() => {
 								let schoolId;
@@ -221,17 +235,13 @@ class HomeworkCenter extends React.Component {
 								if (record.isHeadteacher === 1) {
 									data.roleName = 'headteacher';
 									data.classId = this.props.state.infoClass;
-								} else {
-									switch (record.admin) {
-										case 1:
-											data.roleName = 'gradeLeader'
-											break;
-										case 2:
-											data.roleName = 'headmaster'
-											break;
-									}
-								}
+								} else if (record.admin === 2) {
+									data.roleName = 'headmaster'
 
+								} else if (record.isGradeLeader !== 0) {
+									data.roleName = 'gradeLeader'
+									data.grade = record.isGradeLeader
+								}
 
 								this.props.dispatch({
 									type: 'homePage/remove',
@@ -474,6 +484,7 @@ class HomeworkCenter extends React.Component {
 						p['account'] = det.account;
 						p['isPush'] = det.isPush;
 						p['isHeadteacher'] = det.isHeadteacher;
+						p['isGradeLeader'] = det.isGradeLeader;
 						dataSource.push(p);
 					}
 				} else {
@@ -491,6 +502,7 @@ class HomeworkCenter extends React.Component {
 					p['account'] = det.account;
 					p['isPush'] = det.isPush;
 					p['isHeadteacher'] = det.isHeadteacher;
+					p['isGradeLeader'] = det.isGradeLeader;
 					dataSource.push(p);
 				}
 			}
@@ -756,7 +768,12 @@ class HomeworkCenter extends React.Component {
 			</Layout>
 		);
 	}
-
+	componentDidMount() {
+		this.props.dispatch({
+			type: 'homePage/getGrade',
+			payload: { schoolId: store.get('wrongBookNews').schoolId }
+		})
+	}
 	componentWillMount() {
 		this.props.dispatch({
 			type: 'homePage/tealist',

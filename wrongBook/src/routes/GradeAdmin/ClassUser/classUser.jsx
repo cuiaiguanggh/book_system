@@ -172,8 +172,7 @@ class StuReport extends React.Component {
                       （ {item.studentNum}人）
                       </Menu.Item>
                   )
-                }) :
-                classList.data.map((item, i) => {
+                }) : classList.data.map((item, i) => {
                   return (
                     <Menu.Item key={item.classId}
                       onDoubleClick={(e) => {
@@ -468,7 +467,7 @@ class StuReport extends React.Component {
         payload: id[0]
       });
     } else if (userNews.rodeType == 20) {
-     
+
       let ids = hash.substr(hash.indexOf("&id=") + 4);
       let data = {
         schoolId: userNews.schoolId,

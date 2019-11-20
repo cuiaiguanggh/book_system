@@ -142,11 +142,11 @@ class HomeworkCenter extends React.Component {
 							data.periodTime = this.props.state.periodTime;
 							data.timeStamp = this.props.state.timeStamp
 						}
-					
-							this.props.dispatch({
-								type: 'reportChart/getClassDataReport',
-								payload: data
-							})
+
+						this.props.dispatch({
+							type: 'reportChart/getClassDataReport',
+							payload: data
+						})
 
 					}}
 
@@ -424,6 +424,10 @@ class HomeworkCenter extends React.Component {
 				wronglist.push(wdata[i].num)
 			}
 		}
+		console.log(udata)
+		console.log(timelist)
+		console.log(userlist)
+		console.log(wronglist)
 
 		let _gleft = '2%'
 		if (timelist.length > 20) {
@@ -527,7 +531,6 @@ class HomeworkCenter extends React.Component {
 	render() {
 
 		let timeList = this.props.state.reportTimeList;
-
 		let classReport = this.props.state.classDataReport;
 
 		setTimeout(() => {
@@ -538,9 +541,7 @@ class HomeworkCenter extends React.Component {
 			if (classReport.studentWrongNum) {
 				this.renderStudentUseData(classReport.studentWrongNum)
 			}
-
 			//}
-
 		}, 10);
 		return (
 			<Layout>

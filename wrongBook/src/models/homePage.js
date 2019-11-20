@@ -68,8 +68,13 @@ export default {
 		dcStudentList: [],
 		cunSchoolNmae: undefined,
 		nowschool: '',
+		beginGrade: 0,
+		endGrade: 0,
 	},
 	reducers: {
+		grades(state, { payload }) {
+			return { ...state, beginGrade: payload.beginGrade, endGrade: payload.endGrade };
+		},
 		nowschool(state, { payload }) {
 			return { ...state, nowschool: payload };
 		},
@@ -185,6 +190,13 @@ export default {
 	},
 
 	effects: {
+		*getGrade({ payload }, { put, select }) {
+			let res = yield schoolInfo(payload);
+			yield put({
+				type:'grades',
+				payload:res.data.data
+			})
+		},
 		*remove({ payload }, { put, select }) {
 			//移除用户权限
 			let res = yield remove(payload);

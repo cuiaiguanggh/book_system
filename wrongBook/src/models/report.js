@@ -13,7 +13,9 @@ import {
 	remindHomework,
 	teacherCollect,
 	yuantu,
-	rate
+	rate,
+	recommend,
+	videoPrepare
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -194,7 +196,24 @@ export default {
 	},
 
 	effects: {
+		*videoPrepare({ payload }, { put }) {
+			let res = yield videoPrepare(payload)
+			if (res.data.result === 0) {
+				return res.data.data
+			} else {
+				return false
+			}
+		},
+		*recommend({ payload }, { put, select, }) {
+			let res = yield recommend(payload)
+			if (res.data.result === 0) {
+				return res.data.data
+			} else {
+				return []
 
+			}
+
+		},
 		*rate({ payload }, { put, select, takeLatest, }) {
 			//当调用作业报告数据时，调用作业提高率
 

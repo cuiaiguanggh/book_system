@@ -8,7 +8,8 @@ import {
 	info,
 	schools,
 	loginForGZ,
-	tokenLogin
+	tokenLogin,
+	trial
 } from '../services/loginService';
 import { routerRedux } from 'dva/router';
 import store from 'store';
@@ -71,6 +72,15 @@ export default {
 	},
 
 	effects: {
+		*trial({ payload }) {
+			let res = yield trial(payload);
+
+			if (res.data.result === 0) {
+				return true
+			} else {
+				message.error(res.data.msg)
+			}
+		},
 		*getPower({ payload }, { put, select }) {
 			let data = payload.data;
 			data.data.userId = data.data.id;
@@ -83,44 +93,54 @@ export default {
 				message.error('没有权限');
 				return false
 			}
-			switch (quanx.data.data.roleName[0]) {
-				case 'surpeAdmin':
-					//总管
-					rodeType = 10;
-					data.data.rodeType = 10;
-					break;
-				case 'teacher':
-					//任课老师
-					rodeType = 40;
-					data.data.rodeType = 40;
-					break;
-				case 'headteacher':
-					//班主任 
-					rodeType = 30;
-					data.data.rodeType = 30;
-					break;
-				case 'gradeLeader':
+
+			//筛选最高权限   校管 校长 年级组长 班主任 任课老师
+			for (let i = 0; i < quanx.data.data.roleName.length; i++) {
+				switch (quanx.data.data.roleName[i]) {
+					case 'surpeAdmin':
+						//总管
+						rodeType = 10;
+						data.data.rodeType = 10;
+						break;
+					case 'teacher':
+						//任课老师
+						if (!rodeType) {
+							rodeType = 40;
+							data.data.rodeType = 40;
+						}
+						break;
+					case 'headteacher':
+						//班主任 
+						if (!rodeType || rodeType === 40) {
+							rodeType = 30;
+							data.data.rodeType = 30;
+						}
+						break;
+					case 'schoolManagement':
+						//校管
+						if (!rodeType || rodeType > 20) {
+							rodeType = 20;
+							data.data.rodeType = 20;
+						}
+						break;
+					case 'gradeLeader':
 					//年级组长
-					rodeType = 50;
-					data.data.rodeType = 50;
-					break;
-				case 'schoolManagement':
-					//校管
-					rodeType = 20;
-					data.data.rodeType = 20;
-					break;
-				case 'headmaster':
-					//校长
-					rodeType = 50;
-					data.data.rodeType = 50;
-					break;
+					case 'headmaster':
+						//校长
+						if (!rodeType || rodeType > 20) {
+							rodeType = 50;
+							data.data.rodeType = 50;
+						}
+						break;
+				}
 			}
+
 			store.set('leftMenus', quanx.data.data.permissionList);
 
 			if (rodeType !== 10) {
 				//学校用户信息
 				let usermessage = yield schools({
-					roleName: quanx.data.data.roleName[0]
+					roleName: quanx.data.data.roleName
 				});
 				if (usermessage.data.data.length === 0) {
 					message.error('用户暂未加入学校');
@@ -187,44 +207,52 @@ export default {
 						window.location.href = "http://kacha.xin/";
 						return false
 					}
-					switch (quanx.data.data.roleName[0]) {
-						case 'surpeAdmin':
-							//总管
-							rodeType = 10;
-							data.data.rodeType = 10;
-							break;
-						case 'teacher':
-							//任课老师
-							rodeType = 40;
-							data.data.rodeType = 40;
-							break;
-						case 'headteacher':
-							//班主任 
-							rodeType = 30;
-							data.data.rodeType = 30;
-							break;
-						case 'gradeLeader':
+					//筛选最高权限   校管 校长 年级组长 班主任 任课老师
+					for (let i = 0; i < quanx.data.data.roleName.length; i++) {
+						switch (quanx.data.data.roleName[i]) {
+							case 'surpeAdmin':
+								//总管
+								rodeType = 10;
+								data.data.rodeType = 10;
+								break;
+							case 'teacher':
+								//任课老师
+								if (!rodeType) {
+									rodeType = 40;
+									data.data.rodeType = 40;
+								}
+								break;
+							case 'headteacher':
+								//班主任 
+								if (!rodeType || rodeType === 40) {
+									rodeType = 30;
+									data.data.rodeType = 30;
+								}
+								break;
+							case 'schoolManagement':
+								//校管
+								if (!rodeType || rodeType > 20) {
+									rodeType = 20;
+									data.data.rodeType = 20;
+								}
+								break;
+							case 'gradeLeader':
 							//年级组长
-							rodeType = 50;
-							data.data.rodeType = 50;
-							break;
-						case 'schoolManagement':
-							//校管
-							rodeType = 20;
-							data.data.rodeType = 20;
-							break;
-						case 'headmaster':
-							//校长
-							rodeType = 50;
-							data.data.rodeType = 50;
-							break;
+							case 'headmaster':
+								//校长
+								if (!rodeType || rodeType > 20) {
+									rodeType = 50;
+									data.data.rodeType = 50;
+								}
+								break;
+						}
 					}
 					store.set('leftMenus', quanx.data.data.permissionList);
 
 					if (rodeType !== 10) {
 						//学校用户信息
 						let usermessage = yield schools({
-							roleName: quanx.data.data.roleName[0]
+							roleName: quanx.data.data.roleName
 						});
 						if (usermessage.data.data.length === 0) {
 							message.error('用户暂未加入学校');
@@ -276,7 +304,7 @@ export default {
 					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.result === -1) {
-						
+
 						window.location.href = "http://kacha.xin/";
 
 					} else {
@@ -359,51 +387,57 @@ export default {
 					yield put(routerRedux.push('/getPhone'))
 					return false;
 				}
-				switch (quanx.data.data.roleName[0]) {
-
-					case 'surpeAdmin':
-						//总管
-						rodeType = 10;
-						data.data.rodeType = 10;
-						break;
-					case 'teacher':
-						//任课老师
-						rodeType = 40;
-						data.data.rodeType = 40;
-						break;
-					case 'headteacher':
-						//班主任 
-						rodeType = 30;
-						data.data.rodeType = 30;
-						break;
-					case 'gradeLeader':
+				//筛选最高权限   校管 校长 年级组长 班主任 任课老师
+				for (let i = 0; i < quanx.data.data.roleName.length; i++) {
+					switch (quanx.data.data.roleName[i]) {
+						case 'surpeAdmin':
+							//总管
+							rodeType = 10;
+							data.data.rodeType = 10;
+							break;
+						case 'teacher':
+							//任课老师
+							if (!rodeType) {
+								rodeType = 40;
+								data.data.rodeType = 40;
+							}
+							break;
+						case 'headteacher':
+							//班主任 
+							if (!rodeType || rodeType === 40) {
+								rodeType = 30;
+								data.data.rodeType = 30;
+							}
+							break;
+						case 'schoolManagement':
+							//校管
+							if (!rodeType || rodeType > 20) {
+								rodeType = 20;
+								data.data.rodeType = 20;
+							}
+							break;
+						case 'gradeLeader':
 						//年级组长
-						rodeType = 50;
-						data.data.rodeType = 50;
-						break;
-					case 'schoolManagement':
-						//校管
-						rodeType = 20;
-						data.data.rodeType = 20;
-						break;
-					case 'headmaster':
-						//校长
-						rodeType = 50;
-						data.data.rodeType = 50;
-						break;
+						case 'headmaster':
+							//校长
+							if (!rodeType || rodeType > 20) {
+								rodeType = 50;
+								data.data.rodeType = 50;
+							}
+							break;
+					}
 				}
 				store.set('leftMenus', quanx.data.data.permissionList);
 
 				if (rodeType !== 10) {
 					//学校用户信息
 					let usermessage = yield schools({
-						roleName: quanx.data.data.roleName[0]
+						roleName: quanx.data.data.roleName
 					});
 					if (usermessage.data.data.length === 0) {
 						message.error('用户暂未加入学校');
 						return false;
 					}
-
 					try {
 						data.data.schoolId = usermessage.data.data[0].schoolId;
 					} catch (err) {
@@ -484,6 +518,7 @@ export default {
 				// 	type:'token',
 				// 	payload:res.data.data
 				// })
+				return true
 			} else {
 				if (res.data.message == '服务器异常') {
 

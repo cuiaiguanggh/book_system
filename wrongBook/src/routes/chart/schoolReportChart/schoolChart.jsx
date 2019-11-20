@@ -735,7 +735,6 @@ class HomeworkCenter extends React.Component {
 							payload: value
 						});
 
-
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
 							classId: this.props.state.sclassId,
@@ -748,9 +747,7 @@ class HomeworkCenter extends React.Component {
 							payload: data
 						});
 
-					}}
-
-				>
+					}} >
 					{
 						subList.map((item, i) => (
 							<Option key={i} value={item.v}>{item.k}</Option>
@@ -779,7 +776,7 @@ class HomeworkCenter extends React.Component {
 						});
 						//更新图表
 						this.setState({
-							updatePei: true
+							updatePei: false
 						})
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
@@ -817,9 +814,9 @@ class HomeworkCenter extends React.Component {
 							type: 'reportChart/gradeId',
 							payload: value
 						});
-							//更新图表
+						//更新图表
 						this.setState({
-							updatePei: true
+							updatePei: false
 						})
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,

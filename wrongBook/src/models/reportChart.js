@@ -265,8 +265,9 @@ export default {
     },
     * getSubList({ payload }, { put, select }) {
       let { years } = yield select(state => state.temp);
-      let subData = yield querySubListByClassId({ year: years, classId: payload.classId })
+      let subData = yield querySubListByClassId({ way: 1, year: years, classId: payload.classId })
       let _sublist = subData.data.data;
+
       if (subData.data.result === 0) {
 
         if (_sublist.length === 0) {
@@ -282,6 +283,15 @@ export default {
             type: 'noClassData',
             payload: true
           })
+          yield put({
+            type: 'getSchoolDataReport',
+            payload: {
+              schoolId: payload.schoolId,
+              periodTime: payload.periodTime,
+              timeStamp: payload.timeStamp,
+              classId: payload.classId,
+            }
+          })
           return
         } else {
           yield put({
@@ -291,9 +301,8 @@ export default {
           console.log(2222)
           yield put({
             type: 'schoolDataReport',
-            payload:{}
+            payload: {}
           })
-
         }
         yield put({
           type: 'ssubList',
@@ -386,15 +395,14 @@ export default {
           nowtime = moment().format('YYYY') - 1;
         } else {
           nowtime = moment().format('YYYY');
-        }
-        ;
+        };
         //如果学年不是今年，且选择的时间周期是‘本周’‘本月’则删除数据
-        if (nowtime !== years && periodTime != 1 && periodTime != 2) {
+        if (nowtime != years && periodTime != 1 && periodTime != 2) {
           classRes.data.data.studentWrongNum = [];
           classRes.data.data.classUserNumData = [];
           classRes.data.data.classWrongNumData = [];
         }
-
+       
         yield put({
           type: 'classDataReport',
           payload: classRes.data.data

@@ -22,6 +22,7 @@ export default class MistakesTC extends React.Component {
   render() {
 
     let errorDetails = this.props.errorDetails;
+    let optimizationcuotiMistakes = this.props.optimizationcuotiMistakes;
     let trueNum = [];
     let wrongNum = [];
     let wrongQues = [];
@@ -118,6 +119,20 @@ export default class MistakesTC extends React.Component {
                         <div dangerouslySetInnerHTML={{ __html: errorDetails.knowledgeName }} />
                         <div className={style.txlefttitle}> 【答案与解析】</div>
                         <div dangerouslySetInnerHTML={{ __html: errorDetails.parse }} />
+
+                        <h2 className={style.txlefttitle}>优选错题</h2>
+                        {optimizationcuotiMistakes.length === 0 ?
+                          '暂无优选错题' :
+                          <>
+                            <div dangerouslySetInnerHTML={{ __html: optimizationcuotiMistakes[0].title }} />
+                            <div className={style.txlefttitle}>【知识点】</div>
+                            <div dangerouslySetInnerHTML={{ __html: (optimizationcuotiMistakes[0].knowledges && optimizationcuotiMistakes[0].knowledges[0].knowledgeName) || '暂无知识点' }} />
+                            <div className={style.txlefttitle}>【答案】</div>
+                            <div dangerouslySetInnerHTML={{ __html: optimizationcuotiMistakes[0].answer || '暂无答案' }} />
+                            <div className={style.txlefttitle}>【解析】</div>
+                            <div dangerouslySetInnerHTML={{ __html: optimizationcuotiMistakes[0].parse || '暂无解析' }} />
+                          </>
+                        }
                       </div>
                     </div>
                   </div>
@@ -204,3 +219,13 @@ export default class MistakesTC extends React.Component {
     )
   }
 }
+
+
+/*
+@optimizationcuotiMistakes 优选错题
+
+*/
+
+MistakesTC.defaultProps = {
+  optimizationcuotiMistakes: []
+};

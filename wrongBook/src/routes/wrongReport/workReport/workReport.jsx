@@ -113,6 +113,7 @@ class WorkReport extends React.Component {
       masters: [],
       buttonGo: false,
       cqxq: false,
+      optimizationcuotiMistakes: []
     };
     observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
@@ -664,6 +665,20 @@ class WorkReport extends React.Component {
                         if (item.wrongScore !== 0) {
                           let tcxuhao = i + 1;
                           let errorDetails = this.props.state.scoreDetail.data.questionScoreList[i];
+
+                          if (errorDetails.recommendId !== 0) {
+                            this.props.dispatch({
+                              type: 'report/recommend',
+                              payload: {
+                                uqId: errorDetails.recommendId
+                              }
+                            }).then((res) => {
+                              this.setState({
+                                optimizationcuotiMistakes: res
+                              })
+                            })
+                          }
+
                           this.setState({ xqtc: true, errorDetails, tcxuhao })
                         }
 
@@ -749,6 +764,19 @@ class WorkReport extends React.Component {
                 onClick={() => {
                   let tcxuhao = i + 1;
                   let errorDetails = item;
+                  if (item.recommendId !== 0) {
+                    this.props.dispatch({
+                      type: 'report/recommend',
+                      payload: {
+                        uqId: item.recommendId
+                      }
+                    }).then((res) => {
+                      this.setState({
+                        optimizationcuotiMistakes: res
+                      })
+                    })
+                  }
+
                   this.setState({ xqtc: true, errorDetails, tcxuhao })
                 }}>
                 <div className={style.annulusbase}>
@@ -1227,7 +1255,7 @@ class WorkReport extends React.Component {
                           transform: props.number.interpolate(x => (x > 0.5 ? `rotate(${180 * x}deg)` : 'rotate(0deg)'))
                         }}></animated.div>
                         <animated.div className={style.rightRectangle} style={{
-                          transform: props.number.interpolate(x => (x < 0.5 ? `rotate(${360 * x}deg)` : 'rotate(0deg)')),
+                          transform: props.number.interpolate(x => (x <= 0.5 ? `rotate(${360 * x}deg)` : 'rotate(0deg)')),
                           background: props.number.interpolate(x => (x > 0.5 ? '#FF7F69' : '#EDEDED'))
                         }} ></animated.div>
                       </>}
@@ -1464,7 +1492,6 @@ class WorkReport extends React.Component {
                       }
                     })
                   })
-
                 }}>
                   {this.state.collect === 0 ?
                     <><Icon type="heart" theme="filled" style={{ color: '#FF8551', marginRight: 5 }} /> 已收藏</> :
@@ -1505,7 +1532,7 @@ class WorkReport extends React.Component {
                         }}>
                         <div dangerouslySetInnerHTML={{ __html: beforehand.title }} />
                         <div className={style.txlefttitle}>【考点】</div>
-                        <div dangerouslySetInnerHTML={{ __html: beforehand.knowledgeName }} />
+                        <div dangerouslySetInnerHTML={{ __html: beforehand.knowledgeName || '暂无考点' }} />
                         <div className={style.txlefttitle}> 【答案与解析】</div>
                         <div dangerouslySetInnerHTML={{ __html: beforehand.answer }} />
                       </div>
@@ -1605,6 +1632,7 @@ class WorkReport extends React.Component {
           xqtc={this.state.xqtc}
           guanbi={() => { this.setState({ xqtc: false }) }}
           errorDetails={this.state.errorDetails}
+          optimizationcuotiMistakes={this.state.optimizationcuotiMistakes}
           pipeicw={(uqId) => {
             this.props.dispatch({
               type: 'report/WrongQuestionMarker',
