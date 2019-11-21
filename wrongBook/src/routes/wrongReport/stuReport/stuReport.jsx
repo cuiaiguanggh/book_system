@@ -45,7 +45,9 @@ class StuReport extends React.Component {
       //匹配错误显示
       pptype: 0,
       nowWindows: {},
-      optimizationcuotiMistakes: []
+      optimizationcuotiMistakes: [],
+      nowRecommendId: '',
+      videoId: ''
     }
   }
 
@@ -86,14 +88,11 @@ class StuReport extends React.Component {
           This.props.dispatch({
             type: 'report/uploadVideo',
             payload: {
-              uqId: This.props.state.uqId,
+              videoId: This.state.videoId,
               url: res.data.path,
-              // authorId:store.get('wrongBookNews').userId,
               duration: parseInt(duration)
             }
           });
-
-
         } else {
           message.error(res.msg)
         }
@@ -112,7 +111,24 @@ class StuReport extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    value += 'video?uqId=' + this.props.state.uqId + '&authorId=' + userId;
+
+    if (this.state.videoId === '') {
+      this.props.dispatch({
+        type: 'report/videoPrepare',
+        payload: {
+          questionId: this.state.nowRecommendId,
+          videoType: 1,
+          schoolId: store.get('wrongBookNews').schoolId,
+        }
+      }).then((res) => {
+        this.setState({
+          videoId: res
+        })
+      })
+    }
+
+    value += 'video?videoId=' + this.state.videoId;
+
     let This = this;
     // console.log(this.props.state.visible1,this.props.state.toupload )
     if (!this.props.state.visible1 && !this.props.state.toupload) {
@@ -218,9 +234,7 @@ class StuReport extends React.Component {
                       <p style={{ marginTop: 20, fontSize: '16px', color: '#606266' }}>手机微信扫码，录制视频讲解</p>
 
                       <label htmlFor="file">
-                        <span
-                          className={style.addButon}
-                        >本地上传</span>
+                        <span className={style.addButon}>本地上传</span>
                         <p style={{ margin: '10px 0' }}>支持文件类型:mp4 </p>
                         <p style={{ margin: '10px 0' }}>文件大小限制:50MB</p>
                       </label>
@@ -434,9 +448,12 @@ class StuReport extends React.Component {
               let j = i;
               return (
                 <div key={i} className={style.questionBody}>
-                  <div className={style.questionTop}>
+                  <div className={style.questionTop} onClick={() => {
+                    this.setState({
+                      nowRecommendId: item.recommendId
+                    })
+                  }}>
                     <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
-                    {/* <span>班级错误率：{}%（答错15人）</span> */}
                     {
                       item.num != 0 ?
                         <span style={{ borderLeft: '1px solid #ccc', paddingLeft: '20px' }}>已出卷<span
@@ -446,7 +463,6 @@ class StuReport extends React.Component {
                     <TracksVideo type={item} num={j}></TracksVideo>
                   </div>
                   <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
-
                     if (item.recommendId !== 0) {
                       this.props.dispatch({
                         type: 'report/recommend',
@@ -1190,12 +1206,18 @@ class StuReport extends React.Component {
                 type: 'report/visible',
                 payload: false
               });
+              this.setState({
+                videoId: ''
+              })
             }}
             onCancel={() => {
               this.props.dispatch({
                 type: 'report/visible',
                 payload: false
               });
+              this.setState({
+                videoId: ''
+              })
             }}>
             {
               this.props.state.visible ? this.addVie() : ''

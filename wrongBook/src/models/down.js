@@ -1,8 +1,6 @@
 import {
 	makeSelectWB,
 } from '../services/reportService';
-import { routerRedux } from 'dva/router';
-import moment from 'moment';
 import { message } from 'antd';
 export default {
 

@@ -48,7 +48,9 @@ class wrongTop extends React.Component {
       tcxuhao: 0,
       zoom: false,
       similarTopic: 1,
-      optimizationcuotiMistakes: []
+      optimizationcuotiMistakes: [],
+      nowRecommendId: '',
+      videoId: ''
     };
   }
 
@@ -106,7 +108,11 @@ class wrongTop extends React.Component {
                         style={{ color: "#409EFF" }}>{item.num}</span>次</span>
                       : ''
                   }
-                  <div style={{ float: 'right', position: 'relative', zIndex: 1 }}>
+                  <div style={{ float: 'right', position: 'relative', zIndex: 1 }} onClick={() => {
+                    this.setState({
+                      nowRecommendId: item.recommendId
+                    })
+                  }}>
                     <TracksVideo type={item} num={j}></TracksVideo>
                     {i === 1 ? <Guidance title='录视频' content='微信扫码，可录制或上传讲解视频' /> : ''}
                   </div>
@@ -246,13 +252,11 @@ class wrongTop extends React.Component {
           This.props.dispatch({
             type: 'report/uploadVideo',
             payload: {
-              uqId: This.props.state.questionId,
+              videoId: This.state.videoId,
               url: res.data.path,
               duration: parseInt(duration)
             }
           });
-
-
         } else {
           message.error(res.msg)
         }
@@ -270,7 +274,24 @@ class wrongTop extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    value += 'video?uqId=' + this.props.state.questionId + '&authorId=' + userId
+    if (this.state.videoId === '') {
+      this.props.dispatch({
+        type: 'report/videoPrepare',
+        payload: {
+          questionId: this.state.nowRecommendId,
+          videoType: 1,
+          schoolId: store.get('wrongBookNews').schoolId,
+        }
+      }).then((res) => {
+        this.setState({
+          videoId: res
+        })
+      })
+    }
+
+    value += 'video?videoId=' + this.state.videoId
+
+    // value += 'video?uqId=' + this.props.state.questionId + '&authorId=' + userId
     let This = this;
     // console.log(this.props.state.visible1,this.props.state.toupload )
     if (!this.props.state.visible1 && !this.props.state.toupload) {
@@ -302,8 +323,8 @@ class wrongTop extends React.Component {
             type: 'report/toupload',
             payload: true
           });
-
         }
+
         if (data.url) {
           json = JSON.parse(data.url)
           message.success('视频已发送至学生端，可提醒学生及时复习')
@@ -326,14 +347,12 @@ class wrongTop extends React.Component {
             type: 'report/toupload',
             payload: false
           });
-
         }
 
       }
       //连接关闭的回调方法
       websocket.onclose = function () {
         console.log("WebSocket连接关闭");
-
         This.props.dispatch({
           type: 'report/toupload',
           payload: false
@@ -348,6 +367,7 @@ class wrongTop extends React.Component {
       }
 
     }
+
     let questionNews = this.props.state.questionNews;
     return (
       <div className={style.codeFram} style={{ textAlign: 'center', overflow: "hidden" }}>
@@ -926,12 +946,18 @@ class wrongTop extends React.Component {
               type: 'report/visible',
               payload: false
             });
+            this.setState({
+              videoId: ''
+            })
           }}
           onCancel={() => {
             this.props.dispatch({
               type: 'report/visible',
               payload: false
             });
+            this.setState({
+              videoId: ''
+            })
           }}>
           {this.props.state.visible ? this.addVie() : ''}
         </Modal>

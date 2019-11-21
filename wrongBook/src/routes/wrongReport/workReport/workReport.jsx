@@ -113,7 +113,9 @@ class WorkReport extends React.Component {
       masters: [],
       buttonGo: false,
       cqxq: false,
-      optimizationcuotiMistakes: []
+      optimizationcuotiMistakes: [],
+      nowRecommendId: '',
+      videoId: ''
     };
     observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
@@ -157,12 +159,11 @@ class WorkReport extends React.Component {
           This.props.dispatch({
             type: 'report/uploadVideo',
             payload: {
-              uqId: This.props.state.questionId,
+              videoId: This.state.videoId,
               url: res.data.path,
               duration: parseInt(duration)
             }
           })
-
         } else {
           message.error(res.msg)
         }
@@ -180,7 +181,22 @@ class WorkReport extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    value += 'video?uqId=' + this.props.state.questionId + '&authorId=' + userId
+    if (this.state.videoId === '') {
+      this.props.dispatch({
+        type: 'report/videoPrepare',
+        payload: {
+          questionId: this.state.nowRecommendId,
+          videoType: 3,
+          schoolId: store.get('wrongBookNews').schoolId,
+        }
+      }).then((res) => {
+        this.setState({
+          videoId: res
+        })
+      })
+    }
+
+    value += 'video?videoId=' + this.state.videoId;
     let This = this;
     // console.log(this.props.state.visible1,this.props.state.toupload )
     if (!this.props.state.visible1 && !this.props.state.toupload) {
@@ -1506,7 +1522,12 @@ class WorkReport extends React.Component {
 
                       <div className={style.bluetriangle} style={{ borderTopWidth: 40, zIndex: 1 }}></div>
                       <div className={style.bulesz} style={{ zIndex: 1 }}>{this.state.timunumber}</div>
-                      <div style={{ position: 'absolute', right: 0, top: 0, padding: ' 5px 15px 0 0', background: '#F7F8FC', width: '100%', height: 30 }}>
+                      <div style={{ position: 'absolute', right: 0, top: 0, padding: ' 5px 15px 0 0', background: '#F7F8FC', width: '100%', height: 30 }}
+                        onClick={() => {
+                          this.setState({
+                            nowRecommendId: beforehand.recommendId
+                          })
+                        }}>
                         <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
                       </div>
 
@@ -1674,12 +1695,18 @@ class WorkReport extends React.Component {
               type: 'report/visible',
               payload: false
             });
+            this.setState({
+              videoId: ''
+            })
           }}
           onCancel={() => {
             this.props.dispatch({
               type: 'report/visible',
               payload: false
             });
+            this.setState({
+              videoId: ''
+            })
           }}>
           {this.props.state.visible ? this.addVie() : ''}
         </Modal>
