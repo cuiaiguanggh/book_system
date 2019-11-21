@@ -485,16 +485,15 @@ class WorkReport extends React.Component {
       let downparameters = {
         uqIdsStr: this.props.state.workDownPic.join(','),
         classId: this.props.state.classId,
-        operationClass: this.props.state.classId,
+        subjectId: this.props.state.subId,
       };
       if (this.state.similarTopic === 1) {
         downparameters.practise = 0
       } else {
         downparameters.practise = 1
-      }
-      ;
+      };
       this.props.dispatch({
-        type: 'down/makeSelectWB',
+        type: 'down/makeTestPagePdf',
         payload: downparameters
       });
       //关闭下拉弹窗

@@ -1,5 +1,6 @@
 import {
 	makeSelectWB,
+	makeTestPagePdf
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -186,6 +187,39 @@ export default {
 	},
 
 	effects: {
+		*makeTestPagePdf({ payload }, { put, select }) {
+			let res = yield makeTestPagePdf(payload);
+			if (res.data && res.data.result === 0) {
+				console.log(res.data.data);
+				yield put({
+					type: 'pdfUrl',
+					payload: {
+						downloadLink: res.data.data.downloadUrl,
+						fileLink: res.data.data.url,
+					}
+				});
+				yield put({
+					type: 'downQue',
+					payload: false
+				});
+				yield put({
+					type: 'showPdfModal',
+					payload: true
+				})
+			}
+			else if (res.err) {
+				yield put({
+					type: 'downQue',
+					payload: false
+				})
+			} else {
+				yield put({
+					type: 'downQue',
+					payload: false
+				});
+				message.error(res.data.msg)
+			}
+		},
 		*makeSelectWB({ payload }, { put, select }) {
 			//最新的下载错题
 			let res = yield makeSelectWB(payload);

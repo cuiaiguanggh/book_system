@@ -138,8 +138,14 @@ function videoPrepare(payload) {
         data: payload,
     });
 }
-
+function makeTestPagePdf(payload) {
+    return request(dataCenter('/export/pdf/makeTestPagePdf'), {
+        data: payload,
+        method: 'get'
+    });
+}
 export {
+    makeTestPagePdf,
     videoPrepare,
     recommend,
     rate,
