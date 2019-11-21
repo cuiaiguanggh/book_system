@@ -294,12 +294,12 @@ class wrongTop extends React.Component {
     // value += 'video?uqId=' + this.props.state.questionId + '&authorId=' + userId
     let This = this;
     // console.log(this.props.state.visible1,this.props.state.toupload )
-    if (!this.props.state.visible1 && !this.props.state.toupload) {
+    if (!this.props.state.visible1 && !this.props.state.toupload && this.state.videoId !== '') {
       var timestamp = new Date().getTime() + "";
       timestamp = timestamp.substring(0, timestamp.length - 3);
       var websocket = null;
       //判断当前浏览器是否支持WebSocket
-      let url = dataCen('/report/ws/teachVideoUpload?userId=' + userId + '&uqId=' + this.props.state.questionId)
+      let url = dataCen('/report/ws/teachVideoUpload?videoId=' + this.state.videoId)
       if ('WebSocket' in window) {
         websocket = new WebSocket(url);
       } else {
