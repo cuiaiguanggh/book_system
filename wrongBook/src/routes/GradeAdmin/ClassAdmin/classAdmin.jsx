@@ -114,8 +114,8 @@ class HomeworkCenter extends React.Component {
 		},
 		{
 			title: <div className={style.space}>视频量</div>,
-			dataIndex: 'teaVideoNum',
-			key: 'teaVideoNum',
+			dataIndex: 'videoNum',
+			key: 'videoNum',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
@@ -332,8 +332,8 @@ class HomeworkCenter extends React.Component {
 		},
 		{
 			title: <div className={style.space}>视频数量</div>,
-			dataIndex: 'courseVideoNum',
-			key: 'courseVideoNum',
+			dataIndex: 'videoNum',
+			key: 'videoNum',
 			align: 'center',
 			editable: false,
 			render: (text, record) => (
@@ -481,8 +481,7 @@ class HomeworkCenter extends React.Component {
 						p['wrongNum'] = det.questionNum;
 						p['admin'] = det.admin;
 						p['parentPhones'] = det.parentPhones;
-						p['courseVideoNum'] = det.courseVideoNum;
-						p['teaVideoNum'] = det.teaVideoNum;
+						p['videoNum'] = det.videoNum;
 						p['account'] = det.account;
 						p['isPush'] = det.isPush;
 						p['isHeadteacher'] = det.isHeadteacher;
@@ -499,8 +498,7 @@ class HomeworkCenter extends React.Component {
 					p['phone'] = det.phone;
 					p['admin'] = det.admin;
 					p['parentPhones'] = det.parentPhones;
-					p['courseVideoNum'] = det.courseVideoNum;
-					p['teaVideoNum'] = det.teaVideoNum;
+					p['videoNum'] = det.videoNum;
 					p['account'] = det.account;
 					p['isPush'] = det.isPush;
 					p['isHeadteacher'] = det.isHeadteacher;
