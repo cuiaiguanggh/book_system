@@ -460,7 +460,9 @@ class StuReport extends React.Component {
                           style={{ color: "#1890ff" }}>{item.num}</span>次</span>
                         : ''
                     }
-                    <TracksVideo type={item} num={j}></TracksVideo>
+                    <span hidden={item.recommendId <= 0 ? true : false}>
+                      <TracksVideo type={item} num={j} ></TracksVideo>
+                    </span>
                   </div>
                   <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
                     if (item.recommendId !== 0) {

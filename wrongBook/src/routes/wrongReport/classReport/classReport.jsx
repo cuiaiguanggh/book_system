@@ -108,7 +108,7 @@ class wrongTop extends React.Component {
                         style={{ color: "#409EFF" }}>{item.num}</span>次</span>
                       : ''
                   }
-                  <div style={{ float: 'right', position: 'relative', zIndex: 1 }} onClick={() => {
+                  <div style={{ float: 'right', position: 'relative', zIndex: 1 }} hidden={item.recommendId <= 0 ? true : false} onClick={() => {
                     this.setState({
                       nowRecommendId: item.recommendId
                     })

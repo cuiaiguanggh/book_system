@@ -1527,7 +1527,10 @@ class WorkReport extends React.Component {
                             nowRecommendId: beforehand.recommendId
                           })
                         }}>
-                        <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
+                        <span hidden={beforehand.recommendId <= 0 ? true : false}>
+                          <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
+                        </span>
+
                       </div>
 
                       <div className={style.matchingErrorBottom} onClick={this.pipeicw.bind(this, beforehand)}>
@@ -1562,7 +1565,9 @@ class WorkReport extends React.Component {
                       <div className={style.bluetriangle} style={{ borderTopWidth: 40, zIndex: 1 }}></div>
                       <div className={style.bulesz} style={{ zIndex: 1 }}>{this.state.timunumber}</div>
                       <div style={{ position: 'absolute', right: 0, top: 0, padding: ' 5px 15px 0 0', background: '#F7F8FC', width: '100%', height: 30 }}>
-                        <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
+                        <span hidden={beforehand.recommendId <= 0 ? true : false}>
+                          <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
+                        </span>
                       </div>
 
                       {beforehand.question ?
