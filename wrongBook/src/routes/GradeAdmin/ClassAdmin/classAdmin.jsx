@@ -423,7 +423,9 @@ class HomeworkCenter extends React.Component {
 											classId: this.props.state.infoClass,
 											isPush: Number(checked)
 										}
-									});
+									}).then(() => {
+										record.isPush = !Boolean(text)
+									})
 								}} />
 						</div>
 						: <Tooltip title="请选择班级">
