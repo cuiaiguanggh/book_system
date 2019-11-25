@@ -274,7 +274,7 @@ class wrongTop extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    if (this.state.videoId === '') {
+    if (this.state.videoId === '' && !this.props.state.visible1) {
       this.props.dispatch({
         type: 'report/videoPrepare',
         payload: {
@@ -411,9 +411,7 @@ class wrongTop extends React.Component {
                       <Spin style={{ height: '155px', marginLeft: '-24px', lineHeight: "150px" }} indicator={antIcon} />
                       {/* <Icon type="loading" style={{ fontSize: 24 }} spin /> */}
                       <p style={{ marginTop: 20, fontSize: '16px', color: '#606266' }}>正在上传...</p>
-                      <span
-                        className={style.addButon}
-                      >本地上传</span>
+                      <span className={style.addButon} >本地上传</span>
                       <p style={{ margin: '10px 0' }}>支持文件类型：mp4 </p>
                       <p style={{ margin: '10px 0' }}>文件大小限制：50MB</p>
                     </div>

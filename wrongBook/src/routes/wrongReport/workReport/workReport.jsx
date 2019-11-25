@@ -181,7 +181,7 @@ class WorkReport extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    if (this.state.videoId === '') {
+    if (this.state.videoId === ''&& !this.props.state.visible1) {
       this.props.dispatch({
         type: 'report/videoPrepare',
         payload: {
