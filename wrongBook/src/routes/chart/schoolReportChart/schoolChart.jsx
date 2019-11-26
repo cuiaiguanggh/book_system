@@ -857,7 +857,8 @@ class HomeworkCenter extends React.Component {
 			if (schoolReport.gradeUseNumMap) {
 				this.renderUserCount(schoolReport.gradeUseNumMap)
 			}
-			if (schoolReport.schoolUserNumData) {
+			if (schoolReport.schoolUserNumData && this.props.state.ssubList.length > 0) {
+				console.log(schoolReport)
 				this.renderClassData0(schoolReport.schoolUserNumData, schoolReport.schoolWrongNumData)
 			}
 			if (schoolReport.classUseData) {

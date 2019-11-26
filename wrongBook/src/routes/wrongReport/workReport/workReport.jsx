@@ -113,7 +113,9 @@ class WorkReport extends React.Component {
       masters: [],
       buttonGo: false,
       cqxq: false,
-      optimizationcuotiMistakes: []
+      optimizationcuotiMistakes: [],
+      dianji: false
+
     };
     observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
@@ -1405,6 +1407,18 @@ class WorkReport extends React.Component {
                       return false
                     }
                     if (scoreDetail.data && scoreDetail.data.unCommitId.length > 0) {
+                      //限制连续点击
+                      if (this.state.dianji) {
+                        setTimeout(() => {
+                          this.setState({
+                            dianji: false
+                          })
+                        }, 180000);
+                        return;
+                      }
+                      this.setState({
+                        dianji: true
+                      })
                       this.props.dispatch({
                         type: 'report/remindHomework',
                         payload: {
