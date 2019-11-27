@@ -13,9 +13,9 @@ import Guidance from '../../components/guidance/guidance';
 import AutoSizer from "react-virtualized-auto-sizer";
 import TracksVideo from '../TracksVideo/TracksVideo';
 import QRCode from 'qrcode.react';
-import { dataCenter, dataCen, serverType } from '../../../config/dataCenter'
-import { Spring, animated } from 'react-spring/renderprops'
-
+import { dataCenter, dataCen, serverType } from '../../../config/dataCenter';
+import { Spring, animated } from 'react-spring/renderprops';
+import CanvasDonut from '../../components/canvasDonut/canvasDonut';
 import PhotoLayer from '../../components/photoLayer/photoLayer';
 
 //作业中心界面内容 
@@ -1262,8 +1262,7 @@ class WorkReport extends React.Component {
                     %
                   </div>
 
-
-                  <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
+                  {/* <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
                     <div className={style.centerCircle}></div>
                     <div className={style.annulusOuter}></div>
                     <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
@@ -1278,23 +1277,12 @@ class WorkReport extends React.Component {
                       </>}
                     </Spring>
                     <div className={style.repairAnnulus}></div>
-                  </div>
-
-
-                  {/* <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
-                    <div className={style.centerCircle}></div>
-                    <div className={style.annulusOuter}></div>
-                    {classWrongScore > 0.5 ?
-                      <div className={style.leftRectangle} style={{ transform: `rotate(${180 * classWrongScore}deg)` }}></div> :
-                      <div className={style.leftRectangle} ></div>}
-                    {classWrongScore < 0.5 ?
-                      <div className={style.rightRectangle} style={{ transform: `rotate(${360 * classWrongScore}deg)` }}></div>
-                      : <div className={style.rightRectangle} style={{ background: '#FF7F69' }} ></div>}
-
-                    <div className={style.repairAnnulus}></div>
                   </div> */}
-
-
+                  <div style={document.documentElement.clientWidth <= 1200 ? { right: '1%', position: 'absolute', zIndex: 1, top: '0%' } : { position: 'absolute', zIndex: 1, right: '10%', top: '0%' }} >
+                    <Spring to={{ number: classWrongScore ? classWrongScore : 0 }}>
+                      {props => <CanvasDonut percent={props.number} />}
+                    </Spring>
+                  </div>
 
                 </div>
               </div>
