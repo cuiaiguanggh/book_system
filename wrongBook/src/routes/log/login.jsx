@@ -118,8 +118,8 @@ class Login extends Component {
               咔嚓官网
           </span>
             <Popover placement="bottom" trigger="hover" content={(
-              <div style={{ textAlign: "center" }}>
-                <img src={require('../images/gzQR.png')} />
+              <div style={{ textAlign: "center", padding: '12px 16px' }}>
+                <img src={'https://homework.mizholdings.com/kacha/xcx/page/4477684596443136.4657771556161536.1574847202493.jpg'} />
                 <div>扫描二维码加我微信</div>
               </div>
             )} trigger="click">
