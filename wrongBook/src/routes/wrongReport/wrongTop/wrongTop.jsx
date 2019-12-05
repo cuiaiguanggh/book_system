@@ -26,7 +26,7 @@ class ClassReport extends React.Component {
 					// showSearch
 					style={{ width: 150, margin: '0 20px' }}
 					placeholder="班级"
-					value={this.props.state.className}
+					value={this.props.state.classId}
 					optionFilterProp="children"
 					onChange={(value, option) => {
 						this.props.dispatch({
@@ -81,7 +81,7 @@ class ClassReport extends React.Component {
 					// showSearch
 					style={{ width: 150, margin: '0 20px 0 0' }}
 					placeholder="学科"
-					value={this.props.state.subName}
+					value={this.props.state.subId}
 					optionFilterProp="children"
 					onChange={(value) => {
 						//清空时间段
@@ -185,7 +185,6 @@ class ClassReport extends React.Component {
 							});
 						}
 
-						console.log(2222222)
 						this.props.dispatch({
 							type: 'temp/subId',
 							payload: value
@@ -220,20 +219,6 @@ class ClassReport extends React.Component {
 		if (page === 0) {
 			page = 1
 		}
-		// const { dispatch } = this.props;
-		// if(rodeType === 10){
-		// 	let data1 = {
-		// 		pageNum:1,
-		// 		pageSize:9999
-		// 	}
-		// 	dispatch({
-		// 		type: 'classHome/pageRelevantSchool',
-		// 		payload:data1
-		// 	});
-		// }else 
-		// dispatch({
-		// 	type: 'temp/getClassList',
-		// });
 	}
 }
 

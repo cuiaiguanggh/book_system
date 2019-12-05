@@ -13,13 +13,10 @@ import moment from 'moment';
 // import ydt from '../images/guideFigure.png';
 
 
-
 const Option = Select.Option;
 const {
-  Header, Footer, Sider, Content,
+  Header, Sider,
 } = Layout;
-const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
 
 //主界面内容
 class HomePageLeft extends Component {
@@ -32,8 +29,30 @@ class HomePageLeft extends Component {
   }
   //延迟改变hash切换组件
   ycgaihash(hahs) {
-    //延迟跳转的原因：解决menu样式切换卡顿
+    //修改浏览器标题
     let that = this;
+    let title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}`
+    switch (hahs) {
+      case '/classReport':
+        document.title = `${title}班级错题`
+        break;
+      case '/stuReport':
+        document.title = `${title}学生错题`
+        break;
+      case '/workReport':
+        document.title = `${title}作业报告`
+        break;
+      case '/classUser':
+        document.title = `${title}班级管理`
+        break;
+      case '/schoolChart':
+        document.title = `${title}使用数据`
+        break;
+      case '/classChart':
+        document.title = `${title}使用数据`
+        break;
+    }
+    //延迟跳转的原因：解决menu样式切换卡顿
     setTimeout(function () {
       that.props.dispatch(
         routerRedux.push({
@@ -83,6 +102,7 @@ class HomePageLeft extends Component {
         )
       }
       else if (rodeType === 30 || rodeType === 20) {
+        document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
         this.props.dispatch(
           routerRedux.push({
             pathname: '/classReport',
@@ -311,7 +331,9 @@ class HomePageLeft extends Component {
               });
             }
           } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
-            if (classId !== '' && subId != '' && year !== '') {
+            console.log(classId,subId,year)
+
+            if (classId !== '' && year !== '') {
               console.log('schoolChart')
               //重置月份为0
               this.props.dispatch({
@@ -349,13 +371,18 @@ class HomePageLeft extends Component {
 
   //切换学校
   switchSchool(value, option) {
+
     //替换学校name和id
     let wrongBookNews = store.get('wrongBookNews');
+    let oldSchoolName = wrongBookNews.schoolName;
     let userData = store.get('userData');
     wrongBookNews.schoolId = value;
     wrongBookNews.schoolName = option.props.children;
     userData.schoolId = value;
     userData.schoolName = option.props.children;
+    //替换浏览器标题
+    document.title = document.title.replace(oldSchoolName, option.props.children)
+
     store.set('wrongBookNews', wrongBookNews);
     store.set('userData', userData)
 
@@ -696,6 +723,7 @@ class HomePageLeft extends Component {
     //   })
     // }
 
+
     // 9月1号 之前，是2018-2019学年，9月1号之后，是2019-2020学年 moment().format('YYYY')
     if (Number(moment().format('MM')) < 9) {
       let years = moment().format('YYYY') - 1;
@@ -710,10 +738,34 @@ class HomePageLeft extends Component {
         payload: years
       });
     }
+
+
+    //恢复上次记忆
+    if (store.get('wrongBookNews').memoryYears) {
+      //恢复时，时间默认为全部
+      this.props.dispatch({
+        type: 'report/changeMouth',
+        payload: 0
+      });
+    }
+
+    store.get('wrongBookNews').memoryYears && this.props.dispatch({
+      type: 'temp/years',
+      payload: store.get('wrongBookNews').memoryYears
+    })
+
+    store.get('wrongBookNews').memoryClassId && this.props.dispatch({
+      type: 'temp/classId',
+      payload: store.get('wrongBookNews').memoryClassId
+    })
+    store.get('wrongBookNews').memorySubId && this.props.dispatch({
+      type: 'temp/subId',
+      payload: store.get('wrongBookNews').memorySubId
+    })
+
   }
 
   componentDidMount() {
-
     const { dispatch } = this.props;
     if (!store.get('wrongBookNews')) {
       this.props.dispatch(
@@ -752,7 +804,19 @@ class HomePageLeft extends Component {
     //   type: 'report/getUserSubjectList'
     // });
 
+
+    //关闭浏览器钱，进行记忆班级，学科，学年，学校功能
+    window.onunload = () => {
+      store.set('wrongBookNews', {
+        ...store.get('wrongBookNews'), ...{
+          memoryYears: this.props.state.years,
+          memoryClassId: this.props.state.classId,
+          memorySubId: this.props.state.subId,
+        }
+      })
+    };
   }
+
 }
 
 export default connect((state) => ({

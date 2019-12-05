@@ -82,109 +82,116 @@ export default {
 			}
 		},
 		*getPower({ payload }, { put, select }) {
-			let data = payload.data;
-			data.data.userId = data.data.id;
-			store.set('wrongBookToken', data.data.token);
+			try {
+				let data = payload.data;
+				data.data.userId = data.data.id;
+				store.set('wrongBookToken', data.data.token);
 
-			let rodeType;
-			//获取权限
-			let quanx = yield info({});
-			if (!quanx.data.data.hasOwnProperty('roleName')) {
-				message.error('没有权限');
-				return false
-			}
-
-			//筛选最高权限   校管 校长 年级组长 班主任 任课老师
-			for (let i = 0; i < quanx.data.data.roleName.length; i++) {
-				switch (quanx.data.data.roleName[i]) {
-					case 'surpeAdmin':
-						//总管
-						rodeType = 10;
-						data.data.rodeType = 10;
-						break;
-					case 'teacher':
-						//任课老师
-						if (!rodeType) {
-							rodeType = 40;
-							data.data.rodeType = 40;
-						}
-						break;
-					case 'headteacher':
-						//班主任 
-						if (!rodeType || rodeType === 40) {
-							rodeType = 30;
-							data.data.rodeType = 30;
-						}
-						break;
-					case 'schoolManagement':
-						//校管
-						if (!rodeType || rodeType > 20) {
-							rodeType = 20;
-							data.data.rodeType = 20;
-						}
-						break;
-					case 'gradeLeader':
-					//年级组长
-					case 'headmaster':
-						//校长
-						if (!rodeType || rodeType > 20) {
-							rodeType = 50;
-							data.data.rodeType = 50;
-						}
-						break;
-				}
-			}
-
-			store.set('leftMenus', quanx.data.data.permissionList);
-
-			if (rodeType !== 10) {
-				//学校用户信息
-				let usermessage = yield schools({
-					roleName: quanx.data.data.roleName
-				});
-				if (usermessage.data.data.length === 0) {
-					message.error('用户暂未加入学校');
-					return false;
-				}
-				store.set('moreschool', usermessage.data.data)
-
-				try {
-					data.data.schoolId = usermessage.data.data[0].schoolId;
-					data.data.schoolName = usermessage.data.data[0].schoolName;
-				} catch (err) {
-					console.log('学校id赋值错误')
-				}
-				try {
-					//主要给个人信息页面用的数据
-					usermessage.data.data[0].userClass[0] = { rodeType, schoolName: usermessage.data.data[0].schoolName };
-
-					store.set('userData', usermessage.data.data[0].userClass[0])
-				} catch (err) {
-					console.log('userClass字段没有' + err)
+				let rodeType;
+				//获取权限
+				let quanx = yield info({});
+				if (!quanx.data.data.hasOwnProperty('roleName')) {
+					message.error('没有权限');
+					return false
 				}
 
-			}
-			console.log(data.data)
-			store.set('wrongBookNews', data.data);
+				//筛选最高权限   校管 校长 年级组长 班主任 任课老师
+				for (let i = 0; i < quanx.data.data.roleName.length; i++) {
+					switch (quanx.data.data.roleName[i]) {
+						case 'surpeAdmin':
+							//总管
+							rodeType = 10;
+							data.data.rodeType = 10;
+							break;
+						case 'teacher':
+							//任课老师
+							if (!rodeType) {
+								rodeType = 40;
+								data.data.rodeType = 40;
+							}
+							break;
+						case 'headteacher':
+							//班主任 
+							if (!rodeType || rodeType === 40) {
+								rodeType = 30;
+								data.data.rodeType = 30;
+							}
+							break;
+						case 'schoolManagement':
+							//校管
+							if (!rodeType || rodeType > 20) {
+								rodeType = 20;
+								data.data.rodeType = 20;
+							}
+							break;
+						case 'gradeLeader':
+						//年级组长
+						case 'headmaster':
+							//校长
+							if (!rodeType || rodeType > 20) {
+								rodeType = 50;
+								data.data.rodeType = 50;
+							}
+							break;
+					}
+				}
 
-			yield put({
-				type: 'temp/classList1',
-				payload: []
-			})
-			yield put({
-				type: 'report/changeMouth',
-				payload: 0
-			})
+				store.set('leftMenus', quanx.data.data.permissionList);
 
-			if (rodeType === 10) {
-				yield put(routerRedux.push({
-					pathname: '/school',
-					hash: 'page=1'
-				}))
-			} else {
-				yield put(routerRedux.push({
-					pathname: '/classReport',
-				}))
+				if (rodeType !== 10) {
+					//学校用户信息
+					let usermessage = yield schools({
+						roleName: quanx.data.data.roleName
+					});
+					if (usermessage.data.data.length === 0) {
+						message.error('用户暂未加入学校');
+						return false;
+					}
+					store.set('moreschool', usermessage.data.data)
+
+					try {
+						data.data.schoolId = usermessage.data.data[0].schoolId;
+						data.data.schoolName = usermessage.data.data[0].schoolName;
+					} catch (err) {
+						console.err('学校id赋值错误')
+						throw err
+					}
+					try {
+						//主要给个人信息页面用的数据
+						usermessage.data.data[0].userClass[0] = { rodeType, schoolName: usermessage.data.data[0].schoolName };
+
+						store.set('userData', usermessage.data.data[0].userClass[0])
+					} catch (err) {
+						console.err('userClass字段没有' + err)
+						throw err
+					}
+
+				}
+				console.log(data.data)
+				store.set('wrongBookNews', data.data);
+				yield put({
+					type: 'temp/classList1',
+					payload: []
+				})
+				yield put({
+					type: 'report/changeMouth',
+					payload: 0
+				})
+
+				if (rodeType === 10) {
+					yield put(routerRedux.push({
+						pathname: '/school',
+						hash: 'page=1'
+					}))
+				} else {
+					document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
+					yield put(routerRedux.push({
+						pathname: '/classReport',
+					}))
+				}
+			} catch (e) {
+				message.error('登录发生错误')
+				console.error('登录发生错误' + e);
 			}
 		},
 		*tokenLogin({ payload }, { put, select }) {
@@ -264,7 +271,8 @@ export default {
 							data.data.schoolId = usermessage.data.data[0].schoolId;
 							data.data.schoolName = usermessage.data.data[0].schoolName;
 						} catch (err) {
-							console.log('学校id赋值错误')
+							console.error('学校id赋值错误')
+							throw err
 						}
 						try {
 							//主要给个人信息页面用的数据
@@ -273,6 +281,7 @@ export default {
 							store.set('userData', usermessage.data.data[0].userClass[0])
 						} catch (err) {
 							console.log('userClass字段没有' + err)
+							throw err
 						}
 
 					}
@@ -294,6 +303,7 @@ export default {
 							hash: 'page=1'
 						}))
 					} else {
+						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
 						yield put(routerRedux.push({
 							pathname: '/classReport',
 						}))
@@ -312,6 +322,7 @@ export default {
 					}
 				}
 			} catch (e) {
+				message.error('登录发生错误')
 				console.error('登录发生错误' + e);
 			}
 
@@ -343,6 +354,7 @@ export default {
 				}
 			} catch (e) {
 				console.error('登录发生错误' + e);
+				message.error('登录发生错误')
 			}
 		},
 		*getVC({ payload }, { put, select }) {
@@ -365,123 +377,131 @@ export default {
 			}
 		},
 		*codelog({ payload }, { put, select }) {
-			// code微信扫码登陆
-			let res = yield webchatLoginForWeb(payload);
-			// if(!res.hasOwnProperty("err")){
-			if (res.data.result === 0) {
-				yield put({
-					type: 'codeType',
-					payload: false
-				})
-				let data = res.data;
-				data.data.userId = data.data.id;
-				store.set('wrongBookToken', data.data.token)
+			try {
+				// code微信扫码登陆
+				let res = yield webchatLoginForWeb(payload);
+				// if(!res.hasOwnProperty("err")){
+				if (res.data.result === 0) {
+					yield put({
+						type: 'codeType',
+						payload: false
+					})
+					let data = res.data;
+					data.data.userId = data.data.id;
+					store.set('wrongBookToken', data.data.token)
 
-				let rodeType;
-				//获取权限
-				let quanx = yield info({});
-				if (!quanx.data.data.hasOwnProperty('roleName')) {
-					message.error('没有权限');
-					//跳转到关联页面
-					store.set('wrongBookNews', data.data)
-					yield put(routerRedux.push('/getPhone'))
-					return false;
-				}
-				//筛选最高权限   校管 校长 年级组长 班主任 任课老师
-				for (let i = 0; i < quanx.data.data.roleName.length; i++) {
-					switch (quanx.data.data.roleName[i]) {
-						case 'surpeAdmin':
-							//总管
-							rodeType = 10;
-							data.data.rodeType = 10;
-							break;
-						case 'teacher':
-							//任课老师
-							if (!rodeType) {
-								rodeType = 40;
-								data.data.rodeType = 40;
-							}
-							break;
-						case 'headteacher':
-							//班主任 
-							if (!rodeType || rodeType === 40) {
-								rodeType = 30;
-								data.data.rodeType = 30;
-							}
-							break;
-						case 'schoolManagement':
-							//校管
-							if (!rodeType || rodeType > 20) {
-								rodeType = 20;
-								data.data.rodeType = 20;
-							}
-							break;
-						case 'gradeLeader':
-						//年级组长
-						case 'headmaster':
-							//校长
-							if (!rodeType || rodeType > 20) {
-								rodeType = 50;
-								data.data.rodeType = 50;
-							}
-							break;
-					}
-				}
-				store.set('leftMenus', quanx.data.data.permissionList);
-
-				if (rodeType !== 10) {
-					//学校用户信息
-					let usermessage = yield schools({
-						roleName: quanx.data.data.roleName
-					});
-					if (usermessage.data.data.length === 0) {
-						message.error('用户暂未加入学校');
+					let rodeType;
+					//获取权限
+					let quanx = yield info({});
+					if (!quanx.data.data.hasOwnProperty('roleName')) {
+						message.error('没有权限');
+						//跳转到关联页面
+						store.set('wrongBookNews', data.data)
+						yield put(routerRedux.push('/getPhone'))
 						return false;
 					}
-					try {
-						data.data.schoolId = usermessage.data.data[0].schoolId;
-					} catch (err) {
-						console.log('学校id赋值错误')
+					//筛选最高权限   校管 校长 年级组长 班主任 任课老师
+					for (let i = 0; i < quanx.data.data.roleName.length; i++) {
+						switch (quanx.data.data.roleName[i]) {
+							case 'surpeAdmin':
+								//总管
+								rodeType = 10;
+								data.data.rodeType = 10;
+								break;
+							case 'teacher':
+								//任课老师
+								if (!rodeType) {
+									rodeType = 40;
+									data.data.rodeType = 40;
+								}
+								break;
+							case 'headteacher':
+								//班主任 
+								if (!rodeType || rodeType === 40) {
+									rodeType = 30;
+									data.data.rodeType = 30;
+								}
+								break;
+							case 'schoolManagement':
+								//校管
+								if (!rodeType || rodeType > 20) {
+									rodeType = 20;
+									data.data.rodeType = 20;
+								}
+								break;
+							case 'gradeLeader':
+							//年级组长
+							case 'headmaster':
+								//校长
+								if (!rodeType || rodeType > 20) {
+									rodeType = 50;
+									data.data.rodeType = 50;
+								}
+								break;
+						}
 					}
-					try {
-						//主要给个人信息页面用的数据
-						usermessage.data.data[0].userClass[0] = { ...usermessage.data.data[0].userClass[0], rodeType, schoolName: usermessage.data.data[0].schoolName };
-						store.set('userData', usermessage.data.data[0].userClass[0])
-					} catch (err) {
-						console.log('userClass字段没有' + err)
+					store.set('leftMenus', quanx.data.data.permissionList);
+
+					if (rodeType !== 10) {
+						//学校用户信息
+						let usermessage = yield schools({
+							roleName: quanx.data.data.roleName
+						});
+						if (usermessage.data.data.length === 0) {
+							message.error('用户暂未加入学校');
+							return false;
+						}
+						try {
+							data.data.schoolId = usermessage.data.data[0].schoolId;
+						} catch (err) {
+							console.err('学校id赋值错误')
+							throw err
+						}
+						try {
+							//主要给个人信息页面用的数据
+							usermessage.data.data[0].userClass[0] = { ...usermessage.data.data[0].userClass[0], rodeType, schoolName: usermessage.data.data[0].schoolName };
+							store.set('userData', usermessage.data.data[0].userClass[0])
+						} catch (err) {
+							console.err('userClass字段没有' + err)
+							throw err
+						}
+
 					}
 
+					store.set('wrongBookNews', data.data)
+
+					yield put({
+						type: 'temp/classList1',
+						payload: []
+					})
+					yield put({
+						type: 'report/changeMouth',
+						payload: 0
+					})
+
+					if (rodeType === 10) {
+						yield put(routerRedux.push({
+							pathname: '/school',
+							hash: 'page=1'
+						}))
+					} else if (rodeType === 20) {
+						yield put(routerRedux.push({
+							pathname: '/grade',
+							hash: 'page=1'
+						}))
+					} else if (rodeType === 30 || rodeType === 40) {
+						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
+						yield put(routerRedux.push({
+							pathname: '/classReport',
+						}))
+					}
+					// }
+				} else {
+					message.error(res.data.msg)
 				}
-
-				store.set('wrongBookNews', data.data)
-
-				yield put({
-					type: 'temp/classList1',
-					payload: []
-				})
-				yield put({
-					type: 'report/changeMouth',
-					payload: 0
-				})
-
-				if (rodeType === 10) {
-					yield put(routerRedux.push({
-						pathname: '/school',
-						hash: 'page=1'
-					}))
-				} else if (rodeType === 20) {
-					yield put(routerRedux.push({
-						pathname: '/grade',
-						hash: 'page=1'
-					}))
-				} else if (rodeType === 30 || rodeType === 40) {
-					yield put(routerRedux.push({
-						pathname: '/classReport',
-					}))
-				}
-				// }
-			} else {
-				message.error(res.data.msg)
+			} catch (e) {
+				console.error('登录发生错误' + e);
+				message.error('登录发生错误')
 			}
 		},
 		*phoneLogin({ payload }, { put, select }) {

@@ -833,8 +833,7 @@ class wrongTop extends React.Component {
                         this.monthtime.bind(this, item)
                       }>{item.k}</span>
                   )
-                })
-                : ''
+                }) : ''
             }
             <RangePicker
               style={{ width: 220 }}
@@ -1036,6 +1035,7 @@ class wrongTop extends React.Component {
         payload: data
       });
     }
+
   }
   componentWillMount() {
     //清空知识点

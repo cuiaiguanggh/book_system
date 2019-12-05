@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-	Layout, Menu, Table, Input, message, Modal, Popconfirm, Select, Form, Popover, Button, Spin, Switch, Tooltip
+	Layout, Menu, Table, Input, message, Modal, Popconfirm, Select, Form, Popover, Button, Spin, Switch, Tooltip, Icon, Upload
 } from 'antd';
 // import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
 import style from './classAdmin.less';
 import store from 'store';
 import observer from '../../../utils/observer'
+import { serverType } from '../../../config/dataCenter';
 
 // import * as XLSX from 'xlsx';
 const confirm = Modal.confirm;
@@ -25,7 +26,76 @@ function Trim() {
 		return this.replace(/(^\s*) | (\s*$)/g, '');
 	}
 }
-
+//添加学生弹窗
+const AddStu = connect()(
+	function (props) {
+		const [userName, setUserName] = useState('');
+		const [account, setAccount] = useState('');
+		const [password, setPassword] = useState('888888');
+		const [visible, setVisible] = useState(false);
+		return (
+			<>
+				<span className={style.addGrade} onClick={() => { setVisible(true); }}>添加学生</span>
+				<Modal title="添加学生"
+					visible={visible}
+					onOk={() => {
+						if (userName.trim() == '' || account.trim() == '' || password.trim() == '') {
+							message.warning('请填写正确信息')
+							return;
+						}
+						if (userName === '') {
+							message.warning('请填写学生姓名')
+							return;
+						} else if (account === '') {
+							message.warning('请填写学生帐号')
+							return;
+						} else if (password === '') {
+							message.warning('请填写学生密码')
+							return;
+						}
+						props.dispatch({
+							type: 'homePage/create',
+							payload: {
+								userName,
+								account,
+								password,
+								classId: props.classId
+							}
+						}).then((res) => {
+							if (res) {
+								//刷新
+								props.refresh()
+								setVisible(false);
+								setUserName('');
+								setAccount('');
+								setPassword('888888');
+							}
+						})
+					}}
+					onCancel={() => {
+						setVisible(false);
+						setUserName('');
+						setAccount('');
+						setPassword('888888');
+					}}
+					okText='确定'
+					cancelText='取消'>
+					<div style={{ marginBottom: '10px' }}>
+						<span style={{ width: "80px", display: 'inline-block' }}>姓名</span>
+						<Input value={userName} onChange={(e) => { setUserName(e.target.value.replace(/^ +| +$/g,'')) }} style={{ width: '200px' }} />
+					</div>
+					<div style={{ marginBottom: '10px' }}>
+						<span style={{ width: "80px", display: 'inline-block' }}>帐号</span>
+						<Input value={account} onChange={(e) => { setAccount(e.target.value.replace(/[^\w\.\/]/ig, '')) }} style={{ width: '200px' }} />
+					</div>
+					<div style={{ marginBottom: '10px' }}>
+						<span style={{ width: "80px", display: 'inline-block' }}>密码</span>
+						<Input value={password} onChange={(e) => { setPassword(e.target.value.replace(/[^\w\.\/]/ig, '')) }} style={{ width: '200px' }} />
+					</div>
+				</Modal>
+			</>
+		)
+	})
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
 
@@ -35,6 +105,7 @@ class HomeworkCenter extends React.Component {
 			editingKey: '',
 			current: 'teacher',
 			visible: false,
+			visibleS: false,
 			teacher: '',
 			phone: '',
 			sub: 0,
@@ -45,7 +116,8 @@ class HomeworkCenter extends React.Component {
 				justifyContent: 'center',
 				flexDirection: 'column'
 			}}> <Spin /> </div>,
-			pitchOn: ''
+			pitchOn: '',
+			loading: false
 		};
 		observer.addSubscribe('fuyuan', () => {
 			this.setState({
@@ -57,6 +129,24 @@ class HomeworkCenter extends React.Component {
 				}}> <Spin /> </div>,
 			})
 		})
+		//刷新左侧列表和学生列表
+		this.refreshStu = () => {
+			this.props.dispatch({
+				type: 'homePage/teacherList',
+				payload: {
+					type: 3
+				}
+			});
+			this.props.dispatch({
+				type: 'classHome/pageClass',
+				payload: {
+					schoolId: store.get('wrongBookNews').schoolId,
+					pageSize: 9999,
+					pageNum: 1,
+					year: this.props.state.years
+				}
+			})
+		}
 
 		this.tea = [{
 			title: '姓名',
@@ -67,7 +157,6 @@ class HomeworkCenter extends React.Component {
 			render: (text, record) => (
 				<div>
 					{text}
-
 					{record.isGradeLeader !== 0 && <span className={style.banzhuren}>{record.isGradeLeader}年级组长</span>}
 					{record.isHeadteacher == 1 && <span className={style.banzhuren}>班主任</span>}
 					{record.admin == 2 && <span className={style.banzhuren}>校长</span>}
@@ -274,8 +363,8 @@ class HomeworkCenter extends React.Component {
 					)
 				}
 			}
-		}
-		];
+		}];
+
 		this.stu = [{
 			title: '姓名',
 			dataIndex: 'name',
@@ -386,19 +475,22 @@ class HomeworkCenter extends React.Component {
 									cancelText: '否',
 									onOk() {
 										let data = {
-											userId: record.userId
+											classId: This.props.state.infoClass,
+											childId: record.userId,
 										}
 										This.props.dispatch({
-											type: 'homePage/kickClass',
+											type: 'homePage/exit',
 											payload: data
-										});
+										}).then((res) => {
+											This.refreshStu()
+										})
 									},
 									onCancel() {
 										console.log('Cancel');
 									},
 								});
 							}}>删除</span>
-						</div>
+						</div >
 					)
 				}
 			}
@@ -520,6 +612,71 @@ class HomeworkCenter extends React.Component {
 				children.push(<Option key={data.k}>{data.v}</Option>);
 			}
 		}
+		let that = this;
+		let configuration = {
+			name: 'upfile',
+			showUploadList: false,
+			data: {
+				tokenKC: '14e8e484-1ec2-4e88-b3a9-13e453958a3f'
+			},
+			onChange(info) {
+
+				if (info.file.status === "done") {
+					if (info.file.response.code === "200") {
+						that.setState({
+							loading: true
+						})
+						//云课根据上传的excel加入班级
+						let url, filedata = info.file.response.data, nolead = 0;
+						if (serverType === 0) {
+							url = 'https://api.mizholdings.com/t//mizhu/web/lesson/joinClassByFile'
+						} else {
+							url = 'https://api.mizholdings.com/p//mizhu/web/lesson/joinClassByFile'
+						}
+						let form = new FormData();
+						form.append('tokenKC', '14e8e484-1ec2-4e88-b3a9-13e453958a3f');
+						form.append('stuId', that.props.state.infoClass);
+						form.append('orgId', store.get('wrongBookNews').schoolId);
+						form.append('fileName', filedata.fileName);
+
+						for (let i = 0; i < filedata.list.length; i++) {
+							if (filedata.list[i].errorMsg !== "") {
+								nolead++
+							}
+						}
+
+						fetch(url, {
+							method: "POST",
+							body: form,
+						}).then(response => response.json())
+							.then(res => {
+								if (res.code === '200') {
+									message.success(`共有${filedata.list.length}条学生信息，${nolead}条不能导入`, 6)
+									//刷新
+									that.refreshStu()
+								} else {
+									message.error(res.msg)
+								}
+								that.setState({
+									loading: false
+								})
+							})
+							.catch(function (error) {
+								message.error(error.message)
+							})
+					} else {
+						message.error(info.file.response.msg);
+					}
+				}
+			},
+		};
+		//上传excel表到云课的接口
+		if (serverType === 0) {
+			configuration.action = 'https://api.mizholdings.com/t//mizhu/web/lesson/uploadFile'
+		} else {
+			configuration.action = 'https://api.mizholdings.com/p//mizhu/web/lesson/uploadFile'
+		}
+
 		return (
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
@@ -603,7 +760,9 @@ class HomeworkCenter extends React.Component {
 										this.setState({ visible: true })
 									}}>添加老师</span> : ''
 								}
-
+								{rodeType <= 20 && this.props.state.infoClass && this.state.current === 'student' ?
+									<AddStu classId={this.props.state.infoClass} refresh={this.refreshStu} /> : ''
+								}
 								{rodeType <= 20 && this.props.state.infoClass ?
 									<Popover placement="bottom" trigger="focus" content={this.state.content}>
 										<Button className={style.yqma} onClick={() => {
@@ -624,7 +783,15 @@ class HomeworkCenter extends React.Component {
 										}}>班级邀请码</Button >
 									</Popover> : ''
 								}
-
+								{rodeType <= 20 && this.props.state.infoClass && this.state.current === 'student' ?
+									<>
+										<Button style={{ margin: '0 10px' }} onClick={() => {
+											window.open("http://homework.mizholdings.com/kacha/kcct/7a74b2b773d3c595/导入学生模板.xlsx", '_blank');
+										}}>下载模版</Button >
+										<Upload {...configuration}> <Button loading={this.state.loading}>批量导入学生</Button></Upload>
+									</>
+									: ''
+								}
 
 							</div>
 							<div className={style.table}>
@@ -642,6 +809,7 @@ class HomeworkCenter extends React.Component {
 
 					</div>
 				</Content>
+
 				<Modal
 					title="添加教师"
 					visible={this.state.visible}
@@ -667,24 +835,27 @@ class HomeworkCenter extends React.Component {
 							this.props.dispatch({
 								type: 'homePage/createSchoolUser',
 								payload: data
-							});
-							this.props.dispatch({
-								type: 'homePage/teacherName',
-								payload: ''
-							});
-							this.props.dispatch({
-								type: 'homePage/phone',
-								payload: ''
-							});
+							}).then((res) => {
+								if (res) {
+									this.props.dispatch({
+										type: 'homePage/teacherName',
+										payload: ''
+									});
+									this.props.dispatch({
+										type: 'homePage/phone',
+										payload: ''
+									});
 
-							this.props.dispatch({
-								type: 'homePage/subjectId',
-								payload: ''
-							});
+									this.props.dispatch({
+										type: 'homePage/subjectId',
+										payload: ''
+									});
 
-							this.setState({
-								visible: false,
-							});
+									this.setState({
+										visible: false,
+									});
+								}
+							})
 						}
 					}}
 					onCancel={() => {
@@ -706,8 +877,7 @@ class HomeworkCenter extends React.Component {
 						});
 					}}
 					okText='确定'
-					cancelText='取消'
-				>
+					cancelText='取消'>
 					<div style={{ marginBottom: '10px' }}>
 						<span style={{ width: "80px", display: 'inline-block' }}>姓名</span>
 						<Input
@@ -715,7 +885,7 @@ class HomeworkCenter extends React.Component {
 							onChange={(e) => {
 								this.props.dispatch({
 									type: 'homePage/teacherName',
-									payload: e.target.value
+									payload: e.target.value.replace(/^ +| +$/g,'')
 								});
 							}}
 							onBlur={() => {
@@ -765,7 +935,8 @@ class HomeworkCenter extends React.Component {
 						</Select>
 					</div>
 				</Modal>
-			</Layout>
+
+			</Layout >
 		);
 	}
 	componentDidMount() {

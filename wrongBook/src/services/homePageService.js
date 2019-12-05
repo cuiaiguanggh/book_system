@@ -113,7 +113,19 @@ function remove(payload) {
         data: payload,
     });
 }
+function exit(payload) {
+    return request(dataCenter('/school/class/student/exit'), {
+        data: payload,
+    });
+}
+function create(payload) {
+    return request(dataCenter('/school/class/student/create'), {
+        data: payload,
+    });
+}
 export {
+    create,
+    exit,
     remove,
     assign,
     pushMarker,

@@ -19,10 +19,14 @@ import {
 	wxCode,
 	pushMarker,
 	assign,
-	remove
+	remove,
+	exit,
+	create
 } from '../services/homePageService';
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
+import store from 'store';
+
 export default {
 
 	namespace: 'homePage',
@@ -190,11 +194,29 @@ export default {
 	},
 
 	effects: {
+		*create({ payload }, { put, select }) {
+			let res = yield create(payload);
+			if (res.data.result === 0) {
+				message.success(res.data.msg)
+				return true
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		*exit({ payload }, { put, select }) {
+			let res = yield exit(payload);
+			if (res.data.result === 0) {
+				message.success(res.data.msg)
+				return true
+			} else {
+				message.error(res.data.msg)
+			}
+		},
 		*getGrade({ payload }, { put, select }) {
 			let res = yield schoolInfo(payload);
 			yield put({
-				type:'grades',
-				payload:res.data.data
+				type: 'grades',
+				payload: res.data.data
 			})
 		},
 		*remove({ payload }, { put, select }) {
@@ -635,7 +657,7 @@ export default {
 			}
 
 		},
-		*teacherList({ payload }, { put, select }) {
+		teacherList:[function*({ payload }, { put, select }) {
 			// 获取教师列表
 			let { infoClass, infoSchool } = yield select(state => state.homePage);
 			let data = {
@@ -666,33 +688,31 @@ export default {
 				}
 			}
 
-		},
-
+		},{ type: 'takeLatest' }],
 		*createSchoolUser({ payload }, { put, select }) {
 			// 学年返回
 			let res = yield createSchoolUser(payload);
 			if (res.hasOwnProperty("err")) {
 				yield put(routerRedux.push('/login'))
-			} else
-				if (res.data && res.data.result === 0) {
-					message.success('添加成功')
-					let data = {
-						type: 1
-					}
-					yield put({
-						type: 'teacherList',
-						payload: data
-					})
+			} else if (res.data && res.data.result === 0) {
+				message.success('添加成功')
+				let data = {
+					type: 1
+				}
+				yield put({
+					type: 'teacherList',
+					payload: data
+				})
+				return true
+			} else {
+				if (res.data.result === 2) {
+					yield put(routerRedux.push('/login'))
+				} else if (res.data.msg == '服务器异常') {
 
 				} else {
-					if (res.data.result === 2) {
-						yield put(routerRedux.push('/login'))
-					} else if (res.data.msg == '服务器异常') {
-
-					} else {
-						message.error(res.data.message)
-					}
+					message.error(res.data.message)
 				}
+			}
 
 		},
 		*subjectNodeList({ payload }, { put, select }) {
@@ -758,11 +778,23 @@ export default {
 					type: 'yearList',
 					payload: res.data
 				})
-
-				yield put({
-					type: 'temp/years',
-					payload: res.data.data[0]
-				})
+				//如果不存在上次记忆的学年，则默认选择第一个
+				if (!store.get('wrongBookNews').memoryYears) {
+					console.log('默认学年')
+					yield put({
+						type: 'temp/years',
+						payload: res.data.data[0]
+					})
+				} else {
+					//加载完后，删除学年记忆
+					let cun = store.get('wrongBookNews');
+					yield put({
+						type: 'temp/years',
+						payload: cun.memoryYears
+					})
+					delete (cun.memoryYears);
+					store.set('wrongBookNews', cun)
+				}
 
 			}
 			else if (res.hasOwnProperty("err")) {

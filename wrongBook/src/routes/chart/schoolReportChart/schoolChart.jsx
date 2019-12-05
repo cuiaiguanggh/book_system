@@ -47,16 +47,17 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/timeStamp',
 			payload: item.timeStamp
 		});
-		if (this.props.state.sclassList.length === 0 || this.props.state.ssubList.length === 0) return
-		let cid = this.props.state.sclassList[0].id
-		let sid = this.props.state.ssubList[0].v
+		if (this.props.state.sclassList.length === 0) return
+		let cid = this.props.state.sclassList[0].id;
+		let sid = this.props.state.ssubList.length > 0 && this.props.state.ssubList[0].v;
 		let data = {
 			schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
 			timeStamp: item.timeStamp,
 			classId: cid,
-			subjectId: sid,
 		}
+		if (sid) data.subjectId = sid;
+
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload: data
@@ -79,15 +80,16 @@ class HomeworkCenter extends React.Component {
 			});
 			if (this.props.state.sclassList.length === 0) return
 			let cid = this.props.state.sclassList[0].id;
-			let sid = this.props.state.ssubList[0].v;
+			let sid = this.props.state.ssubList.length > 0 && this.props.state.ssubList[0].v;
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: cid,
-				subjectId: sid,
 				timeStamp: 0,
 				startTime: startDate,
 				endTime: endDate,
 			}
+			if (sid) data.subjectId = sid;
+
 		} else {
 			this.props.dispatch({
 				type: 'reportChart/periodTime',
@@ -105,8 +107,7 @@ class HomeworkCenter extends React.Component {
 				timeStamp: this.props.state.reportTimeList[0].timeStamp,
 			}
 		}
-
-		if (!data.classId || !data.subjectId) return false;
+		if (!data.classId) return false;
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload: data
@@ -858,7 +859,6 @@ class HomeworkCenter extends React.Component {
 				this.renderUserCount(schoolReport.gradeUseNumMap)
 			}
 			if (schoolReport.schoolUserNumData && this.props.state.ssubList.length > 0) {
-				console.log(schoolReport)
 				this.renderClassData0(schoolReport.schoolUserNumData, schoolReport.schoolWrongNumData)
 			}
 			if (schoolReport.classUseData) {
@@ -1061,14 +1061,15 @@ class HomeworkCenter extends React.Component {
 		}, false);
 	}
 	componentWillMount() {
-
-		let schoolId = store.get('wrongBookNews').schoolId;
-		this.props.dispatch({
-			type: 'homePage/getEnableYears',
-			payload: {
-				schoolId
-			}
-		})
+		if (store.get('wrongBookNews').rodeType === 10) {
+			let schoolId = store.get('wrongBookNews').schoolId;
+			this.props.dispatch({
+				type: 'homePage/getEnableYears',
+				payload: {
+					schoolId
+				}
+			})
+		}
 	}
 
 	componentWillUnmount() {

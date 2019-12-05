@@ -183,7 +183,7 @@ class WorkReport extends React.Component {
     if (serverType === 0) {
       value = 'http://dev.kacha.xin/wx/';
     }
-    if (this.state.videoId === ''&& !this.props.state.visible1) {
+    if (this.state.videoId === '' && !this.props.state.visible1) {
       this.props.dispatch({
         type: 'report/videoPrepare',
         payload: {
@@ -1418,6 +1418,7 @@ class WorkReport extends React.Component {
                             dianji: false
                           })
                         }, 180000);
+                        message.info('请勿重复点击，请三分钟后再试')
                         return;
                       }
                       this.setState({

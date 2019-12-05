@@ -58,18 +58,22 @@ body,
 @font-face {
 	font-family: PingFang SC;
 	src        : url('../pages/PF.ttf');
+	font-display: swap
 }
 
 @font-face {
 	font-family: BebasNeue;
 	src        : url('../pages/BebasNeue.otf');
+	font-display: swap
 }
 
 @font-face {
 	font-family: PingFang-SC-Bold;
 	src        : url('../pages/PingFang Bold.ttf');
+	font-display: swap
 }
 @font-face {
 	font-family: PingFang-SC-Medium;
 	src        : url('../pages/pingfang sc medium.otf');
+	font-display: swap
 }

@@ -111,7 +111,7 @@ export default {
 				payload.startTime = stbegtoendTime[0];
 				payload.endTime = stbegtoendTime[1];
 			}
-			if(!payload.subjectId){
+			if (!payload.subjectId) {
 				// message.error('请选择学科');
 				return;
 			}
@@ -134,20 +134,32 @@ export default {
 						type: 'className',
 						payload: res.data.data[0].className
 					})
-					yield put({
-						type: 'classId',
-						payload: res.data.data[0].classId
-					})
+					//自动记忆功能
+					if (!store.get('wrongBookNews').memoryClassId) {
+						console.log('默认班级')
+						yield put({
+							type: 'classId',
+							payload: res.data.data[0].classId
+						})
+						yield put({
+							type: 'getUserSubjectList',
+							payload: res.data.data[0].classId
+						})
+					} else {
+						//加载完后，删除班级记忆
+						let cun = store.get('wrongBookNews');
+						yield put({
+							type: 'getUserSubjectList',
+							payload: cun.memoryClassId
+						})
+						delete (cun.memoryClassId);
+						store.set('wrongBookNews', cun)
+					}
 					yield put({
 						type: 'classList1',
 						payload: res.data
 					})
-
-					yield put({
-						type: 'getUserSubjectList',
-						payload: res.data.data[0].classId
-					})
-				}else{
+				} else {
 					//班级为空时清空所有对应数据
 					yield put({
 						type: 'classId',
@@ -204,7 +216,7 @@ export default {
 				}
 
 			} else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -262,17 +274,17 @@ export default {
 
 					yield put({
 						type: 'reportChart/classDataReport',
-						payload:{
-							studentWrongNum:[],
-							classUserNumData:[],
-							classWrongNumData:[],
-							teacherUseDataList:[]
+						payload: {
+							studentWrongNum: [],
+							classUserNumData: [],
+							classWrongNumData: [],
+							teacherUseDataList: []
 						}
-					  })
+					})
 
 				}
 			} else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -293,11 +305,22 @@ export default {
 			let res = yield getUserSubjectList(data);
 			if (res.data && res.data.result === 0) {
 				if (res.data.data.length > 0) {
+					let subjectId = res.data.data[0].v;
+					//自动记忆功能
+					if (!store.get('wrongBookNews').memorySubId) {
+						console.log('默认学科')
+						yield put({
+							type: 'subId',
+							payload: subjectId
+						});
+					} else {
+						//加载完后，删除学科记忆
+						let cun = store.get('wrongBookNews');
+						subjectId = cun.memorySubId;
+						delete (cun.memorySubId);
+						store.set('wrongBookNews', cun)
+					}
 
-					yield put({
-						type: 'subId',
-						payload: res.data.data[0].v
-					});
 					yield put({
 						type: 'subName',
 						payload: res.data.data[0].k
@@ -308,7 +331,7 @@ export default {
 					});
 					yield put({
 						type: 'subjectId',
-						payload: res.data.data[0].v
+						payload: subjectId
 					});
 					//获取月份
 					yield put({
@@ -316,7 +339,7 @@ export default {
 						payload: {
 							classId: payload,
 							year: years,
-							subjectId: res.data.data[0].v
+							subjectId: subjectId
 						}
 					});
 					//获取知识点筛选
@@ -325,7 +348,7 @@ export default {
 						payload: {
 							classId: payload,
 							year: years,
-							subjectId: res.data.data[0].v,
+							subjectId: subjectId,
 							type: 0,
 						}
 					});
@@ -337,7 +360,7 @@ export default {
 							payload: {
 								classId: payload,
 								year: years,
-								subjectId: res.data.data[0].v,
+								subjectId: subjectId,
 								info: 0,
 								page: 1,
 								pageSize: 20,
@@ -351,7 +374,7 @@ export default {
 							payload: {
 								classId: payload,
 								year: years,
-								subjectId: res.data.data[0].v,
+								subjectId: subjectId,
 							}
 						});
 					}
@@ -361,7 +384,7 @@ export default {
 							type: 'report/queryHomeworkList',
 							payload: {
 								classId: payload,
-								subjectId: res.data.data[0].v
+								subjectId: subjectId
 							}
 						})
 					}
@@ -378,7 +401,7 @@ export default {
 					})
 					yield put({
 						type: 'subId',
-						payload:''
+						payload: ''
 					});
 					yield put({
 						type: 'subList',
@@ -413,7 +436,7 @@ export default {
 					})
 				}
 			} else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -448,7 +471,7 @@ export default {
 					payload: res.data
 				})
 			} else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -469,7 +492,7 @@ export default {
 				})
 			}
 			else {
-				if (res.data.result===2) {
+				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {
 
@@ -493,7 +516,7 @@ export default {
 					})
 				}
 				else {
-					if (res.data.result===2) {
+					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.msg == '服务器异常') {
 

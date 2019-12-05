@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 export default function canvasDonut(props) {
-    console.log(props.percent)
     useEffect(() => {
         const ctx = document.getElementById("myCanvas").getContext("2d");
         //外圆环
