@@ -4,7 +4,9 @@ import {
 	homeworkDetail,
 	getUserSubjectList,
 	getQrMonthList,
-	getKnowledgeList
+	getKnowledgeList,
+	combinedPaper,
+	changeQue
 } from '../services/tempService';
 import {
 	classInfo,
@@ -19,6 +21,8 @@ import { routerRedux } from 'dva/router';
 import moment from 'moment';
 import { message } from 'antd';
 import store from "store";
+import observer from '../utils/observer'
+
 export default {
 
 	namespace: 'temp',
@@ -96,6 +100,39 @@ export default {
 	},
 
 	effects: {
+
+		*changeQue({ payload }, { put, select }) {
+			let res = yield changeQue(payload);
+			if (res.data.result === 0) {
+				return res.data.data
+			} else {
+				message.error(res.data.msg)
+				return []
+			}
+		},
+		combinedPaper: [function* ({ payload }, { put, select }) {
+
+			let res = yield combinedPaper(payload);
+			if (res.data.result === 0) {
+				return res.data.data
+			} else {
+				message.error(res.data.msg)
+				return []
+			}
+		},
+		{ type: 'takeLatest' }
+		],
+		*dollorsKnowledge({ payload }, { put, select }) {
+			if (!payload.subjectId) {
+				return false
+			}
+			let res = yield getKnowledgeList(payload);
+			if (res.data.result === 0) {
+				return res.data.data
+			} else {
+				message.error(res.data.msg)
+			}
+		},
 		*getKnowledgeList({ payload }, { put, select }) {
 			let { mouNow, knowledgenow, stbegtoendTime } = yield select(state => state.report);
 			//月份
@@ -122,6 +159,8 @@ export default {
 					type: 'knowledgeList',
 					payload: res.data
 				})
+			} else {
+				message.error(res.data.msg)
 			}
 		},
 
@@ -352,9 +391,10 @@ export default {
 							type: 0,
 						}
 					});
+
 					//刷新时调用对应页面的接口，而不是调用全部接口
-					//班级错题
 					if (hashStrings === '/classReport') {
+						//班级错题
 						yield put({
 							type: 'report/queryQrDetail',
 							payload: {
@@ -366,9 +406,8 @@ export default {
 								pageSize: 20,
 							}
 						});
-					}
-					//学生错题
-					if (hashStrings === '/stuReport') {
+					} else if (hashStrings === '/stuReport') {
+						//学生错题
 						yield put({
 							type: 'report/queryQrStudentCount',
 							payload: {
@@ -377,9 +416,8 @@ export default {
 								subjectId: subjectId,
 							}
 						});
-					}
-					//作业报告
-					if (hashStrings === '/workReport') {
+					} else if (hashStrings === '/workReport') {
+						//作业报告
 						yield put({
 							type: 'report/queryHomeworkList',
 							payload: {
@@ -387,7 +425,11 @@ export default {
 								subjectId: subjectId
 							}
 						})
+					} else if (hashStrings === '/intelligentDollors') {
+						//智能组卷页面
+						observer.publish('dollorsChange', subjectId)
 					}
+
 				} else {
 					//班级对应的学科为空时候，清空所有对应数据
 					//公用的月份，知识点，学科
@@ -434,6 +476,11 @@ export default {
 						type: 'report/scoreDetail',
 						payload: []
 					})
+					let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
+					if (hashStrings === '/intelligentDollors') {
+						//智能组卷
+						observer.publish('dollorsReset')
+					}
 				}
 			} else {
 				if (res.data.result === 2) {

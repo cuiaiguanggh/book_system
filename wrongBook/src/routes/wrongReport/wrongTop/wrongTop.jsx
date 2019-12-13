@@ -7,6 +7,8 @@ import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './wrongTop.less';
 import store from 'store';
+import observer from '../../../utils/observer'
+
 //作业中心界面内容
 const Option = Select.Option;
 
@@ -130,7 +132,7 @@ class ClassReport extends React.Component {
 								subjectId: value
 							}
 						});
-						
+
 						let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
 						if (hashStrings === '/classReport') {
 							//处在班级错题页面
@@ -183,6 +185,9 @@ class ClassReport extends React.Component {
 									subjectId: value
 								}
 							});
+						} else if (hashStrings === '/intelligentDollors') {
+							//处在智能组卷页面
+							observer.publish('dollorsChange', value)
 						}
 
 						this.props.dispatch({

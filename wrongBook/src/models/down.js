@@ -1,6 +1,7 @@
 import {
 	makeSelectWB,
-	makeTestPagePdf
+	makeTestPagePdf,
+	makeIntelligentTestPdf
 } from '../services/reportService';
 import { message } from 'antd';
 export default {
@@ -185,6 +186,16 @@ export default {
 	},
 
 	effects: {
+		*makeIntelligentTestPdf({ payload }, { put, select }) {
+			//智能组卷页面pdf
+			let res = yield makeIntelligentTestPdf(payload);
+			if (res.data && res.data.result === 0) {
+				return res.data.data;
+			} else {
+				message.error(res.data.msg)
+
+			}
+		},
 		*makeTestPagePdf({ payload }, { put, select }) {
 			let res = yield makeTestPagePdf(payload);
 			if (res.data && res.data.result === 0) {

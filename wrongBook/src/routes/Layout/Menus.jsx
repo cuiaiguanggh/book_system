@@ -51,6 +51,9 @@ class HomePageLeft extends Component {
       case '/classChart':
         document.title = `${title}使用数据`
         break;
+      case '/intelligentDollors':
+        document.title = `${title}智能组卷`
+        break;
     }
     //延迟跳转的原因：解决menu样式切换卡顿
     setTimeout(function () {
@@ -173,7 +176,7 @@ class HomePageLeft extends Component {
             <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span>
           </Menu.Item>)
           menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
-            <Icon type="solution" /><span style={{ cursor: 'pointer' }}>学生错题</span>
+            <Icon type="appstore" /><span style={{ cursor: 'pointer' }}>学生错题</span>
           </Menu.Item>)
           menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
             <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
@@ -199,6 +202,13 @@ class HomePageLeft extends Component {
             menus.push(
               <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
                 <Icon type="pie-chart" /><span>使用数据</span>
+              </Menu.Item>
+            )
+          }
+          if (rodeType !== 10) {
+            menus.push(
+              <Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
+                <Icon type="diff" /><span>智能组卷</span>
               </Menu.Item>
             )
           }
@@ -331,7 +341,7 @@ class HomePageLeft extends Component {
               });
             }
           } else if (window.location.href.split('/#/')[1] == 'schoolChart') {
-            console.log(classId,subId,year)
+            console.log(classId, subId, year)
 
             if (classId !== '' && year !== '') {
               console.log('schoolChart')
@@ -371,13 +381,22 @@ class HomePageLeft extends Component {
 
   //切换学校
   switchSchool(value, option) {
-
-    //替换学校name和id
+    //替换学校name和id和学校类型
     let wrongBookNews = store.get('wrongBookNews');
     let oldSchoolName = wrongBookNews.schoolName;
     let userData = store.get('userData');
     wrongBookNews.schoolId = value;
     wrongBookNews.schoolName = option.props.children;
+    //判断学校是小学，初中，高中，全学段
+    if (option.props.begingrade === 1 && option.props.endgrade === 6) {
+      wrongBookNews.schoolType = '小学'
+    } else if (option.props.begingrade === 7 && option.props.endgrade === 9) {
+      wrongBookNews.schoolType = '初中'
+    } else if (option.props.begingrade === 10 && option.props.endgrade === 12) {
+      wrongBookNews.schoolType = '高中'
+    } else {
+      wrongBookNews.schoolType = '全学段'
+    }
     userData.schoolId = value;
     userData.schoolName = option.props.children;
     //替换浏览器标题
@@ -522,10 +541,12 @@ class HomePageLeft extends Component {
       defaultKey = 'workDetail3'
     } else if (defaultKey.indexOf('classChart') === 0) {
       defaultKey = 'Chart'
-    } if (defaultKey.indexOf('schoolChart') === 0) {
+    } else if (defaultKey.indexOf('schoolChart') === 0) {
       defaultKey = 'Chart'
     } else if (defaultKey.indexOf('classUser') === 0) {
       defaultKey = 'grade'
+    } else if (defaultKey.indexOf('intelligentDollors') === 0) {
+      defaultKey = 'Dollors'
     }
     if (defaultKey == '') {
       if (userNews) {
@@ -660,7 +681,7 @@ class HomePageLeft extends Component {
                     <Select defaultValue={userNews.schoolId} className={style.moreschool}
                       onChange={this.switchSchool.bind(this)}>
                       {moreschool && moreschool.map((item) => (
-                        <Option value={item.schoolId} key={item.schoolId}>{item.schoolName}</Option>
+                        <Option value={item.schoolId} begingrade={item.beginGrade} endgrade={item.endGrade} key={item.schoolId}>{item.schoolName}</Option>
                       ))}
                     </Select> : ''
                   }
@@ -695,7 +716,7 @@ class HomePageLeft extends Component {
             </div>
           </Header>
           {
-            defaultKey.indexOf('workDetail') != -1 ?
+            defaultKey.indexOf('workDetail') != -1 || defaultKey.indexOf('Dollors') > -1 ?
               <Header style={{ background: '#a3b0c3', height: '50px', padding: 0 }}>
                 <WrongTop type={this.props.location} />
               </Header> : ''

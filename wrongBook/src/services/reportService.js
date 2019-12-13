@@ -144,7 +144,14 @@ function makeTestPagePdf(payload) {
         method: 'get'
     });
 }
+function makeIntelligentTestPdf(payload) {
+    return request(dataCenter('/export/pdf/makeIntelligentTestPdf'), {
+        data: payload,
+        method: 'get'
+    });
+}
 export {
+    makeIntelligentTestPdf,
     makeTestPagePdf,
     videoPrepare,
     recommend,
