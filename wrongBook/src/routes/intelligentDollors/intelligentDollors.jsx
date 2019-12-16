@@ -136,7 +136,7 @@ class intelligentDollors extends React.Component {
             //题目列表
             this.getTitles({
                 classId: this.props.state.classId,
-                subjectId: this.props.state.subId,
+                subjectId: subId,
             })
 
         })
@@ -212,7 +212,7 @@ class intelligentDollors extends React.Component {
     }
     render() {
         let mounthList = this.props.state.mounthList;
-        let length = 10;
+        let length = this.state.topicList.length;
         for (let obj of this.state.topicList) {
             if (obj.hide) {
                 length--;
@@ -266,7 +266,15 @@ class intelligentDollors extends React.Component {
                             <div className={style.title}> 本周班级薄弱知识点 </div>
                             <div className={style.knowledgeBox}>
                                 {this.state.dollorsKnowledge.map((item, i) => (
-                                    <span key={i} className={style.label}>{item.knowledgeName}<span>{item.num}</span></span>
+                                    <span key={i} className={style.label} title={item.knowledgeName} >
+                                        <span style={{
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            maxWidth: 215,
+                                            display: 'inline-block',
+                                            overflow: 'hidden',
+                                        }}> {item.knowledgeName}</span>
+                                        < span > {item.num}</span></span>
                                 ))}
                             </div>
                         </div>
@@ -346,7 +354,7 @@ class intelligentDollors extends React.Component {
                     }}>
                         <Icon type="up" />
                     </div>
-                </Layout>
+                </Layout >
                 <Footer className={style.bottom} onClick={(e) => {
                     if (e.target.getAttribute('data-need')) {
                         this.setState({
