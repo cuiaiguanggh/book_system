@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin, DatePicker
+  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin, DatePicker, Empty
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -112,7 +112,7 @@ class StuReport extends React.Component {
       value = 'http://dev.kacha.xin/wx/';
     }
 
-    if (this.state.videoId === ''&& !this.props.state.visible1) {
+    if (this.state.videoId === '' && !this.props.state.visible1) {
       this.props.dispatch({
         type: 'report/videoPrepare',
         payload: {
@@ -377,48 +377,56 @@ class StuReport extends React.Component {
 
   menulist() {
     let studentList = this.props.state.studentList;
-    let current = this.props.state.userId;
-    if (!current) {
-      current = studentList.data[0].userId;
-    }
 
-    if (studentList.data.length > 0) {
-      if (current !== '') {
-        return (
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={[current]}
-            onClick={this.selectStu.bind(this)}
-          >
-            {
-              studentList.data.map((item, i) => (
-                <Menu.Item key={item.userId} style={{ cursor: 'pointer' }} title={item.userName}>
-                  <div style={{ overflow: 'hidden' }}>
-                    <span style={{
-                      float: 'left',
-                      width: "70%",
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
-                    }}>{item.userName}</span>
-                    <span style={{ float: 'right' }}>{item.wrongNum}道</span>
-                  </div>
-                </Menu.Item>
-              ))
-            }
-          </Menu>
-        )
-      } else {
-        return (
-          <Menu
-            // theme="dark"
-            mode="inline"
-          >
-          </Menu>
-        )
+    if (studentList.data && studentList.data.length > 0) {
+      let current = this.props.state.userId;
+      if (!current) {
+        current = studentList.data[0].userId;
       }
-    } else {
 
+      if (studentList.data.length > 0) {
+        if (current !== '') {
+          return (
+            <Menu
+              mode="inline"
+              defaultSelectedKeys={[current]}
+              onClick={this.selectStu.bind(this)}
+            >
+              {
+                studentList.data.map((item, i) => (
+                  <Menu.Item key={item.userId} style={{ cursor: 'pointer' }} title={item.userName}>
+                    <div style={{ overflow: 'hidden' }}>
+                      <span style={{
+                        float: 'left',
+                        width: "70%",
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>{item.userName}</span>
+                      <span style={{ float: 'right' }}>{item.wrongNum}道</span>
+                    </div>
+                  </Menu.Item>
+                ))
+              }
+            </Menu>
+          )
+        } else {
+          return (
+            <Menu
+              // theme="dark"
+              mode="inline"
+            >
+            </Menu>
+          )
+        }
+      }
+
+    } else {
+      return (<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={'暂无学生数据'} style={{
+        position: 'relative',
+        top: '50%',
+        transform: 'translateY(-50%)'
+      }} />)
     }
   }
 
@@ -1058,12 +1066,13 @@ class StuReport extends React.Component {
             </div>
           </div>
           <Layout className={style.innerOut}>
-            {
-              studentList.data && studentList.data.length > 0 ?
-                <Sider className={style.sider}>
-                  {this.menulist()}
-                </Sider> : ''
-            }
+            {/* {
+              studentList.data && studentList.data.length > 0 ? */}
+            <Sider className={style.sider}>
+              {this.menulist()}
+            </Sider>
+            {/*       : ''
+             } */}
 
             <Content className={style.content}
               style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
@@ -1095,8 +1104,17 @@ class StuReport extends React.Component {
                     float: 'left',
                     width: 'calc(100% - 60px)',
                     height: 35,
-                    overflow: 'hidden'
-                  } : { float: 'left', width: 'calc(100% - 60px)', maxHeight: 352, overflow: 'auto' }}>
+                    overflow: 'hidden',
+                    position: 'relative',
+                    top: -2,
+                  } : {
+                      float: 'left',
+                      width: 'calc(100% - 60px)',
+                      maxHeight: 352,
+                      overflow: 'auto',
+                      position: 'relative',
+                      top: -2,
+                    }}>
                     <span key={0} className={0 === this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
                       style={{ width: 48 }}
                       onClick={this.allknowledgenow.bind(this)}>全部</span>
@@ -1258,7 +1276,6 @@ class StuReport extends React.Component {
     let classId = this.props.state.classId;
     let subId = this.props.state.subId;
     let year = this.props.state.years;
-    let userId = this.props.state.userId;
     this.props.dispatch({
       type: 'down/showPdfModal',
       payload: false
@@ -1268,17 +1285,6 @@ class StuReport extends React.Component {
       payload: 1
     });
     if (classId !== '' && subId != '' && year !== '') {
-      //获取知识点筛选
-      this.props.dispatch({
-        type: 'temp/getKnowledgeList',
-        payload: {
-          classId,
-          year,
-          subjectId: this.props.state.subId,
-          userId,
-          type: 1
-        }
-      });
 
       let data = {
         classId: classId,
@@ -1288,7 +1294,19 @@ class StuReport extends React.Component {
       this.props.dispatch({
         type: 'report/queryQrStudentCount',
         payload: data
-      });
+      }).then(() => {
+        //获取知识点筛选
+        this.props.dispatch({
+          type: 'temp/getKnowledgeList',
+          payload: {
+            classId,
+            year,
+            subjectId: this.props.state.subId,
+            userId: this.props.state.userId,
+            type: 1
+          }
+        });
+      })
 
     }
   }

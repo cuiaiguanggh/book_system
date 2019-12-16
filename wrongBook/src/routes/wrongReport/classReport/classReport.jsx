@@ -903,7 +903,7 @@ class wrongTop extends React.Component {
               fontWeight: 'bold',
               color: 'rgba(96,98,102,1)',
             }}>知识点：</span>
-            <div className={this.state.zoom ? `xiaoshi` : ''} style={{ float: 'right', maxHeight: 350, overflow: 'auto', width: 'calc(100% - 56px)', paddingBottom: 15 }}>
+            <div className={this.state.zoom ? `xiaoshi ${style.knowledgeBoxGai}` : `${style.knowledgeBox}`} style={{ width: 'calc(100% - 56px)' }}>
               <span key={0} className={0 == this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
                 onClick={this.allknowledgenow.bind(this)}>全部</span>
               {knowledgeList.data ?

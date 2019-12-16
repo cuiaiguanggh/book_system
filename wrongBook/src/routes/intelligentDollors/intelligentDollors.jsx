@@ -286,7 +286,7 @@ class intelligentDollors extends React.Component {
                             document.getElementById('back').style.opacity = 0.3
                         }
                     }}>
-                        {this.state.topicList.length > 0 ?
+                        { length > 0 ?
                             this.state.topicList.map((item, i) => (
                                 <Topics
                                     key={i}

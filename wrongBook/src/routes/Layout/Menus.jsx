@@ -178,6 +178,11 @@ class HomePageLeft extends Component {
           menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
             <Icon type="appstore" /><span style={{ cursor: 'pointer' }}>学生错题</span>
           </Menu.Item>)
+          menus.push(
+            <Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
+              <Icon type="diff" /><span>智能组卷</span>
+            </Menu.Item>
+          )
           menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
             <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
           </Menu.Item>)
@@ -202,13 +207,6 @@ class HomePageLeft extends Component {
             menus.push(
               <Menu.Item key="Chart" onClick={this.ycgaihash.bind(this, '/schoolChart')}>
                 <Icon type="pie-chart" /><span>使用数据</span>
-              </Menu.Item>
-            )
-          }
-          if (rodeType !== 10) {
-            menus.push(
-              <Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
-                <Icon type="diff" /><span>智能组卷</span>
               </Menu.Item>
             )
           }

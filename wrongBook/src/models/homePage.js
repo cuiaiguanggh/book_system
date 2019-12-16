@@ -412,25 +412,29 @@ export default {
 
 		*administrativeDivision({ payload }, { put, select }) {
 			// 区域信息返回
-			let res = yield administrativeDivision(payload);
-			if (res.hasOwnProperty("err")) {
-				// yield put(routerRedux.push('/login'))
-			} else
-				if (res.data && res.data.result === 0) {
-					yield put({
-						type: 'city',
-						payload: res.data
-					})
-				}
-				else {
-					if (res.data.result === 2) {
-						yield put(routerRedux.push('/login'))
-					} else if (res.data.msg == '服务器异常') {
-
-					} else {
-						message.error(res.data.msg)
+			try {
+				let res = yield administrativeDivision(payload);
+				if (res.hasOwnProperty("err")) {
+					// yield put(routerRedux.push('/login'))
+				} else
+					if (res.data && res.data.result === 0) {
+						yield put({
+							type: 'city',
+							payload: res.data
+						})
 					}
-				}
+					else {
+						if (res.data.result === 2) {
+							yield put(routerRedux.push('/login'))
+						} else if (res.data.msg == '服务器异常') {
+
+						} else {
+							message.error(res.data.msg)
+						}
+					}
+			} catch (e) {
+				console.error('获取区域信息错误' + e)
+			}
 		},
 		*pageRelevantSchool({ payload }, { put, select }) {
 			// 学校列表返回
@@ -657,7 +661,7 @@ export default {
 			}
 
 		},
-		teacherList:[function*({ payload }, { put, select }) {
+		teacherList: [function* ({ payload }, { put, select }) {
 			// 获取教师列表
 			let { infoClass, infoSchool } = yield select(state => state.homePage);
 			let data = {
@@ -688,7 +692,7 @@ export default {
 				}
 			}
 
-		},{ type: 'takeLatest' }],
+		}, { type: 'takeLatest' }],
 		*createSchoolUser({ payload }, { put, select }) {
 			// 学年返回
 			let res = yield createSchoolUser(payload);

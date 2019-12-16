@@ -193,7 +193,7 @@ class HomeworkCenter extends React.Component {
         </div>
       )
     }, {
-      title: '类型',
+      title: '学段',
       dataIndex: 'type',
       key: 'type',
       width: '10%',
@@ -471,7 +471,7 @@ class HomeworkCenter extends React.Component {
                 <Select
                   showSearch
                   style={{ width: 120 }}
-                  placeholder="类型"
+                  placeholder="学段"
                   optionFilterProp="children"
                   // value={this.state}
                   onChange={(value, e) => {
