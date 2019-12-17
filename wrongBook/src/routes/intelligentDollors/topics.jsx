@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Spring, } from 'react-spring/renderprops'
 import style from './intelligentDollors.less';
 import { Icon, Popconfirm } from 'antd';
@@ -10,6 +10,9 @@ export default function Topics(prop) {
     const [height, setHeight] = useState(0);
     //要替换的题目
     const [replace, setReplace] = useState([]);
+    //替换后题目，记录题目的id。
+    const [nowId, setNowId] = useState([]);
+
     if (prop.topic.hide) {
         return (<></>)
     }
@@ -24,7 +27,7 @@ export default function Topics(prop) {
                     <>
                         <div className={`${style.anniu} ${style.topicButton}`} style={{ marginRight: 15 }}
                             onClick={(e) => {
-                                if (replace.length === 0) {
+                                if (replace.length === 0 || !nowId.includes(prop.topic.questionId)) {
                                     prop.change({
                                         knowledgeId: prop.topic.knowledgeId,
                                         questionId: prop.topic.questionId,
@@ -32,6 +35,12 @@ export default function Topics(prop) {
                                         data.push(prop.topic)
                                         setReplace(data)
                                         prop.changeList(data)
+                                        //当前试卷题目的id
+                                        let suzu = []
+                                        for (let obj of data) {
+                                            suzu.push(obj.questionId)
+                                        }
+                                        setNowId(suzu)
                                     })
                                 } else {
                                     prop.changeList(replace)

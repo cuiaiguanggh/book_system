@@ -51,8 +51,8 @@ class HomeworkCenter extends React.Component {
     let morexg = this.state.morexg;
     let managerNames = [], managerPhones = [];
     for (let i = 0; morexg.length > i; i++) {
-        managerNames.push(morexg[i].name);
-        managerPhones.push(morexg[i].phone);
+      managerNames.push(morexg[i].name);
+      managerPhones.push(morexg[i].phone);
     }
     this.props.dispatch({
       type: 'homePage/changeSchool',
@@ -206,8 +206,22 @@ class HomeworkCenter extends React.Component {
           {text}
         </div>
       )
+    }, {
+      title: '服务期限',
+      width: '10%',
+      render: (text, record) => (
+        <div
+          style={{ whiteSpace: 'nowrap' }}
+          className='space'
+          onClick={() => {
+            this.toGrade(record)
+          }}>
+          {record.effStart && record.effEnd ? `${record.effStart}-${record.effEnd}` : ''}
+        </div >
+      )
     },
-    {  title: '校管理员',
+    {
+      title: '校管理员',
       dataIndex: 'principal',
       key: 'principal',
       width: '10%',
@@ -226,7 +240,8 @@ class HomeworkCenter extends React.Component {
       }
 
     },
-    {  title: '校管理帐号',
+    {
+      title: '校管理帐号',
       dataIndex: 'account',
       key: 'account',
       width: '10%',
@@ -263,7 +278,7 @@ class HomeworkCenter extends React.Component {
                   type: 'homePage/schoolInfo',
                   payload: data
                 }).then((morexg) => {
-                  if (morexg &&  morexg.managerNames) {
+                  if (morexg && morexg.managerNames) {
                     let cun = [];
                     for (let i = 0; morexg.managerNames.length > i; i++) {
                       cun.push({
@@ -271,13 +286,13 @@ class HomeworkCenter extends React.Component {
                         phone: morexg.managerPhones[i],
                       })
                     }
-  
+
                     this.setState({
                       morexg: cun,
-    
+
                     })
                   }
-                   if(morexg &&  morexg.effStart){
+                  if (morexg && morexg.effStart) {
                     this.setState({
                       dateString: [morexg.effStart, morexg.effEnd]
                     })
@@ -334,11 +349,11 @@ class HomeworkCenter extends React.Component {
               onClick={() => {
                 this.props.dispatch({
                   type: 'homePage/exportClass',
-                  payload: { 
+                  payload: {
                     schoolId: record.schoolId,
-                    pageNum:1,
-                    pageSize:999,
-                   }
+                    pageNum: 1,
+                    pageSize: 999,
+                  }
                 });
                 this.props.dispatch({
                   type: 'homePage/nowschool',
@@ -377,6 +392,12 @@ class HomeworkCenter extends React.Component {
         }
         if (det.hasOwnProperty('managerPhones')) {
           p["managerPhones"] = det.managerPhones;
+        }
+        if (det.hasOwnProperty('effStart')) {
+          p["effStart"] = det.effStart;
+        }
+        if (det.hasOwnProperty('effEnd')) {
+          p["effEnd"] = det.effEnd;
         }
         dataSource[i] = p;
       }
@@ -590,7 +611,7 @@ class HomeworkCenter extends React.Component {
                         }
                       }
                     }
-                    
+
                     dispatch({
                       type: 'homePage/pageRelevantSchool',
                       payload: data
@@ -739,7 +760,7 @@ class HomeworkCenter extends React.Component {
                 <div style={{ marginBottom: '30px' }}>
                   <span style={{ width: "80px", display: 'inline-block' }}>服务期限 </span>
                   <RangePicker placeholder={['开始时间', '结束时间']}
-                    value={this.state.dateString.length>0?[moment(this.state.dateString[0], 'YYYY/MM/DD'), moment(this.state.dateString[1], 'YYYY/MM/DD')]:null }
+                    value={this.state.dateString.length > 0 ? [moment(this.state.dateString[0], 'YYYY/MM/DD'), moment(this.state.dateString[1], 'YYYY/MM/DD')] : null}
                     onChange={(date, dateString) => {
                       this.setState({
                         dateString

@@ -167,6 +167,11 @@ class HomePageLeft extends Component {
                 <Icon type="bar-chart" /><span>学校管理</span>
               </Link>
             </Menu.Item>)
+            // menus.push(<Menu.Item key="userImport" >
+            //   <Link to='userImport'>
+            //     <Icon type="import" /><span>用户导入</span>
+            //   </Link>
+            // </Menu.Item>)
           }
         }
 

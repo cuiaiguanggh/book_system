@@ -362,41 +362,45 @@ export default {
 			payload.wi.location.href = res.data.data.link;
 		},
 		* queryQrDetail({ payload }, { put, select }) {
-			let { mouNow, knowledgenow, stbegtoendTime } = yield select(state => state.report)
-			//月份
-			if (mouNow !== 0) {
-				payload.month = mouNow.v
-			}
-			//知识点
-			if (knowledgenow.length !== 0) {
-				payload.knowledgeName = knowledgenow
-			}
-			//时间段
-			if (stbegtoendTime.length > 0) {
-				payload.startTime = stbegtoendTime[0];
-				payload.endTime = stbegtoendTime[1];
-			}
-			if (!payload.subjectId) {
-				message.error('请选择学科');
-				return;
-			}
-
-			//账号科目列表
-			let res = yield queryQrDetail(payload);
-			if (res.data && res.data.result === 0) {
-				yield put({
-					type: 'qrdetailList',
-					payload: res.data
-				})
-			}
-			else {
-				if (res.data.result === 2) {
-					yield put(routerRedux.push('/login'))
-				} else if (res.data.msg == '服务器异常') {
-
-				} else {
-					message.error(res.data.msg)
+			try {
+				let { mouNow, knowledgenow, stbegtoendTime } = yield select(state => state.report)
+				//月份
+				if (mouNow !== 0) {
+					payload.month = mouNow.v
 				}
+				//知识点
+				if (knowledgenow.length !== 0) {
+					payload.knowledgeName = knowledgenow
+				}
+				//时间段
+				if (stbegtoendTime.length > 0) {
+					payload.startTime = stbegtoendTime[0];
+					payload.endTime = stbegtoendTime[1];
+				}
+				if (!payload.subjectId) {
+					message.error('请选择学科');
+					return;
+				}
+
+				//账号科目列表
+				let res = yield queryQrDetail(payload);
+				if (res.data && res.data.result === 0) {
+					yield put({
+						type: 'qrdetailList',
+						payload: res.data
+					})
+				}
+				else {
+					if (res.data.result === 2) {
+						yield put(routerRedux.push('/login'))
+					} else if (res.data.msg == '服务器异常') {
+
+					} else {
+						message.error(res.data.msg)
+					}
+				}
+			} catch (e) {
+				console.error('获取错题出错')
 			}
 		},
 		* queryQrStudentCount({ payload }, { put, select }) {

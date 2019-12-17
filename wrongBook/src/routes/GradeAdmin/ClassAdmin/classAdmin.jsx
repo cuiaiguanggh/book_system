@@ -82,7 +82,7 @@ const AddStu = connect()(
 					cancelText='取消'>
 					<div style={{ marginBottom: '10px' }}>
 						<span style={{ width: "80px", display: 'inline-block' }}>姓名</span>
-						<Input value={userName} onChange={(e) => { setUserName(e.target.value.replace(/^ +| +$/g,'')) }} style={{ width: '200px' }} />
+						<Input value={userName} onChange={(e) => { setUserName(e.target.value.replace(/^ +| +$/g, '')) }} style={{ width: '200px' }} />
 					</div>
 					<div style={{ marginBottom: '10px' }}>
 						<span style={{ width: "80px", display: 'inline-block' }}>帐号</span>
@@ -655,14 +655,14 @@ class HomeworkCenter extends React.Component {
 									//刷新
 									that.refreshStu()
 								} else {
-									message.error(res.msg)
+									message.error('导入失败')
 								}
 								that.setState({
 									loading: false
 								})
 							})
 							.catch(function (error) {
-								message.error(error.message)
+								message.error('导入失败')
 							})
 					} else {
 						message.error(info.file.response.msg);
@@ -885,7 +885,7 @@ class HomeworkCenter extends React.Component {
 							onChange={(e) => {
 								this.props.dispatch({
 									type: 'homePage/teacherName',
-									payload: e.target.value.replace(/^ +| +$/g,'')
+									payload: e.target.value.replace(/^ +| +$/g, '')
 								});
 							}}
 							onBlur={() => {
