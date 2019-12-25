@@ -24,7 +24,7 @@ export default class Guidance extends React.Component {
       wz1 = { top: 38, right: 0 };
       wz2 = {
         left: 350,
-        top: '-198px',
+        top: '-180px',
         borderTopColor: 'transparent',
         borderBottomColor: '#409eff'
       };
@@ -36,7 +36,7 @@ export default class Guidance extends React.Component {
       wz1 = { right: 50, top: 50 };
       wz2 = {
         left: 350,
-        top: '-208px',
+        top: '-190px',
         borderTopColor: 'transparent',
         borderBottomColor: '#409eff'
       };
@@ -48,7 +48,7 @@ export default class Guidance extends React.Component {
       wz1 = { right: '-285px', top: 30 };
       wz2 = {
         left: 52,
-        top: '-190px',
+        top: '-175px',
         borderTopColor: 'transparent',
         borderBottomColor: '#409eff'
       };
@@ -60,7 +60,7 @@ export default class Guidance extends React.Component {
       wz1 = { right: '-135px', top: 45 };
       wz2 = {
         left: 185,
-        top: '-190px',
+        top: '-175px',
         borderTopColor: 'transparent',
         borderBottomColor: '#409eff'
       };
@@ -72,7 +72,7 @@ export default class Guidance extends React.Component {
       wz1 = { right: '15px', top: 50 };
       wz2 = {
         left: 330,
-        top: '-190px',
+        top: '-175px',
         borderTopColor: 'transparent',
         borderBottomColor: '#409eff'
       };

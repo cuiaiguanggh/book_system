@@ -123,7 +123,16 @@ function create(payload) {
         data: payload,
     });
 }
+function importData(payload) {
+    return request(dataCenter('/school/class/manage/create/importData'), {
+        data: payload,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+}
 export {
+    importData,
     create,
     exit,
     remove,

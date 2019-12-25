@@ -1,7 +1,7 @@
 import {
 	makeSelectWB,
 	makeTestPagePdf,
-	makeIntelligentTestPdf
+	makeIntelligentTestPdf,
 } from '../services/reportService';
 import { message } from 'antd';
 export default {

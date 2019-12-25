@@ -101,6 +101,7 @@ function RouterConfig({ history }) {
   return (
     <Router history={history}>
       <Switch>
+        <Route path="/" component={Login} exact />
         <Route path="/login" component={Login} />
         <Route path="/getcode" component={Getcode} />
         <Route path="/loginPhone" component={LoginP} />
@@ -125,7 +126,7 @@ function RouterConfig({ history }) {
           <Route path="/classChart" component={ClassChart} />
           <Route path="/intelligentDollors" component={IntelligentDollors} />
           <Route path="/userImport" component={userImport} />
-          </Home>
+        </Home>
       </Switch>
     </Router>
   );

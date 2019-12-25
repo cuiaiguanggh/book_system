@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	Layout, message, Select, Icon, Button, Table
+	Layout, message, Select, Icon, Button, Table, Radio
 } from 'antd';
 import { connect } from 'dva';
 import style from './userImport.less';
@@ -14,23 +14,153 @@ class UserImport extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			fileArr: [],
-			file: [],
-			schoolId: '',
-			year: '',
-			uploadFile: {},
-			dianji: false,
-			teaOrSte: 'tea'
+			dianji: true,
+			teaOrSte: 'tea',
+			schoolName: '',
+			managerName: '',
+			managerPhone: '',
+			teacherTable: [],
+			studentTable: [],
+			schoolType: 0,
+			cun: {},
+			isImport: 0
 		};
 
+		this.teacherColumns = [
+			{
+				title: '班级名称',
+				dataIndex: 'className',
+				width: '18%',
+				render: (text, record) => (text)
+			}, {
+				title: '年级',
+				dataIndex: 'gradeName',
+				width: '18%',
+				render: (text, record) => (text)
+			}, {
+				title: '教师姓名',
+				dataIndex: 'teacherName',
+				width: '18%',
+				render: (text, record) => (text)
+			}, {
+				title: '任教学科',
+				dataIndex: 'subjectName',
+				width: '18%',
+				render: (text, record) => (text)
+			}, {
+				title: '教师手机号',
+				dataIndex: 'phone',
+				width: '18%',
+				render: (text, record) => (text)
+			}, {
+				title: '状态',
+				dataIndex: 'state',
+				width: '10%',
+				align: 'center',
+				render: (text, record) => (
+					text === '正常' ? <span className={style.normal}>正常</span> : <span className={style.failure}>失败</span>
+				)
+
+			},
+		];
+		this.studentColumns = [
+			{
+				title: '班级名称',
+				dataIndex: 'className',
+				width: '22%',
+				render: (text, record) => (text)
+			}, {
+				title: '年级',
+				dataIndex: 'gradeName',
+				width: '22%',
+				render: (text, record) => (text)
+			}, {
+				title: '学生姓名',
+				dataIndex: 'name',
+				width: '22%',
+				render: (text, record) => (text)
+			}, {
+				title: '帐号',
+				dataIndex: 'account',
+				width: '22%',
+				render: (text, record) => (text)
+			}, {
+				title: '状态',
+				dataIndex: 'state',
+				width: '12%',
+				align: 'center',
+				render: (text, record) => (
+					text === '正常' ? <span className={style.normal}>正常</span> : <span className={style.failure}>失败</span>
+				)
+			},
+		];
 	}
+
+	uploading(file) {
+		let token = store.get('wrongBookToken');
+		let form = new FormData();
+		form.append('excelFile', file[0]);
+		fetch(dataCenter('/school/class/import/excel'), {
+			method: "POST",
+			body: form,
+			headers: {
+				"Authorization": token
+			}
+		}).then(response => response.json())
+			.then(res => {
+				if (res.result === 0) {
+					let teacherTable = [], studentTable = [];
+
+					console.log(res.data)
+
+					for (let obj of res.data.classData) {
+						for (let i = 0; i < obj.state.length; i++) {
+							teacherTable.push({
+								className: obj.className,
+								gradeName: obj.gradeName,
+								phone: obj.phone[i],
+								state: obj.state[i],
+								subjectName: obj.subjectName[i],
+								teacherName: obj.teacherName[i],
+							})
+						}
+					}
+					for (let obj of res.data.studentData) {
+						for (let i = 0; i < obj.state.length; i++) {
+							studentTable.push({
+								className: obj.className,
+								gradeName: obj.gradeName,
+								account: obj.account[i],
+								name: obj.name[i],
+								state: obj.state[i],
+							})
+						}
+					}
+
+					this.setState({
+						cun: res.data,
+						studentTable,
+						teacherTable,
+						schoolName: res.data.schoolData.schoolName,
+						managerName: res.data.schoolData.managerName.join(','),
+						managerPhone: res.data.schoolData.managerPhone.join(','),
+						isImport: res.data.isImport
+					})
+				} else {
+					message.error(res.message)
+				}
+			}).catch(function (error) {
+				message.error(error.message)
+			})
+	}
+
 	onImportExcel = file => {
 		const { files } = file.target;
 		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
 		}
-
+		this.uploading(file)
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
@@ -38,215 +168,30 @@ class UserImport extends React.Component {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
 		}
-		this.setState({ file: acceptedFiles, uploadFile: acceptedFiles[0] });
-
+		this.uploading(acceptedFiles)
 	}
 
 	render() {
-		let columns = [
-			{
-				title: '班级名称',
-				dataIndex: 'name',
-				key: 'name',
-				width: '16%',
-				render: (text, record) => (
-					text
-				)
-			}, {
-				title: '年级',
-				dataIndex: 'grade',
-				key: 'grade',
-				width: '16%',
-				render: (text, record) => (
-					text
-				)
-			}, {
-				title: '教师姓名',
-				dataIndex: 'teacher',
-				key: 'teacher',
-				width: '16%',
-				render: (text, record) => (
-					text
-				)
-			}, {
-				title: '任教学科',
-				dataIndex: 'sub',
-				key: 'sub',
-				width: '16%',
-				render: (text, record) => (
-					text
-				)
-			}, {
-				title: '教师手机号',
-				dataIndex: 'phone',
-				key: 'phone',
-				width: '16%',
-				render: (text, record) => (
-					text
-				)
-			}, {
-				title: '状态',
-				dataIndex: 'condition',
-				key: 'condition',
-				width: '16%',
-				render: (text, record) => (
-					text
-				)
-			},
-		];
-		let fileArr = this.state.fileArr;
 
-		// const dataSource = [];
-		// if (fileArr.length > 0) {
-		// 	for (let i = 0; i < fileArr.length; i++) {
-		// 		let det = fileArr[i]
-		// 		let p = {};
-		// 		try {
-		// 			if (det.hasOwnProperty('年级')) {
-		// 				p["grade"] = det.年级;
-		// 				p["name"] = det.班级名称;
-		// 			} else {
-		// 				p["grade"] = dataSource[i - 1].grade;
-		// 				p["name"] = dataSource[i - 1].name;
-		// 			}
-
-		// 		} catch (e) {
-		// 			console.error('表格数据不对')
-		// 		}
-		// 		p["teacher"] = det.教师姓名;
-		// 		p["sub"] = det.任教学科;
-		// 		p["phone"] = det.教师手机号;
-		// 		dataSource[i] = p;
-		// 	}
-		// }
-		const dataSource = [{
-			teacher: '11',
-			sub: '22',
-		}, {
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		}, {
-			teacher: '11',
-			sub: '22',
-		}, {
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		}, {
-			teacher: '11',
-			sub: '22',
-		}, {
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},
-		{
-			teacher: '11',
-			sub: '22',
-		},]
 
 		return (
 			<Layout style={{ background: '#fff' }}>
 				<Content style={{ overflow: 'scroll' }}>
 					<div className={style.gradeboder}>
-						<div style={{ marginBottom: '10px' }}>
-							<Select
-								showSearch
-								style={{ width: 200, marginRight: '10px' }}
-								optionFilterProp="children"
-								placeholder='请选择学年'
-								filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-							>
-								<Option value="jack">Jack</Option>
-								<Option value="Yiminghe">yiminghe</Option>
-							</Select>
-							<Button type="primary" onClick={() => {
-								window.open("http://homework.mizholdings.com/kacha/kcct/0747024f4a95a473/班级导入模板.XLSX", '_blank');
-							}}>下载模板</Button>
-							{
-								dataSource != '' ?
-									<Button
-										type="primary"
-										style={{ marginLeft: '10px' }}
-										onClick={(e) => {
-											//限制连续点击
-											if (this.state.dianji) {
-												setTimeout(() => {
-													this.setState({
-														dianji: false
-													})
-												}, 5000);
-												return;
-											}
-											this.setState({
-												dianji: true
-											})
-											let fileObj = this.state.uploadFile;
-											let form = new FormData();
-											form.append('excelFile', fileObj);
-											let token = store.get('wrongBookToken');
-											let schoolId = store.get('wrongBookNews').schoolId;
-											if (store.get('wrongBookNews').rodeType === 1) {
-												if (schoolId === '') {
-													message.warning('请选择学校')
-												}
-											} else {
-												if (this.props.state.nowYear === '') {
-													message.warning('请选择学段')
-												} else {
-													form.append('schoolId', schoolId)
-													form.append('year', this.props.state.nowYear)
-													fetch(dataCenter('/school/class/manage/creat/excel'), {
-														method: "POST",
-														body: form,
-														headers: {
-															"Authorization": token
-														}
-													}).then(response => response.json())
-														.then(res => {
-															if (res.result === 0) {
-																message.success('导入成功')
-															} else {
-																message.error(res.message)
-															}
-														})
-														.catch(function (error) {
-															message.error(error.message)
-														})
-												}
-											}
-										}}>确认添加</Button> : ''
-							}
+						<div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+							<span style={{ fontWeight: 'bold', color: 'rgba(96,98,102,1)', }}>类型：</span>
+							<Radio.Group onChange={(e) => {
+								this.setState({ schoolType: e.target.value })
+							}} value={this.state.schoolType}>
+								<Radio className={style.radiobox} value={0}>学校</Radio>
+								<Radio className={style.radiobox} value={1} style={{ width: 111, marginLeft: 20 }}>培训机构</Radio>
+							</Radio.Group>
+
+							<Button style={{ height: 36, marginLeft: 35 }}
+								type="primary" onClick={() => {
+									window.open("http://homework.mizholdings.com/kacha/kcct/0747024f4a95a473/班级导入模板.XLSX", '_blank');
+								}}>下载模板</Button>
+
 						</div>
 						<Dropzone onDrop={this.onDrop}>
 							{({ getRootProps, getInputProps, isDragActive }) => {
@@ -270,27 +215,29 @@ class UserImport extends React.Component {
 							id='file'
 							accept='.xlsx, .xls'
 							style={{ display: 'none' }}
-							onChange={this.onImportExcel}
-						/>
+							onChange={this.onImportExcel} />
 					</div>
 					<div className={style.tableBox}>
 						<p className={style.header}>
 							<span style={{ fontWeight: 'bold' }}>
-								学校：<span style={{ fontWeight: 400 }}> 杭州白马湖二中小学 </span>
+								学校：<span style={{ fontWeight: 400 }}> {this.state.schoolName} </span>
 							</span>
 
 							<span style={{ margin: '0 100px', fontWeight: 'bold' }}>
-								校管：<span style={{ fontWeight: 400 }}>王启年</span>
+								校管：<span style={{ fontWeight: 400 }}>{this.state.managerName}</span>
 							</span>
 
 							<span style={{ fontWeight: 'bold' }}>
-								帐号：<span style={{ fontWeight: 400 }}>18762738771</span>
+								帐号：<span style={{ fontWeight: 400 }}>{this.state.managerPhone}</span>
 							</span>
 						</p>
 						<p className={style.twoHeader} onClick={(e) => {
-							this.setState({
-								teaOrSte: e.target.id
-							})
+							if (e.target.id) {
+								this.setState({
+									teaOrSte: e.target.id
+								})
+							}
+
 						}}>
 							<span id='tea' className={this.state.teaOrSte === 'tea' ? style.baise : ''} style={{ borderRight: '1px solid #dfe4ed' }}>教师</span>
 							<span id='ste' className={this.state.teaOrSte === 'ste' ? style.baise : ''} style={this.state.teaOrSte === 'ste' ? { borderRight: '1px solid #dfe4ed' } : {}}>学生</span>
@@ -298,17 +245,18 @@ class UserImport extends React.Component {
 						<Table
 							style={{ padding: 15 }}
 							bordered
-							dataSource={dataSource}
-							columns={columns}
-							className={style.row}
+							dataSource={this.state.teaOrSte === 'tea' ? this.state.teacherTable : this.state.studentTable}
+							columns={this.state.teaOrSte === 'tea' ? this.teacherColumns : this.studentColumns}
 							rowKey={(record, index) => index}
+							onHeaderRow={column => {
+								return {
+									className: 'tableTr',
+								};
+							}}
+
 							pagination={{ pageSize: 10 }}
-							scroll={{ y: 290 }}
-						/>
-
+							scroll={{ y: 290 }} />
 					</div>
-
-
 
 				</Content>
 
@@ -317,18 +265,43 @@ class UserImport extends React.Component {
 					textAlign: 'center',
 					borderTop: '1px solid #E7E7E7'
 				}}>
-					<Button style={{
-						margin: '0 10px',
-						width: 99,
-						height: 40,
-						borderRadius: 3
+					<Button className={style.drbutton} onClick={() => {
+						this.setState({
+							cun: {},
+							studentTable: [],
+							teacherTable: [],
+							schoolName: '',
+							managerName: '',
+							managerPhone: '',
+						})
 					}}>取消导入  </Button>
-					<Button type="primary" style={{
-						margin: '0 10px',
-						width: 99,
-						height: 40,
-						borderRadius: 3
+					<Button type="primary" className={style.drbutton} onClick={() => {
+
+						if (this.state.isImport === 1) {
+							//限制连续点击
+							this.setState({
+								dianji: false
+							})
+							if (this.state.dianji) {
+								//导入数据
+								this.state.cun.schoolType = this.state.schoolType;
+
+								this.props.dispatch({
+									type: 'homePage/importData',
+									payload: this.state.cun
+								}).finally(() => {
+									this.setState({
+										dianji: true
+									})
+								})
+							}
+						} else {
+							message.error('导入数据有误，请修改后再次上传')
+						}
+
+
 					}}>确认导入</Button>
+
 				</Footer>
 			</Layout >
 		)

@@ -474,6 +474,18 @@ export default {
 						}
 						try {
 							data.data.schoolId = usermessage.data.data[0].schoolId;
+							data.data.schoolName = usermessage.data.data[0].schoolName;
+
+							//判断学校是小学，初中，高中，全学段
+							if (usermessage.data.data[0].beginGrade === 1 && usermessage.data.data[0].endGrade === 6) {
+								data.data.schoolType = '小学'
+							} else if (usermessage.data.data[0].beginGrade === 7 && usermessage.data.data[0].endGrade === 9) {
+								data.data.schoolType = '初中'
+							} else if (usermessage.data.data[0].beginGrade === 10 && usermessage.data.data[0].endGrade === 12) {
+								data.data.schoolType = '高中'
+							} else {
+								data.data.schoolType = '全学段'
+							}
 						} catch (err) {
 							console.err('学校id赋值错误')
 							throw err
@@ -505,12 +517,7 @@ export default {
 							pathname: '/school',
 							hash: 'page=1'
 						}))
-					} else if (rodeType === 20) {
-						yield put(routerRedux.push({
-							pathname: '/grade',
-							hash: 'page=1'
-						}))
-					} else if (rodeType === 30 || rodeType === 40) {
+					} else {
 						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
 						yield put(routerRedux.push({
 							pathname: '/classReport',

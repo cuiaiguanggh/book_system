@@ -424,10 +424,10 @@ class HomeworkCenter extends React.Component {
 				wronglist.push(wdata[i].num)
 			}
 		}
-		console.log(udata)
-		console.log(timelist)
-		console.log(userlist)
-		console.log(wronglist)
+		// console.log(udata)
+		// console.log(timelist)
+		// console.log(userlist)
+		// console.log(wronglist)
 
 		let _gleft = '2%'
 		if (timelist.length > 20) {

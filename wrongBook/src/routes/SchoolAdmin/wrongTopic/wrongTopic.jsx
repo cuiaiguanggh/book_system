@@ -15,8 +15,8 @@ class WrongTopic extends React.Component {
       selectedRows: [],
       loading: false,
       classId: '',
-      subjectId: '',
-      subjectNmae: '',
+      subjectId: undefined,
+      subjectNmae: undefined,
       classNmae: '',
     }
     //需求：开始日期和结束日期，默认为两个自然周
@@ -84,6 +84,38 @@ class WrongTopic extends React.Component {
                 payload: {
                   classId: value,
                 }
+              }).then(res => {
+                if (res && res.length > 0) {
+                  this.setState({
+                    subjectId: res[0].v,
+                    subjectNmae: option.props.children
+                  })
+
+                  if ( this.state.startDate === '') return false;
+
+                  this.props.dispatch({
+                    type: 'homePage/membersForSA',
+                    payload: {
+                      classId: value,
+                      subjectId: res[0].v,
+                      startTime: this.state.startDate,
+                      endTime: this.state.endDate,
+                    }
+                  })
+                } else {
+                  this.setState({
+                    subjectId: undefined,
+                    subjectNmae: undefined
+                  })
+                  this.props.dispatch({
+                    type: 'homePage/dcStudentList',
+                    payload: []
+                  })
+                  this.props.dispatch({
+                    type: 'homePage/subjectList',
+                    payload: []
+                  })
+                }
               })
             }}
             filterOption={(input, option) =>
@@ -99,6 +131,7 @@ class WrongTopic extends React.Component {
             showSearch
             style={{ width: 110, marginRight: 10 }}
             placeholder="学科"
+            value={this.state.subjectId}
             onChange={(value, option) => {
               this.setState({
                 subjectId: value,

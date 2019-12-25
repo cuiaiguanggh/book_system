@@ -21,7 +21,8 @@ import {
 	assign,
 	remove,
 	exit,
-	create
+	create,
+	importData
 } from '../services/homePageService';
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
@@ -194,6 +195,15 @@ export default {
 	},
 
 	effects: {
+		*importData({ payload }, { put, select }) {
+			let res = yield importData(payload);
+			if (res.data.result === 0) {
+				message.success(res.data.msg)
+				return true
+			} else {
+				message.error(res.data.message)
+			}
+		},
 		*create({ payload }, { put, select }) {
 			let res = yield create(payload);
 			if (res.data.result === 0) {
@@ -337,6 +347,7 @@ export default {
 					type: 'subjectList',
 					payload: res.data.data
 				})
+				return res.data.data
 			}
 			else {
 				if (res.data.result === 2) {
