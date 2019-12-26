@@ -195,9 +195,9 @@ export default {
 						hash: 'page=1'
 					}))
 				} else {
-					document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
+					document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}智能组卷`
 					yield put(routerRedux.push({
-						pathname: '/classReport',
+						pathname: '/intelligentDollors',
 					}))
 				}
 			} catch (e) {
@@ -324,9 +324,9 @@ export default {
 							hash: 'page=1'
 						}))
 					} else {
-						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
+						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}智能组卷`
 						yield put(routerRedux.push({
-							pathname: '/classReport',
+							pathname: '/intelligentDollors',
 						}))
 					}
 
@@ -518,9 +518,9 @@ export default {
 							hash: 'page=1'
 						}))
 					} else {
-						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
+						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}智能组卷`
 						yield put(routerRedux.push({
-							pathname: '/classReport',
+							pathname: '/intelligentDollors',
 						}))
 					}
 					// }

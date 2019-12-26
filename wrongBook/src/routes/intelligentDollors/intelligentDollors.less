@@ -38,7 +38,7 @@
 
         .leftTop {
             width     : 285px;
-            min-height: 150px;
+            min-height: 100px;
             border    : 1px solid rgba(231, 231, 231, 1);
 
             .label {
@@ -54,7 +54,7 @@
                 margin       : 5px;
 
                 span {
-                    color      : #13CE66;
+                    color      : #409EFF;
                     margin-left: 5px;
                 }
             }
@@ -69,8 +69,8 @@
             overflow  : hidden;
 
             .knowledgeBox {
-                padding   : 5px 5px 15px;
-                max-height: 460px;
+                padding   : 5px 0px 15px 10px;
+                max-height: 535px;
                 overflow  : scroll;
 
                 &::-webkit-scrollbar {
@@ -87,11 +87,45 @@
                 display      : inline-block;
                 padding      : 0 10px;
                 line-height  : 30px;
-                margin       : 5px;
+                text-overflow: ellipsis;
+                white-space  : nowrap;
+                max-width    : 215px;
+                display      : inline-block;
+                overflow     : hidden;
+                margin       : 5px 0;
+            }
 
-                span {
-                    margin-left   : 5px;
-                    vertical-align: middle;
+            .changeNum {
+                color        : rgb(64, 158, 255);
+                display      : inline-block;
+                line-height  : 30px;
+                min-width    : 30px;
+                text-align   : center;
+                border-radius: 5px 0px 0px 5px;
+
+            }
+
+            .numberUp {
+                width        : 15px;
+                height       : 15px;
+                line-height  : 15px;
+                background   : rgba(241, 241, 241, 1);
+                border-radius: 0px 5px 0px 0px;
+
+                &:active {
+                    background: rgba(210, 210, 210, 1);
+                }
+            }
+
+            .numberDown {
+                width        : 15px;
+                height       : 15px;
+                line-height  : 15px;
+                background   : rgba(241, 241, 241, 1);
+                border-radius: 0px 0px 5px 0px;
+
+                &:active {
+                    background: rgba(210, 210, 210, 1);
                 }
             }
         }
@@ -147,9 +181,12 @@
 }
 
 .bottom {
-    background: #fff;
-    text-align: center;
-    border-top: 1px solid #E7E7E7;
+    background : #fff;
+    text-align : center;
+    border-top : 1px solid #E7E7E7;
+    height     : 60px;
+    padding    : 0;
+    line-height: 60px;
 }
 
 .anniu {
@@ -171,7 +208,7 @@
     opacity      : 0;
     border-radius: 50%;
     position     : fixed;
-    bottom       : 75px;
+    bottom       : 50px;
     right        : 70px;
     text-align   : center;
     line-height  : 40px;

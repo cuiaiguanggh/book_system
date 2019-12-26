@@ -69,7 +69,7 @@ export default function Topics(prop) {
                 }
 
             </div>
-            <div dangerouslySetInnerHTML={{ __html: prop.topic.title }} style={{ padding: '30px 90px 20px 30px' }} />
+            <div dangerouslySetInnerHTML={{ __html: prop.topic.title }} style={{ padding: '30px 90px 20px 30px', overflow: 'hidden' }} />
             <Spring to={{ opacity: opacity, height: height, padding: '0 90px 0 30px', overflow: 'hidden' }}>
                 {props =>
                     <div style={props}>

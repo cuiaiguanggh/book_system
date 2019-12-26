@@ -160,7 +160,7 @@ class UserImport extends React.Component {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
 		}
-		this.uploading(file)
+		this.uploading(files)
 	}
 
 	onDrop = (acceptedFiles, rejectedFiles) => {
@@ -172,8 +172,6 @@ class UserImport extends React.Component {
 	}
 
 	render() {
-
-
 		return (
 			<Layout style={{ background: '#fff' }}>
 				<Content style={{ overflow: 'scroll' }}>
@@ -189,7 +187,7 @@ class UserImport extends React.Component {
 
 							<Button style={{ height: 36, marginLeft: 35 }}
 								type="primary" onClick={() => {
-									window.open("http://homework.mizholdings.com/kacha/kcct/0747024f4a95a473/班级导入模板.XLSX", '_blank');
+									window.open("http://homework.mizholdings.com/kacha/kcct/cb7357ca9cca7c4f/一键创建模版.xlsx", '_blank');
 								}}>下载模板</Button>
 
 						</div>
@@ -197,8 +195,7 @@ class UserImport extends React.Component {
 							{({ getRootProps, getInputProps, isDragActive }) => {
 								return (
 									<div className={style.addGrade}
-										{...getRootProps()}
-									>
+										{...getRootProps()} >
 										<span className={style.addSpan}>将Excel文件拖至此处或
 											<label htmlFor="file">
 												<span

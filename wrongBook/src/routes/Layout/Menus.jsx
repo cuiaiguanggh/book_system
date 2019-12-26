@@ -114,7 +114,7 @@ class HomePageLeft extends Component {
       }
     }
 
-    let leftMenus = store.get('leftMenus');
+    // let leftMenus = store.get('leftMenus');
     // for (let i = 0; i < leftMenus.length; i++) {
 
     //   switch (leftMenus[i].permission) {
@@ -167,27 +167,25 @@ class HomePageLeft extends Component {
                 <Icon type="bar-chart" /><span>学校管理</span>
               </Link>
             </Menu.Item>)
-            // menus.push(<Menu.Item key="userImport" >
-            //   <Link to='userImport'>
-            //     <Icon type="import" /><span>用户导入</span>
-            //   </Link>
-            // </Menu.Item>)
+            menus.push(<Menu.Item key="userImport" >
+              <Link to='userImport'>
+                <Icon type="import" /><span>用户导入</span>
+              </Link>
+            </Menu.Item>)
           }
         }
 
         // 作业中心
         if (item === 300 && rodeType !== 10) {
+          menus.push(<Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
+            <Icon type="diff" /><span>智能组卷</span>
+          </Menu.Item>)
           menus.push(<Menu.Item key="workDetail1" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/classReport')}>
             <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span>
           </Menu.Item>)
           menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
             <Icon type="appstore" /><span style={{ cursor: 'pointer' }}>学生错题</span>
           </Menu.Item>)
-          menus.push(
-            <Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
-              <Icon type="diff" /><span>智能组卷</span>
-            </Menu.Item>
-          )
           menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
             <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
           </Menu.Item>)

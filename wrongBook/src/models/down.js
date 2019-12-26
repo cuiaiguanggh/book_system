@@ -2,6 +2,7 @@ import {
 	makeSelectWB,
 	makeTestPagePdf,
 	makeIntelligentTestPdf,
+	knowledgeQue
 } from '../services/reportService';
 import { message } from 'antd';
 export default {
@@ -186,6 +187,14 @@ export default {
 	},
 
 	effects: {
+		*knowledgeQue({ payload }, { put, select }) {
+			let res = yield knowledgeQue(payload);
+			if (res.data && res.data.result === 0) {
+				return res.data.data;
+			} else {
+				message.error(res.data.msg)
+			}
+		},
 		*makeIntelligentTestPdf({ payload }, { put, select }) {
 			//智能组卷页面pdf
 			if (!payload.subjectId) {

@@ -35,21 +35,46 @@ class intelligentDollors extends React.Component {
             pitchOn: '',
             showPdfModal: false,
             pdfUrl: {},
-            loading: '-1'
+            loading: 0,
+            //鼠标次数选中的知识点题数
+            nowNume: ''
         }
-        //提取题目中的题型和数量方法
+        //更新题目中的题型和题型数量和知识点数量的方法
         this.getType = (data) => {
             let map = new Map();
-            // 单选题、多选题、填空题、判断题,其他
+            let knowledge = new Map();
+
             for (let object of data) {
+                // 单选题、多选题、填空题、判断题,其他
                 if (!map.has(object.typeName) && !object.hide) {
                     map.set(object.typeName, 1)
                 } else if (map.size !== 0 && !object.hide) {
                     map.set(object.typeName, map.get(object.typeName) + 1)
                 }
+                //获取对应知识点的数量
+                if (!knowledge.has(object.knowledgeName)) {
+                    if (object.hide) {
+                        knowledge.set(object.knowledgeName, 0)
+                    } else {
+                        knowledge.set(object.knowledgeName, 1)
+                    }
+                } else if (knowledge.size !== 0 && !object.hide) {
+                    knowledge.set(object.knowledgeName, knowledge.get(object.knowledgeName) + 1)
+                }
             }
+
+            //反应到知识点上
+            [...knowledge].forEach((value) => {
+                for (let obj of this.state.dollorsKnowledge) {
+                    if (obj.knowledgeName === value[0]) {
+                        obj.nowNum = value[1]
+                        break;
+                    }
+                }
+            })
             this.setState({
-                pattern: [...map]
+                pattern: [...map],
+                dollorsKnowledge: this.state.dollorsKnowledge
             })
         }
 
@@ -210,6 +235,43 @@ class intelligentDollors extends React.Component {
         })
 
     }
+    //一键组卷
+    oneDonw() {
+        this.setState({
+            loading: 1
+        })
+        let questionIds = [];
+        this.state.topicList.forEach((obj) => {
+            if (!obj.hide) {
+                questionIds.push(obj.questionId)
+            }
+        })
+        this.props.dispatch({
+            type: 'down/makeIntelligentTestPdf',
+            payload: {
+                classId: this.props.state.classId,
+                subjectId: this.props.state.subId,
+                questionIds: questionIds.join(','),
+                isAnswer: 1,
+            }
+        }).then((res) => {
+            if (res) {
+                this.setState({
+                    pdfUrl: res,
+                    showPdfModal: true,
+                    loading: 0
+                })
+            } else {
+                this.setState({
+                    pdfUrl: {},
+                    loading: 0
+                })
+            }
+        })
+
+    }
+
+
     render() {
         let mounthList = this.props.state.mounthList;
         let length = this.state.topicList.length;
@@ -256,25 +318,81 @@ class intelligentDollors extends React.Component {
                             <div className={style.title}> 试卷（{length}题） </div>
                             <div style={{ padding: '5px 5px 15px 5px' }}>
                                 {this.state.pattern.map((item, i) => (
-                                    <span key={i} className={style.label}>{item[0]}<span>{item[1]}</span></span>
+                                    <span key={i} className={style.label}>{item[0]}<span>{item[1]}题</span></span>
                                 ))}
 
                             </div>
                         </div>
 
-                        <div className={style.leftBottom} style={{ maxHeight: 'calc(100% - 190px)' }}>
+                        <div className={style.leftBottom} style={{ maxHeight: 'calc(100% - 140px)' }}>
                             <div className={style.title}> 本周班级薄弱知识点 </div>
                             <div className={style.knowledgeBox}>
                                 {this.state.dollorsKnowledge.map((item, i) => (
-                                    <span key={i} className={style.label} title={item.knowledgeName} >
-                                        <span style={{
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            maxWidth: 215,
-                                            display: 'inline-block',
-                                            overflow: 'hidden',
-                                        }}> {item.knowledgeName}</span>
-                                        < span > {item.num}</span></span>
+                                    <p key={i} style={{ margin: 0, fontSize: 12 }}
+                                        onMouseOver={e => {
+                                            this.setState({
+                                                nowNume: i
+                                            })
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            this.setState({
+                                                nowNume: ''
+                                            })
+                                        }}>
+                                        <span className={style.label} title={item.knowledgeName}> {item.knowledgeName}</span>
+                                        <span style={{ float: 'right' }}>
+                                            <span className={style.changeNum} style={this.state.nowNume === i ? { background: 'rgba(236, 245, 255, 1)', minWidth: 45 } : { textAlign: 'left' }}>
+                                                {item.nowNum || 0}{this.state.nowNume === i ?
+                                                    <span style={{ flexDirection: 'column', display: 'inline-flex', float: 'right', color: '#505050' }}>
+                                                        <span className={style.numberUp} data-klist={[]} onClick={(e) => {
+                                                            let nowNum = item.nowNum + 1 || 1;
+                                                            if (nowNum <= 10 && length < 30) {
+                                                                let cun = this.state.topicList;
+                                                                if (item.hasOwnProperty('cunList') && item.nowNum < 10) {
+                                                                    if (nowNum <= item.cunList.length) {
+                                                                        cun.push({ ...item.cunList[nowNum - 1] })
+                                                                        this.setState({
+                                                                            topicList: cun
+                                                                        })
+                                                                        this.getType(cun)
+                                                                    }
+
+                                                                } else {
+                                                                    this.props.dispatch({
+                                                                        type: 'down/knowledgeQue',
+                                                                        payload: { knowledgeId: item.knowledgeId }
+                                                                    }).then(res => {
+                                                                        item.cunList = res;
+                                                                        cun.push({ ...res[nowNum - 1] })
+                                                                        this.setState({
+                                                                            topicList: cun
+                                                                        })
+                                                                        this.getType(cun)
+
+                                                                    })
+                                                                }
+                                                            }
+
+                                                        }}>  <Icon type="caret-up" />  </span>
+                                                        <span className={style.numberDown} onClick={() => {
+                                                            //删除题目
+                                                            if (item.nowNum > 0) {
+                                                                list: for (let obj of this.state.topicList) {
+                                                                    if (obj.knowledgeName === item.knowledgeName && !obj.hide) {
+                                                                        obj.hide = true;
+                                                                        this.getType(this.state.topicList)
+                                                                        this.setState({
+                                                                            topicList: this.state.topicList
+                                                                        })
+                                                                        break list;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }}>  <Icon type="caret-down" /> </span>
+                                                    </span> : <>题</>}
+                                            </span>
+                                        </span>
+                                    </p>
                                 ))}
                             </div>
                         </div>
@@ -286,7 +404,7 @@ class intelligentDollors extends React.Component {
                             document.getElementById('back').style.opacity = 0.3
                         }
                     }}>
-                        { length > 0 ?
+                        {length > 0 ?
                             this.state.topicList.map((item, i) => (
                                 <Topics
                                     key={i}
@@ -355,81 +473,16 @@ class intelligentDollors extends React.Component {
                         <Icon type="up" />
                     </div>
                 </Layout >
-                <Footer className={style.bottom} onClick={(e) => {
-                    if (e.target.getAttribute('data-need')) {
-                        this.setState({
-                            loading: e.target.getAttribute('data-need')
-                        })
+                <Footer className={style.bottom}>
+                    <div className={style.anniu} style={{ width: 116 }} onClick={this.oneDonw.bind(this)}>
+                        <Icon type="loading" hidden={this.state.loading !== 1} /><Icon type="download" /> 一键组卷  </div>
 
-                        let questionIds = [];
-                        this.state.topicList.forEach((obj) => {
-                            if (!obj.hide) {
-                                questionIds.push(obj.questionId)
-                            }
-                        })
-                        this.props.dispatch({
-                            type: 'down/makeIntelligentTestPdf',
-                            payload: {
-                                classId: this.props.state.classId,
-                                subjectId: this.props.state.subId,
-                                questionIds: questionIds.join(','),
-                                isAnswer: e.target.getAttribute('data-need'),
-                            }
-                        }).then((res) => {
-                            if (res) {
-                                this.setState({
-                                    pdfUrl: res,
-                                    showPdfModal: true,
-                                    loading: -1
-                                })
-                            } else {
-                                this.setState({
-                                    pdfUrl: {},
-                                    loading: -1
-                                })
-                            }
-                        })
-                    }
-
-
-                }}>
-                    <div className={style.anniu} style={{ width: 140 }} data-need={1}>
-                        <Icon type="loading" hidden={this.state.loading !== '1'} /> 下载试卷与答案  </div>
-                    <div className={style.anniu} style={{ width: 100 }} data-need={0}>
-                        <Icon type="loading" hidden={this.state.loading !== '0'} />  下载试卷  </div>
                 </Footer>
                 <Modal
                     visible={this.state.showPdfModal}
                     maskClosable={false}
                     keyboard={false}
                     onOk={() => {
-                        //向前兼容。为了防止用户从收藏直接打开，造成无schoolType，导致bug（下下次发版删除2019.12.12）
-                        if (!store.get('wrongBookNews').schoolType) {
-                            for (let obj of store.get('moreschool')) {
-                                if (obj.schoolName === store.get('wrongBookNews').schoolName) {
-                                    //判断学校是小学，初中，高中，全学段
-                                    if (obj.beginGrade === 1 && obj.endGrade === 6) {
-                                        let data = store.get('wrongBookNews')
-                                        data.schoolType = '小学'
-                                        store.set('wrongBookNews', data);
-                                    } else if (obj.beginGrade === 7 && obj.endGrade === 9) {
-                                        let data = store.get('wrongBookNews')
-                                        data.schoolType = '初中'
-                                        store.set('wrongBookNews', data);
-                                    } else if (obj.beginGrade === 10 && obj.endGrade === 12) {
-                                        let data = store.get('wrongBookNews')
-                                        data.schoolType = '高中'
-                                        store.set('wrongBookNews', data);
-                                    } else {
-                                        let data = store.get('wrongBookNews')
-                                        data.schoolType = '全学段'
-                                        store.set('wrongBookNews', data);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-
                         let downame = `${moment().format('YYYY年MM月DD日')}${store.get('wrongBookNews').schoolType}${this.props.state.subName}${length}.pdf`
                         window.location.href = `${this.state.pdfUrl.downloadUrl}${downame}`;
                         this.setState({

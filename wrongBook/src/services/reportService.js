@@ -150,7 +150,14 @@ function makeIntelligentTestPdf(payload) {
         method: 'get'
     });
 }
+function knowledgeQue(payload) {
+    return request(dataCenter('/report/questions/knowledgeQue'), {
+        data: payload,
+        method: 'get'
+    });
+}
 export {
+    knowledgeQue,
     makeIntelligentTestPdf,
     makeTestPagePdf,
     videoPrepare,

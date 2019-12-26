@@ -7,7 +7,7 @@ import { connect } from 'dva';
 import style from './classAdmin.less';
 import store from 'store';
 import observer from '../../../utils/observer'
-import { serverType } from '../../../config/dataCenter';
+import { dataCenter } from '../../../config/dataCenter';
 
 // import * as XLSX from 'xlsx';
 const confirm = Modal.confirm;
@@ -117,7 +117,6 @@ class HomeworkCenter extends React.Component {
 				flexDirection: 'column'
 			}}> <Spin /> </div>,
 			pitchOn: '',
-			loading: false
 		};
 		observer.addSubscribe('fuyuan', () => {
 			this.setState({
@@ -614,69 +613,25 @@ class HomeworkCenter extends React.Component {
 		}
 		let that = this;
 		let configuration = {
-			name: 'upfile',
+			name: 'excelFile',
 			showUploadList: false,
+			action: dataCenter('/school/class/manage/creat/stuExcel'),
 			data: {
-				tokenKC: '14e8e484-1ec2-4e88-b3a9-13e453958a3f'
+				classId: that.props.state.infoClass
+			},
+			headers: {
+				Authorization: store.get('wrongBookToken')
 			},
 			onChange(info) {
-
-				if (info.file.status === "done") {
-					if (info.file.response.code === "200") {
-						that.setState({
-							loading: true
-						})
-						//云课根据上传的excel加入班级
-						let url, filedata = info.file.response.data, nolead = 0;
-						if (serverType === 0) {
-							url = 'https://api.mizholdings.com/t//mizhu/web/lesson/joinClassByFile'
-						} else {
-							url = 'https://api.mizholdings.com/p//mizhu/web/lesson/joinClassByFile'
-						}
-						let form = new FormData();
-						form.append('tokenKC', '14e8e484-1ec2-4e88-b3a9-13e453958a3f');
-						form.append('stuId', that.props.state.infoClass);
-						form.append('orgId', store.get('wrongBookNews').schoolId);
-						form.append('fileName', filedata.fileName);
-
-						for (let i = 0; i < filedata.list.length; i++) {
-							if (filedata.list[i].errorMsg !== "") {
-								nolead++
-							}
-						}
-
-						fetch(url, {
-							method: "POST",
-							body: form,
-						}).then(response => response.json())
-							.then(res => {
-								if (res.code === '200') {
-									message.success(`共有${filedata.list.length}条学生信息，${nolead}条不能导入`, 6)
-									//刷新
-									that.refreshStu()
-								} else {
-									message.error('导入失败')
-								}
-								that.setState({
-									loading: false
-								})
-							})
-							.catch(function (error) {
-								message.error('导入失败')
-							})
-					} else {
-						message.error(info.file.response.msg);
-					}
+				if (info.file.status === "done" && info.file.response.result === 0) {
+					//刷新
+					that.refreshStu()
+					message.success(info.file.response.msg);
+				} else if (info.file.status === "error") {
+					message.error(info.file.response.message);
 				}
 			},
 		};
-		//上传excel表到云课的接口
-		if (serverType === 0) {
-			configuration.action = 'https://api.mizholdings.com/t//mizhu/web/lesson/uploadFile'
-		} else {
-			configuration.action = 'https://api.mizholdings.com/p//mizhu/web/lesson/uploadFile'
-		}
-
 		return (
 			<Layout>
 				<Content style={{ overflow: 'initial' }}>
@@ -786,9 +741,9 @@ class HomeworkCenter extends React.Component {
 								{rodeType <= 20 && this.props.state.infoClass && this.state.current === 'student' ?
 									<>
 										<Button style={{ margin: '0 10px' }} onClick={() => {
-											window.open("http://homework.mizholdings.com/kacha/kcct/7a74b2b773d3c595/导入学生模板.xlsx", '_blank');
+											window.open("http://homework.mizholdings.com/kacha/kcct/9ea76ce2e83e6b40/学生导入模版.xlsx", '_blank');
 										}}>下载模版</Button >
-										<Upload {...configuration}> <Button loading={this.state.loading}>批量导入学生</Button></Upload>
+										<Upload {...configuration}> <Button>批量导入学生</Button></Upload>
 									</>
 									: ''
 								}
