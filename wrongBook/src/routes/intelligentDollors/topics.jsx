@@ -9,13 +9,9 @@ export default function Topics(prop) {
     const [opacity, setOpacity] = useState(0);
     const [height, setHeight] = useState(0);
     //要替换的题目
-    const [replace, setReplace] = useState([]);
+    // const [replace, setReplace] = useState([]);
     //替换后题目，记录题目的id。
-    const [nowId, setNowId] = useState([]);
-
-    if (prop.topic.hide) {
-        return (<></>)
-    }
+    // const [nowId, setNowId] = useState([]);
 
 
     return (
@@ -27,24 +23,26 @@ export default function Topics(prop) {
                     <>
                         <div className={`${style.anniu} ${style.topicButton}`} style={{ marginRight: 15 }}
                             onClick={(e) => {
-                                if (replace.length === 0 || !nowId.includes(prop.topic.questionId)) {
+                                // if (replace.length === 0 || !nowId.includes(prop.topic.questionId)) {
                                     prop.change({
                                         knowledgeId: prop.topic.knowledgeId,
                                         questionId: prop.topic.questionId,
                                     }, (data) => {
+                                        //储存获取到要替换的题目
                                         data.push(prop.topic)
-                                        setReplace(data)
+                                        // setReplace(data)
+                                        //替换题目
                                         prop.changeList(data)
-                                        //当前试卷题目的id
+                                        //更新当前题目的id
                                         let suzu = []
                                         for (let obj of data) {
                                             suzu.push(obj.questionId)
                                         }
-                                        setNowId(suzu)
+                                        // setNowId(suzu)
                                     })
-                                } else {
-                                    prop.changeList(replace)
-                                }
+                                // } else {
+                                    // prop.changeList(replace)
+                                // }
 
                                 e.stopPropagation();
                             }}
@@ -52,7 +50,7 @@ export default function Topics(prop) {
                         <Popconfirm
                             title={`删除后，本试卷共为${prop.length - 1}题`}
                             onConfirm={(e) => {
-                                prop.delete(prop.topic.questionId)
+                                prop.delete(prop.nowIndex)
                                 e.stopPropagation();
                             }}
                             onCancel={(e) => {

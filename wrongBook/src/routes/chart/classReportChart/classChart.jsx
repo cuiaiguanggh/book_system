@@ -39,14 +39,14 @@ class HomeworkCenter extends React.Component {
 		});
 		this.dispatch({
 			type: 'reportChart/timeStamp',
-			payload: item.timeStamp
+			payload: item.startTimeStamp
 		});
 		let cid = this.state.classId;
 		let sid = this.state.subId;
 		let data = {
 			schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
-			timeStamp: item.timeStamp,
+			timeStamp: item.startTimeStamp,
 			classId: cid,
 			subjectId: sid,
 		};
@@ -87,7 +87,7 @@ class HomeworkCenter extends React.Component {
 			});
 			this.dispatch({
 				type: 'reportChart/timeStamp',
-				payload: this.state.reportTimeList[0].timeStamp
+				payload: this.state.reportTimeList[0].startTimeStamp
 			});
 			let cid = this.state.classId;
 			let sid = this.state.subId;
@@ -96,7 +96,7 @@ class HomeworkCenter extends React.Component {
 				classId: cid,
 				subjectId: sid,
 				periodTime: 1,
-				timeStamp: this.state.reportTimeList[0].timeStamp,
+				timeStamp: this.state.reportTimeList[0].startTimeStamp,
 			}
 		}
 		this.dispatch({

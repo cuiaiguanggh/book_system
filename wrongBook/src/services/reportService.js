@@ -88,6 +88,11 @@ function getCorrection(payload) {
         method: 'get'
     });
 }
+function reset(payload) {
+    return request(dataCenter('/report/questions/correction/reset'), {
+        data: payload,
+    });
+}
 function WrongQuestionMarker(payload) {
     return request(dataCenter('/report/questions/wrongMarker'), {
         data: payload
@@ -156,7 +161,22 @@ function knowledgeQue(payload) {
         method: 'get'
     });
 }
+function queryCourseDetail(payload) {
+    return request(dataCenter('/export/pdf/queryCourseDetail'), {
+        data: payload,
+        method: 'get'
+    });
+}
+function makeMidExamPdfs(payload) {
+    return request(dataCenter('/export/pdf/makeMidExamPdfs'), {
+        data: payload,
+        method: 'get'
+    });
+}
 export {
+    reset,
+    makeMidExamPdfs,
+    queryCourseDetail,
     knowledgeQue,
     makeIntelligentTestPdf,
     makeTestPagePdf,

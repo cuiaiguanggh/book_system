@@ -27,7 +27,6 @@ class LoginPage extends Component {
 		}
 	}
 	render() {
-		const { state: { identity, certification }, dispatch } = this.props;
 		return (
 			<div className='loginPageContaier wrap'>
 				<div className='backTop'>

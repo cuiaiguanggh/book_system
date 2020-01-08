@@ -45,7 +45,7 @@ class HomeworkCenter extends React.Component {
 		});
 		this.props.dispatch({
 			type: 'reportChart/timeStamp',
-			payload: item.timeStamp
+			payload: item.startTimeStamp
 		});
 		if (this.props.state.sclassList.length === 0) return
 		let cid = this.props.state.sclassList[0].id;
@@ -53,7 +53,7 @@ class HomeworkCenter extends React.Component {
 		let data = {
 			schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
-			timeStamp: item.timeStamp,
+			timeStamp: item.startTimeStamp,
 			classId: cid,
 		}
 		if (sid) data.subjectId = sid;
@@ -97,14 +97,14 @@ class HomeworkCenter extends React.Component {
 			});
 			this.props.dispatch({
 				type: 'reportChart/timeStamp',
-				payload: this.props.state.reportTimeList[0].timeStamp
+				payload: this.props.state.reportTimeList[0].startTimeStamp
 			});
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: this.props.state.sclassId,
 				subjectId: this.props.state.subId,
 				periodTime: 1,
-				timeStamp: this.props.state.reportTimeList[0].timeStamp,
+				timeStamp: this.props.state.reportTimeList[0].startTimeStamp,
 			}
 		}
 		if (!data.classId) return false;

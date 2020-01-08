@@ -25,8 +25,6 @@ export default {
 	namespace: 'login',
 
 	state: {
-		identity: '',
-		certification: '',
 		vc: 0,
 		upd: 0,
 		time: 0,
@@ -36,12 +34,6 @@ export default {
 
 	},
 	reducers: {
-		changeUsername(state, { payload }) {
-			return { ...state, identity: payload };
-		},
-		changePassword(state, { payload }) {
-			return { ...state, certification: payload };
-		},
 		vc(state, { payload }) {
 			return { ...state, vc: payload };
 		},
@@ -352,8 +344,6 @@ export default {
 			try {
 				// 登录
 				store.set('wrongBookToken', '')
-				let { identity, certification } = yield select(state => state.login);
-
 				let res = yield loginTiku(payload);
 
 				// if(!res.hasOwnProperty("err")){
@@ -472,6 +462,8 @@ export default {
 							message.error('用户暂未加入学校');
 							return false;
 						}
+						store.set('moreschool', usermessage.data.data)
+
 						try {
 							data.data.schoolId = usermessage.data.data[0].schoolId;
 							data.data.schoolName = usermessage.data.data[0].schoolName;
@@ -562,10 +554,6 @@ export default {
 					type: 'vc',
 					payload: 1
 				})
-				// yield put ({
-				// 	type:'token',
-				// 	payload:res.data.data
-				// })
 				return true
 			} else {
 				if (res.data.message == '服务器异常') {

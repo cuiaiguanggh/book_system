@@ -72,8 +72,18 @@ export default class MistakesTC extends React.Component {
         visible={this.props.xqtc}
         className='mistakesTc'
         width='80%'
-        onOk={this.props.guanbi}
-        onCancel={this.props.guanbi}
+        onOk={() => {
+          this.setState({
+            topicxy: true
+          })
+          this.props.guanbi()
+        }}
+        onCancel={() => {
+          this.setState({
+            topicxy: true
+          })
+          this.props.guanbi()
+        }}
         destroyOnClose={true}
       >
         <div style={{ display: 'flex', height: 800 }}>

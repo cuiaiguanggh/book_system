@@ -95,16 +95,7 @@ class HomePageLeft extends Component {
             hash: `page=1`
           })
         )
-      }
-      else if (rodeType === 20) {
-        this.props.dispatch(
-          routerRedux.push({
-            pathname: '/grade',
-            hash: `page=1`
-          })
-        )
-      }
-      else if (rodeType === 30 || rodeType === 20) {
+      } else if (rodeType === 30 || rodeType === 20) {
         document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
         this.props.dispatch(
           routerRedux.push({
@@ -172,6 +163,11 @@ class HomePageLeft extends Component {
                 <Icon type="import" /><span>用户导入</span>
               </Link>
             </Menu.Item>)
+            // menus.push(<Menu.Item key="specialDownload" >
+            //   <Link to='specialDownload'>
+            //     <Icon type="select" /><span>专题下载</span>
+            //   </Link>
+            // </Menu.Item>)
           }
         }
 

@@ -2,7 +2,9 @@ import {
 	makeSelectWB,
 	makeTestPagePdf,
 	makeIntelligentTestPdf,
-	knowledgeQue
+	knowledgeQue,
+	queryCourseDetail,
+	makeMidExamPdfs
 } from '../services/reportService';
 import { message } from 'antd';
 export default {
@@ -187,7 +189,23 @@ export default {
 	},
 
 	effects: {
-		*knowledgeQue({ payload }, { put, select }) {
+		*makeMidExamPdfs({ payload }, { put, select }) {
+			let res = yield makeMidExamPdfs(payload);
+			if (res.data && res.data.result === 0) {
+				return res.data.data;
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		*queryCourseDetail({ payload }, { put, select }) {
+			let res = yield queryCourseDetail(payload);
+			if (res.data && res.data.result === 0) {
+				return res.data.data;
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		knowledgeQue: [function* ({ payload }, { put, select }) {
 			let res = yield knowledgeQue(payload);
 			if (res.data && res.data.result === 0) {
 				return res.data.data;
@@ -195,6 +213,8 @@ export default {
 				message.error(res.data.msg)
 			}
 		},
+		{ type: 'takeLatest' }
+		],
 		*makeIntelligentTestPdf({ payload }, { put, select }) {
 			//智能组卷页面pdf
 			if (!payload.subjectId) {

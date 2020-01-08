@@ -629,7 +629,7 @@ class HomeworkCenter extends React.Component {
             okText='确定'
             cancelText='取消'
             destroyOnClose={true}
-            bodyStyle={{ height: '540px' }}
+            bodyStyle={{ minHeight: '540px' }}
             width={960}>
 
             {schoolInfo.data ?

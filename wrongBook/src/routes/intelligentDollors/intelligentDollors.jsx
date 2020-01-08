@@ -37,7 +37,7 @@ class intelligentDollors extends React.Component {
             pdfUrl: {},
             loading: 0,
             //鼠标次数选中的知识点题数
-            nowNume: ''
+            nowNume: 0,
         }
         //更新题目中的题型和题型数量和知识点数量的方法
         this.getType = (data) => {
@@ -46,32 +46,32 @@ class intelligentDollors extends React.Component {
 
             for (let object of data) {
                 // 单选题、多选题、填空题、判断题,其他
-                if (!map.has(object.typeName) && !object.hide) {
+                if (!map.has(object.typeName)) {
                     map.set(object.typeName, 1)
-                } else if (map.size !== 0 && !object.hide) {
+                } else if (map.size !== 0) {
                     map.set(object.typeName, map.get(object.typeName) + 1)
                 }
                 //获取对应知识点的数量
                 if (!knowledge.has(object.knowledgeName)) {
-                    if (object.hide) {
-                        knowledge.set(object.knowledgeName, 0)
-                    } else {
-                        knowledge.set(object.knowledgeName, 1)
-                    }
-                } else if (knowledge.size !== 0 && !object.hide) {
+                    knowledge.set(object.knowledgeName, 1)
+                } else if (knowledge.size !== 0) {
                     knowledge.set(object.knowledgeName, knowledge.get(object.knowledgeName) + 1)
                 }
             }
 
-            //反应到知识点上
+            let hadNumber = [];
+            //更新知识点上的对应数量
             [...knowledge].forEach((value) => {
-                for (let obj of this.state.dollorsKnowledge) {
-                    if (obj.knowledgeName === value[0]) {
-                        obj.nowNum = value[1]
-                        break;
-                    }
-                }
+                hadNumber.push(value[0])
             })
+
+            for (let obj of this.state.dollorsKnowledge) {
+                if (hadNumber.includes(obj.knowledgeName)) {
+                    obj.nowNum = knowledge.get(obj.knowledgeName)
+                } else {
+                    obj.nowNum = 0
+                }
+            }
             this.setState({
                 pattern: [...map],
                 dollorsKnowledge: this.state.dollorsKnowledge
@@ -242,9 +242,7 @@ class intelligentDollors extends React.Component {
         })
         let questionIds = [];
         this.state.topicList.forEach((obj) => {
-            if (!obj.hide) {
-                questionIds.push(obj.questionId)
-            }
+            questionIds.push(obj.questionId)
         })
         this.props.dispatch({
             type: 'down/makeIntelligentTestPdf',
@@ -268,18 +266,91 @@ class intelligentDollors extends React.Component {
                 })
             }
         })
-
     }
+    //点击知识点增加试卷题数up按钮
+    upAdd(item, length) {
+        let that = this;
+        let cun = this.state.topicList;
+        let nowNum = item.nowNum + 1 || 1;
 
+        //调用接口获取要增加的题目方法
+        function getList() {
+            let questionIds = [];
+            for (let obj of cun) {
+                questionIds.push(obj.questionId)
+            }
+            that.props.dispatch({
+                type: 'down/knowledgeQue',
+                payload: {
+                    knowledgeId: item.knowledgeId,
+                    questionIds,
+                }
+            }).then(res => {
+                if (res.length > 0) {
+
+                    let suzu = [];
+                    suzu.length = nowNum - 1;
+                    for (let obj of res) {
+                        suzu.push({ ...obj })
+                    }
+                    item.cunList = suzu;
+
+                    cun.push({ ...res[0] })
+                    that.setState({
+                        topicList: cun
+                    })
+                    that.getType(cun)
+                    //记录此时知识点的题数
+                    item.addNowNumber = nowNum
+                }
+            })
+            return;
+        }
+
+
+        if (nowNum <= 10 && length < 30) {
+            //判断是否已获取对应需要替换的题目列表
+            if (item.hasOwnProperty('cunList') && item.nowNum < 10) {
+                //此知识点的题目是否减少
+                if (item.addNowNumber > nowNum - 1) {
+                    getList()
+                } else if (nowNum <= item.cunList.length) {
+                    //存储的题目数量大于等于要增加的题目数
+                    cun.push({ ...item.cunList[nowNum - 1] })
+                    this.setState({
+                        topicList: cun,
+                    })
+                    //更新此时知识点的题数
+                    item.addNowNumber = ++item.addNowNumber;
+                    this.getType(cun)
+                }
+            } else {
+                getList()
+            }
+        }
+    }
+    //点击知识点增加试卷题数down按钮
+    downReduce(item) {
+        if (item.nowNum > 0) {
+            let data = this.state.topicList;
+            data.reverse();
+            list: for (let i = 0; i < data.length; i++) {
+                if (data[i].knowledgeName === item.knowledgeName) {
+                    data.splice(i, 1);
+                    data.reverse();
+                    this.getType(data)
+                    this.setState({
+                        topicList: data
+                    })
+                    break list;
+                }
+            }
+        }
+    }
 
     render() {
         let mounthList = this.props.state.mounthList;
         let length = this.state.topicList.length;
-        for (let obj of this.state.topicList) {
-            if (obj.hide) {
-                length--;
-            }
-        }
 
         return (
             <>
@@ -307,9 +378,7 @@ class intelligentDollors extends React.Component {
                         placeholder={['开始时间', '结束时间']}
                         value={this.state.selectTime}
                         disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
-                        onChange={
-                            this.quantumtime.bind(this)
-                        } />
+                        onChange={this.quantumtime.bind(this)} />
                 </Header>
                 <Layout className={style.dollors}>
 
@@ -320,13 +389,12 @@ class intelligentDollors extends React.Component {
                                 {this.state.pattern.map((item, i) => (
                                     <span key={i} className={style.label}>{item[0]}<span>{item[1]}题</span></span>
                                 ))}
-
                             </div>
                         </div>
 
-                        <div className={style.leftBottom} style={{ maxHeight: 'calc(100% - 140px)' }}>
+                        <div className={style.leftBottom} style={{ height: 'calc(100% - 140px)' }}>
                             <div className={style.title}> 本周班级薄弱知识点 </div>
-                            <div className={style.knowledgeBox}>
+                            <div className={style.knowledgeBox} style={{ height: 'calc(100% - 20px)' }}>
                                 {this.state.dollorsKnowledge.map((item, i) => (
                                     <p key={i} style={{ margin: 0, fontSize: 12 }}
                                         onMouseOver={e => {
@@ -344,51 +412,8 @@ class intelligentDollors extends React.Component {
                                             <span className={style.changeNum} style={this.state.nowNume === i ? { background: 'rgba(236, 245, 255, 1)', minWidth: 45 } : { textAlign: 'left' }}>
                                                 {item.nowNum || 0}{this.state.nowNume === i ?
                                                     <span style={{ flexDirection: 'column', display: 'inline-flex', float: 'right', color: '#505050' }}>
-                                                        <span className={style.numberUp} data-klist={[]} onClick={(e) => {
-                                                            let nowNum = item.nowNum + 1 || 1;
-                                                            if (nowNum <= 10 && length < 30) {
-                                                                let cun = this.state.topicList;
-                                                                if (item.hasOwnProperty('cunList') && item.nowNum < 10) {
-                                                                    if (nowNum <= item.cunList.length) {
-                                                                        cun.push({ ...item.cunList[nowNum - 1] })
-                                                                        this.setState({
-                                                                            topicList: cun
-                                                                        })
-                                                                        this.getType(cun)
-                                                                    }
-
-                                                                } else {
-                                                                    this.props.dispatch({
-                                                                        type: 'down/knowledgeQue',
-                                                                        payload: { knowledgeId: item.knowledgeId }
-                                                                    }).then(res => {
-                                                                        item.cunList = res;
-                                                                        cun.push({ ...res[nowNum - 1] })
-                                                                        this.setState({
-                                                                            topicList: cun
-                                                                        })
-                                                                        this.getType(cun)
-
-                                                                    })
-                                                                }
-                                                            }
-
-                                                        }}>  <Icon type="caret-up" />  </span>
-                                                        <span className={style.numberDown} onClick={() => {
-                                                            //删除题目
-                                                            if (item.nowNum > 0) {
-                                                                list: for (let obj of this.state.topicList) {
-                                                                    if (obj.knowledgeName === item.knowledgeName && !obj.hide) {
-                                                                        obj.hide = true;
-                                                                        this.getType(this.state.topicList)
-                                                                        this.setState({
-                                                                            topicList: this.state.topicList
-                                                                        })
-                                                                        break list;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }}>  <Icon type="caret-down" /> </span>
+                                                        <span className={style.numberUp} onClick={(e) => { this.upAdd(item, length) }}>  <Icon type="caret-up" />  </span>
+                                                        <span className={style.numberDown} onClick={() => { this.downReduce(item) }}>  <Icon type="caret-down" /> </span>
                                                     </span> : <>题</>}
                                             </span>
                                         </span>
@@ -407,30 +432,33 @@ class intelligentDollors extends React.Component {
                         {length > 0 ?
                             this.state.topicList.map((item, i) => (
                                 <Topics
-                                    key={i}
+                                    key={item.questionId}
                                     topic={item}
-                                    delete={(id) => {
-                                        for (let i = 0; i < this.state.topicList.length; i++) {
-                                            if (this.state.topicList[i].questionId === id) {
-                                                this.state.topicList[i].hide = true;
-                                                this.setState({
-                                                    topicList: this.state.topicList
-                                                })
-                                                break;
-                                            }
-                                        }
+                                    nowIndex={i}
+                                    delete={(nowIndex) => {
+                                        let data = this.state.topicList;
+                                        //删除题目
+                                        data.splice(nowIndex, 1);
+                                        this.setState({
+                                            topicList: data
+                                        })
                                         //左边列表试卷题型更新
-                                        this.getType(this.state.topicList)
+                                        this.getType(data)
                                     }}
                                     length={length}
                                     change={(data, tihuan) => {
                                         //调用接口，获取要替换的题目
-                                        this.props.dispatch({
-                                            type: 'temp/changeQue',
-                                            payload: data
-                                        }).then((data) => {
-                                            tihuan(data)
+                                        let questionIds = [];
+                                        this.state.topicList.forEach((obj) => {
+                                            questionIds.push(obj.questionId)
                                         })
+                                        data.questionIds = questionIds.join(','),
+                                            this.props.dispatch({
+                                                type: 'temp/changeQue',
+                                                payload: data
+                                            }).then((data) => {
+                                                tihuan(data)
+                                            })
                                     }}
                                     changeList={(topicLists) => {
                                         //替换题目

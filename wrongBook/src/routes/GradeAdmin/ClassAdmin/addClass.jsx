@@ -211,17 +211,6 @@ class HomeworkCenter extends React.Component {
 					</div>
 				)
 			},
-			// {
-			// 	title: '身份',
-			// 	dataIndex: 'identity',
-			// 	key: 'identity',
-			// 	// width: '20%',
-			// 	render: (text, record) => (
-			// 		<div>
-			// 			{text}
-			// 		</div>
-			// 	)
-			// },
 			{
 				title: '教师姓名',
 				dataIndex: 'teacher',
@@ -280,7 +269,6 @@ class HomeworkCenter extends React.Component {
 				p["teacher"] = det.教师姓名;
 				p["sub"] = det.任教学科;
 				p["phone"] = det.教师手机号;
-				// p["identity"] = det.身份;
 				dataSource[i] = p;
 			}
 		}

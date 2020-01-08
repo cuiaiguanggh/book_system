@@ -15,7 +15,8 @@ import {
 	yuantu,
 	rate,
 	recommend,
-	videoPrepare
+	videoPrepare,
+	reset
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -52,8 +53,17 @@ export default {
 		cuowunumber: 0,
 		dainumber: 0,
 		improveRate: 0,
+		a: 0,
+		b: 0,
+		c: 0,
+		d: 0,
+		standardAnswer: null,
+		questionType: null
 	},
 	reducers: {
+		discern(state, { payload }) {
+			return { ...state, a: payload.a, b: payload.b, c: payload.c, d: payload.d, standardAnswer: payload.standardAnswer, questionType: payload.questionType };
+		},
 		improveRate(state, { payload }) {
 			return { ...state, improveRate: payload };
 		},
@@ -268,6 +278,16 @@ export default {
 			//匹配错误反馈
 			let res = yield WrongQuestionMarker(payload);
 		},
+		*reset({ payload }, { put, select }) {
+			//清除预批改结果
+			let res = yield reset(payload);
+			if (res.data.result === 0) {
+				message.success(res.data.msg)
+			} else {
+				message.error(res.data.msg)
+			}
+
+		},
 		* getCorrection({ payload }, { put, select }) {
 			//获得预批改作业信息
 			let res = yield getCorrection(payload);
@@ -297,6 +317,10 @@ export default {
 				type: 'dainumber',
 				payload: dainumber
 			})
+			// yield put({
+			// 	type: 'discern',
+			// 	payload: res.data.data
+			// })
 		},
 		* deleteVidio({ payload }, { put, select }) {
 			let { qrdetailList, qrdetailList1, beforehand } = yield select(state => state.report);

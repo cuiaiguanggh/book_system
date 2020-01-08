@@ -1,13 +1,12 @@
 import React from 'react';
 import {
-	Layout, message, Select, Icon, Button, Table, Radio
+	Layout, message, Upload, Icon, Button, Table, Radio
 } from 'antd';
 import { connect } from 'dva';
 import style from './userImport.less';
 import store from 'store';
 import Dropzone from 'react-dropzone'
 import { dataCenter } from '../../../config/dataCenter'
-const { Option } = Select;
 const { Content, Footer } = Layout;
 
 class UserImport extends React.Component {
@@ -154,8 +153,8 @@ class UserImport extends React.Component {
 			})
 	}
 
-	onImportExcel = file => {
-		const { files } = file.target;
+	onImportExcel = files => {
+		console.log(files)
 		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
@@ -197,22 +196,17 @@ class UserImport extends React.Component {
 									<div className={style.addGrade}
 										{...getRootProps()} >
 										<span className={style.addSpan}>将Excel文件拖至此处或
-											<label htmlFor="file">
-												<span
-													className={style.addButon}
-												>上传</span>
-											</label>
+										<Upload showUploadList={false}
+												beforeUpload={(file, fileList) => { this.onImportExcel(fileList); return false }}>
+												<span className={style.addButon} >上传</span>
+											</Upload>
 										</span>
 									</div>
 								)
 							}}
 						</Dropzone>
-						<input
-							type='file'
-							id='file'
-							accept='.xlsx, .xls'
-							style={{ display: 'none' }}
-							onChange={this.onImportExcel} />
+
+
 					</div>
 					<div className={style.tableBox}>
 						<p className={style.header}>

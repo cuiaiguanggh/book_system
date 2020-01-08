@@ -33,8 +33,6 @@ export default {
 	namespace: 'homePage',
 
 	state: {
-		identity: '',
-		certification: '',
 		classNews: [],
 		pageHomeworkList: [],
 		catalogId: '',

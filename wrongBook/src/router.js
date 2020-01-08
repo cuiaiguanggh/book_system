@@ -28,10 +28,10 @@ const Home = Loadable({
   loader: () => import('./routes/Layout/Menus'),
   loading: () => <List />,
 });
-const GradeAdmin = Loadable({
-  loader: () => import('./routes/GradeAdmin/gradeAdmin'),
-  loading: () => <List />,
-});
+// const GradeAdmin = Loadable({
+//   loader: () => import('./routes/GradeAdmin/gradeAdmin'),
+//   loading: () => <List />,
+// });
 const ClassUser = Loadable({
   loader: () => import('./routes/GradeAdmin/ClassUser/classUser'),
   loading: () => <List />,
@@ -96,6 +96,11 @@ const userImport = Loadable({
   loader: () => import('./routes/SchoolAdmin/userImport/userImport'),
   loading: () => <List />,
 });
+const specialDownload = Loadable({
+  loader: () => import('./routes/SchoolAdmin/specialDownload/specialDownload'),
+  loading: () => <List />,
+});
+
 function RouterConfig({ history }) {
 
   return (
@@ -110,7 +115,7 @@ function RouterConfig({ history }) {
         {/* <Route path="/classInfo" component={ClassInfo} /> */}
         <Route path="/studentDetail" component={StudentDetail} />
         <Home>
-          <Route path="/grade" component={GradeAdmin} />
+          {/* <Route path="/grade" component={GradeAdmin} /> */}
           <Route path="/classUser" component={ClassUser} />
           <Route path="/class" component={ClassAdmin} />
           <Route path="/addclass" component={AddClass} />
@@ -126,6 +131,7 @@ function RouterConfig({ history }) {
           <Route path="/classChart" component={ClassChart} />
           <Route path="/intelligentDollors" component={IntelligentDollors} />
           <Route path="/userImport" component={userImport} />
+          <Route path="/specialDownload" component={specialDownload} />
         </Home>
       </Switch>
     </Router>

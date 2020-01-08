@@ -116,9 +116,11 @@ class WorkReport extends React.Component {
       optimizationcuotiMistakes: [],
       nowRecommendId: '',
       videoId: '',
-      dianji: false
-
+      dianji: false,
+      recordBackTime: 0
     };
+    this.keyEvent = this.keyEvent.bind(this);
+
     observer.addSubscribe('trueOrFalse', this.yupirightb.bind(this))
   }
   onImportExcel = file => {
@@ -400,7 +402,9 @@ class WorkReport extends React.Component {
 
         let cun = list[i].userAnswerList;
         for (let i = 0; cun.length > i; i++) {
-          uqIds.push(cun[i].uqId)
+          if (cun[i].uqId) {
+            uqIds.push(cun[i].uqId)
+          }
         }
 
         timunumber = i + 1;
@@ -451,7 +455,6 @@ class WorkReport extends React.Component {
       type: 'report/beforehand',
       payload: list[number],
     });
-    // uqId = list[number].uqId.split('uqid-')[1];
     timunumber = number + 1;
     collect = list[number].isMarker;
 
@@ -469,16 +472,16 @@ class WorkReport extends React.Component {
     let cun = list[number].userAnswerList
     let uqIds = [];
     for (let i = 0; cun.length > i; i++) {
-      uqIds.push(cun[i].uqId)
+      if (cun[i].uqId) {
+        uqIds.push(cun[i].uqId)
+      }
     }
     //调用对应的学生错题
     if (uqIds.length > 0) {
       this.props.dispatch({
         type: 'report/getCorrection',
         payload: {
-          uqIds: uqIds
-          // uqId,
-          // classId: this.props.state.classId,
+          uqIds
         }
       })
     }
@@ -865,7 +868,51 @@ class WorkReport extends React.Component {
     });
   }
 
-  //预批改弹窗  完成按钮
+  //预批改弹窗  上一题按钮
+  backTopic() {
+    let list = this.props.state.scoreDetail.data.questionScoreList;
+    let timunumber = Number(this.state.timunumber), uqIds = [];
+    timunumber--;
+    timunumber--;
+
+    if (timunumber >= 0) {
+      this.props.dispatch({
+        type: 'report/beforehand',
+        payload: list[timunumber],
+      });
+
+      let cun = list[timunumber].userAnswerList
+      for (let i = 0; cun.length > i; i++) {
+        if (cun[i].uqId) {
+          uqIds.push(cun[i].uqId)
+        }
+      }
+      //左侧题目列表的题目序号
+      timunumber++;
+      if (timunumber < 10) {
+        timunumber = `0${timunumber}`
+      }
+      //调用对应的学生错题
+      this.props.dispatch({
+        type: 'report/beforstuTopic',
+        payload: [],
+      });
+      if (uqIds.length > 0) {
+        this.props.dispatch({
+          type: 'report/getCorrection',
+          payload: {
+            uqIds
+          }
+        });
+      }
+      this.state.recordBackTime++;
+      this.setState({
+        timunumber,
+        recordBackTime: this.state.recordBackTime
+      })
+    }
+  }
+  //预批改弹窗  下一题按钮
   allOther() {
     //隐藏滚动条，和回复匹配错误
     this.setState({
@@ -873,6 +920,7 @@ class WorkReport extends React.Component {
       topicxy: true,
       collect: 1
     });
+    //提交批改数据
     let beforstuTopic = this.props.state.beforstuTopic;
     for (let i = 0; i < beforstuTopic.length; i++) {
       if (beforstuTopic[i].teacherCollect === 0) {
@@ -891,6 +939,7 @@ class WorkReport extends React.Component {
       //学生错题进入的预批改弹弹窗，则直接关闭
       this.setState({
         aheadSelect: false,
+        recordBackTime: 0,
         stugoto: false,
       });
       //重新调用接口
@@ -912,11 +961,12 @@ class WorkReport extends React.Component {
       });
     } else {
       //点击预批改进入预批改弹窗
-      if (this.state.leftdaipi === 0) {
+      if (this.state.leftdaipi === 0 && this.state.recordBackTime === 0) {
         //批改到最后一题的时候，点击其余全对关闭窗口
         //重新调用接口
         this.setState({
-          aheadSelect: false
+          aheadSelect: false,
+          recordBackTime: 0,
         });
         this.props.dispatch({
           type: 'report/queryHomeworkScoreDetail',
@@ -935,26 +985,46 @@ class WorkReport extends React.Component {
           });
         });
       } else {
-        //否则自动显示下一个未批改的题目
         let list = this.props.state.scoreDetail.data.questionScoreList;
         let timunumber = Number(this.state.timunumber), leftdaipi = this.state.leftdaipi, uqIds = [];
-        for (let i = timunumber; i < list.length; i++) {
-          if (list.length >= i && list[i].isAllCollect === 0) {
-            this.props.dispatch({
-              type: 'report/beforehand',
-              payload: list[i],
-            });
+        //如果已经有返回上一题次数   
+        if (this.state.recordBackTime > 0) {
+          this.props.dispatch({
+            type: 'report/beforehand',
+            payload: list[timunumber],
+          });
 
-            let cun = list[i].userAnswerList
-            for (let i = 0; cun.length > i; i++) {
+          let cun = list[timunumber].userAnswerList
+          for (let i = 0; cun.length > i; i++) {
+            if (cun[i].uqId) {
               uqIds.push(cun[i].uqId)
             }
-            timunumber = i + 1;
-            break;
           }
+          timunumber++;
+          this.state.recordBackTime--;
+        } else {
+          //否则自动显示下一个未批改的题目
+          for (let i = timunumber; i < list.length; i++) {
+            if (list.length >= i && list[i].isAllCollect === 0) {
+              this.props.dispatch({
+                type: 'report/beforehand',
+                payload: list[i],
+              });
+
+              let cun = list[i].userAnswerList
+              for (let i = 0; cun.length > i; i++) {
+                if (cun[i].uqId) {
+                  uqIds.push(cun[i].uqId)
+                }
+              }
+              timunumber = i + 1;
+              break;
+            }
+          }
+          //题目列表的待批改
+          leftdaipi--;
         }
-        //题目列表的待批改
-        leftdaipi--;
+
         //左侧题目列表的题目序号
         if (timunumber < 10) {
           timunumber = `0${timunumber}`
@@ -979,6 +1049,46 @@ class WorkReport extends React.Component {
       }
     }
   }
+  //键盘上下左右切换事件
+  keyEvent(e) {
+    if (this.state.aheadSelect && !this.state.stugoto) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        this.allOther()
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        this.backTopic()
+      }
+    }
+  }
+  //清除预批改结果
+  eliminate() {
+    let cun = this.props.state.beforstuTopic, uqIds = [];
+    for (let i = 0; cun.length > i; i++) {
+      if (cun[i].uqId) {
+        uqIds.push(cun[i].uqId)
+      }
+    }
+    this.props.dispatch({
+      type: 'report/reset',
+      payload: {
+        uqIds
+      }
+    }).then(() => {
+      //更新预批改弹窗上的数据
+      this.props.dispatch({
+        type: 'report/getCorrection',
+        payload: {
+          uqIds
+        }
+      });
+      //更新弹窗外数据
+      this.props.dispatch({
+        type: 'report/queryHomeworkScoreDetail',
+        payload: {
+          homeworkId: this.props.state.homeworkId
+        }
+      })
+    })
+  }
 
 
   //匹配错误按钮
@@ -993,6 +1103,7 @@ class WorkReport extends React.Component {
       onOk() {
         that.setState({ topicxy: false });
         let uqId = beforehand.uqId.split('uqid-')[1];
+        beforehand.type = 3;
         that.props.dispatch({
           type: 'report/WrongQuestionMarker',
           payload: {
@@ -1009,6 +1120,7 @@ class WorkReport extends React.Component {
   yptcCancel() {
     this.setState({
       aheadSelect: false,
+      recordBackTime: 0,
       stugoto: false,
       gundt: false,
       topicxy: true,
@@ -1135,9 +1247,9 @@ class WorkReport extends React.Component {
           for (let i = 0; i < text.length; i++) {
             arr.push(
               text[i] == -1 ?
-                <Icon key={`news-${i}`} type="exclamation-circle" theme='filled' className={'quicon'} />
+                <Icon key={`news - ${i} `} type="exclamation-circle" theme='filled' className={'quicon'} />
                 :
-                <span key={`news-${i}`} className={text[i] === 0 ? 'qunot' : (text[i] === 1 ? 'quwrong' : 'qutrue')}>{i + 1}</span>
+                <span key={`news - ${i} `} className={text[i] === 0 ? 'qunot' : (text[i] === 1 ? 'quwrong' : 'qutrue')}>{i + 1}</span>
             )
           }
           return <div style={{ display: 'flex', flexWrap: 'wrap' }}>{arr}</div>
@@ -1227,9 +1339,6 @@ class WorkReport extends React.Component {
                         </animated.span>
                         )}
                       </Spring>
-
-                      {/* <span className={style.number}>{classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'}
-                      </span> */}
                       %
                     </span>
                   </div>
@@ -1244,8 +1353,6 @@ class WorkReport extends React.Component {
                       </animated.span>
                       )}
                     </Spring>
-
-                    {/* {Math.round(Math.abs(this.props.state.improveRate * 100))} */}
                     %
                   </div>
 
@@ -1257,27 +1364,8 @@ class WorkReport extends React.Component {
                       </animated.span>
                       )}
                     </Spring>
-
-                    {/* {classWrongScore ? (classWrongScore * 100).toFixed(0) : '0'} */}
                     %
                   </div>
-
-                  {/* <div className={style.annulusBasics} style={document.documentElement.clientWidth <= 1200 ? { right: '1%' } : {}} >
-                    <div className={style.centerCircle}></div>
-                    <div className={style.annulusOuter}></div>
-                    <Spring native to={{ number: classWrongScore ? classWrongScore : 0 }}>
-                      {props => <>
-                        <animated.div className={style.leftRectangle} style={{
-                          transform: props.number.interpolate(x => (x > 0.5 ? `rotate(${180 * x}deg)` : 'rotate(0deg)'))
-                        }}></animated.div>
-                        <animated.div className={style.rightRectangle} style={{
-                          transform: props.number.interpolate(x => (x <= 0.5 ? `rotate(${360 * x}deg)` : 'rotate(0deg)')),
-                          background: props.number.interpolate(x => (x > 0.5 ? '#FF7F69' : '#EDEDED'))
-                        }} ></animated.div>
-                      </>}
-                    </Spring>
-                    <div className={style.repairAnnulus}></div>
-                  </div> */}
                   <div style={document.documentElement.clientWidth <= 1200 ? { right: '1%', position: 'absolute', zIndex: 1, top: '0%' } : { position: 'absolute', zIndex: 1, right: '10%', top: '0%' }} >
                     <Spring to={{ number: classWrongScore ? classWrongScore : 0 }}>
                       {props => <CanvasDonut percent={props.number} />}
@@ -1304,9 +1392,6 @@ class WorkReport extends React.Component {
                       </animated.span>
                       )}
                     </Spring>
-
-                    {/* <span className={style.number}>{scoreDetail.data ? scoreDetail.data.collectNum : '0'}
-                    </span> */}
                     题
                     </span>
                 </div>
@@ -1319,28 +1404,19 @@ class WorkReport extends React.Component {
                     </animated.span>
                     )}
                   </Spring>
-                  {/* {scoreDetail.data ? scoreDetail.data.allQuestionNum : '0'} */}
                   题次
                   </div>
 
                 <Spring native to={{ number: scoreDetail.data ? (scoreDetail.data.allQuestionNum / scoreDetail.data.totalNum * 30) : 30 }}>
-                  {props => (<animated.div className={style.longellipse} style={{ width: props.number.interpolate(x => `${x}%`) }}>
+                  {props => (<animated.div className={style.longellipse} style={{ width: props.number.interpolate(x => `${x}% `) }}>
                   </animated.div>
                   )}
                 </Spring>
                 <Spring native to={{ number: scoreDetail.data ? (scoreDetail.data.collectNum / scoreDetail.data.totalNum * 30) : 0 }}>
-                  {props => (<animated.div className={style.jindublue} style={{ width: props.number.interpolate(x => `${x}%`) }}>
+                  {props => (<animated.div className={style.jindublue} style={{ width: props.number.interpolate(x => `${x}% `) }}>
                   </animated.div>
                   )}
                 </Spring>
-                {/* <div className={style.longellipse}
-                  style={scoreDetail.data ? { width: `${scoreDetail.data.allQuestionNum / scoreDetail.data.totalNum * 30}%` } : { width: '30%' }
-                  }>
-                </div>
-
-                <div className={style.jindublue}
-                  style={scoreDetail.data ? { width: `${scoreDetail.data.collectNum / scoreDetail.data.totalNum * 30}%` } : { width: 0 }}>
-                </div> */}
 
                 <div className={style.gopigai} onClick={this.beforehandgai.bind(this)}
                   style={!scoreDetail.data || (scoreDetail.data && scoreDetail.data.collectNum === scoreDetail.data.allQuestionNum) ? {
@@ -1360,12 +1436,10 @@ class WorkReport extends React.Component {
                     查看详情
                   </div>
                 </div>
-
                 <div style={document.documentElement.clientWidth <= 1200 ? { display: 'flex', alignItems: 'center', paddingLeft: '5%' } : { display: 'flex', alignItems: 'center', paddingLeft: '18%' }}>
                   <span className={style.leftText}>
                     未提交
                    </span>
-
                   <span className={style.right}>
                     <span className={style.number}>
                       <Spring native to={{ number: scoreDetail.data ? scoreDetail.data.unCommit : 0 }}>
@@ -1374,7 +1448,6 @@ class WorkReport extends React.Component {
                         </animated.span>
                         )}
                       </Spring>
-                      {/* {scoreDetail.data ? scoreDetail.data.unCommit : 0} */}
                     </span>人
                     </span>
                 </div>
@@ -1384,15 +1457,10 @@ class WorkReport extends React.Component {
 
                 <Spring native to={{ number: scoreDetail.data ? (scoreDetail.data.allQuestionNum / (scoreDetail.data.unCommit + scoreDetail.data.allQuestionNum) * 30) : 0 }}>
                   {props => (
-                    <animated.div className={style.jindublue} style={{ width: props.number.interpolate(x => `${x}%`), background: 'rgba(89,215,80,1)' }}>
+                    <animated.div className={style.jindublue} style={{ width: props.number.interpolate(x => `${x}% `), background: 'rgba(89,215,80,1)' }}>
                     </animated.div>
                   )}
                 </Spring>
-
-                {/* <div className={style.jindublue} style={scoreDetail.data ?
-                  { width: `${scoreDetail.data.allQuestionNum / (scoreDetail.data.unCommit + scoreDetail.data.allQuestionNum) * 30}%`, background: 'rgba(89,215,80,1)' } : { width: 0, background: 'rgba(89,215,80,1)' }}>
-                </div> */}
-
 
                 <div className={style.texttj} style={document.documentElement.clientWidth <= 1200 ? { paddingLeft: '5%' } : {}}>
                   已提交作业 <Spring native to={{ number: scoreDetail.data ? scoreDetail.data.commit : 0 }}>
@@ -1401,7 +1469,6 @@ class WorkReport extends React.Component {
                     </animated.span>
                     )}
                   </Spring>
-                  {/* {scoreDetail.data ? scoreDetail.data.commit : 0} */}
                   人
                 </div>
 
@@ -1480,7 +1547,7 @@ class WorkReport extends React.Component {
           <div style={{ display: 'flex', height: 850 }}>
             <div className={style.aheadLeft}>
               <p className={style.aheadTitle}>
-                {this.state.stugoto ? '当前题目：' : `题目列表：待批改${this.state.leftdaipi}题`}
+                {this.state.stugoto ? '当前题目：' : `题目列表：待批改${this.state.leftdaipi} 题`}
                 <span style={{ fontSize: 16, cursor: 'pointer' }} onClick={() => {
                   let collect = this.state.collect;
                   if (collect === 1) {
@@ -1533,7 +1600,6 @@ class WorkReport extends React.Component {
                         <span hidden={beforehand.recommendId <= 0 ? true : false}>
                           <TracksVideo type={beforehand} num={this.state.timunumber - 1}></TracksVideo>
                         </span>
-
                       </div>
 
                       <div className={style.matchingErrorBottom} onClick={this.pipeicw.bind(this, beforehand)}>
@@ -1575,7 +1641,7 @@ class WorkReport extends React.Component {
 
                       {beforehand.question ?
                         <img style={{ width: '100%' }}
-                          src={beforehand.question.split(',')[0].indexOf('?') > 0 ? `${beforehand.question.split(',')[0]}/thumbnail/1000x` : `${beforehand.question.split(',')[0]}?imageMogr2/thumbnail/1000x`} />
+                          src={beforehand.question.split(',')[0].indexOf('?') > 0 ? `${beforehand.question.split(',')[0]}/thumbnail/1000x` : `${beforehand.question.split(',')[0]}?imageMogr2 / thumbnail / 1000x`} />
                         : ''
                       }
                     </div>)
@@ -1585,18 +1651,46 @@ class WorkReport extends React.Component {
             </div>
             <div className={style.aheadRight} style={{ width: 'calc(100% - 380px)' }}>
 
-              <div className={style.yupitctopzi}>{this.props.state.homeworkName}  &nbsp; 预批改</div>
-              <div style={{ fontSize: 18, padding: '0 40px 0 50px', color: 'rgba(85,91,108,1)' }}>
-                <span style={{ position: 'absolute' }}>答题列表：待批{this.props.state.dainumber}人 </span>
-                <span style={{ display: 'block', textAlign: 'center' }}>点击标记错题 </span>
-              </div>
+              <div className={style.yupitctopzi} >{this.props.state.homeworkName}  &nbsp; 预批改</div>
+              {/* {this.props.state.questionType === 4 ?
+                <>  <p style={{ padding: '10px 40px 15px 50px', color: 'rgba(85,91,108,1)', margin: 0 }}>
+                  <label style={{ fontSize: 16, paddingRight: 30 }}>未识别：</label>
+                  <span style={{
+                    fontSize: 18,
+                    width: 144,
+                    lineHeight: '32px',
+                    border: '2px solid rgba(197, 197, 197, 0.2)',
+                    borderRadius: 18,
+                    textAlign: "center",
+                    display: ' inline-block',
+                    color: '#7B7F80'
+                  }}>待批（{this.props.state.dainumber}人） </span>
+                </p>
+                  <p style={{ padding: '0px 40px 15px 50px', color: 'rgba(85,91,108,1)', margin: 0 }}>
+                    <label style={{ fontSize: 16, paddingRight: 30 }}>已识别：</label>
+                    <span style={this.props.state.standardAnswer === 'A' ? { color: '#00C1B2', background: 'rgba(204, 243, 240, 1)' } : {}} className={style.discernBox}>A（{this.props.state.a}人） </span>
+                    <span style={this.props.state.standardAnswer === 'B' ? { color: '#00C1B2', background: 'rgba(204, 243, 240, 1)' } : {}} className={style.discernBox}>B（{this.props.state.b}人） </span>
+                    <span style={this.props.state.standardAnswer === 'C' ? { color: '#00C1B2', background: 'rgba(204, 243, 240, 1)' } : {}} className={style.discernBox}>C（{this.props.state.c}人） </span>
+                    <span style={this.props.state.standardAnswer === 'D' ? { color: '#00C1B2', background: 'rgba(204, 243, 240, 1)' } : {}} className={style.discernBox}>D（{this.props.state.d}人） </span>
+                    <Button type="primary" style={{ width: 122, height: 36, fontSize: 15, borderRadius: 4, float: 'right' }}
+                      onClick={this.eliminate.bind(this)} >清除批改结果</Button>
+                  </p>
+                </>
+                : */}
+                <div style={{ fontSize: 18, padding: '30px 40px 40px 50px', color: 'rgba(85,91,108,1)' }}>
+                  <span style={{ position: 'absolute' }}>答题列表：待批{this.props.state.dainumber}人 </span>
+                  <span style={{ display: 'block', textAlign: 'center' }}>点击标记错题 </span>
+                </div>
+              {/* } */}
 
+              <div style={{ width: '100%', height: 1, background: '#E8E8E8' }}></div>
+              <div style={{ bottom: '-625px', position: 'relative', width: '100%', height: 1, background: '#E8E8E8' }}></div>
               <div style={{ padding: '10px 30px 20px 40px' }}>
                 {beforstuTopic.length > 0 ?
                   <AutoSizer>
                     {({ height, width }) => (
                       <VariableSizeGrid
-                        height={650}
+                        height={610}
                         columnWidth={() => '50%'}
                         rowHeight={index => {
                           let one = beforstuTopic[(2 * index)],
@@ -1631,13 +1725,13 @@ class WorkReport extends React.Component {
                   </AutoSizer> : ''
                 }
                 {beforstuTopic.length > 0 ?
-                  <div style={{ width: '100%', textAlign: 'right', bottom: '-670px', position: 'relative' }}>
+                  <div style={{ width: '100%', textAlign: 'right', bottom: '-625px', position: 'relative' }}>
                     <div className={style.jindukang}>
                       <span className={style.jinduerr}
                         style={
                           beforstuTopic.length > 0 && beforstuTopic[beforstuTopic.length - 1].hasOwnProperty('true') ?
-                            { width: `${Math.floor((this.props.state.cuowunumber / (beforstuTopic.length - 1)) * 100)}%` } :
-                            { width: `${Math.floor((this.props.state.cuowunumber / beforstuTopic.length) * 100)}%` }
+                            { width: `${Math.floor((this.props.state.cuowunumber / (beforstuTopic.length - 1)) * 100)}% ` } :
+                            { width: `${Math.floor((this.props.state.cuowunumber / beforstuTopic.length) * 100)}% ` }
                         }>
                       </span>
                       <span className={style.jinduzi}>错误{this.props.state.cuowunumber}人
@@ -1645,8 +1739,15 @@ class WorkReport extends React.Component {
                           （共{beforstuTopic[beforstuTopic.length - 1].true ? beforstuTopic.length - 1 : beforstuTopic.length}人）</span></span>
 
                     </div>
-                    <Button type="primary" style={{ width: 183, lineHeight: '44px', height: 44, fontSize: 16, borderRadius: 3 }}
-                      onClick={this.allOther.bind(this)}>完成</Button>
+                    {this.state.stugoto ? <Button type="primary" style={{ width: 80, height: 36, fontSize: 15, borderRadius: 4, marginLeft: 10 }}
+                      onClick={this.allOther.bind(this)}>完成</Button> :
+                      <>
+                        <Button style={{ width: 80, height: 36, fontSize: 15, borderRadius: 4 }}
+                          onClick={this.backTopic.bind(this)}>上一题</Button>
+                        <Button type="primary" style={{ width: 80, height: 36, fontSize: 15, borderRadius: 4, marginLeft: 10 }}
+                          onClick={this.allOther.bind(this)}>下一题</Button>
+                      </>
+                    }
                   </div> : ''
                 }
 
@@ -1792,8 +1893,12 @@ class WorkReport extends React.Component {
         // loadMoreFn()
       }
     }
+    //键盘监听事件
+    document.addEventListener('keydown', this.keyEvent)
   }
-
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.keyEvent);
+  }
 }
 
 export default connect((state) => ({

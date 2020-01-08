@@ -135,7 +135,7 @@ export default {
         })
         yield put({
           type: 'timeStamp',
-          payload: res.data.data[0].timeStamp
+          payload: res.data.data[0].startTimeStamp
         })
 
         if (payload.classReport === true) {
