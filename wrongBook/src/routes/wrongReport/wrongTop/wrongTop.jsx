@@ -4,16 +4,13 @@ import {
 } from 'antd';
 import { routerRedux, } from "dva/router";
 import { connect } from 'dva';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
-import style from './wrongTop.less';
-import store from 'store';
 import observer from '../../../utils/observer'
 
 //作业中心界面内容
 const Option = Select.Option;
 
 
-class ClassReport extends React.Component {
+class WrongTop extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -232,4 +229,4 @@ export default connect((state) => ({
 		...state.report,
 		...state.temp,
 	}
-}))(ClassReport);
+}))(WrongTop);

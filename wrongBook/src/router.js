@@ -100,7 +100,10 @@ const specialDownload = Loadable({
   loader: () => import('./routes/SchoolAdmin/specialDownload/specialDownload'),
   loading: () => <List />,
 });
-
+const workCorrection = Loadable({
+  loader: () => import('./routes/workCorrection/workCorrection'),
+  loading: () => <List />,
+});
 function RouterConfig({ history }) {
 
   return (
@@ -125,7 +128,8 @@ function RouterConfig({ history }) {
           <Route path="/user" component={UserList} />
           <Route path="/classReport" component={ClassReport} />
           <Route path="/stuReport" component={StuReport} />
-          <Route path="/workReport" component={WorkReport} />
+          {/* <Route path="/workReport" component={WorkReport} />*/}
+          <Route path="/workCorrection" component={workCorrection} />
           <Route path="/userInfo" component={UserInfo} />
           <Route path="/schoolChart" component={SchoolChart} />
           <Route path="/classChart" component={ClassChart} />

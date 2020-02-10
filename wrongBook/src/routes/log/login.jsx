@@ -115,7 +115,7 @@ class Login extends Component {
         <div className={style.loginTop}>
           <div className={style.box}>
             <span onClick={() => { window.location.href = "http://kacha.xin/" }}>
-              咔嚓官网
+              咔嚓拍官网
           </span>
             <Popover placement="bottom" trigger="hover" content={(
               <div style={{ textAlign: "center", padding: '12px 16px' }}>
@@ -136,7 +136,7 @@ class Login extends Component {
         </div>
         <div className={style.normal}>
           <div className={style.loginInner}>
-            <h2>咔嚓错题数据详情系统</h2>
+            <h2>咔嚓拍精准化教学系统</h2>
             {/* <h2>账号登陆</h2> */}
             <div className={style.chooseType}>
               {

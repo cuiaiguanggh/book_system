@@ -1,0 +1,310 @@
+.layoutHead {
+  background : #fff;
+  padding    : 0 20px;
+  height     : auto;
+  line-height: 50px
+}
+
+.innerOut {
+  position       : absolute;
+  top            : 50px;
+  bottom         : 0;
+  padding        : 20px 0 10px;
+  width          : 100%;
+  justify-content: center;
+}
+
+.left {
+  height        : 100%;
+  width         : 216px;
+  background    : rgba(255, 255, 255, 1);
+  padding-bottom: 25px;
+
+  .dataDisplay {
+    font-size      : 16px;
+    height         : 50px;
+    border-bottom  : 1px solid #E7E7E7;
+    display        : flex;
+    flex-direction : column;
+    justify-content: center;
+    align-items    : center;
+
+  }
+
+  .leftTop {
+    margin-top    : 20px;
+    padding-left  : 30px;
+    display       : flex;
+    align-items   : center;
+    padding-bottom: 10px;
+
+    .text {
+      font-size  : 16px;
+      color      : rgba(51, 51, 51, 1);
+      margin-left: 8px;
+    }
+  }
+
+  .stu {
+    margin       : 12px 0;
+    padding      : 0 30px;
+    font-size    : 16px;
+    color        : rgba(51, 51, 51, 1);
+    height       : 36px;
+    line-height  : 36px;
+    overflow     : hidden;
+    text-overflow: ellipsis;
+    white-space  : nowrap;
+  }
+
+  .pitch {
+    cursor: pointer;
+
+    &:hover {
+      color     : rgba(64, 158, 255, 1);
+      background: rgba(242, 250, 253, 1);
+    }
+  }
+
+  .xuanzhong {
+    color     : rgba(64, 158, 255, 1);
+    background: rgba(242, 250, 253, 1);
+  }
+
+  .already {
+    color     : rgba(0, 204, 0, 1);
+    background: #fff;
+  }
+
+  .remind {
+    width        : 61px;
+    height       : 21px;
+    background   : rgba(255, 146, 0, 1);
+    border-radius: 5px;
+    font-size    : 12px;
+    color        : rgba(255, 255, 255, 1);
+    line-height  : 21px;
+    margin-left  : 19px;
+    display      : inline-block;
+    text-align   : center;
+    cursor       : pointer;
+  }
+
+}
+
+
+.correction {
+  height     : 100%;
+  background : rgba(255, 255, 255, 1);
+  margin-left: 20px;
+
+  .checkPicture {
+    width   : 100%;
+    padding : 20px;
+    overflow: auto;
+    height  : 100%;
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(209, 209, 209, 0.5);
+      height          : 25px;
+      border-radius   : 0px;
+      width           : 15px;
+    }
+
+    &::-webkit-scrollbar {
+      width: 15px;
+      /* 纵向滚动条*/
+      height: 15px;
+      /* 横向滚动条 */
+      background-color: #fff;
+    }
+
+    .dui {
+      height     : 50px;
+      background : rgba(231, 250, 240, 1);
+      line-height: 50px;
+      font-weight: bold;
+      font-size  : 18px;
+      color      : rgba(19, 206, 102, 1);
+      text-align : center;
+      width      : 100%;
+    }
+
+    .cuo {
+      height     : 50px;
+      background : rgba(254, 240, 240, 1);
+      line-height: 50px;
+      font-weight: bold;
+      font-size  : 18px;
+      color      : rgba(245, 108, 108, 1);
+      text-align : center;
+    }
+
+    .allTrue {
+      width      : 85px;
+      height     : 30px;
+      background : #9fa2a8;
+      color      : #fff;
+      float      : right;
+      margin     : 10px 3% 0px 0px;
+      line-height: 30px;
+      font-weight: 400;
+
+
+    }
+
+    .fangda {
+      cursor: pointer;
+      float : right;
+      margin: 10px 20px 0px 0px;
+    }
+
+    .dagou {
+      position : absolute;
+      z-index  : 5;
+      left     : 50%;
+      top      : 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .verygood {
+      position: absolute;
+      right   : 0;
+      top     : 0;
+    }
+
+    .try {
+      position: absolute;
+      right   : 0;
+      top     : 0;
+    }
+
+    .nowImg {
+      position : relative;
+      cursor   : url('../images/faultMouse.png') 23 23, pointer;
+    }
+
+  }
+}
+
+
+.checkCuo {
+  position   : absolute;
+  cursor     : url('../images/correctMouse.png') 23 23, pointer;
+  // padding : 20px;
+  z-index    : 10;
+  transform  : translate(-50%, -50%);
+}
+
+.checkDui {
+  position   : absolute;
+  cursor     : pointer;
+  // padding : 20px;
+  cursor     : url('../images/rightMouse.png') 23 23, pointer;
+  z-index    : 10;
+  transform  : translate(-50%, -50%);
+
+}
+
+.anniu {
+  display        : flex;
+  flex-direction : column;
+  justify-content: flex-end;
+
+  .tiaoguo {
+    width          : 90px;
+    height         : 90px;
+    background     : #8AC1FB;
+    color          : rgba(255, 255, 255, 1);
+    cursor         : pointer;
+    border-radius  : 50%;
+    font-size      : 20px;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+
+    &:hover {
+      background: #409EFF;
+    }
+  }
+
+  .wancheng {
+    width          : 90px;
+    height         : 90px;
+    background     : #409EFF;
+    color          : rgba(255, 255, 255, 1);
+    cursor         : pointer;
+    border-radius  : 50%;
+    font-size      : 20px;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    margin         : 20px 0 40px;
+    text-align     : center;
+  }
+}
+
+
+
+.gifBox {
+  width     : 250px;
+  height    : 330px;
+  background: #fff;
+
+  .guanbi {
+    width       : 85px;
+    height      : 35px;
+    background  : rgb(138, 193, 251);
+    color       : rgb(255, 255, 255);
+    text-align  : center;
+    line-height : 35px;
+    float       : right;
+    margin-right: 25px;
+    cursor      : pointer;
+  }
+}
+
+.pagination {
+  display       : flex;
+  flex-direction: column;
+  height        : 100%;
+  margin-left   : 20px;
+  overflow      : auto;
+  overflow-x    : hidden;
+
+  .text {
+    color        : #333333;
+    font-size    : 16px;
+    margin-bottom: 20px;
+  }
+
+  .number {
+    font-size    : 18px;
+    color        : #606266;
+    width        : 36px;
+    height       : 36px;
+    background   : rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    text-align   : center;
+    line-height  : 36px;
+    margin       : 10px 0;
+    cursor       : pointer;
+
+    &:hover {
+      background: rgba(64, 158, 255, 1);
+      color     : #fff;
+    }
+  }
+
+  .finish {
+    color     : rgba(19, 206, 102, 1);
+    background: rgba(19, 206, 102, 0.15);
+  }
+
+  .current {
+    background: rgba(64, 158, 255, 1);
+    color     : #fff;
+  }
+
+
+}

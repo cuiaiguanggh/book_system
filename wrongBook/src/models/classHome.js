@@ -167,7 +167,7 @@ export default {
 						break;
 					}
 				}
-			
+
 				if (panduan) {
 					yield put({
 						type: 'homePage/infoClass',
@@ -248,7 +248,7 @@ export default {
 		},
 		*updateClass({ payload }, { put, select }) {
 			// 修改班级信息
-			let { adminId, className, classNews, classInfoPayload, classId } = yield select(state => state.classHome)
+			let { adminId, className, classInfoPayload, classId } = yield select(state => state.classHome)
 			let data = {
 				classId: classId,
 				className: className,
@@ -257,30 +257,30 @@ export default {
 			let res = yield updateClass(data);
 			if (res.hasOwnProperty("err")) {
 				// yield put(routerRedux.push('/login'))
-			} else
-				if (res.data && res.data.result === 0) {
-					const rodeType = store.get('wrongBookNews').rodeType
+			} else if (res.data && res.data.result === 0) {
+				const rodeType = store.get('wrongBookNews').rodeType
 
-					if (rodeType === 20) {
-						yield put({
-							type: 'pageClass',
-							payload: classInfoPayload
-						})
-					} else {
-						yield put({
-							type: 'getClassList',
-						})
-					}
+				if (rodeType === 20) {
+					yield put({
+						type: 'pageClass',
+						payload: classInfoPayload
+					})
+				} else {
+					let { years } = yield select(state => state.temp)
+					yield put({
+						type: 'getClassList',
+						payload: {
+							year: years,
+							schoolId: store.get('wrongBookNews').schoolId
+						}
+					})
 				}
-				else {
-					if (res.data.result === 2) {
-						yield put(routerRedux.push('/login'))
-					} else if (res.data.msg == '服务器异常') {
+			} else if (res.data.result === 2) {
+				yield put(routerRedux.push('/login'))
+			} else {
+				message.error(res.data.msg)
+			}
 
-					} else {
-						message.error(res.data.msg)
-					}
-				}
 		},
 		*updateClassAdmin({ payload }, { put, select }) {
 			// 修改班主任

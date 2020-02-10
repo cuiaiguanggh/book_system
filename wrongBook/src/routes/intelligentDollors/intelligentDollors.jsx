@@ -87,6 +87,11 @@ class intelligentDollors extends React.Component {
                 type: 'temp/combinedPaper',
                 payload: data
             }).then(list => {
+                for (let obj of list) {
+                    obj.title = obj.title && obj.title.replace(/宋体/g, "微软雅黑")
+                    obj.answer = obj.answer && obj.answer.replace(/宋体/g, "微软雅黑")
+                    obj.parse = obj.parse && obj.parse.replace(/宋体/g, "微软雅黑")
+                }
                 this.setState({
                     topicList: list
                 })
@@ -291,6 +296,9 @@ class intelligentDollors extends React.Component {
                     let suzu = [];
                     suzu.length = nowNum - 1;
                     for (let obj of res) {
+                        obj.title = obj.title && obj.title.replace(/宋体/g, "微软雅黑")
+                        obj.answer = obj.answer && obj.answer.replace(/宋体/g, "微软雅黑")
+                        obj.parse = obj.parse && obj.parse.replace(/宋体/g, "微软雅黑")
                         suzu.push({ ...obj })
                     }
                     item.cunList = suzu;
@@ -492,7 +500,7 @@ class intelligentDollors extends React.Component {
                     </Content>
                     <div id='back' className={style.upArrows} onClick={() => {
                         var time = setInterval(function () {
-                            document.getElementById('dollors').scrollTop = document.getElementById('dollors').scrollTop - 7;
+                            document.getElementById('dollors').scrollTop = document.getElementById('dollors').scrollTop *0.9;
                             if (document.getElementById('dollors').scrollTop <= 0) {
                                 clearInterval(time);
                             }

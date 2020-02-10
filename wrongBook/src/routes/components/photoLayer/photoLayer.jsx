@@ -29,9 +29,9 @@ export default class PhotoLayer extends React.Component {
                 justifyContent: 'center',
                 alignItems: 'center',
             }}
-                onClick={() => [
+                onClick={() => {
                     this.props.clearMasters()
-                ]}>
+                }}>
                 {this.props.masters.length > 1 ?
                     <Icon type="left-circle" theme="twoTone" style={{ fontSize: 80, width: '10%', cursor: 'pointer' }}
                         onClick={(e) => {

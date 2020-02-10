@@ -105,15 +105,7 @@ class StuReport extends React.Component {
       })
       this.props.dispatch({
         type: 'classHome/updateClass',
-      }, this.props.dispatch({
-        type: 'classHome/pageClass',
-        payload: {
-          schoolId: store.get('wrongBookNews').schoolId,
-          pageSize: 9999,
-          pageNum: 1,
-          year: this.props.state.years
-        }
-      }))
+      })
     }
     this.setState({
       whetherbz: false

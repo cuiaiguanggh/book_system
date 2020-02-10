@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	Layout, message, Upload, Icon, Button, Table, Radio
+	Layout, message, Upload, Checkbox, Button, Table, Radio, Icon
 } from 'antd';
 import { connect } from 'dva';
 import style from './userImport.less';
@@ -13,7 +13,6 @@ class UserImport extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			dianji: true,
 			teaOrSte: 'tea',
 			schoolName: '',
 			managerName: '',
@@ -22,39 +21,42 @@ class UserImport extends React.Component {
 			studentTable: [],
 			schoolType: 0,
 			cun: {},
-			isImport: 0
+			isImport: 0,
+			isOtherSchool: 0,
+			checked: false,
+			dianji: false
+
 		};
 
 		this.teacherColumns = [
 			{
 				title: '班级名称',
 				dataIndex: 'className',
-				width: '18%',
+				width: '17%',
 				render: (text, record) => (text)
 			}, {
-				title: '年级',
+				title: () => (<>年级 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'gradeName',
-				width: '18%',
+				width: '17%',
 				render: (text, record) => (text)
 			}, {
-				title: '教师姓名',
+				title: (<>教师姓名 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'teacherName',
-				width: '18%',
+				width: '17%',
 				render: (text, record) => (text)
 			}, {
-				title: '任教学科',
+				title: (<>任教学科 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'subjectName',
-				width: '18%',
+				width: '17%',
 				render: (text, record) => (text)
 			}, {
-				title: '教师手机号',
+				title: (<>教师手机号 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'phone',
-				width: '18%',
+				width: '17%',
 				render: (text, record) => (text)
 			}, {
 				title: '状态',
 				dataIndex: 'state',
-				width: '10%',
 				align: 'center',
 				render: (text, record) => (
 					text === '正常' ? <span className={style.normal}>正常</span> : <span className={style.failure}>失败</span>
@@ -69,17 +71,17 @@ class UserImport extends React.Component {
 				width: '22%',
 				render: (text, record) => (text)
 			}, {
-				title: '年级',
+				title: (<>年级 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'gradeName',
 				width: '22%',
 				render: (text, record) => (text)
 			}, {
-				title: '学生姓名',
+				title: (<>学生姓名 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'name',
 				width: '22%',
 				render: (text, record) => (text)
 			}, {
-				title: '帐号',
+				title: (<>帐号 <Icon type="exclamation-circle" theme="filled" /></>),
 				dataIndex: 'account',
 				width: '22%',
 				render: (text, record) => (text)
@@ -99,6 +101,7 @@ class UserImport extends React.Component {
 		let token = store.get('wrongBookToken');
 		let form = new FormData();
 		form.append('excelFile', file[0]);
+		form.append('schoolType', this.state.schoolType);
 		fetch(dataCenter('/school/class/import/excel'), {
 			method: "POST",
 			body: form,
@@ -109,8 +112,6 @@ class UserImport extends React.Component {
 			.then(res => {
 				if (res.result === 0) {
 					let teacherTable = [], studentTable = [];
-
-					console.log(res.data)
 
 					for (let obj of res.data.classData) {
 						for (let i = 0; i < obj.state.length; i++) {
@@ -143,7 +144,9 @@ class UserImport extends React.Component {
 						schoolName: res.data.schoolData.schoolName,
 						managerName: res.data.schoolData.managerName.join(','),
 						managerPhone: res.data.schoolData.managerPhone.join(','),
-						isImport: res.data.isImport
+						isImport: res.data.isImport,
+						isOtherSchool: res.data.isOtherSchool,
+						checked: false,
 					})
 				} else {
 					message.error(res.message)
@@ -154,7 +157,6 @@ class UserImport extends React.Component {
 	}
 
 	onImportExcel = files => {
-		console.log(files)
 		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
@@ -178,7 +180,19 @@ class UserImport extends React.Component {
 						<div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
 							<span style={{ fontWeight: 'bold', color: 'rgba(96,98,102,1)', }}>类型：</span>
 							<Radio.Group onChange={(e) => {
-								this.setState({ schoolType: e.target.value })
+								this.setState({
+									schoolType: e.target.value,
+									isOtherSchool: 0,
+									studentTable: [],
+									teacherTable: [],
+									schoolName: '',
+									managerName: '',
+									managerPhone: '',
+									isImport: 0,
+									cun: {},
+									checked: false,
+								})
+
 							}} value={this.state.schoolType}>
 								<Radio className={style.radiobox} value={0}>学校</Radio>
 								<Radio className={style.radiobox} value={1} style={{ width: 111, marginLeft: 20 }}>培训机构</Radio>
@@ -251,11 +265,19 @@ class UserImport extends React.Component {
 
 				</Content>
 
-				<Footer style={{
-					background: '#fff',
-					textAlign: 'center',
-					borderTop: '1px solid #E7E7E7'
-				}}>
+				<Footer style={this.state.schoolType === 0 && this.state.isOtherSchool === 1 ?
+					{
+						paddingTop: 35,
+						background: '#fff',
+						textAlign: 'center',
+						borderTop: '1px solid #E7E7E7',
+					} : {
+						background: '#fff',
+						textAlign: 'center',
+						borderTop: '1px solid #E7E7E7',
+					}
+
+				}>
 					<Button className={style.drbutton} onClick={() => {
 						this.setState({
 							cun: {},
@@ -264,34 +286,49 @@ class UserImport extends React.Component {
 							schoolName: '',
 							managerName: '',
 							managerPhone: '',
+							isImport: 0,
+							checked: false,
+							isOtherSchool: 0
 						})
-					}}>取消导入  </Button>
-					<Button type="primary" className={style.drbutton} onClick={() => {
+					}}>取消导入</Button>
 
+					<Button type="primary" className={style.drbutton} disabled={this.state.schoolType === 0 && this.state.isOtherSchool === 1 && !this.state.checked} onClick={() => {
 						if (this.state.isImport === 1) {
 							//限制连续点击
-							this.setState({
-								dianji: false
-							})
 							if (this.state.dianji) {
-								//导入数据
-								this.state.cun.schoolType = this.state.schoolType;
-
-								this.props.dispatch({
-									type: 'homePage/importData',
-									payload: this.state.cun
-								}).finally(() => {
+								setTimeout(() => {
 									this.setState({
-										dianji: true
+										dianji: false
 									})
-								})
+								}, 5000);
+								return;
 							}
+
+							this.setState({
+								dianji: true
+							})
+
+							//导入数据
+							this.state.cun.schoolType = this.state.schoolType;
+							this.props.dispatch({
+								type: 'homePage/importData',
+								payload: this.state.cun
+							})
 						} else {
 							message.error('导入数据有误，请修改后再次上传')
 						}
-
-
 					}}>确认导入</Button>
+					{this.state.schoolType === 0 && this.state.isOtherSchool === 1 &&
+						<Checkbox style={{
+							position: 'absolute',
+							bottom: 75,
+							transform: 'translateX(-80%)'
+						}} onChange={(e) => {
+							this.setState({
+								checked: e.target.checked
+							})
+						}}><Icon type="exclamation-circle" theme="filled" style={{ color: '#faad14', margin: '0 2px' }} />确定将数据中其他学校的学生账号转移到本校</Checkbox>
+					}
 
 				</Footer>
 			</Layout >

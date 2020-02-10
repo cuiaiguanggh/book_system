@@ -182,8 +182,11 @@ class HomePageLeft extends Component {
           menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
             <Icon type="appstore" /><span style={{ cursor: 'pointer' }}>学生错题</span>
           </Menu.Item>)
-          menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
-            <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
+          // menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
+          //   <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
+          // </Menu.Item>)
+          menus.push(<Menu.Item key="correction" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workCorrection')}>
+            <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业批改</span>
           </Menu.Item>)
         }
         // 班级管理模块
@@ -536,6 +539,8 @@ class HomePageLeft extends Component {
       defaultKey = 'workDetail2'
     } else if (defaultKey.indexOf('workReport') === 0) {
       defaultKey = 'workDetail3'
+    } else if (defaultKey.indexOf('workCorrection') === 0) {
+      defaultKey = 'correction'
     } else if (defaultKey.indexOf('classChart') === 0) {
       defaultKey = 'Chart'
     } else if (defaultKey.indexOf('schoolChart') === 0) {

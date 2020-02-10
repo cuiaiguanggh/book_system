@@ -91,7 +91,7 @@ class WrongTopic extends React.Component {
                     subjectNmae: option.props.children
                   })
 
-                  if ( this.state.startDate === '') return false;
+                  if (this.state.startDate === '') return false;
 
                   this.props.dispatch({
                     type: 'homePage/membersForSA',
@@ -166,7 +166,7 @@ class WrongTopic extends React.Component {
                 endDate: dateString[1],
               })
 
-              if (this.state.classId === '' || this.state.subjectId === '' || dateString[0] === '') return false;
+              if (this.state.classId === '' || this.state.subjectId === undefined || this.state.subjectId === '' || dateString[0] === '') return false;
 
               this.props.dispatch({
                 type: 'homePage/membersForSA',

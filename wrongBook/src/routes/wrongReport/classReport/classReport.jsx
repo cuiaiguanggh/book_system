@@ -24,7 +24,7 @@ const {
 const { RangePicker } = DatePicker;
 const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />;
 let hei = 200;
-class wrongTop extends React.Component {
+class classReport extends React.Component {
   constructor(props) {
     super(props);
     this.Ref = ref => {
@@ -1058,4 +1058,4 @@ export default connect((state) => ({
     ...state.example,
     ...state.report,
   }
-}))(wrongTop);
+}))(classReport);

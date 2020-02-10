@@ -18,6 +18,8 @@ app.model(require('./models/report').default);
 app.model(require('./models/down').default);
 app.model(require('./models/example').default);
 app.model(require('./models/reportChart').default);
+app.model(require('./models/correction').default);
+
 // 4. Router
 app.router(require('./router').default);
 

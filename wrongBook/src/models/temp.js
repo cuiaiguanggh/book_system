@@ -184,6 +184,18 @@ export default {
 							type: 'getUserSubjectList',
 							payload: res.data.data[0].classId
 						})
+
+						if (window.location.href.split('/#/')[1] == 'workCorrection') {
+							//重新调用作业批改页面接口
+							yield put({
+								type: 'correction/pgSubjectList',
+								payload: {
+									classId: res.data.data[0].classId
+								}
+							});
+
+						}
+
 					} else {
 						//加载完后，删除班级记忆
 						let cun = store.get('wrongBookNews');
