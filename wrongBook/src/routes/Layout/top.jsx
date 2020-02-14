@@ -52,7 +52,7 @@ class Top extends Component {
 						<div style ={{width:"1200px",margin:'0 auto'}}>
 							<Link to="/login"  style={{cursor:'pointer'}} replace >
 								{/* <img alt='' style={{height:'40px'}} src={head}/> */}
-								<img alt='' style={{height:'40px'}} src={require('../images/t_nv_ig_n.png')}/>
+								<img alt='' style={{height:'40px'}} src={require('../images/blackLogin.png')}/>
 							</Link>
 							<span style={{marginLeft:50,fontSize:16}}>
 							{leftName}

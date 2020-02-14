@@ -20,15 +20,46 @@
   background    : rgba(255, 255, 255, 1);
   padding-bottom: 25px;
 
+  .submitBox {
+    position     : relative;
+    text-align   : center;
+    line-height  : 34px;
+    margin       : 20px auto 0;
+    width        : 170px;
+    height       : 34px;
+    background   : rgba(243, 243, 243, 1);
+    border       : 1px solid rgba(225, 225, 225, 1);
+    border-radius: 17px;
+
+    .refer {
+      width        : 90px;
+      border-radius: 17px;
+      position     : absolute;
+    }
+
+    .norefer {
+      width        : 90px;
+      border-radius: 17px;
+      position     : absolute;
+      left         : 80px;
+    }
+
+    .pitchButt {
+      background: rgba(64, 158, 255, 1);
+      z-index   : 2;
+      color     : rgba(255, 255, 255, 1);
+
+    }
+  }
+
   .dataDisplay {
     font-size      : 16px;
-    height         : 50px;
+    height         : 60px;
     border-bottom  : 1px solid #E7E7E7;
     display        : flex;
     flex-direction : column;
     justify-content: center;
-    align-items    : center;
-
+    padding-left   : 30px;
   }
 
   .leftTop {
@@ -98,9 +129,58 @@
   background : rgba(255, 255, 255, 1);
   margin-left: 20px;
 
+  .allfinish {
+    text-align: center;
+    margin-top: 10%;
+
+    .textfinish {
+      font-size : 24px;
+      color     : rgb(38, 38, 38);
+      margin-top: 30px;
+    }
+
+    .boxfinish {
+      width          : 60%;
+      height         : 218px;
+      background     : rgba(248, 249, 251, 1);
+      border-radius  : 10px;
+      margin         : 40px auto 30px;
+      display        : flex;
+      justify-content: space-around;
+      align-items    : center;
+
+      .inbox {
+        display       : flex;
+        flex-direction: column;
+        width         : 50%;
+      }
+
+      .finumber {
+        font-family: BebasNeue;
+        font-size  : 48px;
+        color      : #6E89A0;
+        font-weight: Regular;
+      }
+
+      .finhanzi {
+        font-family: PingFang-SC-Bold;
+        font-size  : 26px;
+        color      : #B1C1D1;
+        font-weight: Bold;
+      }
+
+      .zishu {
+        font-size  : 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color      : rgba(77, 77, 77, 1);
+      }
+
+    }
+  }
+
   .checkPicture {
     width   : 100%;
-    padding : 20px;
     overflow: auto;
     height  : 100%;
 
@@ -119,25 +199,14 @@
       background-color: #fff;
     }
 
-    .dui {
-      height     : 50px;
-      background : rgba(231, 250, 240, 1);
-      line-height: 50px;
-      font-weight: bold;
-      font-size  : 18px;
-      color      : rgba(19, 206, 102, 1);
-      text-align : center;
-      width      : 100%;
-    }
 
-    .cuo {
+    .imgtop {
       height     : 50px;
-      background : rgba(254, 240, 240, 1);
       line-height: 50px;
       font-weight: bold;
-      font-size  : 18px;
-      color      : rgba(245, 108, 108, 1);
+      font-size  : 16px;
       text-align : center;
+      position   : relative;
     }
 
     .allTrue {
@@ -145,18 +214,64 @@
       height     : 30px;
       background : #9fa2a8;
       color      : #fff;
-      float      : right;
-      margin     : 10px 3% 0px 0px;
+      position   : absolute;
+      top        : 50%;
+      left       : 50%;
+      transform  : translate(-50%, -50%);
       line-height: 30px;
-      font-weight: 400;
-
 
     }
 
+    .leftCut {
+      &:hover {
+        background: url('../images/blueleft.png') no-repeat center;
+      }
+
+      margin    : 12px 5% 0px 0px;
+      cursor    : pointer;
+      float     : right;
+      width     :16px;
+      height    :22px;
+      background: url('../images/left.png') no-repeat center;
+    }
+
+    .rightCut {
+      &:hover {
+        background: url('../images/blueright.png') no-repeat center;
+      }
+
+      margin    : 12px 8% 0px 0px;
+      cursor    : pointer;
+      float     : right;
+      width     :16px;
+      height    :22px;
+      background: url('../images/right.png') no-repeat center;
+    }
+
     .fangda {
-      cursor: pointer;
-      float : right;
-      margin: 10px 20px 0px 0px;
+      &:hover {
+        background: url('../images/bluefangda.png') no-repeat center;
+      }
+
+      cursor    : pointer;
+      float     : right;
+      margin    : 10px 3% 0px 0px;
+      width     : 26px;
+      height    : 26px;
+      background: url('../images/fangda.png') no-repeat center;
+    }
+
+    .xuanzhuang {
+      &:hover {
+        background: url('../images/bluerotate.png') no-repeat center;
+      }
+
+      cursor    : pointer;
+      float     : right;
+      margin    : 10px 4% 0px 0px;
+      width     : 26px;
+      height    : 26px;
+      background: url('../images/rotate.png') no-repeat center;
     }
 
     .dagou {
@@ -180,8 +295,8 @@
     }
 
     .nowImg {
-      position : relative;
-      cursor   : url('../images/faultMouse.png') 23 23, pointer;
+      position: relative;
+      cursor  : url('../images/faultMouse.png') 23 23, pointer;
     }
 
   }
@@ -210,15 +325,91 @@
   display        : flex;
   flex-direction : column;
   justify-content: flex-end;
+  min-height     : 275px;
+
+  .tishi {
+    width        : 34px;
+    height       : 34px;
+    background   : rgba(138, 193, 251, 1);
+    border-radius: 50%;
+    cursor       : pointer;
+    border-radius: 50%;
+    font-size    : 21px;
+    font-weight  : bold;
+    color        : rgba(255, 255, 255, 1);
+    line-height  : 34px;
+    text-align   : center;
+    margin       : 0 0 20px 23px;
+    position     : relative;
+
+    &:hover {
+      background: #409EFF;
+    }
+
+    .triangle {
+      position           : absolute;
+      border             : 9px solid #5393FF;
+      border-top-color   : transparent;
+      border-right-color : transparent;
+      border-bottom-color: transparent;
+      top                : 9px;
+      right              : 60px;
+    }
+
+    .howbutton {
+      width        : 102px;
+      height       : 35px;
+      background   : #5494ff;
+      border-radius: 2px;
+      font-size    : 14px;
+      font-weight  : 400;
+      color        : #fff;
+      text-align   : center;
+      line-height  : 35px;
+      margin       : 20px auto 0;
+      cursor       : pointer;
+    }
+
+    .howdoit {
+      width        : 370px;
+      height       : 300px;
+      background   : rgba(255, 255, 255, 1);
+      border       : 1px solid rgba(83, 147, 255, 1);
+      border-radius: 10px;
+      font-size    : 15.5px;
+      position     : absolute;
+      top          : -120px;
+      right        : 78px;
+      color        : #474747;
+      font-weight  : 400;
+      padding      : 0 25px;
+      text-align   : left;
+      line-height  : 26px;
+      cursor       : auto;
+      z-index      : 10;
+
+      .howtitle {
+        color        : rgba(0, 0, 0, 1);
+        line-height  : 60px;
+        border-bottom: 1px solid #EEEEEE;
+        text-align   : center;
+        margin-bottom: 10px;
+      }
+
+    }
+  }
+
+
+
 
   .tiaoguo {
-    width          : 90px;
-    height         : 90px;
+    width          : 80px;
+    height         : 80px;
     background     : #8AC1FB;
     color          : rgba(255, 255, 255, 1);
     cursor         : pointer;
     border-radius  : 50%;
-    font-size      : 20px;
+    font-size      : 18px;
     display        : flex;
     align-items    : center;
     justify-content: center;
@@ -229,13 +420,13 @@
   }
 
   .wancheng {
-    width          : 90px;
-    height         : 90px;
+    width          : 80px;
+    height         : 80px;
     background     : #409EFF;
     color          : rgba(255, 255, 255, 1);
     cursor         : pointer;
     border-radius  : 50%;
-    font-size      : 20px;
+    font-size      : 18px;
     display        : flex;
     align-items    : center;
     justify-content: center;

@@ -823,18 +823,24 @@ class StuReport extends React.Component {
         type: 'down/downQue',
         payload: true
       });
-      console.log(this.props.state)
       //下载pdf
       let downparameters = {
         uqIdsStr: this.props.state.stuDownPic.join(','),
         childId: this.props.state.userId,
         operationClass: this.props.state.classId,
+        subjectId: this.props.state.subId,
       };
       if (this.state.similarTopic === 1) {
         downparameters.practise = 0
       } else {
         downparameters.practise = 1
       };
+
+      if (this.props.state.stbegtoendTime.length > 0) {
+        downparameters.beginDate = this.props.state.stbegtoendTime[0];
+        downparameters.endDate = this.props.state.stbegtoendTime[1];
+      }
+
       this.props.dispatch({
         type: 'down/makeSelectWB',
         payload: downparameters

@@ -6,6 +6,9 @@ import {
 import style from './workCorrection.less';
 import observer from '../../utils/observer'
 import CorrectsAmplification from './CorrectsAmplification';
+import SiderNavigation from './SiderNavigation';
+import Complete from './Complete';
+import TransitionalImage from './TransitionalImage';
 
 const Option = Select.Option;
 const {
@@ -13,39 +16,7 @@ const {
 } = Layout;
 
 
-function TransitionalImage(props) {
-    const [load, setLoad] = useState(0);
-    const [newsrc, setNewsrc] = useState(props.src);
 
-    useEffect(() => {
-        if (newsrc !== props.src) {
-            setNewsrc(props.src)
-            setLoad(0)
-            props.changeLoad(0)
-        }
-    });
-    return (
-        <>
-            <div style={load === 0 ? {
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: '15%',
-            } : { display: 'none' }}>
-                <img src={'https://homework.mizholdings.com/kacha/xcx/page/4785173221607424.4758128007628800.1581070647900.jpg'} style={{ width: 100 }} />
-            </div>
-            <img src={`${newsrc}/rotate/${props.angle}`} style={load === 0 ?
-                { visibility: 'hidden' } : {
-                    width: '100%',
-                    // transform: `rotate(${props.angle}deg)`
-                }}
-                id='outImg'
-                onMouseDown={(e) => { e.preventDefault() }}
-                onLoad={() => { setLoad(1); props.changeLoad(1) }} />
-        </>
-    )
-}
 class workCorrection extends React.Component {
     constructor(props) {
         super(props);
@@ -57,15 +28,16 @@ class workCorrection extends React.Component {
             phList: [],
             nowPage: 0,
             pitchStuId: '',
+            pitchStuName: '',
             idIndex: 0,
             shuju: '',
             minWidth: 1530,
             nowImgWidth: 900,
             nowIcoWidth: 40,
-            topHeight: 'calc(50% - 105px)',
             loading: 0,
-            dianji: false,
-
+            present: 1,
+            reminder: false,
+            checkinwho: 0
         }
 
         observer.addSubscribe('updateList', (array) => {
@@ -82,10 +54,12 @@ class workCorrection extends React.Component {
                 phList: array
             })
         })
-        observer.addSubscribe('updateId', (id, index) => {
+        observer.addSubscribe('updateId', (id, index, name, checkinwho) => {
             this.setState({
                 pitchStuId: id,
-                idIndex: index
+                pitchStuName: name,
+                idIndex: index,
+                checkinwho
             })
         })
     }
@@ -183,7 +157,9 @@ class workCorrection extends React.Component {
     //切换页码
     cutPagination(nowTopic, i) {
         this.SaveTrace(nowTopic)
-        document.getElementById('bigBox').scrollTop = 0;
+        if (document.getElementById('bigBox')) {
+            document.getElementById('bigBox').scrollTop = 0;
+        }
         this.setState({
             nowPage: i
         })
@@ -208,7 +184,9 @@ class workCorrection extends React.Component {
             }
         }
         this.SaveTrace(nowTopic);
-        document.getElementById('bigBox').scrollTop = 0;
+        if (document.getElementById('bigBox')) {
+            document.getElementById('bigBox').scrollTop = 0;
+        }
         this.setState({
             nowPage: page
         })
@@ -217,6 +195,10 @@ class workCorrection extends React.Component {
 
     //点击已提交的学生
     clickStu(item, i) {
+        this.props.dispatch({
+            type: 'correction/isCorrected',
+            payload: 0
+        })
         this.props.dispatch({
             type: 'correction/pgPages',
             payload: {
@@ -229,49 +211,90 @@ class workCorrection extends React.Component {
         this.setState({
             nowPage: 0,
             pitchStuId: item.userId,
+            pitchStuName: item.name,
             idIndex: i
         })
-        document.getElementById('bigBox').scrollTop = 0
+
+        if (document.getElementById('bigBox')) {
+            document.getElementById('bigBox').scrollTop = 0;
+        }
     }
 
 
     //下一个学生
-    nextStu(studentList) {
-        if (this.state.idIndex < studentList.submitted.length - 1) {
-            let nowindex = ++this.state.idIndex;
+    nextStu(uncheck, checked) {
+
+        //在待批改学生中时
+        if (this.state.checkinwho === 0) {
+            let nowindex = this.state.idIndex;
+            if (nowindex < uncheck.length - 1) {
+                nowindex++
+            } else if (nowindex === uncheck.length - 1 && uncheck.length > 1) {
+                nowindex = 0;
+            } else {
+                message.info('已经选择到最后一个学生了')
+                return;
+            }
             this.props.dispatch({
                 type: 'correction/pgPages',
                 payload: {
                     classId: this.props.state.classId,
                     subjectId: this.props.state.subjectId,
                     workDate: this.props.state.workDate,
-                    userId: studentList.submitted[nowindex].userId
+                    userId: uncheck[nowindex].userId
                 },
             })
             this.setState({
                 nowPage: 0,
-                pitchStuId: studentList.submitted[nowindex].userId,
+                pitchStuId: uncheck[nowindex].userId,
+                pitchStuName: uncheck[nowindex].name,
                 idIndex: nowindex
             })
+
         } else {
-            message.info('已经选择到最后一个学生了')
+            //在已批改学生中时
+            if (this.state.idIndex < checked.length - 1) {
+                let nowindex = ++this.state.idIndex;
+                this.props.dispatch({
+                    type: 'correction/pgPages',
+                    payload: {
+                        classId: this.props.state.classId,
+                        subjectId: this.props.state.subjectId,
+                        workDate: this.props.state.workDate,
+                        userId: checked[nowindex].userId
+                    },
+                })
+                this.setState({
+                    nowPage: 0,
+                    pitchStuId: checked[nowindex].userId,
+                    pitchStuName: checked[nowindex].name,
+                    idIndex: nowindex
+                })
+            } else {
+                message.info('已经选择到最后一个学生了')
+            }
+
+
         }
+
     }
 
-
     //点击跳过按钮
-    sclickKip(nowTopic, studentList) {
+    sclickKip(nowTopic, uncheck, checked) {
         if (this.state.phList.length > 0) {
             this.SaveTrace(nowTopic)
-            this.nextStu(studentList)
+            this.nextStu(uncheck, checked)
         }
     }
     //点击完成按钮
-    sclickFinish(nowTopic, studentList, approvedStu) {
-
-        if (approvedStu === studentList.submitted.length) {
+    sclickFinish(nowTopic, studentList, uncheck, checked) {
+        if (studentList.submitted.length === 0 && studentList.uncommitted.length === 0) {
+            message.info('暂无作业')
+            return;
+        }
+        if (checked.length === studentList.submitted.length) {
             message.success('已全部批改完成')
-            return
+            return;
         }
         let pageIds = [];
         for (let obj of this.state.phList) {
@@ -279,9 +302,8 @@ class workCorrection extends React.Component {
                 pageIds.push(obj.pageId)
             }
         }
-
-
-        let newmarkList = [], angle = nowTopic.angle
+        //上传批改痕迹
+        let newmarkList = [], angle = nowTopic.angle;
         if (nowTopic.markList && nowTopic.markList.length > 0) {
             for (let obj of nowTopic.markList) {
                 newmarkList.push({
@@ -318,12 +340,31 @@ class workCorrection extends React.Component {
                             workDate: this.props.state.workDate
                         }
                     })
-
                 })
             }
             //下一个学生
-            this.nextStu(studentList)
-        })
+            this.nextStu(uncheck, checked)
+        });
+
+        //这个学生，所有题目都批改完成，提醒学生
+        let panduan = true;
+        for (let obj of this.state.phList) {
+            if (obj.status === 0 && (!obj.markList || obj.markList.length === 0)) {
+                panduan = false;
+                break;
+            }
+        }
+        if (panduan) {
+            this.props.dispatch({
+                type: 'correction/check',
+                payload: {
+                    subjectId: this.props.state.subjectId,
+                    userId: this.state.pitchStuId
+                }
+            })
+        }
+
+
     }
 
     //生成批改图标的方法
@@ -339,6 +380,7 @@ class workCorrection extends React.Component {
         }
         //生成错误图标
         let nowdom = e.currentTarget;
+
         let x = e.clientX - nowdom.offsetLeft - nowdom.offsetParent.offsetParent.offsetLeft;
         let y = e.clientY - nowdom.offsetTop - nowdom.offsetParent.offsetTop - nowdom.offsetParent.offsetParent.offsetTop + document.getElementById('bigBox').scrollTop;
         //防止在边缘点击造成批改图标在外面
@@ -468,38 +510,44 @@ class workCorrection extends React.Component {
                 phList: this.state.phList
             })
         }
-
     }
 
+
+
     render() {
-        let classList = this.props.state.classList1;
-        let className = this.props.state.className;
-        let subjectList = this.props.state.subjectList;
-        let homeworkList = this.props.state.homeworkList;
-        let studentList = this.props.state.studentList;
-        //已批学生数
-        let approvedStu = 0;
+        let classList = this.props.state.classList1,
+            className = this.props.state.className,
+            subjectList = this.props.state.subjectList,
+            homeworkList = this.props.state.homeworkList,
+            studentList = this.props.state.studentList,
+            //总错题数    
+            allcuoti = 0,
+            //已批改学生
+            checked = [],
+            //待批改
+            uncheck = [];
         for (let obj of studentList.submitted) {
             if (obj.corrected === 1) {
-                approvedStu++;
+                checked.push(obj)
+            } else {
+                uncheck.push(obj)
+            }
+            if (this.props.state.isCorrected === 1) {
+                allcuoti += obj.wrongNum
             }
         }
+
         //已批题目数
         let approvedTopic = 0;
         //当前学生的所有错题数
-        // let currentAll = 0;
         for (let obj of this.state.phList) {
             if (obj.markList && obj.markList.length) {
                 approvedTopic++;
-                // if (obj.markList[0].type !== 3) {
-                //     currentAll += obj.markList.length
-                // }
             }
         }
 
         //当前页码题目
         let nowTopic = this.state.phList.length > 0 && this.state.phList[this.state.nowPage];
-
 
         //不显示1，全对2，优秀3，需要努力4
         let remark = 1;
@@ -510,14 +558,10 @@ class workCorrection extends React.Component {
         } else if (nowTopic.markList && nowTopic.markList.length > 0) {
             remark = 4
         }
-        //未提交的最大高度
-        if (document.getElementById('uncommittedTop')) {
-            this.state.topHeight = `calc(100% - ${document.getElementById('uncommittedTop') && document.getElementById('uncommittedTop').offsetTop}px - 20px)`
 
-        }
 
         return (
-            <Content style={{ minHeight: 280, overflow: 'hidden', overflowX: 'auto', position: 'relative' }}>
+            <Content style={{ minHeight: 700, overflow: 'hidden', overflowX: 'auto', position: 'relative' }}>
                 <Layout className={style.layout}>
                     <Header style={{ background: '#a3b0c3', height: '50px', padding: 0, minWidth: this.state.minWidth }}>
                         <div style={{ height: '50px', lineHeight: '50px', background: 'rgba(198,206,218,1)' }}>
@@ -562,180 +606,144 @@ class workCorrection extends React.Component {
                         </div>
                     </Header>
                     <Layout className={style.innerOut} style={{ minWidth: this.state.minWidth }}>
-                        <Sider className={style.left}>
 
-                            <div className={style.dataDisplay}>
-                                <div>已批：<span style={{ color: '#409EFF' }}>{approvedStu}/{studentList.submitted.length}人</span></div>
-                            </div>
-                            <div className={style.leftTop} >
-                                <img src={require('../images/greenSubmit.png')} />
-                                <span className={style.text}>
-                                    已提交学生（{studentList.submitted.length}）
-                                  </span>
-                            </div>
-                            <div style={{ overflow: 'auto', maxHeight: 'calc(50% - 105px)' }}>
-                                {studentList.submitted.map((item, i) => (
-                                    item.commited === 1 &&
-                                    <div key={i} onClick={() => { this.clickStu(item, i) }}
-                                        className={this.state.pitchStuId == item.userId ? `${style.stu} ${style.pitch} ${style.xuanzhong}` :
-                                            `${item.corrected === 1 ? `${style.stu} ${style.pitch} ${style.already}` : `${style.stu} ${style.pitch}`}`} >
-                                        <span style={{ float: 'left' }}>{item.name}</span>
-                                        <span style={{ float: 'right' }}>错{item.wrongNum}题</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className={style.leftTop} id='uncommittedTop'>
-                                <img src={require('../images/orangeSubmit.png')} />
-                                <span className={style.text} >
-                                    未提交<span className={style.remind} onClick={() => {
-                                        //限制连续点击
-                                        if (this.state.dianji) {
-                                            setTimeout(() => {
-                                                this.setState({
-                                                    dianji: false
-                                                })
-                                            }, 180000);
-                                            message.info('请勿重复点击，请三分钟后再试')
-                                            return;
-                                        }
-                                        this.setState({
-                                            dianji: true
-                                        })
-                                        if (studentList.uncommitted.length === 0) {
-                                            message.info('学生已经全部提交')
-                                            return false;
-                                        }
-                                        let userId = [];
-                                        for (let obj of studentList.uncommitted) {
-                                            userId.push(obj.userId)
-                                        }
-                                        this.props.dispatch({
-                                            type: 'correction/remind',
-                                            payload: {
-                                                classId: this.props.state.classId,
-                                                subjectId: this.props.state.subjectId,
-                                                workDate: this.props.state.workDate,
-                                                userId
-                                            }
-                                        })
-                                    }}>一键提醒</span>
-                                </span>
-                            </div>
-                            <div style={{ overflow: 'auto', maxHeight: `${this.state.topHeight}` }}>
-                                {studentList.uncommitted.map((item, i) => (
-                                    item.commited === 0 && <div key={i} className={style.stu}> {item.name} </div>
-                                ))}
-                            </div>
+                        <SiderNavigation
+                            checked={checked}
+                            uncheck={uncheck}
+                            studentList={studentList}
+                            present={this.state.present}
+                            pitchStuId={this.state.pitchStuId}
+                            clickStu={(item, i) => { this.clickStu(item, i) }}
+                            checkinwho={(value) => {
+                                this.setState({
+                                    checkinwho: value
+                                })
+                            }}
+                            changePresent={(value) => {
+                                this.setState({
+                                    present: value
+                                })
+                            }}
+                        />
 
-                        </Sider>
                         <div className={style.correction} >
-                            <div className={style.checkPicture} style={{ width: `${this.state.nowImgWidth + 55}px` }} id='bigBox'>
-                                {nowTopic ? <>
-                                    {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 ?
-                                        <div className={style.cuo}>
-                                            <span style={{ paddingLeft: '18%' }}> 【错误】：{nowTopic.markList.length}题  </span>
+                            {this.props.state.isCorrected === 1 && nowTopic ?
+                                <Complete
+                                    nowImgWidth={this.state.nowImgWidth}
+                                    approvedStu={checked.length}
+                                    average={Math.round(allcuoti / studentList.submitted.length)}
+                                    clickButton={() => {
+                                        this.props.dispatch({
+                                            type: 'correction/isCorrected',
+                                            payload: 0
+                                        })
+                                        this.setState({
+                                            present: 1
+                                        })
+                                    }}
+                                /> :
+                                <div className={style.checkPicture} style={{ width: `${this.state.nowImgWidth + 15}px` }} id='bigBox'>
+                                    {nowTopic ? <>
+                                        <div className={style.imgtop}>
+                                            <div style={{ float: 'left', marginLeft: 20 }}>
+                                                <span style={this.state.minWidth === 1100 ? {
+                                                    maxWidth: 125,
+                                                    float: 'left',
+                                                    marginRight: 5,
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis'
+                                                } : { marginRight: 20 }}>{this.state.pitchStuName}</span>
+                                                {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 &&
+                                                    <span style={{ color: '#F56C6C' }}> 错误：{nowTopic.markList.length}题</span>
+                                                }
+                                                {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type === 3 &&
+                                                    <span style={{ color: '#13CE66' }}> 全部正确</span>
+                                                }
+                                            </div>
+                                            {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 ?
+                                                <div className={style.allTrue} >✔全对</div> :
+                                                <div className={style.allTrue} style={{ background: '#13ce66', cursor: 'pointer' }}
+                                                    onClick={(e) => {
+                                                        if (this.state.loading === 0) {
+                                                            //图片正在加载中，不能操作
+                                                            return false
+                                                        }
+                                                        nowTopic.markList = [{ type: 3 }];
+                                                        this.setState({
+                                                            phList: this.state.phList
+                                                        })
+                                                        e.stopPropagation();
+                                                    }}>✔全对</div>
+                                            }
+                                            <span className={style.fangda} onClick={(e) => { this.clickMagnify(nowTopic) }}></span>
+                                            <span className={style.xuanzhuang} onClick={(e) => { this.clickRotate(nowTopic) }}></span>
+                                            <span className={style.rightCut} onClick={() => { this.upDown('down', nowTopic) }}></span>
+                                            <span className={style.leftCut} onClick={(e) => { this.upDown('up', nowTopic) }}></span>
 
-                                            <img src={require('../images/fangda.png')} className={style.fangda} onClick={(e) => { this.clickMagnify(nowTopic) }} />
-                                            <img src={require('../images/rotate.png')} className={style.fangda} onClick={(e) => { this.clickRotate(nowTopic) }} />
-
-                                            <div className={style.allTrue} >✔全对</div>
                                         </div>
-                                        :
-                                        <div className={style.dui} >
-                                            <span style={{ paddingLeft: '18%' }}> 【错误】：0 题  </span>
-                                            <img src={require('../images/fangda.png')} className={style.fangda} onClick={(e) => { this.clickMagnify(nowTopic) }} />
-                                            <img src={require('../images/rotate.png')} className={style.fangda} onClick={(e) => { this.clickRotate(nowTopic) }} />
 
-                                            <div className={style.allTrue} style={{
-                                                background: '#13ce66',
-                                                cursor: 'pointer',
-                                            }} onClick={(e) => {
-                                                nowTopic.markList = [{ type: 3 }];
+                                        <div className={style.nowImg} style={{ width: '100%', }} onClick={(e) => { this.generateResults(e, nowTopic) }}>
+                                            {this.state.loading === 1 && nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 && nowTopic.markList.map((item, j) => {
+                                                return (<div key={j}>
+                                                    {item.type === 1 ?
+                                                        <img src={require('../images/cuowu.png')} className={style.checkCuo} style={{ top: item.y, left: item.x, width: this.state.nowIcoWidth, }}
+                                                            onClick={(e) => {
+                                                                //点击错误图标时，更改为半对
+                                                                this.mistakeAlter(e, nowTopic, j)
+                                                            }} /> :
+                                                        <img src={require('../images/bandui.png')} className={style.checkDui} style={{ top: item.y, left: item.x, width: `${this.state.nowIcoWidth / 40 * 100}px`, }}
+                                                            onClick={(e) => {
+                                                                //点击半对图标时，图标消失
+                                                                this.halfAlter(e, nowTopic, j)
+                                                            }} />}
+                                                </div>)
+                                            })}
+
+                                            <TransitionalImage
+                                                angle={nowTopic.angle}
+                                                src={`${nowTopic.pageUrl}/thumbnail/1000x/interlace/1`}
+                                                changeLoad={(value) => {
+                                                    this.setState({
+                                                        loading: value
+                                                    })
+                                                }} />
+                                            {remark === 2 && this.state.loading === 1 && <>
+                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/4f6cc398fe2b0168/.png'} className={style.verygood} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />
+                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/d4ceb3ed3044a742/.png'} className={style.dagou} style={{ width: `${this.state.nowIcoWidth / 40 * 460}px` }} /> </>}
+                                            {remark === 3 && this.state.loading === 1 && <img src={'http://homework.mizholdings.com/kacha/kcsj/7ad9942284f399fd/.png'} className={style.try} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />}
+                                            {remark === 4 && this.state.loading === 1 && <img src={'http://homework.mizholdings.com/kacha/kcsj/8b84a6068e65b2e2/.png'} className={style.try} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />}
+
+                                        </div>
+                                        {this.state.shuju !== '' && <CorrectsAmplification
+                                            shuju={this.state.shuju}
+                                            angle={nowTopic.angle}
+                                            nowImgWidth={this.state.nowImgWidth}
+                                            remark={remark}
+                                            proportion={this.state.proportion}
+                                            nowIcoWidth={this.state.nowIcoWidth * this.state.proportion}
+                                            guanbi={(data) => {
+                                                nowTopic.markList = data.markList;
                                                 this.setState({
-                                                    phList: this.state.phList
-                                                });
-                                                e.stopPropagation()
-                                            }}>✔全对</div>
+                                                    shuju: '',
+                                                })
+                                            }} />}
+                                    </> : <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10%' }}>
+                                            <div>
+                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/65eca522d826abf1/.png'} />
+                                                <p style={{
+                                                    fontSize: 16,
+                                                    color: 'rgba(118, 118, 118, 1)',
+                                                    marginTop: 10,
+                                                    textAlign: 'center'
+                                                }}>暂无作业</p>
+                                            </div>
                                         </div>
                                     }
-                                    <div style={{
-                                        display: 'flex',
-                                        position: 'absolute',
-                                        justifyContent: ' space-between',
-                                        width: this.state.nowImgWidth,
-                                        height: '100%',
-                                        alignItems: 'center',
-                                    }}>
-                                        <img src={require('../images/leftCut.png')} style={{
-                                            zIndex: 20, cursor: 'pointer'
-                                        }} onClick={() => { this.upDown('up', nowTopic) }} />
-                                        <img src={require('../images/rightCut.png')} style={{
-                                            zIndex: 20, cursor: 'pointer'
-                                        }} onClick={() => { this.upDown('down', nowTopic) }} />
-                                    </div>
-                                    <div className={style.nowImg} style={{ width: '100%', }} onClick={(e) => { this.generateResults(e, nowTopic) }}>
-                                        {this.state.loading === 1 && nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 && nowTopic.markList.map((item, j) => {
-                                            return (<div key={j}>
-                                                {item.type === 1 ?
-                                                    <img src={require('../images/cuowu.png')} className={style.checkCuo} style={{ top: item.y, left: item.x, width: this.state.nowIcoWidth, }}
-                                                        onClick={(e) => {
-                                                            //点击错误图标时，更改为半对
-                                                            this.mistakeAlter(e, nowTopic, j)
-                                                        }} /> :
-                                                    <img src={require('../images/bandui.png')} className={style.checkDui} style={{ top: item.y, left: item.x, width: `${this.state.nowIcoWidth / 40 * 100}px`, }}
-                                                        onClick={(e) => {
-                                                            //点击半对图标时，图标消失
-                                                            this.halfAlter(e, nowTopic, j)
-                                                        }} />}
-                                            </div>)
-                                        })}
-
-                                        <TransitionalImage
-                                            angle={nowTopic.angle}
-                                            src={`${nowTopic.pageUrl}/thumbnail/1000x/interlace/1`}
-                                            changeLoad={(value) => {
-                                                this.setState({
-                                                    loading: value
-                                                })
-                                            }} />
-                                        {/* <img src={`${nowTopic.pageUrl}/thumbnail/1000x/interlace/1`} style={{ width: '100%' }} id='outImg'
-                                            onMouseDown={(e) => { e.preventDefault() }}
-                                            onLoad={() => { console.log(111) }} /> */}
-
-                                        {remark === 2 && this.state.loading === 1 && <>
-                                            <img src={'http://homework.mizholdings.com/kacha/kcsj/4f6cc398fe2b0168/.png'} className={style.verygood} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />
-                                            <img src={'http://homework.mizholdings.com/kacha/kcsj/d4ceb3ed3044a742/.png'} className={style.dagou} style={{ width: `${this.state.nowIcoWidth / 40 * 460}px` }} /> </>}
-                                        {remark === 3 && this.state.loading === 1 && <img src={'http://homework.mizholdings.com/kacha/kcsj/7ad9942284f399fd/.png'} className={style.try} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />}
-                                        {remark === 4 && this.state.loading === 1 && <img src={'http://homework.mizholdings.com/kacha/kcsj/8b84a6068e65b2e2/.png'} className={style.try} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />}
-
-                                    </div>
-                                    {this.state.shuju !== '' && <CorrectsAmplification
-                                        shuju={this.state.shuju}
-                                        angle={nowTopic.angle}
-                                        nowImgWidth={this.state.nowImgWidth}
-                                        remark={remark}
-                                        proportion={this.state.proportion}
-                                        nowIcoWidth={this.state.nowIcoWidth * this.state.proportion}
-                                        guanbi={(data) => {
-                                            nowTopic.markList = data.markList;
-                                            this.setState({
-                                                shuju: '',
-                                            })
-                                        }} />}
-                                </> : <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', }}>
-                                        <div>
-                                            <img src={require('../images/noWork.png')} />
-                                            <p style={{
-                                                fontSize: 16,
-                                                color: 'rgba(118, 118, 118, 1)',
-                                                margin: '10px 0 0 -5px',
-                                            }}>暂无作业</p>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+                                </div>
+                            }
                         </div>
-                        <div className={style.pagination}>
+                        <div className={style.pagination} style={this.props.state.isCorrected === 1 ? { visibility: 'hidden' } : { visibility: 'visible' }}>
                             <span className={style.text}> 页码</span>
                             {this.state.phList.map((item, i) => {
                                 return (!item.markList && item.status === 0) || (item.markList && item.markList.length === 0) ?
@@ -745,12 +753,7 @@ class workCorrection extends React.Component {
                                         onClick={() => { this.cutPagination(nowTopic, i) }}> {i + 1}</span>
                             })}
                         </div>
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            marginLeft: 20,
-                        }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginLeft: 20, }}>
                             <div className={style.gifBox} style={localStorage.getItem('dongtu') ? { visibility: 'hidden' } : { visibility: 'visible' }}>
                                 <img src={'https://homework.mizholdings.com/kacha/xcx/page/4785173221607424.4758128007628800.1581070206200.jpg'} style={{ width: 250, height: 202 }} />
                                 <p style={{ margin: 14 }}>单击图片任意位置可判错，单击<span style={{ color: '#e76f64' }}>✖</span>更改为半对，再次单击取消批改结果</p>
@@ -764,7 +767,28 @@ class workCorrection extends React.Component {
                                 </div>
                             </div>
                             <div className={style.anniu}>
-                                <div className={style.tiaoguo} onClick={() => { this.sclickKip(nowTopic, studentList) }}>
+                                <div className={style.tishi} onClick={() => {
+                                    this.setState({
+                                        reminder: true
+                                    })
+                                }}>?
+                                        <div style={this.state.reminder ? { display: 'block' } : { display: 'none' }}>
+                                        <div className={style.triangle}></div>
+                                        <div className={style.howdoit}>
+                                            <div className={style.howtitle}>如何批改作业</div>
+                                            鼠标左键单击作业错题，可判错误；再次单击错号，更改为半对错；第三次单击半对错，取消批改痕迹；依次循环；点击<span style={{ color: '#4B8EFF' }}>【跳过 暂不批改】</span>，
+                                本作业页面不批改，再次进入仍可继续批改；所有页面全部批完（不含跳过页），点击 <span style={{ color: '#4B8EFF' }}>【完成】</span>，可自动切换至下一学生的作业.
+                                                <div className={style.howbutton} onClick={(e) => {
+                                                this.setState({
+                                                    reminder: false
+                                                })
+                                                e.stopPropagation();
+                                            }}>我知道了</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={style.tiaoguo} onClick={() => { this.sclickKip(nowTopic, uncheck, checked) }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
                                         <span>跳过</span>
                                         <span style={{ fontSize: 14 }}>暂不批改</span>
@@ -773,14 +797,14 @@ class workCorrection extends React.Component {
                                 <div className={style.wancheng} onClick={() => {
                                     let that = this;
                                     if (approvedTopic === this.state.phList.length) {
-                                        that.sclickFinish(nowTopic, studentList, approvedStu)
+                                        that.sclickFinish(nowTopic, studentList, uncheck, checked)
                                     } else {
                                         Modal.confirm({
                                             title: '还有页面未批改，是否完成批改',
                                             okText: '确认',
                                             cancelText: '取消',
                                             onOk() {
-                                                that.sclickFinish(nowTopic, studentList, approvedStu)
+                                                that.sclickFinish(nowTopic, studentList, uncheck, checked)
                                             }
                                         });
                                     }
@@ -806,27 +830,28 @@ class workCorrection extends React.Component {
         if (window.screen.availWidth === 1920) {
             this.setState({
                 minWidth: 1530,
-                nowImgWidth: 900,
+                nowImgWidth: 940,
                 nowIcoWidth: 40,
             })
         } else if (window.screen.availWidth < 1920 && window.screen.availWidth >= 1600) {
             this.setState({
                 minWidth: 1400,
-                nowImgWidth: 700,
+                nowImgWidth: 740,
                 nowIcoWidth: 31,
             })
         } else if (window.screen.availWidth < 1600) {
             this.setState({
                 minWidth: 1100,
-                nowImgWidth: 480,
+                nowImgWidth: 520,
                 nowIcoWidth: 21,
             })
         }
-
-        this.props.dispatch({
-            type: 'correction/pgSubjectList',
-            payload: { classId: this.props.state.classId },
-        });
+        if (this.props.state.classId !== '') {
+            this.props.dispatch({
+                type: 'correction/pgSubjectList',
+                payload: { classId: this.props.state.classId },
+            });
+        }
 
     }
 

@@ -6,6 +6,7 @@ import {
     pages,
     pageCommit,
     remind,
+    check,
 } from '../services/correctionService';
 
 import { message } from 'antd';
@@ -20,6 +21,7 @@ export default {
         subjectId: '',
         studentList: { submitted: [], uncommitted: [] },
         workDate: '',
+        isCorrected: 0
     },
     reducers: {
         subjectList(state, { payload }) {
@@ -37,7 +39,9 @@ export default {
         workDate(state, { payload }) {
             return { ...state, workDate: payload };
         },
-
+        isCorrected(state, { payload }) {
+            return { ...state, isCorrected: payload };
+        },
 
     },
 
@@ -93,6 +97,7 @@ export default {
                         type: 'studentList',
                         payload: { submitted: [], uncommitted: [] }
                     })
+
                     observer.publish('updateList', [])
                 }
             } else {
@@ -147,7 +152,7 @@ export default {
                 payload: payload.workDate
             })
             if (res.data && res.data.result === 0) {
-                let stuList = res.data.data, submitted = [], uncommitted = [];
+                let stuList = res.data.data.studentPagesWork, submitted = [], uncommitted = [];
                 for (let i = 0; i < stuList.length; i++) {
                     if (stuList[i].commited === 0) {
                         submitted = stuList.slice(0, i);
@@ -155,26 +160,51 @@ export default {
                         break;
                     }
                 }
-
                 let nowList = { submitted, uncommitted }
                 yield put({
                     type: 'studentList',
                     payload: nowList
                 })
+                yield put({
+                    type: 'isCorrected',
+                    payload: res.data.data.isCorrected
+                })
                 if (submitted.length > 0) {
                     if (submitted[0].commited === 1) {
                         const { classId } = yield select(state => state.temp)
                         const { subjectId, workDate } = yield select(state => state.correction)
-                        observer.publish('updateId', submitted[0].userId, 0)
-                        yield put({
-                            type: 'pgPages',
-                            payload: {
-                                classId,
-                                subjectId,
-                                workDate,
-                                userId: submitted[0].userId
+                        //是否存在待批改的，存在选中待批改学生
+                        let whether = true;
+                        for (let obj of submitted) {
+                            if (obj.corrected === 0) {
+                                observer.publish('updateId', obj.userId, 0, obj.name, 0);
+                                yield put({
+                                    type: 'pgPages',
+                                    payload: {
+                                        classId,
+                                        subjectId,
+                                        workDate,
+                                        userId: obj.userId
+                                    }
+                                })
+                                whether = false;
+                                break;
                             }
-                        })
+                        }
+                        if (whether) {
+                            observer.publish('updateId', submitted[0].userId, 0, submitted[0].name, 1)
+                            yield put({
+                                type: 'pgPages',
+                                payload: {
+                                    classId,
+                                    subjectId,
+                                    workDate,
+                                    userId: submitted[0].userId
+                                }
+                            })
+                        }
+
+
                     }
                 } else {
                     //清空数据
@@ -197,7 +227,7 @@ export default {
                 payload: payload.workDate
             })
             if (res.data && res.data.result === 0) {
-                let stuList = res.data.data, submitted = [], uncommitted = [];
+                let stuList = res.data.data.studentPagesWork, submitted = [], uncommitted = [];
                 for (let i = 0; i < stuList.length; i++) {
                     if (stuList[i].commited === 0) {
                         submitted = stuList.slice(0, i);
@@ -210,6 +240,10 @@ export default {
                 yield put({
                     type: 'studentList',
                     payload: nowList
+                })
+                yield put({
+                    type: 'isCorrected',
+                    payload: res.data.data.isCorrected
                 })
 
             } else {
@@ -249,6 +283,15 @@ export default {
             let res = yield remind(payload)
             if (res.data && res.data.result === 0) {
                 message.success(res.data.msg)
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *check({ payload }, { put }) {
+            //一键提醒
+            let res = yield check(payload)
+            if (res.data && res.data.result === 0) {
+
             } else {
                 message.error(res.data.msg)
             }

@@ -48,7 +48,14 @@ function remind(payload) {
         method: 'post',
     });
 }
+function check(payload) {
+    return request(dataCenter('/report/homework/check'), {
+        data: payload,
+        method: 'post',
+    });
+}
 export {
+    check,
     remind,
     pageCommit,
     pages,

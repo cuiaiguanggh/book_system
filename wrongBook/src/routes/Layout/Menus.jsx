@@ -173,6 +173,9 @@ class HomePageLeft extends Component {
 
         // 作业中心
         if (item === 300 && rodeType !== 10) {
+          menus.push(<Menu.Item key="correction" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workCorrection')}>
+            <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业批改</span>
+          </Menu.Item>)
           menus.push(<Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
             <Icon type="diff" /><span>智能组卷</span>
           </Menu.Item>)
@@ -185,9 +188,6 @@ class HomePageLeft extends Component {
           // menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
           //   <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
           // </Menu.Item>)
-          menus.push(<Menu.Item key="correction" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workCorrection')}>
-            <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业批改</span>
-          </Menu.Item>)
         }
         // 班级管理模块
         if (item === 200) {
@@ -764,27 +764,32 @@ class HomePageLeft extends Component {
 
 
     //恢复上次记忆
-    if (store.get('wrongBookNews').memoryYears) {
+    if (store.get('wrongBookNews') && store.get('wrongBookNews').memoryYears) {
       //恢复时，时间默认为全部
       this.props.dispatch({
         type: 'report/changeMouth',
         payload: 0
       });
+      this.props.dispatch({
+        type: 'temp/years',
+        payload: store.get('wrongBookNews').memoryYears
+      })
     }
 
-    store.get('wrongBookNews').memoryYears && this.props.dispatch({
-      type: 'temp/years',
-      payload: store.get('wrongBookNews').memoryYears
-    })
+    if (store.get('wrongBookNews') && store.get('wrongBookNews').memoryClassId) {
+      this.props.dispatch({
+        type: 'temp/classId',
+        payload: store.get('wrongBookNews').memoryClassId
+      })
+    }
+    if (store.get('wrongBookNews') && store.get('wrongBookNews').memorySubId) {
+      this.props.dispatch({
+        type: 'temp/subId',
+        payload: store.get('wrongBookNews').memorySubId
+      })
+    }
 
-    store.get('wrongBookNews').memoryClassId && this.props.dispatch({
-      type: 'temp/classId',
-      payload: store.get('wrongBookNews').memoryClassId
-    })
-    store.get('wrongBookNews').memorySubId && this.props.dispatch({
-      type: 'temp/subId',
-      payload: store.get('wrongBookNews').memorySubId
-    })
+
 
   }
 

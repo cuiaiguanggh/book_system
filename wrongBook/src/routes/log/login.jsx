@@ -295,41 +295,47 @@ class Login extends Component {
                 applyPhone: e.currentTarget.value
               })
             }} />
-            <Input placeholder='输入验证码' style={{ marginBottom: 55, width: 220, height: 40 }} onChange={(e) => {
-              this.setState({
-                applyyzm: e.currentTarget.value
-              })
-            }} />
-            <div className={style.getQR} onClick={() => {
-              if (this.state.time !== 0) {
-                return false
-              }
-              if (!(/^1[3456789]\d{9}$/.test(this.state.applyPhone))) {
-                message.error("手机号码有误，请重填");
-              } else {
-                this.props.dispatch({
-                  type: 'login/getVC',
-                  payload: {
-                    phone: this.state.applyPhone
-                  }
-                });
+            <div style={{
+              marginBottom: 55,
+              display: 'flex',
+              justifyContent: 'center',
+            }}>
+              <Input placeholder='输入验证码' style={{ width: 220, height: 40 }} onChange={(e) => {
                 this.setState({
-                  time: 60
+                  applyyzm: e.currentTarget.value
                 })
-                let that = this;
-                setInterval(function interval() {
-                  if (that.state.time === 0) {
-                    clearInterval(interval);
-                    return false;
-                  }
-                  that.setState({
-                    time: that.state.time - 1
+              }} />
+              <div className={style.getQR} onClick={() => {
+                if (this.state.time !== 0) {
+                  return false
+                }
+                if (!(/^1[3456789]\d{9}$/.test(this.state.applyPhone))) {
+                  message.error("手机号码有误，请重填");
+                } else {
+                  this.props.dispatch({
+                    type: 'login/getVC',
+                    payload: {
+                      phone: this.state.applyPhone
+                    }
+                  });
+                  this.setState({
+                    time: 60
                   })
-                }, 1000);
+                  let that = this;
+                  setInterval(function interval() {
+                    if (that.state.time === 0) {
+                      clearInterval(interval);
+                      return false;
+                    }
+                    that.setState({
+                      time: that.state.time - 1
+                    })
+                  }, 1000);
+                }
               }
-            }
-            }>
-              {this.state.time === 0 ? '获取短信验证码' : `重新发送${this.state.time}`}
+              }>
+                {this.state.time === 0 ? '获取短信验证码' : `重新发送${this.state.time}`}
+              </div>
             </div>
             <div className={style.applyButton} onClick={() => {
               if (this.state.applyPhone === '') {

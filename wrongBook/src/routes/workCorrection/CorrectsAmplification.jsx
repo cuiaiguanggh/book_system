@@ -137,7 +137,6 @@ export default function CorrectsAmplification(props) {
             })}
             <img src={`${nowTopic.pageUrl}/thumbnail/1000x/interlace/1/rotate/${props.angle}`} style={{
                 height: '100%',
-                // transform: `rotate(${props.angle}deg)`
             }} onMouseDown={(e) => { e.preventDefault() }} />
             {remark === 2 && <>
                 <img src={'http://homework.mizholdings.com/kacha/kcsj/4f6cc398fe2b0168/.png'} className={style.verygood} />
