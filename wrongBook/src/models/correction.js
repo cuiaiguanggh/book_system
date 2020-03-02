@@ -7,6 +7,12 @@ import {
     pageCommit,
     remind,
     check,
+    workCommit,
+    updateCommit,
+    deleteCommit,
+    teacherCommit,
+    homeworkCommit,
+    share,
 } from '../services/correctionService';
 
 import { message } from 'antd';
@@ -19,9 +25,10 @@ export default {
         subjectList: [],
         homeworkList: [],
         subjectId: '',
+        subjectName: '',
         studentList: { submitted: [], uncommitted: [] },
         workDate: '',
-        isCorrected: 0
+        isCorrected: 0,
     },
     reducers: {
         subjectList(state, { payload }) {
@@ -29,6 +36,9 @@ export default {
         },
         subjectId(state, { payload }) {
             return { ...state, subjectId: payload };
+        },
+        subjectName(state, { payload }) {
+            return { ...state, subjectName: payload };
         },
         homeworkList(state, { payload }) {
             return { ...state, homeworkList: payload };
@@ -56,18 +66,23 @@ export default {
                 })
                 if (res.data.data.length > 0) {
                     const { classId } = yield select(state => state.temp)
-                    const { subjectId } = yield select(state => state.correction)
-                    let selectSub = res.data.data[0].v;
+                    const { subjectId, subjectName } = yield select(state => state.correction)
+                    let selectSub = res.data.data[0].v, selectSubName = res.data.data[0].k;
 
                     if (subjectId !== '') {
                         //如果已选中的学科已存在，则不更改学科id
                         for (let obj of res.data.data) {
                             if (obj.v === subjectId) {
                                 selectSub = subjectId;
+                                selectSubName = subjectName;
                                 break
                             }
                         }
                     }
+                    yield put({
+                        type: 'subjectName',
+                        payload: selectSubName
+                    })
                     yield put({
                         type: 'subjectId',
                         payload: selectSub
@@ -86,6 +101,11 @@ export default {
                         payload: ''
                     })
                     yield put({
+                        type: 'subjectName',
+                        payload: ''
+                    })
+
+                    yield put({
                         type: 'homeworkList',
                         payload: []
                     })
@@ -97,7 +117,10 @@ export default {
                         type: 'studentList',
                         payload: { submitted: [], uncommitted: [] }
                     })
-
+                    yield put({
+                        type: 'isCorrected',
+                        payload: 0
+                    })
                     observer.publish('updateList', [])
                 }
             } else {
@@ -109,14 +132,12 @@ export default {
             let res = yield homeworkList(payload)
             if (res.data && res.data.result === 0) {
                 let suzu = res.data.data;
-                yield put({
-                    type: 'workDate',
-                    payload: suzu[0]
-                })
+
                 yield put({
                     type: 'homeworkList',
                     payload: suzu
                 })
+
                 if (suzu.length > 0) {
                     const { classId } = yield select(state => state.temp)
                     const { subjectId } = yield select(state => state.correction)
@@ -128,6 +149,10 @@ export default {
                             workDate: suzu[0]
                         }
                     })
+                    yield put({
+                        type: 'workDate',
+                        payload: suzu[0]
+                    })
                 } else {
                     //清空数据
                     yield put({
@@ -137,6 +162,10 @@ export default {
                     yield put({
                         type: 'studentList',
                         payload: { submitted: [], uncommitted: [] }
+                    })
+                    yield put({
+                        type: 'isCorrected',
+                        payload: 0
                     })
                     observer.publish('updateList', [])
                 }
@@ -152,18 +181,11 @@ export default {
                 payload: payload.workDate
             })
             if (res.data && res.data.result === 0) {
-                let stuList = res.data.data.studentPagesWork, submitted = [], uncommitted = [];
-                for (let i = 0; i < stuList.length; i++) {
-                    if (stuList[i].commited === 0) {
-                        submitted = stuList.slice(0, i);
-                        uncommitted = stuList.slice(i, stuList.length);
-                        break;
-                    }
-                }
-                let nowList = { submitted, uncommitted }
+                let submitted = res.data.data.studentCommitWork || [], uncommitted = res.data.data.studentUnCommitWork || [];
+
                 yield put({
                     type: 'studentList',
-                    payload: nowList
+                    payload: { submitted, uncommitted }
                 })
                 yield put({
                     type: 'isCorrected',
@@ -176,8 +198,8 @@ export default {
                         //是否存在待批改的，存在选中待批改学生
                         let whether = true;
                         for (let obj of submitted) {
-                            if (obj.corrected === 0) {
-                                observer.publish('updateId', obj.userId, 0, obj.name, 0);
+                            if (obj.corrected === 0 || (obj.supplement === 1 && obj.corrected === 2)) {
+                                observer.publish('updateId', obj.userId, obj.name, 0, obj.corrected);
                                 yield put({
                                     type: 'pgPages',
                                     payload: {
@@ -192,7 +214,7 @@ export default {
                             }
                         }
                         if (whether) {
-                            observer.publish('updateId', submitted[0].userId, 0, submitted[0].name, 1)
+                            observer.publish('updateId', submitted[0].userId, submitted[0].name, 1, submitted[0].corrected)
                             yield put({
                                 type: 'pgPages',
                                 payload: {
@@ -227,29 +249,18 @@ export default {
                 payload: payload.workDate
             })
             if (res.data && res.data.result === 0) {
-                let stuList = res.data.data.studentPagesWork, submitted = [], uncommitted = [];
-                for (let i = 0; i < stuList.length; i++) {
-                    if (stuList[i].commited === 0) {
-                        submitted = stuList.slice(0, i);
-                        uncommitted = stuList.slice(i, stuList.length - 1);
-                        break;
-                    }
-                }
+                let submitted = res.data.data.studentCommitWork || [], uncommitted = res.data.data.studentUnCommitWork || [];
 
-                let nowList = { submitted, uncommitted }
                 yield put({
                     type: 'studentList',
-                    payload: nowList
-                })
-                yield put({
-                    type: 'isCorrected',
-                    payload: res.data.data.isCorrected
+                    payload: { submitted, uncommitted }
                 })
 
             } else {
                 message.error(res.data.msg)
             }
         },
+
         *pgPages({ payload }, { put }) {
             //对应学生的作业
             let res = yield pages(payload)
@@ -292,6 +303,85 @@ export default {
             let res = yield check(payload)
             if (res.data && res.data.result === 0) {
 
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *teacherCommit({ payload }, { put }) {
+            //教师批改完成提交
+            let res = yield teacherCommit(payload)
+            if (res.data && res.data.result === 0) {
+
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *workCommit({ payload }, { put }) {
+            //发布评价
+            let res = yield workCommit(payload)
+            if (res.data && res.data.result === 0) {
+                message.success('发布评价成功')
+
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *updateCommit({ payload }, { put }) {
+            //更新评价
+            let res = yield updateCommit(payload)
+            if (res.data && res.data.result === 0) {
+                message.success('更新评价成功')
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *deleteCommit({ payload }, { put }) {
+            //删除评价
+            let res = yield deleteCommit(payload)
+            if (res.data && res.data.result === 0) {
+                message.success('删除评价成功')
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *plupdateStudentList({ payload }, { put, select }) {
+            //评论后的更新学生列表
+            let res = yield studentList(payload)
+            yield put({
+                type: 'workDate',
+                payload: payload.workDate
+            })
+            if (res.data && res.data.result === 0) {
+                let submitted = res.data.data.studentCommitWork || [], uncommitted = res.data.data.studentUnCommitWork || [];
+
+                yield put({
+                    type: 'studentList',
+                    payload: { submitted, uncommitted }
+                })
+
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *homeworkCommit({ payload }, { put }) {
+            //导出作业提交情况
+            let res = yield homeworkCommit(payload)
+            console.log(res)
+            if (res.data && res.data.result === 0) {
+                console.log(res)
+                let blob = new Blob([res], { type: 'application/vnd.ms-excel' });
+                console.log(blob)
+                // window.location.href = `${this.state.pdfUrl.downloadUrl}${downame}`;
+
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        *share({ payload }, { put }) {
+            //分享优秀作业
+            let res = yield share(payload)
+            if (res.data && res.data.result === 0) {
+                message.success(res.data.msg)
             } else {
                 message.error(res.data.msg)
             }

@@ -1206,8 +1206,7 @@ class StuReport extends React.Component {
                   width: '58%'
                 }}>
                   <h3 className={style.fonsfwc}>原图</h3>
-                  {
-                    this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
+                  { this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
                       <img key={i} className={style.yuantp} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                     ))
                   }

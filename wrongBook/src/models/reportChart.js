@@ -292,6 +292,7 @@ export default {
               classId: payload.classId,
             }
           })
+
           return
         } else {
           yield put({
@@ -329,6 +330,20 @@ export default {
           timeStamp: payload.timeStamp,
           classId: payload.classId,
           subjectId: _subjectId
+        }
+
+        let { startTime, endTime } = yield select(state => state.reportChart);
+
+        if (startTime !== '' && endTime !== '') {
+          data = {
+            schoolId: payload.schoolId,
+            classId: payload.classId,
+            timeStamp: 0,
+            startTime: startTime,
+            endTime: endTime,
+            subjectId: _subjectId
+
+          }
         }
 
         yield put({
@@ -402,7 +417,7 @@ export default {
           classRes.data.data.classUserNumData = [];
           classRes.data.data.classWrongNumData = [];
         }
-       
+
         yield put({
           type: 'classDataReport',
           payload: classRes.data.data

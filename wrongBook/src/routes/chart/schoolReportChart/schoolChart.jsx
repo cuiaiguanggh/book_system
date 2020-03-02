@@ -61,6 +61,14 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/getSchoolDataReport',
 			payload: data
 		});
+		this.props.dispatch({
+			type: 'reportChart/startTime',
+			payload: ''
+		});
+		this.props.dispatch({
+			type: 'reportChart/endTime',
+			payload: ''
+		});
 	}
 	onChangeDate(startDate, endDate) {
 		this.setState({
@@ -80,6 +88,7 @@ class HomeworkCenter extends React.Component {
 			if (this.props.state.sclassList.length === 0) return
 			let cid = this.props.state.sclassList[0].id;
 			let sid = this.props.state.ssubList.length > 0 && this.props.state.ssubList[0].v;
+
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: cid,
@@ -87,8 +96,7 @@ class HomeworkCenter extends React.Component {
 				startTime: startDate,
 				endTime: endDate,
 			}
-			if (sid) data.subjectId = sid;
-
+			if (sid) data.subjectId = this.props.state.subjectId || sid;
 		} else {
 			this.props.dispatch({
 				type: 'reportChart/periodTime',
@@ -101,7 +109,7 @@ class HomeworkCenter extends React.Component {
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				classId: this.props.state.sclassId,
-				subjectId: this.props.state.subId,
+				subjectId: this.props.state.subjectId,
 				periodTime: 1,
 				timeStamp: this.props.state.reportTimeList[0].startTimeStamp,
 			}
@@ -729,7 +737,6 @@ class HomeworkCenter extends React.Component {
 					// optionFilterProp="children"
 					value={this.props.state.subjectId}
 					onChange={(value) => {
-
 						this.props.dispatch({
 							type: 'reportChart/subjectId',
 							payload: value
@@ -741,6 +748,16 @@ class HomeworkCenter extends React.Component {
 							subjectId: value,
 							periodTime: this.props.state.periodTime,
 							timeStamp: this.props.state.timeStamp,
+						}
+						if (this.props.state.startTime !== '' && this.props.state.endTime !== '') {
+							data = {
+								schoolId: store.get('wrongBookNews').schoolId,
+								classId: this.props.state.sclassId,
+								subjectId: value,
+								timeStamp: 0,
+								startTime: this.props.state.startTime,
+								endTime: this.props.state.endTime,
+							}
 						}
 						this.props.dispatch({
 							type: 'reportChart/changeSubList',

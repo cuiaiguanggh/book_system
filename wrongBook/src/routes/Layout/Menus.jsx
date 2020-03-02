@@ -31,7 +31,7 @@ class HomePageLeft extends Component {
   ycgaihash(hahs) {
     //修改浏览器标题
     let that = this;
-    let title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}`
+    let title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}`
     switch (hahs) {
       case '/classReport':
         document.title = `${title}班级错题`
@@ -96,7 +96,7 @@ class HomePageLeft extends Component {
           })
         )
       } else if (rodeType === 30 || rodeType === 20) {
-        document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}班级错题`
+        document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}班级错题`
         this.props.dispatch(
           routerRedux.push({
             pathname: '/classReport',

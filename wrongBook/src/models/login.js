@@ -187,7 +187,7 @@ export default {
 						hash: 'page=1'
 					}))
 				} else {
-					document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}作业批改`
+					document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}作业批改`
 					yield put(routerRedux.push({
 						pathname: '/workCorrection',
 					}))
@@ -316,7 +316,7 @@ export default {
 							hash: 'page=1'
 						}))
 					} else {
-						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}作业批改`
+						document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}作业批改`
 						yield put(routerRedux.push({
 							pathname: '/workCorrection',
 						}))
@@ -510,7 +510,7 @@ export default {
 							hash: 'page=1'
 						}))
 					} else {
-						document.title = `咔嚓拍错题${store.get('wrongBookNews').schoolName}作业批改`
+						document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}作业批改`
 						yield put(routerRedux.push({
 							pathname: '/workCorrection',
 						}))

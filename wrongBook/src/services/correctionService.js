@@ -54,7 +54,48 @@ function check(payload) {
         method: 'post',
     });
 }
+function workCommit(payload) {
+    return request(dataCenter('/report/homework/workCommit'), {
+        data: payload,
+        method: 'post',
+    });
+}
+function updateCommit(payload) {
+    return request(dataCenter('/report/homework/updateCommit'), {
+        data: payload,
+        method: 'post',
+    });
+}
+function deleteCommit(payload) {
+    return request(dataCenter('/report/homework/deleteCommit'), {
+        data: payload,
+        method: 'post',
+    });
+}
+function teacherCommit(payload) {
+    return request(dataCenter('/report/homework/teacherCommit'), {
+        data: payload,
+        method: 'post',
+    });
+}
+function homeworkCommit(payload) {
+    return request(dataCenter('/export/excel/homeworkCommit'), {
+        data: payload,
+    });
+}
+function share(payload) {
+    return request(dataCenter('/report/homework/share'), {
+        data: payload,
+    });
+}
+
 export {
+    share,
+    homeworkCommit,
+    teacherCommit,
+    deleteCommit,
+    workCommit,
+    updateCommit,
     check,
     remind,
     pageCommit,

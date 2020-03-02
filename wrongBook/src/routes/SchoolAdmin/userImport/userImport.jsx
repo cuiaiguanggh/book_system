@@ -59,7 +59,7 @@ class UserImport extends React.Component {
 				dataIndex: 'state',
 				align: 'center',
 				render: (text, record) => (
-					text === '正常' ? <span className={style.normal}>正常</span> : <span className={style.failure}>失败</span>
+					text === '正常' ? <span className={style.normal}>{text}</span> : <span className={style.failure}>{text}</span>
 				)
 
 			},
@@ -91,7 +91,7 @@ class UserImport extends React.Component {
 				width: '12%',
 				align: 'center',
 				render: (text, record) => (
-					text === '正常' ? <span className={style.normal}>正常</span> : <span className={style.failure}>失败</span>
+					text === '正常' ? <span className={style.normal}>{text}</span> : <span className={style.failure}>{text}</span>
 				)
 			},
 		];

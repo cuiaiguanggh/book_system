@@ -5,10 +5,11 @@ import {
 } from 'antd';
 import style from './workCorrection.less';
 import observer from '../../utils/observer'
-import CorrectsAmplification from './CorrectsAmplification';
 import SiderNavigation from './SiderNavigation';
 import Complete from './Complete';
-import TransitionalImage from './TransitionalImage';
+import MarkedArea from './MarkedArea';
+import Appraise from './Appraise';
+
 
 const Option = Select.Option;
 const {
@@ -27,17 +28,17 @@ class workCorrection extends React.Component {
             meismyong: 0,
             phList: [],
             nowPage: 0,
+            agoPage: -1,
             pitchStuId: '',
             pitchStuName: '',
+            pitchCorrected: 0,
             idIndex: 0,
-            shuju: '',
             minWidth: 1530,
-            nowImgWidth: 900,
+            nowImgWidth: 940,
             nowIcoWidth: 40,
-            loading: 0,
             present: 1,
             reminder: false,
-            checkinwho: 0
+            checkinwho: 0,
         }
 
         observer.addSubscribe('updateList', (array) => {
@@ -54,12 +55,13 @@ class workCorrection extends React.Component {
                 phList: array
             })
         })
-        observer.addSubscribe('updateId', (id, index, name, checkinwho) => {
+        observer.addSubscribe('updateId', (id, name, checkinwho, corrected) => {
             this.setState({
                 pitchStuId: id,
                 pitchStuName: name,
-                idIndex: index,
-                checkinwho
+                idIndex: 0,
+                checkinwho,
+                pitchCorrected: corrected
             })
         })
     }
@@ -101,12 +103,19 @@ class workCorrection extends React.Component {
     }
     //切换学科
     cutSubject(value, option) {
+
         this.props.dispatch({
             type: 'correction/subjectId',
             payload: value
         })
+        this.props.dispatch({
+            type: 'correction/subjectName',
+            payload: option.props.children
+        })
+
         this.setState({
-            nowPage: 0
+            nowPage: 0,
+            agoPage: -1
         })
         this.props.dispatch({
             type: 'correction/pgHomeworkList',
@@ -119,7 +128,8 @@ class workCorrection extends React.Component {
     //切换作业
     cutWork(value) {
         this.setState({
-            nowPage: 0
+            nowPage: 0,
+            agoPage: -1
         })
         this.props.dispatch({
             type: 'correction/pgStudentList',
@@ -131,67 +141,6 @@ class workCorrection extends React.Component {
         })
     }
 
-    //保存批改痕迹的方法
-    SaveTrace(nowTopic) {
-        let newmarkList = [], angle = nowTopic.angle;
-        if (nowTopic.markList && nowTopic.markList.length > 0) {
-            for (let obj of nowTopic.markList) {
-                newmarkList.push({
-                    ...obj,
-                    x: obj.x - this.state.nowIcoWidth / 2,
-                    y: obj.y - 27 * (this.state.nowIcoWidth / 40),
-                })
-            }
-        }
-        this.props.dispatch({
-            type: 'correction/pgMarkCommit',
-            payload: {
-                pageId: nowTopic.pageId,
-                width: this.state.nowImgWidth,
-                markList: newmarkList,
-                angle,
-            },
-        })
-    }
-
-    //切换页码
-    cutPagination(nowTopic, i) {
-        this.SaveTrace(nowTopic)
-        if (document.getElementById('bigBox')) {
-            document.getElementById('bigBox').scrollTop = 0;
-        }
-        this.setState({
-            nowPage: i
-        })
-    }
-    //上一题,下一题
-    upDown(direction, nowTopic) {
-        let page = this.state.nowPage;
-        if (direction === 'up') {
-            if (page === 0) {
-                message.info('已经是第一页')
-                return false;
-            } else {
-                page--;
-            }
-        }
-        if (direction === 'down') {
-            if (page === this.state.phList.length - 1) {
-                message.info('已经是最后一页')
-                return false;
-            } else {
-                page++;
-            }
-        }
-        this.SaveTrace(nowTopic);
-        if (document.getElementById('bigBox')) {
-            document.getElementById('bigBox').scrollTop = 0;
-        }
-        this.setState({
-            nowPage: page
-        })
-
-    }
 
     //点击已提交的学生
     clickStu(item, i) {
@@ -210,31 +159,47 @@ class workCorrection extends React.Component {
         })
         this.setState({
             nowPage: 0,
+            agoPage: -1,
             pitchStuId: item.userId,
             pitchStuName: item.name,
-            idIndex: i
+            idIndex: i,
+            pitchCorrected: item.corrected,
         })
+        document.getElementById('markedArea').scrollTop = 0;
+        document.getElementById('pagination').scrollTop = 0;
 
-        if (document.getElementById('bigBox')) {
-            document.getElementById('bigBox').scrollTop = 0;
-        }
     }
 
 
     //下一个学生
     nextStu(uncheck, checked) {
-
         //在待批改学生中时
+        let nowindex = this.state.idIndex;
         if (this.state.checkinwho === 0) {
-            let nowindex = this.state.idIndex;
-            if (nowindex < uncheck.length - 1) {
-                nowindex++
-            } else if (nowindex === uncheck.length - 1 && uncheck.length > 1) {
+            if (nowindex === uncheck.length - 1) {
                 nowindex = 0;
-            } else {
-                message.info('已经选择到最后一个学生了')
-                return;
+                this.setState({
+                    idIndex: 0,
+                })
+            } else if (nowindex < uncheck.length - 1) {
+                nowindex++;
             }
+            if (uncheck.length === 1) {
+                //如果批改到待批改的最后一个学生
+                this.props.dispatch({
+                    type: 'correction/isCorrected',
+                    payload: 1
+                })
+                this.setState({
+                    nowPage: 0,
+                    agoPage: -1,
+                    pitchStuId: '',
+                    pitchStuName: '',
+                    pitchCorrected: 0,
+                })
+            }
+
+
             this.props.dispatch({
                 type: 'correction/pgPages',
                 payload: {
@@ -246,71 +211,67 @@ class workCorrection extends React.Component {
             })
             this.setState({
                 nowPage: 0,
+                agoPage: -1,
                 pitchStuId: uncheck[nowindex].userId,
                 pitchStuName: uncheck[nowindex].name,
-                idIndex: nowindex
+                pitchCorrected: uncheck[nowindex].corrected,
             })
+
+
+
 
         } else {
             //在已批改学生中时
             if (this.state.idIndex < checked.length - 1) {
-                let nowindex = ++this.state.idIndex;
-                this.props.dispatch({
-                    type: 'correction/pgPages',
-                    payload: {
-                        classId: this.props.state.classId,
-                        subjectId: this.props.state.subjectId,
-                        workDate: this.props.state.workDate,
-                        userId: checked[nowindex].userId
-                    },
-                })
-                this.setState({
-                    nowPage: 0,
-                    pitchStuId: checked[nowindex].userId,
-                    pitchStuName: checked[nowindex].name,
-                    idIndex: nowindex
-                })
+                nowindex++;
             } else {
                 message.info('已经选择到最后一个学生了')
             }
 
+            this.props.dispatch({
+                type: 'correction/pgPages',
+                payload: {
+                    classId: this.props.state.classId,
+                    subjectId: this.props.state.subjectId,
+                    workDate: this.props.state.workDate,
+                    userId: checked[nowindex].userId
+                },
+            })
+            this.setState({
+                nowPage: 0,
+                agoPage: -1,
+                pitchStuId: checked[nowindex].userId,
+                pitchStuName: checked[nowindex].name,
+                pitchCorrected: checked[nowindex].corrected,
+                idIndex: nowindex
+            })
 
         }
+        document.getElementById('markedArea').scrollTop = 0;
+        document.getElementById('pagination').scrollTop = 0;
 
     }
-
-    //点击跳过按钮
-    sclickKip(nowTopic, uncheck, checked) {
-        if (this.state.phList.length > 0) {
-            this.SaveTrace(nowTopic)
-            this.nextStu(uncheck, checked)
-        }
-    }
-    //点击完成按钮
-    sclickFinish(nowTopic, studentList, uncheck, checked) {
-        if (studentList.submitted.length === 0 && studentList.uncommitted.length === 0) {
-            message.info('暂无作业')
-            return;
-        }
-        if (checked.length === studentList.submitted.length) {
-            message.success('已全部批改完成')
-            return;
-        }
-        let pageIds = [];
-        for (let obj of this.state.phList) {
-            if (obj.markList && obj.markList.length > 0) {
-                pageIds.push(obj.pageId)
-            }
-        }
-        //上传批改痕迹
+    //保存批改痕迹的方法
+    SaveTrace(nowTopic) {
         let newmarkList = [], angle = nowTopic.angle;
         if (nowTopic.markList && nowTopic.markList.length > 0) {
-            for (let obj of nowTopic.markList) {
-                newmarkList.push({
-                    ...obj,
-                    x: obj.x - this.state.nowIcoWidth / 2,
-                    y: obj.y - 27 * (this.state.nowIcoWidth / 40),
-                })
+            if (nowTopic.multiple > 1) {
+                //图片是否被方大过
+                for (let obj of nowTopic.markList) {
+                    newmarkList.push({
+                        ...obj,
+                        x: obj.x / nowTopic.multiple - this.state.nowIcoWidth / 2,
+                        y: obj.y / nowTopic.multiple - 27 * (this.state.nowIcoWidth / 40),
+                    })
+                }
+            } else {
+                for (let obj of nowTopic.markList) {
+                    newmarkList.push({
+                        ...obj,
+                        x: obj.x - this.state.nowIcoWidth / 2,
+                        y: obj.y - 27 * (this.state.nowIcoWidth / 40),
+                    })
+                }
             }
         }
 
@@ -321,6 +282,61 @@ class workCorrection extends React.Component {
                 width: this.state.nowImgWidth,
                 markList: newmarkList,
                 angle,
+                commitType: 0
+            },
+        })
+    }
+
+    //点击完成按钮
+    sclickFinish(nowTopic, studentList, uncheck, checked) {
+        if (studentList.submitted.length === 0 && studentList.uncommitted.length === 0) {
+            message.info('暂无作业')
+            return;
+        }
+
+        // if (this.state.pitchCorrected === 1) {
+        //     this.nextStu(uncheck, checked)
+        // message.success('已全部批改完成')
+        // }
+        let pageIds = [];
+        for (let obj of this.state.phList) {
+            if (obj.markList && obj.markList.length > 0) {
+                pageIds.push(obj.pageId)
+            }
+        }
+        //上传批改痕迹
+        let newmarkList = [], angle = nowTopic.angle;
+
+        if (nowTopic.markList && nowTopic.markList.length > 0) {
+            if (nowTopic.multiple > 1) {
+                //图片是否被放大过
+                for (let obj of nowTopic.markList) {
+                    newmarkList.push({
+                        ...obj,
+                        x: obj.x / nowTopic.multiple - this.state.nowIcoWidth / 2,
+                        y: obj.y / nowTopic.multiple - 27 * (this.state.nowIcoWidth / 40),
+                    })
+                }
+            } else {
+                for (let obj of nowTopic.markList) {
+                    newmarkList.push({
+                        ...obj,
+                        x: obj.x - this.state.nowIcoWidth / 2,
+                        y: obj.y - 27 * (this.state.nowIcoWidth / 40),
+                    })
+                }
+            }
+        }
+
+
+        this.props.dispatch({
+            type: 'correction/pgMarkCommit',
+            payload: {
+                pageId: nowTopic.pageId,
+                width: this.state.nowImgWidth,
+                markList: newmarkList,
+                angle,
+                commitType: 1
             },
         }).then(() => {
             if (pageIds.length > 0) {
@@ -340,10 +356,10 @@ class workCorrection extends React.Component {
                             workDate: this.props.state.workDate
                         }
                     })
+                    this.nextStu(uncheck, checked)
                 })
             }
-            //下一个学生
-            this.nextStu(uncheck, checked)
+
         });
 
         //这个学生，所有题目都批改完成，提醒学生
@@ -362,157 +378,45 @@ class workCorrection extends React.Component {
                     userId: this.state.pitchStuId
                 }
             })
-        }
-
-
-    }
-
-    //生成批改图标的方法
-    generateResults(e, nowTopic) {
-        if (this.state.loading === 0) {
-            //图片正在加载中，不能操作
-            return false
-        }
-        if (nowTopic.status === 1) {
-            //批改过不能修改
-            message.warning('此学生作业已完成批改，不可修改')
-            return false
-        }
-        //生成错误图标
-        let nowdom = e.currentTarget;
-
-        let x = e.clientX - nowdom.offsetLeft - nowdom.offsetParent.offsetParent.offsetLeft;
-        let y = e.clientY - nowdom.offsetTop - nowdom.offsetParent.offsetTop - nowdom.offsetParent.offsetParent.offsetTop + document.getElementById('bigBox').scrollTop;
-        //防止在边缘点击造成批改图标在外面
-        if (x > nowdom.offsetWidth - this.state.nowIcoWidth - 10 * this.state.nowIcoWidth / 40) {
-            x = nowdom.offsetWidth - this.state.nowIcoWidth - 10 * this.state.nowIcoWidth / 40
-        } else if (x < this.state.nowIcoWidth / 2 + 30 * this.state.nowIcoWidth / 40) {
-            x = this.state.nowIcoWidth / 2 + 30 * this.state.nowIcoWidth / 40
-        }
-        if (y > nowdom.offsetHeight - 27 * this.state.nowIcoWidth / 40) {
-            y = nowdom.offsetHeight - 27 * this.state.nowIcoWidth / 40
-        } else if (y < 27 * this.state.nowIcoWidth / 40) {
-            y = 27 * this.state.nowIcoWidth / 40
-
-        }
-
-
-        if (!nowTopic.markList || nowTopic.markList.length === 0 || nowTopic.markList[0].type === 3) {
-            //第一次批改或者从打勾开始重新批改
-            nowTopic.markList = [{
-                x,
-                y,
-                type: 1
-            }];
-        } else {
-            //已批改过
-            nowTopic.markList.push({
-                x,
-                y,
-                type: 1
-            });
-        }
-        this.setState({
-            phList: this.state.phList
-        })
-    }
-    //点击错误图标变成半对
-    mistakeAlter(e, nowTopic, j) {
-        if (nowTopic.status === 1) {
-            //批改过不能修改
-            return false
-        }
-        nowTopic.markList[j].type = 2;
-        this.setState({
-            phList: this.state.phList
-        })
-        e.stopPropagation();
-    }
-
-    //点击半对图标消失
-    halfAlter(e, nowTopic, j) {
-        if (nowTopic.status === 1) {
-            //批改过不能修改
-            return false
-        }
-        nowTopic.markList.splice(j, 1);
-        this.setState({
-            phList: this.state.phList
-        })
-        e.stopPropagation();
-    }
-
-    //点击放大批改
-    clickMagnify(nowTopic) {
-        if (this.state.loading === 0) {
-            //图片正在加载中，不能操作
-            return false
-        }
-        let tup = document.getElementById('outImg')
-        let proportion = document.body.clientHeight / tup.height;
-        let suzu = []
-        //获取的批改结果坐标进行转换
-        if (nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList.type !== 3) {
-            for (let obj of nowTopic.markList) {
-                suzu.push({
-                    ...obj,
-                    x: obj.x * proportion,
-                    y: obj.y * proportion,
-                })
-            }
-        } else {
-            suzu = nowTopic.markList
-        }
-        this.setState({
-            shuju: {
-                ...nowTopic,
-                markList: suzu,
-            },
-            proportion
-        })
-    }
-    //点击旋转
-    clickRotate(nowTopic) {
-        if (this.state.loading === 0) {
-            //图片正在加载中，不能操作
-            return false
-        }
-        if (nowTopic.status === 1) {
-            message.info('已批改过，不能旋转')
-            return false
-        }
-        let that = this;
-        if (nowTopic.markList && nowTopic.markList.length > 0) {
-            Modal.confirm({
-                title: '已有批改痕迹，旋转将清空当前批改痕迹',
-                okText: '确认',
-                cancelText: '取消',
-                onOk() {
-                    if (nowTopic.angle < 360) {
-                        nowTopic.angle += 90
-                    } else if (nowTopic.angle === 360) {
-                        nowTopic.angle = 90
-                    }
-                    nowTopic.markList = [];
-                    that.setState({
-                        phList: that.state.phList
-                    })
+            this.props.dispatch({
+                type: 'correction/teacherCommit',
+                payload: {
+                    subjectId: this.props.state.subjectId,
+                    studentId: this.state.pitchStuId,
+                    classId: this.props.state.classId,
+                    workDate: this.props.state.workDate,
                 }
-            });
-        } else {
-            if (nowTopic.angle < 360) {
-                nowTopic.angle += 90
-            } else if (nowTopic.angle === 360) {
-                nowTopic.angle = 90
-            }
-            nowTopic.markList = [];
-            this.setState({
-                phList: this.state.phList
             })
         }
+
     }
-
-
+    //改变页码
+    changePage(i) {
+        this.setState({
+            nowPage: i
+        })
+        document.getElementById('markedArea').scrollTop = document.getElementById('markedArea').childNodes[i].offsetTop - 20
+    }
+    //点击查看详情按钮
+    clickDetails() {
+        this.props.dispatch({
+            type: 'correction/isCorrected',
+            payload: 0
+        })
+        this.props.dispatch({
+            type: 'correction/pgPages',
+            payload: {
+                classId: this.props.state.classId,
+                subjectId: this.props.state.subjectId,
+                workDate: this.props.state.workDate,
+                userId: this.state.pitchStuId,
+            },
+        })
+        this.setState({
+            present: 1,
+            nowPage: 0
+        })
+    }
 
     render() {
         let classList = this.props.state.classList1,
@@ -527,10 +431,10 @@ class workCorrection extends React.Component {
             //待批改
             uncheck = [];
         for (let obj of studentList.submitted) {
-            if (obj.corrected === 1) {
-                checked.push(obj)
-            } else {
+            if (obj.corrected === 0 || (obj.supplement === 1 && obj.corrected === 2)) {
                 uncheck.push(obj)
+            } else {
+                checked.push(obj)
             }
             if (this.props.state.isCorrected === 1) {
                 allcuoti += obj.wrongNum
@@ -545,21 +449,13 @@ class workCorrection extends React.Component {
                 approvedTopic++;
             }
         }
-
-        //当前页码题目
-        let nowTopic = this.state.phList.length > 0 && this.state.phList[this.state.nowPage];
-
-        //不显示1，全对2，优秀3，需要努力4
-        let remark = 1;
-        if (nowTopic.status === 1 && !nowTopic.markList || (nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type === 3)) {
-            remark = 2
-        } else if (nowTopic.markList && nowTopic.markList.length === 1 && nowTopic.markList[0].type !== 3) {
-            remark = 3
-        } else if (nowTopic.markList && nowTopic.markList.length > 0) {
-            remark = 4
+        //教师评语    
+        let wtbHomeworkCorrect = null;
+        if (this.state.checkinwho === 0 && uncheck.length > 0 && uncheck[this.state.idIndex]) {
+            wtbHomeworkCorrect = uncheck[this.state.idIndex].wtbHomeworkCorrect
+        } else if (checked.length > 0 && checked[this.state.idIndex]) {
+            wtbHomeworkCorrect = checked[this.state.idIndex].wtbHomeworkCorrect
         }
-
-
         return (
             <Content style={{ minHeight: 700, overflow: 'hidden', overflowX: 'auto', position: 'relative' }}>
                 <Layout className={style.layout}>
@@ -583,7 +479,7 @@ class workCorrection extends React.Component {
                                     placeholder="学科"
                                     value={this.props.state.subjectId}
                                     optionFilterProp="children"
-                                    onChange={(value) => { this.cutSubject(value) }}
+                                    onChange={(value, option) => { this.cutSubject(value, option) }}
                                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
                                     {subjectList.map((item, i) => (
                                         <Option key={i} value={item.v}>{item.k}</Option>
@@ -626,109 +522,45 @@ class workCorrection extends React.Component {
                             }}
                         />
 
-                        <div className={style.correction} >
-                            {this.props.state.isCorrected === 1 && nowTopic ?
+                        <div className={style.correction} style={{ overflow: 'auto' }} id='markedArea'>
+                            {this.props.state.isCorrected === 1 ?
                                 <Complete
                                     nowImgWidth={this.state.nowImgWidth}
                                     approvedStu={checked.length}
                                     average={Math.round(allcuoti / studentList.submitted.length)}
-                                    clickButton={() => {
-                                        this.props.dispatch({
-                                            type: 'correction/isCorrected',
-                                            payload: 0
-                                        })
-                                        this.setState({
-                                            present: 1
-                                        })
-                                    }}
-                                /> :
-                                <div className={style.checkPicture} style={{ width: `${this.state.nowImgWidth + 15}px` }} id='bigBox'>
-                                    {nowTopic ? <>
-                                        <div className={style.imgtop}>
-                                            <div style={{ float: 'left', marginLeft: 20 }}>
-                                                <span style={this.state.minWidth === 1100 ? {
-                                                    maxWidth: 125,
-                                                    float: 'left',
-                                                    marginRight: 5,
-                                                    whiteSpace: 'nowrap',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis'
-                                                } : { marginRight: 20 }}>{this.state.pitchStuName}</span>
-                                                {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 &&
-                                                    <span style={{ color: '#F56C6C' }}> 错误：{nowTopic.markList.length}题</span>
-                                                }
-                                                {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type === 3 &&
-                                                    <span style={{ color: '#13CE66' }}> 全部正确</span>
-                                                }
-                                            </div>
-                                            {nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 ?
-                                                <div className={style.allTrue} >✔全对</div> :
-                                                <div className={style.allTrue} style={{ background: '#13ce66', cursor: 'pointer' }}
-                                                    onClick={(e) => {
-                                                        if (this.state.loading === 0) {
-                                                            //图片正在加载中，不能操作
-                                                            return false
-                                                        }
-                                                        nowTopic.markList = [{ type: 3 }];
+                                    clickButton={() => { this.clickDetails() }}
+                                /> : <>
+                                    {this.state.phList.length > 0 ? <>
+                                        {this.state.phList.map((item, i) => (
+                                            <MarkedArea
+                                                key={item.pageId}
+                                                wtbHomeworkCorrect={wtbHomeworkCorrect}
+                                                pitchStuName={this.state.pitchStuName}
+                                                gxphList={() => {
+                                                    if (this.state.agoPage === -1) {
                                                         this.setState({
-                                                            phList: this.state.phList
+                                                            agoPage: i
                                                         })
-                                                        e.stopPropagation();
-                                                    }}>✔全对</div>
-                                            }
-                                            <span className={style.fangda} onClick={(e) => { this.clickMagnify(nowTopic) }}></span>
-                                            <span className={style.xuanzhuang} onClick={(e) => { this.clickRotate(nowTopic) }}></span>
-                                            <span className={style.rightCut} onClick={() => { this.upDown('down', nowTopic) }}></span>
-                                            <span className={style.leftCut} onClick={(e) => { this.upDown('up', nowTopic) }}></span>
-
-                                        </div>
-
-                                        <div className={style.nowImg} style={{ width: '100%', }} onClick={(e) => { this.generateResults(e, nowTopic) }}>
-                                            {this.state.loading === 1 && nowTopic.markList && nowTopic.markList.length > 0 && nowTopic.markList[0].type !== 3 && nowTopic.markList.map((item, j) => {
-                                                return (<div key={j}>
-                                                    {item.type === 1 ?
-                                                        <img src={require('../images/cuowu.png')} className={style.checkCuo} style={{ top: item.y, left: item.x, width: this.state.nowIcoWidth, }}
-                                                            onClick={(e) => {
-                                                                //点击错误图标时，更改为半对
-                                                                this.mistakeAlter(e, nowTopic, j)
-                                                            }} /> :
-                                                        <img src={require('../images/bandui.png')} className={style.checkDui} style={{ top: item.y, left: item.x, width: `${this.state.nowIcoWidth / 40 * 100}px`, }}
-                                                            onClick={(e) => {
-                                                                //点击半对图标时，图标消失
-                                                                this.halfAlter(e, nowTopic, j)
-                                                            }} />}
-                                                </div>)
-                                            })}
-
-                                            <TransitionalImage
-                                                angle={nowTopic.angle}
-                                                src={`${nowTopic.pageUrl}/thumbnail/1000x/interlace/1`}
-                                                changeLoad={(value) => {
+                                                    } else if (this.state.agoPage !== i) {
+                                                        //切换批改的作业时候，保存上一份的批改痕迹
+                                                        this.SaveTrace(this.state.phList[this.state.agoPage])
+                                                        this.setState({
+                                                            agoPage: i
+                                                        })
+                                                    }
                                                     this.setState({
-                                                        loading: value
+                                                        phList: this.state.phList,
+                                                        nowPage: i
                                                     })
-                                                }} />
-                                            {remark === 2 && this.state.loading === 1 && <>
-                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/4f6cc398fe2b0168/.png'} className={style.verygood} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />
-                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/d4ceb3ed3044a742/.png'} className={style.dagou} style={{ width: `${this.state.nowIcoWidth / 40 * 460}px` }} /> </>}
-                                            {remark === 3 && this.state.loading === 1 && <img src={'http://homework.mizholdings.com/kacha/kcsj/7ad9942284f399fd/.png'} className={style.try} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />}
-                                            {remark === 4 && this.state.loading === 1 && <img src={'http://homework.mizholdings.com/kacha/kcsj/8b84a6068e65b2e2/.png'} className={style.try} style={{ width: `${this.state.nowIcoWidth / 40 * 125}px` }} />}
+                                                }}
+                                                nowImgWidth={this.state.nowImgWidth}
+                                                nowIcoWidth={this.state.nowIcoWidth}
+                                                nowTopic={item}
+                                                src={`${item.pageUrl}/thumbnail/1000x/interlace/1`}
+                                            />
+                                        ))}
 
-                                        </div>
-                                        {this.state.shuju !== '' && <CorrectsAmplification
-                                            shuju={this.state.shuju}
-                                            angle={nowTopic.angle}
-                                            nowImgWidth={this.state.nowImgWidth}
-                                            remark={remark}
-                                            proportion={this.state.proportion}
-                                            nowIcoWidth={this.state.nowIcoWidth * this.state.proportion}
-                                            guanbi={(data) => {
-                                                nowTopic.markList = data.markList;
-                                                this.setState({
-                                                    shuju: '',
-                                                })
-                                            }} />}
-                                    </> : <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10%' }}>
+                                    </> : <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10%', width: `${this.state.nowImgWidth + 15}px` }}>
                                             <div>
                                                 <img src={'http://homework.mizholdings.com/kacha/kcsj/65eca522d826abf1/.png'} />
                                                 <p style={{
@@ -740,17 +572,16 @@ class workCorrection extends React.Component {
                                             </div>
                                         </div>
                                     }
-                                </div>
+                                </>
                             }
                         </div>
-                        <div className={style.pagination} style={this.props.state.isCorrected === 1 ? { visibility: 'hidden' } : { visibility: 'visible' }}>
+                        <div className={style.pagination} id={'pagination'} style={this.props.state.isCorrected === 1 ? { visibility: 'hidden' } : { visibility: 'visible' }}>
                             <span className={style.text}> 页码</span>
                             {this.state.phList.map((item, i) => {
+
                                 return (!item.markList && item.status === 0) || (item.markList && item.markList.length === 0) ?
-                                    <span key={i} className={this.state.nowPage === i ? `${style.number} ${style.current}` : `${style.number}`}
-                                        onClick={() => { this.cutPagination(nowTopic, i) }}> {i + 1}</span> :
-                                    <span key={i} className={this.state.nowPage === i ? `${style.number}  ${style.finish} ${style.current}` : `${style.number}  ${style.finish} `}
-                                        onClick={() => { this.cutPagination(nowTopic, i) }}> {i + 1}</span>
+                                    <span key={i} className={this.state.nowPage === i ? `${style.number} ${style.current}` : `${style.number}`} onClick={() => { this.changePage(i) }}> {i + 1}</span> :
+                                    <span key={i} className={this.state.nowPage === i ? `${style.number}  ${style.finish} ${style.current}` : `${style.number}  ${style.finish}`} onClick={() => { this.changePage(i) }}> {i + 1}</span>
                             })}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginLeft: 20, }}>
@@ -771,13 +602,14 @@ class workCorrection extends React.Component {
                                     this.setState({
                                         reminder: true
                                     })
-                                }}>?
-                                        <div style={this.state.reminder ? { display: 'block' } : { display: 'none' }}>
+                                }}>
+                                    <div style={this.state.reminder ? { display: 'block' } : { display: 'none' }}>
                                         <div className={style.triangle}></div>
                                         <div className={style.howdoit}>
                                             <div className={style.howtitle}>如何批改作业</div>
-                                            鼠标左键单击作业错题，可判错误；再次单击错号，更改为半对错；第三次单击半对错，取消批改痕迹；依次循环；点击<span style={{ color: '#4B8EFF' }}>【跳过 暂不批改】</span>，
-                                本作业页面不批改，再次进入仍可继续批改；所有页面全部批完（不含跳过页），点击 <span style={{ color: '#4B8EFF' }}>【完成】</span>，可自动切换至下一学生的作业.
+                                            鼠标左键单击作业错题，可判错误；再次单击错号，更改为半对错；第三次单击半对错，取消批改痕迹；依次循环<br /><br />
+
+                                            所有页面全部批完（不含跳过页）点击 <span style={{ color: '#4B8EFF' }}>【完成】</span>，可自动切换至下一学生的作业
                                                 <div className={style.howbutton} onClick={(e) => {
                                                 this.setState({
                                                     reminder: false
@@ -787,24 +619,108 @@ class workCorrection extends React.Component {
                                         </div>
                                     </div>
                                 </div>
+                                <div className={style.tishiOnce}>
+                                    {!localStorage.getItem('tishipz') &&
+                                        <>
+                                            <div className={style.whiteTriangle}></div>
+                                            <div className={style.content}>
+                                                <div style={{ color: '#12151C', }}>点击这里增加作业批注</div>
+                                                <div style={{ color: '#737373', margin: '15px 0px 20px' }}>给学生一些鼓励和指导吧！</div>
+                                                <div style={{ color: '#409EFF', cursor: 'pointer', textAlign: 'right' }}
+                                                    onClick={() => {
+                                                        localStorage.setItem('tishipz', true);
+                                                        this.setState({
+                                                            meismyong: 3
+                                                        })
+                                                    }}>知道了</div>
+                                            </div>
+                                        </>
+                                    }
 
-                                <div className={style.tiaoguo} onClick={() => { this.sclickKip(nowTopic, uncheck, checked) }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
-                                        <span>跳过</span>
-                                        <span style={{ fontSize: 14 }}>暂不批改</span>
-                                    </div>
+
+                                    {this.state.pitchStuId !== '' && this.props.state.isCorrected === 0 && this.props.state.workDate !== '' ?
+                                        <Appraise
+                                            wtbHomeworkCorrect={wtbHomeworkCorrect}
+                                            title={`${this.props.state.workDate.substring(5, 10)}${this.state.pitchStuName}同学作业评价`}
+                                            pitchStuName={this.state.pitchStuName}
+                                            deleteCommit={() => {
+                                                this.props.dispatch({
+                                                    type: 'correction/deleteCommit',
+                                                    payload: {
+                                                        correctId: wtbHomeworkCorrect.correctId,
+                                                    }
+                                                }).then(() => {
+                                                    this.props.dispatch({
+                                                        //更新
+                                                        type: 'correction/plupdateStudentList',
+                                                        payload: {
+                                                            classId: this.props.state.classId,
+                                                            subjectId: this.props.state.subjectId,
+                                                            workDate: this.props.state.workDate
+                                                        }
+                                                    })
+                                                })
+                                            }}
+                                            workCommit={(content, common, level, isExcellent) => {
+                                                this.props.dispatch({
+                                                    type: 'correction/workCommit',
+                                                    payload: {
+                                                        studentId: this.state.pitchStuId,
+                                                        subjectId: this.props.state.subjectId,
+                                                        classId: this.props.state.classId,
+                                                        workDate: this.props.state.workDate,
+                                                        common,
+                                                        content,
+                                                        level,
+                                                        isExcellent
+                                                    }
+                                                }).then(() => {
+                                                    this.props.dispatch({
+                                                        //更新
+                                                        type: 'correction/plupdateStudentList',
+                                                        payload: {
+                                                            classId: this.props.state.classId,
+                                                            subjectId: this.props.state.subjectId,
+                                                            workDate: this.props.state.workDate
+                                                        }
+                                                    })
+                                                })
+                                            }}
+                                            updateCommit={(content, common, level, isExcellent) => {
+                                                this.props.dispatch({
+                                                    type: 'correction/updateCommit',
+                                                    payload: {
+                                                        correctId: wtbHomeworkCorrect.correctId,
+                                                        common,
+                                                        content,
+                                                        level,
+                                                        isExcellent
+                                                    }
+                                                }).then(() => {
+                                                    this.props.dispatch({
+                                                        //更新
+                                                        type: 'correction/plupdateStudentList',
+                                                        payload: {
+                                                            classId: this.props.state.classId,
+                                                            subjectId: this.props.state.subjectId,
+                                                            workDate: this.props.state.workDate
+                                                        }
+                                                    })
+                                                })
+                                            }}
+                                        /> : <div className={style.jobEvaluation}>   作业 <br />  评价  </div>}
                                 </div>
                                 <div className={style.wancheng} onClick={() => {
                                     let that = this;
                                     if (approvedTopic === this.state.phList.length) {
-                                        that.sclickFinish(nowTopic, studentList, uncheck, checked)
+                                        that.sclickFinish(this.state.phList[this.state.nowPage], studentList, uncheck, checked)
                                     } else {
                                         Modal.confirm({
                                             title: '还有页面未批改，是否完成批改',
                                             okText: '确认',
                                             cancelText: '取消',
                                             onOk() {
-                                                that.sclickFinish(nowTopic, studentList, uncheck, checked)
+                                                that.sclickFinish(that.state.phList[that.state.nowPage], studentList, uncheck, checked)
                                             }
                                         });
                                     }
@@ -841,7 +757,7 @@ class workCorrection extends React.Component {
             })
         } else if (window.screen.availWidth < 1600) {
             this.setState({
-                minWidth: 1100,
+                minWidth: 1180,
                 nowImgWidth: 520,
                 nowIcoWidth: 21,
             })
