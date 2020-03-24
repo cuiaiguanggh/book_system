@@ -16,7 +16,10 @@ import {
 	rate,
 	recommend,
 	videoPrepare,
-	reset
+	reset,
+	tree,
+	queDetail,
+	sign,
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -793,9 +796,36 @@ export default {
 
 				}
 		},
+
+		* tree({ payload }, { put, select }) {
+			let res = yield tree(payload);
+			if (res.data && res.data.result === 0) {
+				if (res.data.data) {
+					return res.data.data
+				}
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		* queDetail({ payload }, { put, select }) {
+			let res = yield queDetail(payload);
+			if (res.data && res.data.result === 0) {
+				if (res.data.data) {
+					return res.data.data
+				}
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		* sign({ payload }, { put, select }) {
+			let res = yield sign(payload);
+			if (res.data && res.data.result === 0) {
+				message.success(res.data.msg)
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+
 	},
-
-
-
 
 };

@@ -173,7 +173,28 @@ function makeMidExamPdfs(payload) {
         method: 'get'
     });
 }
+function tree(payload) {
+    return request(dataCenter('/question/qb/tree'), {
+        data: payload,
+        method: 'get'
+    });
+}
+function queDetail(payload) {
+    return request(dataCenter('/question/qb/queDetail'), {
+        data: payload,
+        method: 'get'
+    });
+}
+function sign(payload) {
+    return request(dataCenter('/question/qb/sign'), {
+        data: payload,
+    });
+}
+
 export {
+    sign,
+    queDetail,
+    tree,
     reset,
     makeMidExamPdfs,
     queryCourseDetail,

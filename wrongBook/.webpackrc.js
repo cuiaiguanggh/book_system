@@ -12,9 +12,19 @@ export default {
       extraBabelPlugins: ['dva-hmr'],
     },
   },
-
+  "manifest": {},
+  "hash": true,
+  "html": {
+    "template": "./public/index.ejs",
+  },
   "extraBabelIncludes": [
     "node_modules/react-spring",
+  ],
+  "commons": [
+    {
+      async: '__common',
+      children: true,
+      minChunks: 4
+    },
   ]
-
 };

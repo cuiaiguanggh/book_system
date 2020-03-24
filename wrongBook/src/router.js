@@ -104,6 +104,11 @@ const workCorrection = Loadable({
   loader: () => import('./routes/workCorrection/workCorrection'),
   loading: () => <List />,
 });
+const fineQuestion = Loadable({
+  loader: () => import('./routes/fineQuestion/fineQuestion'),
+  loading: () => <List />,
+});
+
 function RouterConfig({ history }) {
 
   return (
@@ -136,6 +141,8 @@ function RouterConfig({ history }) {
           <Route path="/intelligentDollors" component={IntelligentDollors} />
           <Route path="/userImport" component={userImport} />
           <Route path="/specialDownload" component={specialDownload} />
+          <Route path="/fineQuestion" component={fineQuestion} />
+
         </Home>
       </Switch>
     </Router>

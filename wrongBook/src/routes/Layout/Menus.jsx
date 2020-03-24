@@ -163,6 +163,11 @@ class HomePageLeft extends Component {
                 <Icon type="import" /><span>用户导入</span>
               </Link>
             </Menu.Item>)
+            menus.push(<Menu.Item key="fineQuestion" >
+              <Link to='fineQuestion'>
+                <Icon type="import" /><span>精品题库</span>
+              </Link>
+            </Menu.Item>)
             // menus.push(<Menu.Item key="specialDownload" >
             //   <Link to='specialDownload'>
             //     <Icon type="select" /><span>专题下载</span>

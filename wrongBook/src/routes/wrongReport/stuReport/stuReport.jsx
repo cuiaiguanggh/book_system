@@ -492,7 +492,7 @@ class StuReport extends React.Component {
                     });
                   }}>
 
-                    {item.title && item.type === 0 ?
+                    {(item.title && item.type === 0) || !item.questionUrl ?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
                       <img key={i} style={{ width: '100%' }}
@@ -1206,9 +1206,9 @@ class StuReport extends React.Component {
                   width: '58%'
                 }}>
                   <h3 className={style.fonsfwc}>原图</h3>
-                  { this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
-                      <img key={i} className={style.yuantp} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
-                    ))
+                  {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
+                    <img key={i} className={style.yuantp} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
+                  ))
                   }
                 </div>
               </div> :

@@ -1,0 +1,250 @@
+.left {
+    background   : rgba(255, 255, 255, 1);
+    border-radius: 3px 3px 3px 3px;
+    height       : 100%;
+    flex         : 0 0 250px !important;
+    max-width    : 250px !important;
+    overflow     : hidden;
+
+    .top {
+        width          : 100%;
+        height         : 48px;
+        background     : rgba(64, 158, 255, 1);
+        color          : #ffffff;
+        display        : flex;
+        justify-content: center;
+        align-items    : center;
+
+        &:hover {
+            .subjectBox {
+                display: flex;
+            }
+        }
+
+        .subjectBox {
+            width          : 250px;
+            height         : 275px;
+            background     : rgba(255, 255, 255, 1);
+            border         : 1px solid rgba(64, 158, 255, 1);
+            padding        : 15px;
+            display        : none;
+            flex-direction : column;
+            justify-content: space-between;
+            position       : absolute;
+            top            : 48px;
+            z-index        : 5;
+
+            p {
+                color        : #000000;
+                margin-bottom: 10px;
+            }
+
+            ul {
+                display  : flex;
+                flex-wrap: wrap;
+                color    : #999999;
+                margin   : 0;
+
+                li {
+                    width        : 36px;
+                    text-align   : center;
+                    margin       : 0 3px;
+                    cursor       : pointer;
+                    border-radius: 5px;
+
+                    &:hover {
+                        color     : rgba(255, 255, 255, 1);
+                        background: rgba(64, 158, 255, 1);
+
+                    }
+                }
+            }
+
+            .yuandian {
+                width        : 5px;
+                height       : 5px;
+                background   : rgba(153, 153, 153, 1);
+                border-radius: 50%;
+                margin-right : 4px;
+                display      : inline-block;
+                margin-bottom: 2px;
+            }
+        }
+    }
+
+    .keyword {
+        margin : 20px 0 10px;
+        padding: 0 13px;
+        height : 36px;
+
+        input {
+            border-radius: 18px;
+            padding-left : 16px;
+        }
+
+        span {
+            font-size: 20px;
+            right    : 30px;
+        }
+
+    }
+
+    :global(.ant-tree-node-content-wrapper-close) {
+        :global(.anticon-minus-circle) {
+            display: none;
+        }
+    }
+
+    :global(.ant-tree-node-content-wrapper-open) {
+        :global(.anticon-plus-circle) {
+            display: none;
+        }
+    }
+
+    :global(.ant-tree) {
+        li {
+
+            :global(.ant-tree-node-content-wrapper.ant-tree-node-selected) {
+                background: #fff !important;
+                color     : #000000 !important;
+            }
+
+            // :global(.ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal.ant-tree-node-selected) {
+            //     color: #409EFF !important;
+            // }
+
+            :global(.ant-tree-node-content-wrapper) {
+                color: #000000;
+
+                &:hover {
+                    background: #fff !important;
+                    color     : #409EFF !important;
+                }
+            }
+
+        }
+
+    }
+}
+
+.header {
+    width        : 100%;
+    height       : 166px;
+    background   : #FFFFFF;
+    border-radius: 3px;
+    padding      : 20px 20px 10px 20px;
+    color        : #000000;
+
+    .text {
+        color       : #666666;
+        margin-right: 10px;
+    }
+
+    .noselect {
+        padding     : 5px;
+        cursor      : pointer;
+        margin-right: 17px;
+    }
+
+    .select {
+        background   : rgba(64, 158, 255, 1);
+        border-radius: 2px;
+        color        : rgba(255, 255, 255, 1);
+    }
+
+    .selectBox {
+        width: 85px;
+
+        &>div {
+            border    : 0;
+            box-shadow: none;
+
+            &>div {
+                margin-left: 0;
+            }
+        }
+    }
+}
+
+.middle {
+    padding: 15px 20px;
+    width  : 100%;
+    color  : #000000;
+    margin : 0;
+
+    .allIn {
+        width        : 118px;
+        height       : 24px;
+        border       : 1px solid #99A9BC;
+        border-radius: 5px;
+        font-size    : 12px;
+        color        : #99A9BC;
+        cursor       : pointer;
+        text-align   : center;
+        display      : inline-block;
+        line-height  : 24px;
+
+        &:hover {
+            color       : rgba(64, 158, 255, 1);
+            border-color: rgba(64, 158, 255, 1);
+        }
+
+    }
+}
+
+.topic {
+    width     : 100%;
+    background: rgba(255, 255, 255, 1);
+    color     : #333333;
+    margin-bottom: 10px;
+    .one {
+        margin       : 0 30px;
+        padding      : 25px 0;
+        border-bottom: 1px dashed #E7E7E7;
+    }
+
+    .bottom {
+        text-align : right;
+        height     : 45px;
+        width      : 100%;
+        line-height: 45px;
+
+        .delect {
+            color : #83878D;
+            cursor: pointer;
+
+            &:hover {
+                color: #409EFF;
+            }
+        }
+
+        .joinQuestion {
+            width        : 90px;
+            height       : 30px;
+            background   : rgba(102, 177, 255, 1);
+            border-radius: 3px;
+            font-size    : 12px;
+            color        : #FFFFFF;
+            text-align   : center;
+            line-height  : 30px;
+            display      : inline-block;
+            margin       : 0 20px 0 40px;
+            cursor       : pointer;
+        }
+
+        .romveQuestion {
+            width        : 90px;
+            height       : 30px;
+            background   : #C6CFDA;
+            border-radius: 3px;
+            font-size    : 12px;
+            color        : #FFFFFF;
+            text-align   : center;
+            line-height  : 30px;
+            display      : inline-block;
+            margin       : 0 20px 0 40px;
+            cursor       : pointer;
+
+        }
+    }
+}

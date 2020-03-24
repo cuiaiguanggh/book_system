@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { message, Layout, Icon } from 'antd';
+import { message, Layout, Icon, Modal, Button } from 'antd';
 import style from './workCorrection.less';
 import * as XLSX from 'xlsx';
 import store from 'store';
@@ -10,6 +10,21 @@ const { Sider } = Layout;
 
 function SiderNavigation(props) {
     const [dianji, setDianji] = useState(false);
+
+    const [visible, setVisible] = useState(false);
+    const [excellentId, setExcellentId] = useState([]);
+
+
+    useEffect(() => {
+        let studentId = [];
+        for (let obj of props.checked) {
+            if (obj.wtbHomeworkCorrect && obj.wtbHomeworkCorrect.isExcellent === 1) {
+                studentId.push(obj.wtbHomeworkCorrect.studentId)
+            }
+        }
+        setExcellentId(studentId)
+    }, [props.checked]);
+
     //一键提醒
     function keyRemind(studentList) {
         //限制连续点击
@@ -87,7 +102,7 @@ function SiderNavigation(props) {
 
         let cishu = 0, excel = [
             [`             ${title}`, null, null, null],
-            [`未提交(${props.studentList.uncommitted.length}人)`, `未批改(${props.uncheck.length}人)`, `已批改(${props.checked.length}人)`, `错题数`]
+            [`未提交(${props.studentList.uncommitted.length}人)`, `未批改(${props.uncheck.length}人)`, `已批改(${props.checked.length}人)`, `得分`]
         ];
 
         if (props.checked.length > props.uncheck.length && props.checked.length > props.studentList.uncommitted.length) {
@@ -113,7 +128,9 @@ function SiderNavigation(props) {
             }
             if (props.checked.length > i) {
                 cun.push(props.checked[i].name)
-                cun.push(props.checked[i].wrongNum)
+                if (props.checked[i].wtbHomeworkCorrect) {
+                    cun.push(props.checked[i].wtbHomeworkCorrect.score)
+                }
             } else {
                 cun.push(null)
                 cun.push(null)
@@ -140,20 +157,6 @@ function SiderNavigation(props) {
 
     }
 
-    function share(e, id) {
-        props.dispatch({
-            type: 'correction/share',
-            payload: {
-                classId: props.state.classId,
-                subjectId: props.state.subjectId,
-                workDate: props.state.workDate.split('作业')[0],
-                studentId: id,
-            }
-        })
-        e.stopPropagation()
-
-    }
-
     return (
         <Sider className={style.left}>
             <div className={style.dataDisplay}>
@@ -174,7 +177,7 @@ function SiderNavigation(props) {
                             onClick={() => { keyRemind(props.studentList) }}>一键提醒</span>
                     </span>
                 </div>
-                <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 210px)' }}>
+                <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 245px)' }}>
                     {props.studentList.uncommitted.map((item, i) => (
                         item.commited === 0 && <div key={i} className={style.stu}> {item.name} </div>
                     ))}
@@ -184,7 +187,7 @@ function SiderNavigation(props) {
                             <img src={require('../images/blueSubmit.png')} />
                             <span className={style.text}>  待批改学生({props.uncheck.length})</span>
                         </div>
-                        <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 210px)' }}>
+                        <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 245px)' }}>
                             {props.uncheck.map((item, i) => (
                                 <div key={i} onClick={() => { props.clickStu(item, i); props.checkinwho(0) }}
                                     className={props.pitchStuId == item.userId ? `${style.stu} ${style.pitch} ${style.xuanzhong}` :
@@ -202,18 +205,17 @@ function SiderNavigation(props) {
                                     <div key={i} onClick={() => { props.clickStu(item, i); props.checkinwho(1) }}
                                         className={`${style.stu} ${style.pitch} ${item.corrected === 1 && style.already} ${props.state.isCorrected === 0 && props.pitchStuId == item.userId && style.xuanzhong}`} >
                                         <span className={style.stuname} >
-                                            <span style={{ overflow: 'hidden', maxWidth: 80, display: 'inline-flex' }}>{item.name}</span>
+
+                                            <span style={{ overflow: 'hidden', width: 60, display: 'inline-flex' }}>{item.name}</span>
+
                                             {item.wtbHomeworkCorrect &&
                                                 <>
                                                     <span style={{ fontWeight: 'bold', marginLeft: 5 }}>{item.wtbHomeworkCorrect.level}</span>
-                                                    {item.wtbHomeworkCorrect.isExcellent === 1 &&
-                                                        <span className={style.excellent} onClick={(e) => { share(e, item.userId) }}>优秀
-                                                        <span className={style.fxtishi}> 分享优秀作业</span>
-                                                            <img src={require('../images/share.png')} style={{ margin: '0 0 2px 5px' }} />
-                                                        </span>
-                                                    }
-                                                </>
-                                            }
+                                                    {item.wtbHomeworkCorrect.score !== null && <span style={{ width: 80, textAlign: 'right', display: 'inline-block' }}>{item.wtbHomeworkCorrect.score}分</span>}
+
+                                                    {item.wtbHomeworkCorrect.isExcellent === 1 && <img src={require('../images/fiveStar.png')} style={{ position: 'absolute', top: 12, left: '-20px' }} />}
+                                                </>}
+
                                         </span>
                                         <span style={{ float: 'right' }}>错{item.wrongNum}题</span>
                                     </div>
@@ -221,28 +223,25 @@ function SiderNavigation(props) {
                             </div>
                         </div>
                     </> : <>
-                            <div className={style.leftTop} >
+                            <div className={style.leftTop} style={{ zIndex: 5, position: 'relative', background: '#fff' }}>
                                 <img src={require('../images/greenSubmit.png')} />
                                 <span className={style.text}>已批改学生({props.checked.length})</span>
                             </div>
-
-                            <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 210px)' }}>
+                            <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 245px)' }}>
                                 {props.checked.map((item, i) => (
                                     <div key={i} onClick={() => { props.clickStu(item, i); props.checkinwho(1) }}
                                         className={`${style.stu} ${style.pitch} ${item.corrected === 1 && style.already} ${props.state.isCorrected === 0 && props.pitchStuId == item.userId && style.xuanzhong}`} >
                                         <span className={style.stuname}>
-                                            <span style={{ overflow: 'hidden', maxWidth: 80, display: 'inline-flex' }}>{item.name}</span>
+
+                                            <span style={{ overflow: 'hidden', width: 60, display: 'inline-flex' }}>{item.name}</span>
+
                                             {item.wtbHomeworkCorrect &&
                                                 <>
                                                     <span style={{ fontWeight: 'bold', marginLeft: 5 }}>{item.wtbHomeworkCorrect.level}</span>
-                                                    {item.wtbHomeworkCorrect.isExcellent === 1 &&
-                                                        <span className={style.excellent} onClick={(e) => { share(e, item.userId) }}>优秀
-                                                              <span className={style.fxtishi}> 分享优秀作业</span>
-                                                            <img src={require('../images/share.png')} style={{ margin: '0 0 2px 5px' }} />
-                                                        </span>
-                                                    }
-                                                </>
-                                            }
+                                                    {item.wtbHomeworkCorrect.score !== null && <span style={{ width: 80, textAlign: 'right', display: 'inline-block' }}>{item.wtbHomeworkCorrect.score}分</span>}
+                                                    {item.wtbHomeworkCorrect.isExcellent === 1 && <img src={require('../images/fiveStar.png')} style={{ position: 'absolute', top: 12, left: '-20px' }} />}
+                                                </>}
+
                                         </span>
                                         <span style={{ float: 'right' }}>错{item.wrongNum}题</span>
                                     </div>
@@ -250,8 +249,57 @@ function SiderNavigation(props) {
                             </div>
                         </>}
                 </>}
+            <div className={`${style.daochu} ${excellentId.length === 0 && style.noClick}`} style={{ bottom: 59 }}
+                onClick={() => {
+                    if (excellentId.length === 0) { return }
+                    setVisible(true)
+                }}>  优秀作业分享  </div>
+
             <div className={style.daochu} onClick={() => { daochu() }}>  导出名单表  </div>
+            <Modal
+                visible={visible}
+                width={950}
+                footer={null}
+                onCancel={() => { setVisible(false) }}>
+                <p style={{ color: '#333333', fontSize: 18, marginBottom: 40 }}>优秀作业分享</p>
+
+                <p style={{ marginBottom: 25 }} > 优秀作业：
+                <span style={{ color: '#409EFF' }}>
+                        {props.checked.map((item, i) => (
+                            item.wtbHomeworkCorrect && item.wtbHomeworkCorrect.isExcellent === 1 &&
+                            `${item.name}${props.checked.length - 1 === i ? '' : '，'}`
+                        ))}
+                    </span>
+                </p>
+
+                <p style={{ color: '#333333', marginBottom: 55 }}>确定分享以上同学的优秀作业吗？</p>
+                <p style={{ textAlign: "right", margin: 0 }}>
+                    <Button onClick={() => { setVisible(false) }} style={{
+                        width: 74,
+                        height: 40,
+                    }}>取消</Button>
+                    <Button onClick={() => {
+                        console.log(excellentId)
+                        if (excellentId.length > 0) {
+                            setVisible(false);
+                            props.dispatch({
+                                type: 'correction/share',
+                                payload: {
+                                    classId: props.state.classId,
+                                    subjectId: props.state.subjectId,
+                                    workDate: props.state.workDate.split('作业')[0],
+                                    studentId: excellentId,
+                                }
+                            })
+                        }
+
+                    }} type="primary"
+                        style={{ background: '#409EFF', marginLeft: 15, width: 74, height: 40 }} >分享</Button>
+                </p>
+
+            </Modal>
         </Sider>
+
     );
 }
 

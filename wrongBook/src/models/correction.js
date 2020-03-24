@@ -241,25 +241,6 @@ export default {
                 message.error(res.data.msg)
             }
         },
-        *updateStudentList({ payload }, { put, select }) {
-            //更新学生列表
-            let res = yield studentList(payload)
-            yield put({
-                type: 'workDate',
-                payload: payload.workDate
-            })
-            if (res.data && res.data.result === 0) {
-                let submitted = res.data.data.studentCommitWork || [], uncommitted = res.data.data.studentUnCommitWork || [];
-
-                yield put({
-                    type: 'studentList',
-                    payload: { submitted, uncommitted }
-                })
-
-            } else {
-                message.error(res.data.msg)
-            }
-        },
 
         *pgPages({ payload }, { put }) {
             //对应学生的作业
@@ -320,7 +301,7 @@ export default {
             //发布评价
             let res = yield workCommit(payload)
             if (res.data && res.data.result === 0) {
-                message.success('发布评价成功')
+                // message.success('发布评价成功')
 
             } else {
                 message.error(res.data.msg)
@@ -344,16 +325,11 @@ export default {
                 message.error(res.data.msg)
             }
         },
-        *plupdateStudentList({ payload }, { put, select }) {
-            //评论后的更新学生列表
+        *updateStudentList({ payload }, { put, select }) {
+            //更新学生列表
             let res = yield studentList(payload)
-            yield put({
-                type: 'workDate',
-                payload: payload.workDate
-            })
             if (res.data && res.data.result === 0) {
                 let submitted = res.data.data.studentCommitWork || [], uncommitted = res.data.data.studentUnCommitWork || [];
-
                 yield put({
                     type: 'studentList',
                     payload: { submitted, uncommitted }
