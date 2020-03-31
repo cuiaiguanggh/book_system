@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import style from './workCorrection.less';
-import { Input, Icon, Modal } from 'antd';
+import { Input, Icon, Modal, message } from 'antd';
+import observer from '../../utils/observer'
 
 export default function MarkedArea(props) {
     const [load, setLoad] = useState(0);
@@ -9,57 +10,53 @@ export default function MarkedArea(props) {
     const [mouseClickX, setMouseClickX] = useState(false);
     const [mouseMove, setMouseMove] = useState(false);
 
-    const [top, setTop] = useState(0);
-    const [mouseType, setMouseType] = useState(false);
     const [mouseMoveType, setMouseMoveType] = useState(false);
 
     const [drawRectXY, setDrawRectXY] = useState(false);
     const [drawMove, setDrawMove] = useState(false);
-    // const [contentEditable, setContentEditable] = useState(false);
 
-    const [wrongNumber, setWrongNumber] = useState(0);
 
     const [dragStartX, setDragStartX] = useState(false);
     const [dragStartY, setDragStartY] = useState(false);
+
+
 
 
     useEffect(() => {
         if (newsrc !== props.src) {
             setNewsrc(props.src)
             setLoad(0)
+            observer.publish('setLoad', 0)
         }
-        //评语的高度
-        if (document.getElementById('pyu')) {
-            setTop(document.getElementById('pyu').offsetHeight)
-        } else {
-            setTop(0)
-        }
-        //计算错误数
-        let number = 0;
-        if (props.nowTopic.markList) {
-            for (let obj of props.nowTopic.markList) {
-                if (obj.type === 1 || obj.type === 2) {
-                    number++;
-                }
-            }
-        }
-        setWrongNumber(number)
     });
+
 
     //点击对图标消失
     function halfAlter(e, nowTopic, j) {
+        if (props.isAmend) {
+            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+            return false
+        }
         nowTopic.markList.splice(j, 1);
         props.gxphList()
         e.stopPropagation();
     }
     //点击错误图标变成半对
     function mistakeAlter(e, nowTopic, j) {
+        if (props.isAmend) {
+            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+            return false
+        }
         nowTopic.markList[j].type = 2;
         props.gxphList()
         e.stopPropagation();
     }
     //点击半对变成对
     function trueAlter(e, nowTopic, j) {
+        if (props.isAmend) {
+            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+            return false
+        }
         nowTopic.markList[j].type = 4;
         props.gxphList()
         e.stopPropagation();
@@ -111,6 +108,10 @@ export default function MarkedArea(props) {
 
     //文字工具
     function textPostil(e, nowTopic) {
+        if (props.isAmend) {
+            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+            return false
+        }
         if (load === 0) {
             //图片正在加载中，不能操作
             return false
@@ -154,6 +155,10 @@ export default function MarkedArea(props) {
 
     //生成批改图标的方法
     function generateResults(e, nowTopic) {
+        if (props.isAmend) {
+            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+            return false
+        }
         if (load === 0) {
             //图片正在加载中，不能操作
             return false
@@ -197,6 +202,10 @@ export default function MarkedArea(props) {
 
     //点击旋转
     function clickRotate(nowTopic) {
+        if (props.isAmend) {
+            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+            return false
+        }
         if (load === 0) {
             //图片正在加载中，不能操作
             return false
@@ -272,100 +281,19 @@ export default function MarkedArea(props) {
         }
     }
 
-    //不显示1，全对2，优秀3，需要努力4
-    let remark = 1;
-    if (props.nowTopic.status === 1 && !props.nowTopic.markList || (props.nowTopic.markList && props.nowTopic.markList.length > 0 && props.nowTopic.markList[0].type === 3)) {
-        remark = 2
-    } else if (props.nowTopic.markList && props.nowTopic.markList.length === 1 && props.nowTopic.markList[0].type !== 3) {
-        remark = 3
-    } else if (props.nowTopic.markList && props.nowTopic.markList.length > 0) {
-        remark = 4
-    }
     return (
         <div className={style.checkPicture} style={{ width: `${props.nowImgWidth}px` }}>
-            <div className={style.imgtop}>
-                <div style={{ float: 'left', marginLeft: 20 }}>
-                    <span style={{ marginRight: 20 }}>{props.pitchStuName}</span>
-                    {wrongNumber > 0 && <span style={{ color: '#F56C6C' }}> 错误：{wrongNumber}题</span>}
-                    {props.nowTopic.markList && props.nowTopic.markList.length > 0 && props.nowTopic.markList[0].type === 3 &&
-                        <span style={{ color: '#13CE66' }}> 全部正确</span>}
 
-                    {/* {props.nowTopic.markList && props.nowTopic.markList.length > 0 ?
-                        <div className={style.allTrue} >✔全对</div> :
-                        <div className={style.allTrue} style={{ background: '#13ce66', cursor: 'pointer' }}
-                            onClick={(e) => {
-                                if (load === 0) {
-                                    //图片正在加载中，不能操作
-                                    return false
-                                }
-                                props.nowTopic.markList = [{ type: 3 }];
-                                props.gxphList()
-
-                                e.stopPropagation();
-                            }}>✔全对</div>
-                    } */}
-                </div>
-
-                {/* <div className={style.changesize}>
-                    <span className={style.suobox}>
-                        <div className={style.suo}> 缩小  </div>
-                        <Icon type="minus-circle" theme="filled" onClick={shrink} />
-                    </span>
-                    <span className={style.numberx}>{multiple}X</span>
-                    <span className={style.fangbox}>
-                        <div className={style.fang}> 放大  </div>
-                        <Icon type="plus-circle" theme="filled" onClick={magnify} />
-                    </span>
-                </div> */}
-
-                <span className={style.quandui} onClick={(e) => {
-                    //图片正在加载中，不能操作
-                    if (load === 0) { return false }
-                    props.nowTopic.markList = [{ type: 3 }];
-                    props.gxphList()
-                    e.stopPropagation();
-                }}>   全对  </span>
-                <span className={style.xuanzhuang} onClick={(e) => { clickRotate(props.nowTopic) }}>
-                    <span className={style.hintText}>旋转</span>
-                </span>
-
-                <span className={style.trash} onClick={(e) => {
-                    //图片正在加载中，不能操作
-                    if (load === 0) { return false }
-                    setMouseType(mouseType === 'trash' ? false : 'trash')
-                    // setContentEditable(false)
-                }}>
-                    <span className={style.hintText}>清除</span>
-                </span>
-                <span className={style.Atext} onClick={(e) => {
-                    //图片正在加载中，不能操作
-                    if (load === 0) { return false }
-                    setMouseType(mouseType === 'text' ? false : 'text')
-                    // setContentEditable(true)
-                }}>
-                    <span className={style.hintText}>文字</span>
-                </span>
-
-                <span className={style.defaultIcon} onClick={(e) => {
-                    //图片正在加载中，不能操作
-                    if (load === 0) { return false }
-                    setMouseType(false)
-                    // setContentEditable(false)
-                }}>
-                    <span className={style.hintText}>批改</span>
-                </span>
-            </div>
-
-            <div className={`${style.nowImg} ${mouseType === 'trash' && style.clearImg}`}
-                style={mouseType === 'text' ? { cursor: 'crosshair' } : {}}
+            <div className={`${style.nowImg} ${props.mouseType === 'trash' && style.clearImg}`}
+                style={props.mouseType === 'text' ? { cursor: 'crosshair' } : {}}
                 onMouseUp={() => {
-                    if (mouseType === 'trash') {
+                    if (props.mouseType === 'trash') {
                         setMouseMoveType(false)
                     }
                 }}
                 onMouseMove={e => {
                     //默认批改类型画矩形框
-                    if (!mouseType && drawRectXY && e.nativeEvent.offsetX - drawRectXY.x > 5) {
+                    if (!props.mouseType && drawRectXY && e.nativeEvent.offsetX - drawRectXY.x > 5) {
                         //目前先限制只能往右下角方向
                         drawing(e, props.nowTopic)
                     }
@@ -393,11 +321,15 @@ export default function MarkedArea(props) {
                     }
                 }}
                 onClick={(e) => {
-                    if (mouseType === 'trash' && !mouseMove) {
+                    if (props.isAmend) {
+                        message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+                        return false
+                    }
+                    if (props.mouseType === 'trash' && !mouseMove) {
                         //清除
                         return
                     }
-                    if (mouseType === 'text' && !mouseMove) {
+                    if (props.mouseType === 'text' && !mouseMove) {
                         //文字
                         textPostil(e, props.nowTopic)
                         return
@@ -435,8 +367,8 @@ export default function MarkedArea(props) {
                                     item.x = item.x - dragStartX + e.clientX
                                 }
 
-                                if (e.clientY - dragStartY + item.y > node.offsetHeight - 35 - 50) {
-                                    item.y = node.offsetHeight - 35 - 50
+                                if (e.clientY - dragStartY + item.y > node.offsetHeight - 35) {
+                                    item.y = node.offsetHeight - 35
                                 } else if (e.clientY - dragStartY > 0) {
                                     item.y = e.clientY - dragStartY + item.y
                                 } else if (dragStartY - e.clientY > item.y) {
@@ -449,13 +381,23 @@ export default function MarkedArea(props) {
 
                             }}
                             className={style.textOutBox}
-                            style={{
+                            style={props.mouseType !== 'trash' ? {
                                 top: item.y,
                                 left: item.x,
                                 maxWidth: `calc(100% - ${item.x}px)`,
                                 maxHeight: `calc(100% - ${item.y}px)`,
-                            }}>
-                            <div contentEditable
+                                border: `${props.mouseType ? '1px solid' : '0px'}`,
+                                cursor: 'move',
+                                width: item.width
+                            } : {
+                                    top: item.y,
+                                    left: item.x,
+                                    maxWidth: `calc(100% - ${item.x}px)`,
+                                    maxHeight: `calc(100% - ${item.y}px)`,
+                                    border: `${props.mouseType ? '1px solid' : '0px'}`,
+                                    width: item.width
+                                }}>
+                            <div contentEditable={props.mouseType === 'text'}
                                 className={style.textBox}
                                 onInput={(e) => {
                                     if (e.currentTarget.textContent.length > 200) {
@@ -473,22 +415,26 @@ export default function MarkedArea(props) {
                                     }
                                 }}
                                 onClick={(e) => {
-                                    if (mouseType === 'trash') {
+                                    if (props.mouseType === 'trash') {
                                         //清除
                                         delectWho(e, props.nowTopic, j, 2)
                                     }
                                     e.stopPropagation()
                                     e.preventDefault()
                                 }}
-                                style={{
-                                    // top: item.y, left: item.x,
-                                    // maxWidth: `calc(100% - ${item.x}px)`,
-                                    // maxHeight: `calc(100% - ${item.y}px)`,
-                                    minWidth: 50 * multiple,
-                                    minHeight: 35 * multiple,
-                                    fontSize: 20 * multiple * props.nowImgWidth / 940,
-                                    lineHeight: 1.2,
-                                }}>
+                                style={
+                                    props.mouseType !== 'trash' ? {
+                                        minWidth: 50 * multiple,
+                                        minHeight: 35 * multiple,
+                                        fontSize: 20 * multiple * props.nowImgWidth / 940,
+                                        lineHeight: 1.2,
+                                        cursor: props.mouseType ? 'default' : 'move',
+                                    } : {
+                                            minWidth: 50 * multiple,
+                                            minHeight: 35 * multiple,
+                                            fontSize: 20 * multiple * props.nowImgWidth / 940,
+                                            lineHeight: 1.2,
+                                        }}>
                                 {item.content}
                             </div>
                         </div>
@@ -514,7 +460,7 @@ export default function MarkedArea(props) {
                             }
                         }}
                         onClick={(e) => {
-                            if (mouseType === 'trash') {
+                            if (props.mouseType === 'trash') {
                                 //清除
                                 delectWho(e, props.nowTopic, j, 3)
                             }
@@ -528,7 +474,7 @@ export default function MarkedArea(props) {
                 {load === 1 && props.nowTopic.markList && props.nowTopic.markList.length > 0 && props.nowTopic.markList[0].type !== 3 && props.nowTopic.markList.map((item, j) => {
                     return (<div key={j}>
                         {item.type === 1 &&
-                            <img alt='' src={require('../images/cuowu.png')} className={`${style.checkCuo} ${mouseType === 'trash' && style.clearImg} `} style={{ top: item.y, left: item.x, width: props.nowIcoWidth * multiple, }}
+                            <img alt='' src={require('../images/cuowu.png')} className={`${style.checkCuo} ${props.mouseType === 'trash' && style.clearImg} `} style={{ top: item.y, left: item.x, width: props.nowIcoWidth * multiple, }}
                                 onMouseOver={(e) => {
                                     if (mouseMoveType === 'trash') {
                                         //清除
@@ -536,7 +482,7 @@ export default function MarkedArea(props) {
                                     }
                                 }}
                                 onClick={(e) => {
-                                    if (mouseType === 'trash') {
+                                    if (props.mouseType === 'trash') {
                                         delectWho(e, props.nowTopic, j, 1)
                                     } else {
                                         //点击错误图标时，更改为半对
@@ -547,7 +493,7 @@ export default function MarkedArea(props) {
                                     e.preventDefault()
 
                                 }} />}
-                        {item.type === 2 && <img alt='' src={require('../images/bandui.png')} className={`${style.checkDui} ${mouseType === 'trash' && style.clearImg} `} style={{ top: item.y, left: item.x, width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, }}
+                        {item.type === 2 && <img alt='' src={require('../images/bandui.png')} className={`${style.checkDui} ${props.mouseType === 'trash' && style.clearImg} `} style={{ top: item.y, left: item.x, width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, }}
                             onMouseOver={(e) => {
                                 if (mouseMoveType === 'trash') {
                                     //清除
@@ -555,7 +501,7 @@ export default function MarkedArea(props) {
                                 }
                             }}
                             onClick={(e) => {
-                                if (mouseType === 'trash') {
+                                if (props.mouseType === 'trash') {
                                     //清除
                                     delectWho(e, props.nowTopic, j, 1)
                                 } else {
@@ -566,7 +512,7 @@ export default function MarkedArea(props) {
                                 e.preventDefault()
 
                             }} />}
-                        {item.type === 4 && <img alt='' src={require('../images/reddui.png')} className={`${style.checkDui} ${mouseType === 'trash' && style.clearImg} `} style={{ top: item.y, left: item.x, width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, }}
+                        {item.type === 4 && <img alt='' src={require('../images/reddui.png')} className={`${style.checkDui} ${props.mouseType === 'trash' && style.clearImg} `} style={{ top: item.y, left: item.x, width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, }}
                             onMouseOver={(e) => {
                                 if (mouseMoveType === 'trash') {
                                     //清除
@@ -574,7 +520,7 @@ export default function MarkedArea(props) {
                                 }
                             }}
                             onClick={(e) => {
-                                if (mouseType === 'trash') {
+                                if (props.mouseType === 'trash') {
                                     //清除
                                     delectWho(e, props.nowTopic, j, 1)
                                 } else {
@@ -602,14 +548,18 @@ export default function MarkedArea(props) {
                         width: `${multiple * props.nowImgWidth}px`,
                     }}
                     onMouseDown={e => {
-                        if (mouseType === 'trash') {
+                        if (props.isAmend) {
+                            return false
+                        }
+
+                        if (props.mouseType === 'trash') {
                             setMouseMoveType('trash')
                         }
                         //记录此时点击的坐标位置
                         if (e.nativeEvent.target === e.currentTarget && multiple > 1) {
                             setMouseClickX(e.nativeEvent.offsetX)
                         }
-                        if (!mouseType) {
+                        if (!props.mouseType) {
                             setDrawRectXY({
                                 x: e.nativeEvent.offsetX,
                                 y: e.nativeEvent.offsetY,
@@ -620,24 +570,19 @@ export default function MarkedArea(props) {
                         }
                         e.preventDefault()
                     }}
-                    onLoad={() => { setLoad(1); }} />
+                    onLoad={() => { setLoad(1); observer.publish('setLoad', 1) }} />
                 {props.wtbHomeworkCorrect &&
                     <>
-                        {(props.wtbHomeworkCorrect.common !== '' || props.wtbHomeworkCorrect.content !== '') &&
-                            <div className={style.teacherComment} id='pyu' style={{ width: `${multiple * 100}% ` }}>
-                                教师评语：{props.wtbHomeworkCorrect.common}{props.wtbHomeworkCorrect.content}
-                            </div>
-                        }
-                        {props.wtbHomeworkCorrect.isExcellent === 1 && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/6321c93c26e057a5/.png'} className={style.verygood} style={{ width: `${props.nowIcoWidth / 40 * 125 * multiple}px`, top: top, right: ` - ${(multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
-                        {props.wtbHomeworkCorrect.level === "A+" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/cad27f38bc42a604/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: `${top + 65 * multiple}px`, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
-                        {props.wtbHomeworkCorrect.level === "A" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/32a1349fd07f48bc/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: `${top + 65 * multiple}px`, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
-                        {props.wtbHomeworkCorrect.level === "B" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/1c0aee03f542237f/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: `${top + 65 * multiple}px`, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
-                        {props.wtbHomeworkCorrect.level === "C" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/f1effe5f8b59942f/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: `${top + 65 * multiple}px`, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
-                        {props.wtbHomeworkCorrect.level === "D" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/41979bc6194d85ae/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: `${top + 65 * multiple}px`, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
+                        {props.wtbHomeworkCorrect.isExcellent === 1 && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/6321c93c26e057a5/.png'} className={style.verygood} style={{ width: `${props.nowIcoWidth / 40 * 125 * multiple}px`, right: ` - ${(multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
+                        {props.wtbHomeworkCorrect.level === "A+" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/cad27f38bc42a604/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: 65, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
+                        {props.wtbHomeworkCorrect.level === "A" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/32a1349fd07f48bc/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: 65, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
+                        {props.wtbHomeworkCorrect.level === "B" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/1c0aee03f542237f/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: 65, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
+                        {props.wtbHomeworkCorrect.level === "C" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/f1effe5f8b59942f/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: 65, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
+                        {props.wtbHomeworkCorrect.level === "D" && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/41979bc6194d85ae/.png'} className={style.level} style={{ width: `${props.nowIcoWidth / 40 * 100 * multiple}px`, top: 65, right: `${props.nowIcoWidth / 40 * 125 * multiple - (multiple - 1) * props.nowImgWidth}px` }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.preventDefault() }} />}
 
                     </>
                 }
-                {remark === 2 && load === 1 && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/d4ceb3ed3044a742/.png'} className={style.dagou} style={{ width: `${props.nowIcoWidth / 40 * 460 * multiple}px`, left: `${multiple * 50}% ` }} onMouseDown={(e) => { e.preventDefault() }} onClick={(e) => { e.stopPropagation() }} />}
+                {props.nowTopic.markList && props.nowTopic.markList.length > 0 && props.nowTopic.markList[0].type === 3 && load === 1 && <img alt='' src={'http://homework.mizholdings.com/kacha/kcsj/d4ceb3ed3044a742/.png'} className={style.dagou} style={{ width: `${props.nowIcoWidth / 40 * 460 * multiple}px`, left: `${multiple * 50}% ` }} onMouseDown={(e) => { e.preventDefault() }} onClick={(e) => { e.stopPropagation() }} />}
 
 
             </div>

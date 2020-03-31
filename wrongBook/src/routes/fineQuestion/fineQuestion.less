@@ -6,6 +6,14 @@
     max-width    : 250px !important;
     overflow     : hidden;
 
+    :global(.ant-spin-nested-loading) {
+        height: 100%;
+    }
+
+    :global(.ant-spin-container) {
+        height: 100%;
+    }
+
     .top {
         width          : 100%;
         height         : 48px;
@@ -109,9 +117,7 @@
                 color     : #000000 !important;
             }
 
-            // :global(.ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal.ant-tree-node-selected) {
-            //     color: #409EFF !important;
-            // }
+ 
 
             :global(.ant-tree-node-content-wrapper) {
                 color: #000000;
@@ -193,10 +199,11 @@
 }
 
 .topic {
-    width     : 100%;
-    background: rgba(255, 255, 255, 1);
-    color     : #333333;
+    width        : 100%;
+    background   : rgba(255, 255, 255, 1);
+    color        : #333333;
     margin-bottom: 10px;
+
     .one {
         margin       : 0 30px;
         padding      : 25px 0;

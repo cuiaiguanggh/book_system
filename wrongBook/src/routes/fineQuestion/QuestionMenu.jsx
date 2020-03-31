@@ -10,7 +10,7 @@ export default function QuestionMenu(props) {
     const [unfolds, setUnfolds] = useState([]);
     const [autoExpandParent, setAutoExpandParent] = useState(false);
 
-    const [pitchSubject, setPitchSubject] = useState('初中数学');
+    const [pitchSubject, setPitchSubject] = useState('高中物理');
 
     const [antistop, setAntistop] = useState(false);
 
@@ -48,7 +48,9 @@ export default function QuestionMenu(props) {
         return <>  {data &&
             data.map((item, i) => (
                 item.hasOwnProperty('children') ?
-                    <TreeNode title={<span style={item.knowledgeName.includes(antistop) ? { color: 'rgb(255, 85, 0)' } : {}}>{item.knowledgeName}</span>} key={item.knowledgeId} icon={<><Icon type="plus-circle" /><Icon type="minus-circle" /></>} >
+                    <TreeNode title={<span style={props.nowKnowledgeId == item.knowledgeId ? { color: '#409EFF' } :
+                        { color: `${item.knowledgeName.includes(antistop) ? 'rgb(255, 85, 0)' : ''}` }}>
+                        {item.knowledgeName}</span>} key={item.knowledgeId} icon={<><Icon type="plus-circle" /><Icon type="minus-circle" /></>} >
                         <> {recursion(item.children)}</>
                     </TreeNode> :
                     <TreeNode key={item.knowledgeId} title={<span style={props.nowKnowledgeId == item.knowledgeId ? { color: '#409EFF' } :
@@ -59,8 +61,6 @@ export default function QuestionMenu(props) {
         }
         </>
     }
-
-
 
 
     return (
@@ -153,25 +153,26 @@ export default function QuestionMenu(props) {
                     autoExpandParent={autoExpandParent}
                     onSelect={(selectedKeys, e) => {
                         let key = e.node.props.eventKey;
+
+                        if (props.nowKnowledgeId !== key) {
+                            props.getTopics(key)
+                        }
+                        props.upadtaKnowledgeId(key)
+
                         if (unfolds.length === 0) {
                             setUnfolds(selectedKeys)
                             return;
                         }
+
                         if (e.node.props.hasOwnProperty('children') && !unfolds.includes(key)) {
                             //展开
                             unfolds.push(key)
-                        } else if (e.selectedNodes.length > 0 && !e.selectedNodes[0].props.children) {
-                            // 最后一层
-
-                            if (props.nowKnowledgeId !== key) {
-                                props.getTopics(key)
-                            }
-                            props.upadtaKnowledgeId(key)
                         } else if (unfolds.includes(key)) {
                             // 收缩
                             let index = unfolds.indexOf(key)
                             unfolds.splice(index, 1)
                         }
+
                         setUnfolds(unfolds)
                         setAutoExpandParent(false)
 

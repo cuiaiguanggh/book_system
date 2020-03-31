@@ -15,33 +15,34 @@ export default function Topics(prop) {
 
 
     return (
-        <div className={style.bigBox} style={prop.pitchOn == prop.topic.questionId ? { borderColor: '#409EFF' } : {}}
+        <div className={style.bigBox} style={prop.pitchOn == prop.topic.questionId ? { border: '1px solid #409eff' } : {}}
             onClick={() => { prop.selecttopic(prop.topic.questionId) }}>
             <div className={style.title}>
-                <span style={{ margin: ' 0 30px ' }}> {prop.type}</span>知识点：{prop.topic.knowledgeName}
+                <span style={{ margin: '0px 30px 0 10px' }}> {prop.type}</span>知识点：{prop.topic.knowledgeName}
                 {prop.pitchOn == prop.topic.questionId &&
                     <>
-                        <div className={`${style.anniu} ${style.topicButton}`} style={{ marginRight: 15 }}
+                        <div className={`${style.anniu} ${style.topicButton}`}
+                            style={{ width: 80 }}
                             onClick={(e) => {
                                 // if (replace.length === 0 || !nowId.includes(prop.topic.questionId)) {
-                                    prop.change({
-                                        knowledgeId: prop.topic.knowledgeId,
-                                        questionId: prop.topic.questionId,
-                                    }, (data) => {
-                                        //储存获取到要替换的题目
-                                        data.push(prop.topic)
-                                        // setReplace(data)
-                                        //替换题目
-                                        prop.changeList(data)
-                                        //更新当前题目的id
-                                        let suzu = []
-                                        for (let obj of data) {
-                                            suzu.push(obj.questionId)
-                                        }
-                                        // setNowId(suzu)
-                                    })
+                                prop.change({
+                                    knowledgeId: prop.topic.knowledgeId,
+                                    questionId: prop.topic.questionId,
+                                }, (data) => {
+                                    //储存获取到要替换的题目
+                                    data.push(prop.topic)
+                                    // setReplace(data)
+                                    //替换题目
+                                    prop.changeList(data)
+                                    //更新当前题目的id
+                                    let suzu = []
+                                    for (let obj of data) {
+                                        suzu.push(obj.questionId)
+                                    }
+                                    // setNowId(suzu)
+                                })
                                 // } else {
-                                    // prop.changeList(replace)
+                                // prop.changeList(replace)
                                 // }
 
                                 e.stopPropagation();
@@ -58,7 +59,7 @@ export default function Topics(prop) {
                             }}
                             okText="确定"
                             cancelText="取消" >
-                            <div className={`${style.anniu} ${style.topicButton}`} style={{ marginRight: 10 }}
+                            <div className={`${style.anniu} ${style.topicButton}`}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                 }}>删除</div>
@@ -67,7 +68,7 @@ export default function Topics(prop) {
                 }
 
             </div>
-            <div dangerouslySetInnerHTML={{ __html: prop.topic.title }} style={{ padding: '30px 90px 20px 30px', overflow: 'hidden' }} />
+            <div dangerouslySetInnerHTML={{ __html: prop.topic.title }} style={{ padding: '0px 30px 0 10px', overflow: 'hidden' }} />
             <Spring to={{ opacity: opacity, height: height, padding: '0 90px 0 30px', overflow: 'hidden' }}>
                 {props =>
                     <div style={props}>
@@ -84,8 +85,8 @@ export default function Topics(prop) {
                 setHeight(height === 0 ? 'auto' : 0)
                 e.stopPropagation();
             }}>
-                查看解析
-          <Spring to={{ rotate: rotate }}>
+                {rotate === 0 ? '展开解析' : '收起解析'}
+                <Spring to={{ rotate: rotate }}>
                     {props => <Icon type="down" style={{ transform: `rotate(${props.rotate}deg)`, color: '#B6BDCF', marginLeft: 5 }} />}
                 </Spring>
             </div>

@@ -21,9 +21,9 @@ class fineQuestion extends React.Component {
             parameter: {
                 gradeId: [10, 11, 12]
             },
-            nowKnowledgeId: 5100,
-            grade: ['初一', '初二', '初三'],
-            checkedGrade: ['初一', '初二', '初三'],
+            nowKnowledgeId: '',
+            grade: ['高一', '高二', '高三'],
+            checkedGrade: ['高一', '高二', '高三'],
             gradePeriod: 3,
             pageNumber: 1,
             loading: true,
@@ -67,7 +67,7 @@ class fineQuestion extends React.Component {
 
         return (
             <Layout style={{ background: '#EBECEE', padding: '15px 4% 15px 8%' }}>
-                <Sider className={style.left}>
+                <Sider className={style.left} >
                     <Spin spinning={this.state.loading}>
                         <QuestionMenu treeStructure={this.state.treeStructure}
                             nowKnowledgeId={this.state.nowKnowledgeId}
@@ -227,8 +227,8 @@ class fineQuestion extends React.Component {
         this.props.dispatch({
             type: 'report/tree',
             payload: {
-                subjectId: 2,
-                phaseId: 2
+                subjectId: 8,
+                phaseId: 3
             }
         }).then(data => {
             this.setState({

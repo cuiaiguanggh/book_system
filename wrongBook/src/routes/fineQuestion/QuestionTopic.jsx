@@ -18,12 +18,15 @@ export default function QuestionTopic(props) {
             {props.topics.map((item, i) => (
                 <div className={style.topic} key={item.questionId}>
                     <div className={style.one}>
+                        <div style={{ overflowY: 'auto', paddingBottom: 25, borderBottom: '1px dashed rgba(231,231,231,1)', marginBottom: 25, }}>
+                            <img src={item.url} alt="" />
+                        </div>
 
                         {item.title && <><div dangerouslySetInnerHTML={{ __html: item.title }}></div> <br /></>}
-                        {item.answer && <>答案：<div dangerouslySetInnerHTML={{ __html: item.answer }}></div> <br /></>}
+                        {/* {item.answer && <>答案：<div dangerouslySetInnerHTML={{ __html: item.answer }}></div> <br /></>}
                         {item.parse && <>解析：<div dangerouslySetInnerHTML={{ __html: item.parse }}></div> <br /></>}
                         {item.summary && <>总结：<div dangerouslySetInnerHTML={{ __html: item.summary }}></div><br /></>}
-                        {item.comment && <>意见<div dangerouslySetInnerHTML={{ __html: item.comment }}></div><br /></>}
+                        {item.comment && <>意见<div dangerouslySetInnerHTML={{ __html: item.comment }}></div><br /></>} */}
 
 
                     </div>

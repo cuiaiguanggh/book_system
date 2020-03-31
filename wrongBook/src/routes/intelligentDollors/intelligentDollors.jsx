@@ -366,7 +366,6 @@ class intelligentDollors extends React.Component {
                     <span style={{
                         fontSize: 14,
                         fontFamily: 'MicrosoftYaHei-Bold',
-                        fontWeight: 'bold',
                         color: 'rgba(96,98,102,1)',
                     }}>时间：</span>
                     <span key={0} className={0 == this.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
@@ -381,7 +380,7 @@ class intelligentDollors extends React.Component {
                             }) : ''
                     }
                     <RangePicker
-                        style={{ width: 220 }}
+                        style={{ width: 250 }}
                         format="YYYY-MM-DD"
                         placeholder={['开始时间', '结束时间']}
                         value={this.state.selectTime}
@@ -500,7 +499,7 @@ class intelligentDollors extends React.Component {
                     </Content>
                     <div id='back' className={style.upArrows} onClick={() => {
                         var time = setInterval(function () {
-                            document.getElementById('dollors').scrollTop = document.getElementById('dollors').scrollTop *0.9;
+                            document.getElementById('dollors').scrollTop = document.getElementById('dollors').scrollTop * 0.9;
                             if (document.getElementById('dollors').scrollTop <= 0) {
                                 clearInterval(time);
                             }

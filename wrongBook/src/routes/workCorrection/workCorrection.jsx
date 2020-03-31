@@ -10,6 +10,7 @@ import Complete from './Complete';
 import MarkedArea from './MarkedArea';
 // import Appraise from './Appraise';
 import CompleteCorrections from './CompleteCorrections';
+import Toolbar from './Toolbar';
 
 
 const Option = Select.Option;
@@ -40,8 +41,10 @@ class workCorrection extends React.Component {
             present: 1,
             reminder: false,
             checkinwho: 0,
+            isAmend: false,
+            mouseType: false
         }
-
+        this.agoScrollTop = 0;
         observer.addSubscribe('updateList', (array) => {
             //获取的批改结果坐标进行转换
             for (let obj of array) {
@@ -79,7 +82,10 @@ class workCorrection extends React.Component {
                 pitchStuName: name,
                 idIndex: 0,
                 checkinwho,
-                pitchCorrected: corrected
+                pitchCorrected: corrected,
+                isAmend: corrected === 1 ? true : false,
+                mouseType: false
+
             })
         })
     }
@@ -112,8 +118,10 @@ class workCorrection extends React.Component {
         });
         //切换批改页面的学科
         this.setState({
-            nowPage: 0
+            nowPage: 0,
+            agoPage: -1
         })
+        this.agoScrollTop = 0;
         this.props.dispatch({
             type: 'correction/pgSubjectList',
             payload: { classId: value },
@@ -135,6 +143,7 @@ class workCorrection extends React.Component {
             nowPage: 0,
             agoPage: -1
         })
+        this.agoScrollTop = 0;
         this.props.dispatch({
             type: 'correction/pgHomeworkList',
             payload: {
@@ -149,6 +158,8 @@ class workCorrection extends React.Component {
             nowPage: 0,
             agoPage: -1
         })
+        this.agoScrollTop = 0;
+
         this.props.dispatch({
             type: 'correction/pgStudentList',
             payload: {
@@ -182,7 +193,11 @@ class workCorrection extends React.Component {
             pitchStuName: item.name,
             idIndex: i,
             pitchCorrected: item.corrected,
+            isAmend: item.corrected === 1 ? true : false,
+            mouseType: false
         })
+        this.agoScrollTop = 0;
+
         document.getElementById('markedArea').scrollTop = 0;
         document.getElementById('pagination').scrollTop = 0;
 
@@ -218,9 +233,9 @@ class workCorrection extends React.Component {
                 pitchStuId: uncheck[nowindex].userId,
                 pitchStuName: uncheck[nowindex].name,
                 pitchCorrected: uncheck[nowindex].corrected,
+                isAmend: uncheck[nowindex].corrected === 1 ? true : false,
+                mouseType: false
             })
-
-
 
         } else {
             //在已批改学生中时
@@ -245,12 +260,14 @@ class workCorrection extends React.Component {
                 pitchStuId: checked[nowindex].userId,
                 pitchStuName: checked[nowindex].name,
                 pitchCorrected: checked[nowindex].corrected,
-                idIndex: nowindex
+                idIndex: nowindex,
+                isAmend: checked[nowindex].corrected === 1 ? true : false,
+                mouseType: false
             })
-
         }
         document.getElementById('markedArea').scrollTop = 0;
         document.getElementById('pagination').scrollTop = 0;
+        this.agoScrollTop = 0;
 
     }
     //保存批改痕迹的方法
@@ -418,7 +435,7 @@ class workCorrection extends React.Component {
         this.setState({
             nowPage: i
         })
-        document.getElementById('markedArea').scrollTop = document.getElementById('markedArea').childNodes[i].offsetTop - 20
+        document.getElementById('markedArea').scrollTop = document.getElementById('markedArea').childNodes[i].offsetTop - 50
     }
     //点击查看详情按钮
     clickDetails() {
@@ -455,7 +472,7 @@ class workCorrection extends React.Component {
                     workDate: this.props.state.workDate,
                     common,
                     content,
-                    score,
+                    score: score || '',
                     level: level || '',
                     isExcellent
                 }
@@ -469,7 +486,7 @@ class workCorrection extends React.Component {
                     correctId,
                     common,
                     content,
-                    score,
+                    score: score || '',
                     level: level || '',
                     isExcellent
                 }
@@ -511,12 +528,13 @@ class workCorrection extends React.Component {
                 approvedTopic++;
             }
         }
-        //教师评语    
+        //教师评价   
         let wtbHomeworkCorrect = null;
+
         if (this.state.checkinwho === 0 && uncheck.length > 0 && uncheck[this.state.idIndex]) {
-            wtbHomeworkCorrect = uncheck[this.state.idIndex].wtbHomeworkCorrect
+            wtbHomeworkCorrect = uncheck[this.state.idIndex].wtbHomeworkCorrect;
         } else if (checked.length > 0 && checked[this.state.idIndex]) {
-            wtbHomeworkCorrect = checked[this.state.idIndex].wtbHomeworkCorrect
+            wtbHomeworkCorrect = checked[this.state.idIndex].wtbHomeworkCorrect;
         }
         return (
             <Content style={{ minHeight: 700, overflow: 'hidden', overflowX: 'auto', position: 'relative' }}>
@@ -524,7 +542,8 @@ class workCorrection extends React.Component {
                     <Header style={{ background: '#a3b0c3', height: '50px', padding: 0, minWidth: this.state.minWidth }}>
                         <div style={{ height: '50px', lineHeight: '50px', background: 'rgba(198,206,218,1)' }}>
                             {classList.data && classList.data.length > 0 && className != '' &&
-                                <Select style={{ width: 150, margin: '0 20px' }}
+                                <Select style={{ width: 120, marginLeft: 25 }}
+                                    getPopupContainer={triggerNode => triggerNode.parentElement}
                                     placeholder="班级"
                                     value={this.props.state.classId}
                                     optionFilterProp="children"
@@ -533,11 +552,11 @@ class workCorrection extends React.Component {
                                     {classList.data.map((item, i) => (
                                         <Option key={i} value={item.classId}>{item.className}</Option>
                                     ))}
-                                </Select>
-                            }
+                                </Select>}
                             {subjectList.length > 0 &&
-                                <Select style={{ width: 150, margin: '0 20px 0 0' }}
+                                <Select style={{ width: 90, marginLeft: 5 }}
                                     showSearch
+                                    getPopupContainer={triggerNode => triggerNode.parentElement}
                                     placeholder="学科"
                                     value={this.props.state.subjectId}
                                     optionFilterProp="children"
@@ -549,8 +568,9 @@ class workCorrection extends React.Component {
                                 </Select>
                             }
                             {homeworkList.length > 0 &&
-                                <Select style={{ width: 150, margin: '0 20px 0 0' }}
+                                <Select style={{ width: 150, marginLeft: 5 }}
                                     showSearch
+                                    getPopupContainer={triggerNode => triggerNode.parentElement}
                                     placeholder="作业"
                                     optionFilterProp="children"
                                     value={this.props.state.workDate}
@@ -583,81 +603,111 @@ class workCorrection extends React.Component {
                                 })
                             }}
                         />
+                        <div>
+                            {this.state.phList.length > 0 && this.props.state.isCorrected !== 1 &&
+                                <div className={style.checkPicture} style={{
+                                    position: 'absolute',
+                                    zIndex: 30,
+                                    width: this.state.nowImgWidth,
+                                    marginLeft: 20
+                                }}>
+                                    <Toolbar nowTopic={this.state.phList[this.state.nowPage]}
+                                        isAmend={this.state.isAmend}
+                                        pitchStuName={this.state.pitchStuName}
+                                        mouseType={this.state.mouseType}
+                                        changeMouseType={(type) => this.setState({ mouseType: type })}
+                                        quandui={() => {
+                                            if (this.state.agoPage === -1) {
+                                                this.setState({ agoPage: this.state.nowPage })
+                                            } else if (this.state.agoPage !== this.state.nowPage) {
+                                                //批改的点击全对时，保存上一份批改痕迹
+                                                this.SaveTrace(this.state.phList[this.state.agoPage])
+                                                this.setState({ agoPage: this.state.nowPage })
+                                            }
+                                            this.setState({ phList: this.state.phList })
+                                        }}
+                                        gxphList={() => { this.setState({ phList: this.state.phList }) }}
+                                    />
+                                </div>}
+                            <div className={style.correction} id='markedArea'
+                                onMouseDown={(e) => {
+                                    this.agoScrollTop = e.currentTarget.scrollTop;
+                                }}
+                                onScroll={(e) => {
 
-                        <div className={style.correction} style={{ overflow: 'auto' }} id='markedArea'
-                            onMouseDown={(e) => {
-                                this.agoScrollTop = e.currentTarget.scrollTop;
-                            }}
-                            onScroll={(e) => {
-                                let nowPage = this.state.nowPage, scrollTop = e.currentTarget.scrollTop, childNodes = document.getElementById('markedArea').childNodes;
+                                    let nowPage = this.state.nowPage, scrollTop = e.currentTarget.scrollTop, childNodes = document.getElementById('markedArea').childNodes;
 
-                                if (scrollTop - this.agoScrollTop > 0 && nowPage < childNodes.length - 1 && scrollTop > childNodes[nowPage].offsetTop + (childNodes[nowPage + 1].offsetTop - childNodes[nowPage].offsetTop) * 0.75) {
-                                    nowPage++
-                                    this.agoScrollTop = scrollTop;
-                                    this.setState({
-                                        nowPage
-                                    })
-                                } else if (scrollTop - this.agoScrollTop < 0 && nowPage > 0 && scrollTop < childNodes[nowPage - 1].offsetTop + (childNodes[nowPage].offsetTop - childNodes[nowPage - 1].offsetTop) * 0.25) {
-                                    nowPage--
-                                    this.agoScrollTop = scrollTop;
-                                    this.setState({
-                                        nowPage
-                                    })
-                                }
-
-
-                            }}>
-                            {this.props.state.isCorrected === 1 ?
-                                <Complete
-                                    nowImgWidth={this.state.nowImgWidth}
-                                    approvedStu={checked.length}
-                                    average={Math.round(allcuoti / studentList.submitted.length)}
-                                    clickButton={() => { this.clickDetails() }}
-                                /> : <>
-                                    {this.state.phList.length > 0 ? <>
-                                        {this.state.phList.map((item, i) => (
-                                            <MarkedArea
-                                                key={item.pageId}
-                                                wtbHomeworkCorrect={wtbHomeworkCorrect}
-                                                pitchStuName={this.state.pitchStuName}
-                                                gxphList={() => {
-                                                    if (this.state.agoPage === -1) {
-                                                        this.setState({
-                                                            agoPage: i
-                                                        })
-                                                    } else if (this.state.agoPage !== i) {
-                                                        //切换批改的作业时候，保存上一份的批改痕迹
-                                                        this.SaveTrace(this.state.phList[this.state.agoPage])
-                                                        this.setState({
-                                                            agoPage: i
-                                                        })
-                                                    }
-                                                    this.setState({
-                                                        phList: this.state.phList,
-                                                        nowPage: i
-                                                    })
-                                                }}
-                                                nowImgWidth={this.state.nowImgWidth}
-                                                nowIcoWidth={this.state.nowIcoWidth}
-                                                nowTopic={item}
-                                                src={`${item.pageUrl}/thumbnail/1000x/interlace/1`}
-                                            />
-                                        ))}
-
-                                    </> : <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10%', width: `${this.state.nowImgWidth + 15}px` }}>
-                                            <div>
-                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/65eca522d826abf1/.png'} />
-                                                <p style={{
-                                                    fontSize: 16,
-                                                    color: 'rgba(118, 118, 118, 1)',
-                                                    marginTop: 10,
-                                                    textAlign: 'center'
-                                                }}>暂无作业</p>
-                                            </div>
-                                        </div>
+                                    if (scrollTop) {
+                                        if (scrollTop - this.agoScrollTop > 0 && nowPage < childNodes.length - 1 && scrollTop > childNodes[nowPage].offsetTop + (childNodes[nowPage + 1].offsetTop - childNodes[nowPage].offsetTop) * 0.7) {
+                                            nowPage++
+                                            this.agoScrollTop = scrollTop;
+                                            this.setState({
+                                                nowPage
+                                            })
+                                        } else if (scrollTop - this.agoScrollTop < 0 && nowPage > 0 && scrollTop < childNodes[nowPage - 1].offsetTop + (childNodes[nowPage].offsetTop - childNodes[nowPage - 1].offsetTop) * 0.3) {
+                                            nowPage--
+                                            this.agoScrollTop = scrollTop;
+                                            this.setState({
+                                                nowPage
+                                            })
+                                        }
                                     }
-                                </>
-                            }
+
+                                }}>
+                                {this.props.state.isCorrected === 1 ?
+                                    <Complete
+                                        nowImgWidth={this.state.nowImgWidth}
+                                        approvedStu={checked.length}
+                                        average={Math.round(allcuoti / studentList.submitted.length)}
+                                        clickButton={() => { this.clickDetails() }}
+                                    /> : <>
+
+                                        {this.state.phList.length > 0 ? <>
+                                            {this.state.phList.map((item, i) => (
+                                                <MarkedArea
+                                                    key={item.pageId}
+                                                    isAmend={this.state.isAmend}
+                                                    mouseType={this.state.mouseType}
+                                                    wtbHomeworkCorrect={wtbHomeworkCorrect}
+                                                    gxphList={() => {
+                                                        if (this.state.agoPage === -1) {
+                                                            this.setState({
+                                                                agoPage: i
+                                                            })
+                                                        } else if (this.state.agoPage !== i) {
+                                                            //切换批改的作业时候，保存上一份的批改痕迹
+                                                            this.SaveTrace(this.state.phList[this.state.agoPage])
+                                                            this.setState({
+                                                                agoPage: i
+                                                            })
+                                                        }
+                                                        this.setState({
+                                                            phList: this.state.phList,
+                                                            nowPage: i
+                                                        })
+                                                    }}
+                                                    nowImgWidth={this.state.nowImgWidth}
+                                                    nowIcoWidth={this.state.nowIcoWidth}
+                                                    nowTopic={item}
+                                                    src={`${item.pageUrl}/thumbnail/1000x/interlace/1`}
+                                                />
+                                            ))}
+
+                                        </> : <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10%', width: `${this.state.nowImgWidth + 15}px` }}>
+                                                <div>
+                                                    <img src={'http://homework.mizholdings.com/kacha/kcsj/65eca522d826abf1/.png'} />
+                                                    <p style={{
+                                                        fontSize: 16,
+                                                        color: 'rgba(118, 118, 118, 1)',
+                                                        marginTop: 10,
+                                                        textAlign: 'center'
+                                                    }}>暂无作业</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </>
+                                }
+                            </div>
                         </div>
                         <div>
                             <div className={style.pagination} id={'pagination'} style={this.props.state.isCorrected === 1 ? { visibility: 'hidden' } : { visibility: 'visible' }}>
@@ -701,6 +751,8 @@ class workCorrection extends React.Component {
                                 whether={this.state.pitchStuId !== '' && this.props.state.isCorrected === 0 && this.props.state.workDate !== ''}
                                 wtbHomeworkCorrect={wtbHomeworkCorrect}
                                 userId={this.state.pitchStuId}
+                                isAmend={this.state.isAmend}
+                                change={() => { this.setState({ isAmend: false }) }}
                                 wancheng={(content, common, level, score, isExcellent) => {
                                     let that = this;
                                     if (approvedTopic === this.state.phList.length) {
@@ -773,19 +825,19 @@ class workCorrection extends React.Component {
         //根据显示器不同分辨率显示不同情况
         if (window.screen.availWidth === 1920) {
             this.setState({
-                minWidth: 1635,
+                minWidth: 1550,
                 nowImgWidth: 940,
                 nowIcoWidth: 40,
             })
         } else if (window.screen.availWidth < 1920 && window.screen.availWidth >= 1600) {
             this.setState({
-                minWidth: 1435,
+                minWidth: 1370,
                 nowImgWidth: 740,
                 nowIcoWidth: 31,
             })
         } else if (window.screen.availWidth < 1600) {
             this.setState({
-                minWidth: 1215,
+                minWidth: 1110,
                 nowImgWidth: 520,
                 nowIcoWidth: 21,
             })

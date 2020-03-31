@@ -101,8 +101,8 @@ function SiderNavigation(props) {
         let title = `${store.get('wrongBookNews').schoolName} ${props.state.className} ${props.state.subjectName} ${props.state.workDate}情况统计`;
 
         let cishu = 0, excel = [
-            [`             ${title}`, null, null, null],
-            [`未提交(${props.studentList.uncommitted.length}人)`, `未批改(${props.uncheck.length}人)`, `已批改(${props.checked.length}人)`, `得分`]
+            [`                  ${title}`, null, null, null, null],
+            [`未提交(${props.studentList.uncommitted.length}人)`, `未批改(${props.uncheck.length}人)`, `已批改(${props.checked.length}人)`, `得分`, `错题`]
         ];
 
         if (props.checked.length > props.uncheck.length && props.checked.length > props.studentList.uncommitted.length) {
@@ -130,10 +130,15 @@ function SiderNavigation(props) {
                 cun.push(props.checked[i].name)
                 if (props.checked[i].wtbHomeworkCorrect) {
                     cun.push(props.checked[i].wtbHomeworkCorrect.score)
+                } else {
+                    cun.push(null)
                 }
+                cun.push(props.checked[i].wrongNum)
             } else {
                 cun.push(null)
                 cun.push(null)
+                cun.push(null)
+
             }
             excel.push(cun);
         }
@@ -190,10 +195,8 @@ function SiderNavigation(props) {
                         <div style={{ overflow: 'auto', maxHeight: 'calc(100% - 245px)' }}>
                             {props.uncheck.map((item, i) => (
                                 <div key={i} onClick={() => { props.clickStu(item, i); props.checkinwho(0) }}
-                                    className={props.pitchStuId == item.userId ? `${style.stu} ${style.pitch} ${style.xuanzhong}` :
-                                        `${item.corrected === 1 ? `${style.stu} ${style.pitch} ${style.already}` : `${style.stu} ${style.pitch}`}`} >
+                                    className={props.pitchStuId == item.userId ? `${style.stu} ${style.pitch} ${style.xuanzhong}` : `${style.stu} ${style.pitch}`} >
                                     <span className={style.stuname}>{item.name} {item.supplement === 1 && <span className={style.resubmissions}>补交</span>}</span>
-
                                 </div>
                             ))}
                             <div className={style.leftTop} >
@@ -205,18 +208,14 @@ function SiderNavigation(props) {
                                     <div key={i} onClick={() => { props.clickStu(item, i); props.checkinwho(1) }}
                                         className={`${style.stu} ${style.pitch} ${item.corrected === 1 && style.already} ${props.state.isCorrected === 0 && props.pitchStuId == item.userId && style.xuanzhong}`} >
                                         <span className={style.stuname} >
-
-                                            <span style={{ overflow: 'hidden', width: 60, display: 'inline-flex' }}>{item.name}</span>
-
-                                            {item.wtbHomeworkCorrect &&
-                                                <>
-                                                    <span style={{ fontWeight: 'bold', marginLeft: 5 }}>{item.wtbHomeworkCorrect.level}</span>
-                                                    {item.wtbHomeworkCorrect.score !== null && <span style={{ width: 80, textAlign: 'right', display: 'inline-block' }}>{item.wtbHomeworkCorrect.score}分</span>}
-
-                                                    {item.wtbHomeworkCorrect.isExcellent === 1 && <img src={require('../images/fiveStar.png')} style={{ position: 'absolute', top: 12, left: '-20px' }} />}
-                                                </>}
-
+                                            <span style={{ overflow: 'hidden', width: 85, display: 'inline-flex' }}>{item.name}</span>
+                                            {item.wtbHomeworkCorrect && item.wtbHomeworkCorrect.isExcellent === 1 && <img src={require('../images/fiveStar.png')} style={{ position: 'absolute', top: 12, left: '-20px' }} />}
                                         </span>
+
+                                        {item.wtbHomeworkCorrect &&
+                                            <span style={{ width: 50, textAlign: 'center', display: 'inline-block' }}>
+                                                {item.wtbHomeworkCorrect.score !== null ? `${item.wtbHomeworkCorrect.score}分` : item.wtbHomeworkCorrect.level}
+                                            </span>}
                                         <span style={{ float: 'right' }}>错{item.wrongNum}题</span>
                                     </div>
                                 ))}
@@ -233,16 +232,16 @@ function SiderNavigation(props) {
                                         className={`${style.stu} ${style.pitch} ${item.corrected === 1 && style.already} ${props.state.isCorrected === 0 && props.pitchStuId == item.userId && style.xuanzhong}`} >
                                         <span className={style.stuname}>
 
-                                            <span style={{ overflow: 'hidden', width: 60, display: 'inline-flex' }}>{item.name}</span>
+                                            <span style={{ overflow: 'hidden', width: 85, display: 'inline-flex' }}>{item.name}</span>
 
-                                            {item.wtbHomeworkCorrect &&
-                                                <>
-                                                    <span style={{ fontWeight: 'bold', marginLeft: 5 }}>{item.wtbHomeworkCorrect.level}</span>
-                                                    {item.wtbHomeworkCorrect.score !== null && <span style={{ width: 80, textAlign: 'right', display: 'inline-block' }}>{item.wtbHomeworkCorrect.score}分</span>}
-                                                    {item.wtbHomeworkCorrect.isExcellent === 1 && <img src={require('../images/fiveStar.png')} style={{ position: 'absolute', top: 12, left: '-20px' }} />}
-                                                </>}
+                                            {item.wtbHomeworkCorrect && item.wtbHomeworkCorrect.isExcellent === 1 && <img src={require('../images/fiveStar.png')} style={{ position: 'absolute', top: 12, left: '-20px' }} />}
 
                                         </span>
+                                        {item.wtbHomeworkCorrect &&
+                                            <span style={{ width: 50, textAlign: 'center', display: 'inline-block' }}>
+                                                {item.wtbHomeworkCorrect.score !== null ? `${item.wtbHomeworkCorrect.score}分` : item.wtbHomeworkCorrect.level}
+                                            </span>
+                                        }
                                         <span style={{ float: 'right' }}>错{item.wrongNum}题</span>
                                     </div>
                                 ))}
