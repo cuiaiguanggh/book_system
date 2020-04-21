@@ -131,7 +131,14 @@ function importData(payload) {
         }
     });
 }
+function care(payload) {
+    return request(dataCenter('/school/users/care'), {
+        data: payload,
+    });
+}
+
 export {
+    care,
     importData,
     create,
     exit,

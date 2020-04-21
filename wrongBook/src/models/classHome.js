@@ -157,9 +157,9 @@ export default {
 					type: 'classList',
 					payload: res.data
 				})
-				//切换学年时的班级与当前选中的班级相同时，不清空选中班级的id
-
 				let { infoClass } = yield select(state => state.homePage)
+
+				//切换学年时的班级与当前选中的班级相同时，不清空选中班级的id
 				let panduan = true;
 				for (let i = 0; i < res.data.data.list.length; i++) {
 					if (res.data.data.list[i].classId == infoClass) {
@@ -167,7 +167,6 @@ export default {
 						break;
 					}
 				}
-
 				if (panduan) {
 					yield put({
 						type: 'homePage/infoClass',
@@ -175,8 +174,7 @@ export default {
 					})
 				}
 
-			}
-			else {
+			} else {
 				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
 				} else if (res.data.msg == '服务器异常') {

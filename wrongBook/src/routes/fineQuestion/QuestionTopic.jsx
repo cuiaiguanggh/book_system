@@ -22,7 +22,7 @@ export default function QuestionTopic(props) {
                             <img src={item.url} alt="" />
                         </div>
 
-                        {item.title && <><div dangerouslySetInnerHTML={{ __html: item.title }}></div> <br /></>}
+                        {item.title && <><div style={{ overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: item.title }}></div> <br /></>}
                         {/* {item.answer && <>答案：<div dangerouslySetInnerHTML={{ __html: item.answer }}></div> <br /></>}
                         {item.parse && <>解析：<div dangerouslySetInnerHTML={{ __html: item.parse }}></div> <br /></>}
                         {item.summary && <>总结：<div dangerouslySetInnerHTML={{ __html: item.summary }}></div><br /></>}
@@ -31,7 +31,7 @@ export default function QuestionTopic(props) {
 
                     </div>
                     <div className={style.bottom}>
-                        <span className={style.delect}> <Icon type="minus-circle" /> 删除</span>
+                        <span className={style.delect} onClick={() => { props.delect(item.questionId) }}> <Icon type="minus-circle" /> 删除</span>
 
                         {item.isGood === 1 ?
                             <div className={style.joinQuestion} style={{ background: '#C6CFDA' }} onClick={() => { props.joinRemove(item.questionId, 0, i); }}> ➖ 移出题库  </div> :

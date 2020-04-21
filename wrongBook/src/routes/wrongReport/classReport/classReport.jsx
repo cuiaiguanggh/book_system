@@ -162,7 +162,7 @@ class classReport extends React.Component {
 
                   <span style={{ marginLeft: '24px' }}
                     className={style.wrongbluezi}
-                    onClick={this.tiaoz.bind(this, item.picId)}>
+                    onClick={this.tiaoz.bind(this, item.recommendId)}>
                     <img src={require('../../images/seek.png')} style={{ marginRight: '6px' }} />
                     搜索题目
                       {i === 0 ? <Guidance title='搜索题目' content='点击可自动复制题目并跳转网页搜题' /> : ''}

@@ -190,8 +190,13 @@ function sign(payload) {
         data: payload,
     });
 }
-
+function remove(payload) {
+    return request(dataCenter('/question/qb/remove'), {
+        data: payload,
+    });
+}
 export {
+    remove,
     sign,
     queDetail,
     tree,

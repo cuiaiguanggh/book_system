@@ -23,7 +23,7 @@ class WrongTop extends React.Component {
 			return (
 				<Select
 					// showSearch
-					style={{ width: 150, margin: '0 20px' }}
+					style={{ width: 120 }}
 					placeholder="班级"
 					value={this.props.state.classId}
 					optionFilterProp="children"
@@ -77,8 +77,7 @@ class WrongTop extends React.Component {
 		if (subList.data && subList.data.length > 0 && subName != '') {
 			return (
 				<Select
-					// showSearch
-					style={{ width: 150, margin: '0 20px 0 0' }}
+					style={{ width: 90, marginLeft: 5 }}
 					placeholder="学科"
 					value={this.props.state.subId}
 					optionFilterProp="children"
@@ -98,7 +97,6 @@ class WrongTop extends React.Component {
 							payload: []
 						});
 
-						//
 						this.props.dispatch({
 							type: 'report/changeMouth',
 							payload: 0
@@ -208,10 +206,10 @@ class WrongTop extends React.Component {
 	}
 	render() {
 		return (
-			<div style={{ height: '50px', lineHeight: '50px', background: 'rgba(198,206,218,1)' }}>
+			<>
 				{this.getGrade()}
 				{this.getSub()}
-			</div>
+			</>
 		);
 	}
 

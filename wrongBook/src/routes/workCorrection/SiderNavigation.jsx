@@ -254,7 +254,13 @@ function SiderNavigation(props) {
                     setVisible(true)
                 }}>  优秀作业分享  </div>
 
-            <div className={style.daochu} onClick={() => { daochu() }}>  导出名单表  </div>
+            <div className={`${style.daochu} ${(props.studentList.uncommitted.length === 0 && props.studentList.submitted.length === 0) && style.noClick} `}
+                onClick={() => {
+                    if (props.studentList.uncommitted.length === 0 && props.studentList.submitted.length === 0) { return }
+
+                    daochu()
+
+                }}>  导出名单表  </div>
             <Modal
                 visible={visible}
                 width={950}

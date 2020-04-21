@@ -22,7 +22,8 @@ import {
 	remove,
 	exit,
 	create,
-	importData
+	importData,
+	care,
 } from '../services/homePageService';
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
@@ -823,6 +824,15 @@ export default {
 			}
 
 		},
+		*care({ payload }, { put, select }) {
+			let res = yield care(payload);
+			if (res.data && res.data.result === 0) {
+				message.success('修改成功')
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+
 	},
 
 

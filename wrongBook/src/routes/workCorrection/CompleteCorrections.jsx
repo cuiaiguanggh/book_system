@@ -117,7 +117,7 @@ export default function CompleteCorrections(props) {
                         {appraise.length === 200 && <div className={style.words} style={appraise.length === 200 ? { color: '#EE6B52' } : {}}>
                             已输入{appraise.length}个字</div>}
                     </div>
-                    <Button type="primary" className={style.wcanniu} onClick={() => {
+                    <Button type="primary" className={style.wcanniu} loading={props.loading}onClick={() => {
                         props.wancheng(appraise, evaluation, level, score, isExcellent);
                     }}>完成批改</Button>
                 </>}

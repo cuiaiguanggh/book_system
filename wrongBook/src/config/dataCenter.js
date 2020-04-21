@@ -14,9 +14,9 @@ const serverType=0;
 
 
 // 正式服务器
-//  const url = 'https://api.kacha.xin';
+// const url = 'https://api.kacha.xin';
 // const host1 = "wss://api.kacha.xin";
-// const serverType=1;
+// const serverType = 1;
 
 
 // const url = host+'/wrongManage';// test
@@ -35,7 +35,7 @@ function dataCen(api) {
 // 	return url1 + api
 // }
 
-export  {
+export {
 	dataCenter,
 	dataCen,
 	serverType,

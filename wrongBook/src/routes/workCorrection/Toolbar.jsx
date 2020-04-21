@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import style from './workCorrection.less';
-import { message, Modal } from 'antd';
+import { message, Modal, Popover } from 'antd';
 import observer from '../../utils/observer'
 
 
@@ -123,22 +123,85 @@ export default function Toolbar(props) {
                 }
                 //图片正在加载中，不能操作
                 if (load === 0) { return false }
-                props.changeMouseType(props.mouseType === 'trash' ? false : 'trash')
+                props.changeMouseType('trash')
             }}>
                 <span className={style.hintText}>清除</span>
             </span>
-            <span className={`${style.Atext} ${props.mouseType === 'text' && style.nowSelect}`} onClick={(e) => {
+            <Popover content={(<div className={style.drawTypeA} onClick={(e) => {
                 if (props.isAmend) {
                     message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
                     return false
                 }
                 //图片正在加载中，不能操作
                 if (load === 0) { return false }
-
-                props.changeMouseType(props.mouseType === 'text' ? false : 'text')
+                let dataType = e.target.getAttribute('data-type');
+                if (dataType) {
+                    props.changeTextSize(Number(dataType))
+                    props.changeMouseType('text');
+                }
             }}>
-                <span className={style.hintText}>文字</span>
-            </span>
+                <span className={`${props.sizeMultiple === 0.7 && style.nowSelect}`} data-type='0.7' >小</span>
+                <span className={`${props.sizeMultiple === 1 && style.nowSelect}`} data-type='1' style={{ margin: '0 17px' }}>中</span>
+                <span className={`${props.sizeMultiple === 1.3 && style.nowSelect}`} data-type='1.3' >大</span>
+            </div>)} trigger="hover" placement="bottom" mouseLeaveDelay={0.5}>
+
+                <div className={style.AtextBox}>
+                    <div className={`${style.Atext} ${props.mouseType === 'text' && style.nowSelect}`} onClick={(e) => {
+                        if (props.isAmend) {
+                            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+                            return false
+                        }
+                        //图片正在加载中，不能操作
+                        if (load === 0) { return false }
+                        props.changeMouseType('text')
+                    }}>
+                        {/* <div className={style.triangle}></div>
+                        <div className={style.drawType}>
+                            <span className={`${props.sizeMultiple === 0.7 && style.nowSelect}`} onClick={() => { props.changeTextSize(0.7) }}>小</span>
+                            <span className={`${props.sizeMultiple === 1 && style.nowSelect}`} onClick={() => { props.changeTextSize(1) }} style={{ margin: '0 15px' }}>中</span>
+                            <span className={`${props.sizeMultiple === 1.3 && style.nowSelect}`} onClick={() => { props.changeTextSize(1.3) }}>大</span>
+                        </div> */}
+                    </div>
+                </div>
+            </Popover>
+            <Popover content={(<div className={style.drawTypeC}
+                onClick={(e) => {
+                    if (props.isAmend) {
+                        message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+                        return false
+                    }
+                    //图片正在加载中，不能操作
+                    if (load === 0) { return false }
+                    let dataType = e.target.getAttribute('data-type');
+                    if (dataType) {
+                        props.changeMouseType(dataType)
+                    }
+                }}>
+                <div className={`${style.littleBox} ${props.mouseType === 'circleBox' && style.nowSelect}`} data-type='circleBox'></div>
+                <div className={`${style.line} ${props.mouseType === 'circleLine' && style.nowSelect}`} data-type='circleLine'></div>
+                <div className={`${style.tilde} ${props.mouseType === 'circleTilde' && style.nowSelect}`} data-type='circleTilde'></div>
+            </div>)} trigger="hover" placement="bottom" mouseLeaveDelay={0.5}>
+
+                <div className={style.circleBox}>
+                    <div className={`${style.circle}  ${props.mouseType && props.mouseType.includes('Line') && style.line} ${props.mouseType && props.mouseType.includes('Tilde') && style.tilde}   ${props.mouseType && props.mouseType.includes('circle') && style.nowSelect}`} onClick={(e) => {
+                        if (props.isAmend) {
+                            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
+                            return false
+                        }
+                        //图片正在加载中，不能操作
+                        if (load === 0) { return false }
+                        props.changeMouseType('circleBox')
+                    }}>
+                        {/* <div className={style.triangle}></div>
+                    <div className={style.drawType}>
+                        <div className={`${style.littleBox} ${props.mouseType === 'circleBox' && style.nowSelect}`} data-type='circleBox'></div>
+                        <div className={`${style.line} ${props.mouseType === 'circleLine' && style.nowSelect}`} data-type='circleLine'></div>
+                        <div className={`${style.tilde} ${props.mouseType === 'circleTilde' && style.nowSelect}`} data-type='circleTilde'></div>
+                    </div> */}
+
+                    </div>
+                </div>
+            </Popover>
 
             <span className={`${style.defaultIcon} ${!props.mouseType && style.nowSelect}`} onClick={(e) => {
                 if (props.isAmend) {
@@ -152,6 +215,6 @@ export default function Toolbar(props) {
             }}>
                 <span className={style.hintText}>批改</span>
             </span>
-        </div>
+        </div >
     )
 }

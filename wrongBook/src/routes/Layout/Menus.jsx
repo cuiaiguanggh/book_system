@@ -670,7 +670,7 @@ class HomePageLeft extends Component {
             {this.Menus()}
           </Menu>
         </Sider>
-        <Layout>
+        <Layout style={{ position: "relative" }}>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Icon
               style={{ cursor: 'pointer' }}
@@ -724,7 +724,7 @@ class HomePageLeft extends Component {
           </Header>
           {
             defaultKey.indexOf('workDetail') != -1 || defaultKey.indexOf('Dollors') > -1 ?
-              <Header style={{ background: '#a3b0c3', height: '50px', padding: 0 }}>
+              <Header style={{ background: '#fff', height: '50px', padding: 0, position: "absolute", left: 70 }}>
                 <WrongTop type={this.props.location} />
               </Header> : ''
           }

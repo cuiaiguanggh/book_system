@@ -120,9 +120,9 @@ export default {
           } else if (arr[i].periodTime === 2) {
             arr[i].name = '本学期'
           } else if (arr[i].periodTime === 3) {
-            arr[i].name = '本月'
+            arr[i].name = '月'
           } else if (arr[i].periodTime === 4) {
-            arr[i].name = '本周'
+            arr[i].name = '周'
           }
         }
         yield put({

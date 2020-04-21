@@ -442,6 +442,18 @@ class HomeworkCenter extends React.Component {
 				if (rodeType <= 20) {
 					return (
 						<div>
+							{/* <span style={{ background: '#13CE66' }} className={style.annniu} onClick={() => {
+								// this.setState({ pitchOn: record.userId });
+							}}>已关注</span> */}
+							{/* <span className={style.annniu} style={{ border: '1px solid rgba(220,223,230,1)', color: '#606266' }} onClick={() => {
+								this.props.dispatch({
+									type: 'homePage/care',
+									payload: {
+										userId: record.userId,
+										classId: this.props.state.infoClass,
+									}
+								})
+							}}>关注</span> */}
 							{record.userId === this.state.pitchOn ? <span style={{ background: '#85CE61' }} className={style.annniu} onClick={() => {
 								this.setState({ pitchOn: '' });
 								if (record.nowname) {
@@ -505,7 +517,7 @@ class HomeworkCenter extends React.Component {
 				render: (text, record) => {
 					return this.props.state.infoClass ?
 						<div className={style.space}>
-							<Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={Boolean(text)} disabled={!Boolean(this.props.state.infoClass)}
+							<Switch defaultChecked={Boolean(text)} disabled={!Boolean(this.props.state.infoClass)}
 								onChange={(checked) => {
 									this.props.dispatch({
 										type: 'homePage/ifpush',
@@ -521,7 +533,7 @@ class HomeworkCenter extends React.Component {
 						</div>
 						: <Tooltip title="请选择班级">
 							<div className={style.space}>
-								<Switch checkedChildren="开" unCheckedChildren="关" defaultChecked={Boolean(text)} disabled={!Boolean(this.props.state.infoClass)}
+								<Switch defaultChecked={Boolean(text)} disabled={!Boolean(this.props.state.infoClass)}
 									onChange={(checked) => {
 										this.props.dispatch({
 											type: 'homePage/ifpush',
@@ -757,6 +769,7 @@ class HomeworkCenter extends React.Component {
 									pagination={true}
 									bordered={true}
 									// components={components}
+									style={{ userSelect: 'text' }}
 									rowClassName="editable-row"
 								/>
 							</div>
@@ -779,11 +792,11 @@ class HomeworkCenter extends React.Component {
 							let data = {
 								name: this.props.state.teacherName,
 								phone: this.props.state.phone,
-								classId: hash.substr(hash.indexOf("&id=") + 4),
+								classId: this.props.state.infoClass,
 								subjectId: this.props.state.subjectId
 							}
 
-							if (!data.classId || data.classId.indexOf('=') > 0) {
+							if (!data.classId) {
 								message.warning('班级未选中');
 								return;
 							}

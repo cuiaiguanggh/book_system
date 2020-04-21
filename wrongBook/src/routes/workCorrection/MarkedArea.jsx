@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import style from './workCorrection.less';
 import { Input, Icon, Modal, message } from 'antd';
 import observer from '../../utils/observer'
+const { TextArea } = Input;
 
 export default function MarkedArea(props) {
     const [load, setLoad] = useState(0);
@@ -15,11 +16,8 @@ export default function MarkedArea(props) {
     const [drawRectXY, setDrawRectXY] = useState(false);
     const [drawMove, setDrawMove] = useState(false);
 
-
     const [dragStartX, setDragStartX] = useState(false);
     const [dragStartY, setDragStartY] = useState(false);
-
-
 
 
     useEffect(() => {
@@ -82,24 +80,27 @@ export default function MarkedArea(props) {
 
     }
 
-    //画矩形框
+    //画矩形框，直线，波浪线
     function drawing(e, nowTopic) {
         if (load === 0) {
             //图片正在加载中，不能操作
             return false
         }
+
         if (drawMove) {
+            if (props.mouseType === 'circleBox') {
+                //画矩形框
+                drawRectXY.height = e.nativeEvent.screenY - drawRectXY.screenY;
+            }
             drawRectXY.width = e.nativeEvent.screenX - drawRectXY.screenX;
-            drawRectXY.height = e.nativeEvent.screenY - drawRectXY.screenY;
         } else {
             if (!props.nowTopic.supMarkList || props.nowTopic.supMarkList.length === 0) {
-                //第一次生成矩形框
+                //第一次生成矩形框，直线，波浪线
                 nowTopic.supMarkList = [drawRectXY];
             } else {
-                //已经有过矩形框
+                //已经有过矩形框，直线，波浪线
                 nowTopic.supMarkList.push(drawRectXY);
             }
-            console.log(nowTopic.supMarkList)
             setDrawMove(true)
         }
 
@@ -134,6 +135,7 @@ export default function MarkedArea(props) {
                 y,
                 content: '',
                 type: 6,
+                fontSize: props.sizeMultiple || 1
             }];
         } else {
             //已批过
@@ -142,6 +144,7 @@ export default function MarkedArea(props) {
                 y,
                 content: '',
                 type: 6,
+                fontSize: props.sizeMultiple || 1
             });
         }
         props.gxphList()
@@ -200,43 +203,6 @@ export default function MarkedArea(props) {
         props.gxphList()
     }
 
-    //点击旋转
-    function clickRotate(nowTopic) {
-        if (props.isAmend) {
-            message.warning('当前已全部批改完成状态，点击【修改】按钮，才能改判作业')
-            return false
-        }
-        if (load === 0) {
-            //图片正在加载中，不能操作
-            return false
-        }
-        if ((nowTopic.markList && nowTopic.markList.length > 0) || (nowTopic.supMarkList && nowTopic.supMarkList.length > 0) || (nowTopic.contentMarkList && nowTopic.contentMarkList.length > 0)) {
-            Modal.confirm({
-                title: '已有批改痕迹，旋转将清空当前批改痕迹',
-                okText: '确认',
-                cancelText: '取消',
-                onOk() {
-                    if (nowTopic.angle < 360) {
-                        nowTopic.angle += 90
-                    } else if (nowTopic.angle === 360) {
-                        nowTopic.angle = 90
-                    }
-                    nowTopic.markList = [];
-                    nowTopic.supMarkList = [];
-                    nowTopic.contentMarkList = [];
-                    props.gxphList();
-                }
-            });
-        } else {
-            if (nowTopic.angle < 360) {
-                nowTopic.angle += 90
-            } else if (nowTopic.angle === 360) {
-                nowTopic.angle = 90
-            }
-            nowTopic.markList = [];
-            props.gxphList();
-        }
-    }
     //点击缩小
     function shrink() {
         if (multiple > 1) {
@@ -286,15 +252,10 @@ export default function MarkedArea(props) {
 
             <div className={`${style.nowImg} ${props.mouseType === 'trash' && style.clearImg}`}
                 style={props.mouseType === 'text' ? { cursor: 'crosshair' } : {}}
-                onMouseUp={() => {
-                    if (props.mouseType === 'trash') {
-                        setMouseMoveType(false)
-                    }
-                }}
+                onMouseUp={() => { if (props.mouseType === 'trash') { setMouseMoveType(false) } }}
                 onMouseMove={e => {
-                    //默认批改类型画矩形框
-                    if (!props.mouseType && drawRectXY && e.nativeEvent.offsetX - drawRectXY.x > 5) {
-                        //目前先限制只能往右下角方向
+                    if (drawRectXY && e.nativeEvent.offsetX - drawRectXY.x > 5) {
+                        //画矩形框（目前限制只能往右下角方向），直线，波浪线
                         drawing(e, props.nowTopic)
                     }
 
@@ -335,11 +296,14 @@ export default function MarkedArea(props) {
                         return
                     }
                     setDrawRectXY(false)
-                    if (drawMove) {
-                        //画矩形框中
+
+                    if (drawMove && props.mouseType.includes('circle')) {
+                        //画矩形框，直线，波浪线中
                         setDrawMove(false)
                         return
                     }
+
+
                     if (!mouseMove) {
                         generateResults(e, props.nowTopic)
                     }
@@ -381,24 +345,20 @@ export default function MarkedArea(props) {
 
                             }}
                             className={style.textOutBox}
-                            style={props.mouseType !== 'trash' ? {
+                            style={{
                                 top: item.y,
                                 left: item.x,
                                 maxWidth: `calc(100% - ${item.x}px)`,
                                 maxHeight: `calc(100% - ${item.y}px)`,
-                                border: `${props.mouseType ? '1px solid' : '0px'}`,
-                                cursor: 'move',
-                                width: item.width
-                            } : {
-                                    top: item.y,
-                                    left: item.x,
-                                    maxWidth: `calc(100% - ${item.x}px)`,
-                                    maxHeight: `calc(100% - ${item.y}px)`,
-                                    border: `${props.mouseType ? '1px solid' : '0px'}`,
-                                    width: item.width
-                                }}>
+                                border: `${props.mouseType === 'text' || props.mouseType === 'trash' ? '1px solid' : '1px solid  transparent'}`,
+                                width: item.width,
+                                cursor: `${props.mouseType === 'text' ? 'default' : `${props.mouseType === 'trash' ? 'unset' : 'move'}`}`,
+                            }}>
+
+
                             <div contentEditable={props.mouseType === 'text'}
                                 className={style.textBox}
+                                onFocus={() => { props.focusIndex(j) }}
                                 onInput={(e) => {
                                     if (e.currentTarget.textContent.length > 200) {
                                         e.currentTarget.textContent = item.content
@@ -422,52 +382,94 @@ export default function MarkedArea(props) {
                                     e.stopPropagation()
                                     e.preventDefault()
                                 }}
-                                style={
-                                    props.mouseType !== 'trash' ? {
-                                        minWidth: 50 * multiple,
-                                        minHeight: 35 * multiple,
-                                        fontSize: 20 * multiple * props.nowImgWidth / 940,
-                                        lineHeight: 1.2,
-                                        cursor: props.mouseType ? 'default' : 'move',
-                                    } : {
-                                            minWidth: 50 * multiple,
-                                            minHeight: 35 * multiple,
-                                            fontSize: 20 * multiple * props.nowImgWidth / 940,
-                                            lineHeight: 1.2,
-                                        }}>
+                                style={{
+                                    minWidth: 50 * multiple,
+                                    minHeight: 35 * multiple,
+                                    wordWrap: 'break-word',
+                                    fontSize: item.fontSize ? (20 * multiple * props.nowImgWidth / 940 * item.fontSize) : (20 * multiple * props.nowImgWidth / 940),
+                                    lineHeight: 1.2,
+                                    cursor: props.mouseType === 'text' ? 'default' : `${props.mouseType === 'trash' ? 'unset' : 'move'}`,
+                                }}>
                                 {item.content}
                             </div>
                         </div>
-
                     )
                 })}
 
-                {/* 矩形框 */}
+
                 {load === 1 && props.nowTopic.supMarkList && props.nowTopic.supMarkList.length > 0 && props.nowTopic.supMarkList.map((item, j) => {
-                    return (<div key={j} className={style.rectangle}
-                        style={{ top: item.y, left: item.x, width: item.width, height: item.height }}
-                        onMouseOver={(e) => {
-                            if (mouseMoveType === 'trash') {
+                    if (item.type === 5) {
+                        /* 矩形框 */
+                        return (<div key={j} className={style.rectangle}
+                            style={{ top: item.y, left: item.x, width: item.width, height: item.height }}
+                            onMouseOver={(e) => {
                                 //清除
-                                delectWho(e, props.nowTopic, j, 3)
-                            }
-                        }}
-                        onMouseMove={(e) => {
-                            if (drawMove) {
-                                drawRectXY.width = e.nativeEvent.screenX - drawRectXY.screenX;
-                                drawRectXY.height = e.nativeEvent.screenY - drawRectXY.screenY;
-                                props.gxphList();
-                            }
-                        }}
-                        onClick={(e) => {
-                            if (props.mouseType === 'trash') {
+                                if (mouseMoveType === 'trash') { delectWho(e, props.nowTopic, j, 3) }
+                            }}
+                            onMouseMove={(e) => {
+                                if (drawMove) {
+                                    drawRectXY.width = e.nativeEvent.screenX - drawRectXY.screenX;
+                                    drawRectXY.height = e.nativeEvent.screenY - drawRectXY.screenY;
+                                    props.gxphList();
+                                }
+                            }}
+                            onClick={(e) => {
+                                if (props.mouseType === 'trash') {
+                                    //清除
+                                    delectWho(e, props.nowTopic, j, 3)
+                                }
+                                e.stopPropagation()
+                                e.preventDefault()
+                            }}>
+                        </div>)
+                    } else if (item.type === 7) {
+                        /* 直线 */
+                        return (<div key={j} className={style.circleLine}
+                            style={{ top: item.y, left: item.x, width: item.width, height: 2 }}
+                            onMouseOver={(e) => {
                                 //清除
-                                delectWho(e, props.nowTopic, j, 3)
-                            }
-                            e.stopPropagation()
-                            e.preventDefault()
-                        }}>
-                    </div>)
+                                if (mouseMoveType === 'trash') { delectWho(e, props.nowTopic, j, 3) }
+                            }}
+                            onMouseMove={(e) => {
+                                if (drawMove) {
+                                    drawRectXY.width = e.nativeEvent.screenX - drawRectXY.screenX;
+                                    props.gxphList();
+                                }
+                            }}
+                            onClick={(e) => {
+                                if (props.mouseType === 'trash') {
+                                    //清除
+                                    delectWho(e, props.nowTopic, j, 3)
+                                }
+                                e.stopPropagation()
+                                e.preventDefault()
+                            }}>
+                        </div>)
+                    } else if (item.type === 8) {
+                        /* 波浪线 */
+                        return (<div key={j} className={style.circleTilde}
+                            style={{ top: item.y, left: item.x, width: item.width, height: 8 }}
+                            onMouseOver={(e) => {
+                                //清除
+                                if (mouseMoveType === 'trash') { delectWho(e, props.nowTopic, j, 3) }
+                            }}
+                            onMouseMove={(e) => {
+                                if (drawMove) {
+                                    drawRectXY.width = e.nativeEvent.screenX - drawRectXY.screenX;
+                                    props.gxphList();
+                                }
+                            }}
+                            onClick={(e) => {
+                                if (props.mouseType === 'trash') {
+                                    //清除
+                                    delectWho(e, props.nowTopic, j, 3)
+                                }
+                                e.stopPropagation()
+                                e.preventDefault()
+                            }}>
+                        </div>)
+                    }
+
                 })}
 
                 {/* 对错图标 */}
@@ -559,7 +561,7 @@ export default function MarkedArea(props) {
                         if (e.nativeEvent.target === e.currentTarget && multiple > 1) {
                             setMouseClickX(e.nativeEvent.offsetX)
                         }
-                        if (!props.mouseType) {
+                        if (props.mouseType === 'circleBox') {
                             setDrawRectXY({
                                 x: e.nativeEvent.offsetX,
                                 y: e.nativeEvent.offsetY,
@@ -567,7 +569,27 @@ export default function MarkedArea(props) {
                                 screenY: e.nativeEvent.screenY,
                                 type: 5,
                             })
+                        } else if (props.mouseType === 'circleLine') {
+                            //画直线
+                            setDrawRectXY({
+                                x: e.nativeEvent.offsetX,
+                                y: e.nativeEvent.offsetY,
+                                screenX: e.nativeEvent.screenX,
+                                screenY: e.nativeEvent.screenY,
+                                type: 7,
+                            })
+                        } else if (props.mouseType === 'circleTilde') {
+                            //画波浪线
+                            setDrawRectXY({
+                                x: e.nativeEvent.offsetX,
+                                y: e.nativeEvent.offsetY,
+                                screenX: e.nativeEvent.screenX,
+                                screenY: e.nativeEvent.screenY,
+                                type: 8,
+                            })
                         }
+
+
                         e.preventDefault()
                     }}
                     onLoad={() => { setLoad(1); observer.publish('setLoad', 1) }} />

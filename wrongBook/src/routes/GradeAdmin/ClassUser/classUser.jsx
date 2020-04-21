@@ -57,7 +57,6 @@ class StuReport extends React.Component {
     let hash = location.substr(location.indexOf("sId=") + 4);
     let id = location.substr(location.indexOf("&id=") + 4);
     let head = hash.split('&id=');
-    let link = `classUser#${head[0]}&id=`
     let userNews = store.get('wrongBookNews')
     if (e.key !== id) {
       if (userNews.rodeType === 10) {
@@ -115,7 +114,7 @@ class StuReport extends React.Component {
   menulist() {
     let location = this.props.location.hash;
     let classList = [];
-    let id = location.substr(location.indexOf("&id=") + 4);
+    // let id = location.substr(location.indexOf("&id=") + 4);
 
     const rodeType = store.get('wrongBookNews').rodeType
     if (rodeType <= 20) {
@@ -139,11 +138,13 @@ class StuReport extends React.Component {
             observer.publish('fuyuan')
           }}
             mode="inline"
-            defaultSelectedKeys={[id]}
+            // defaultSelectedKeys={[id]}
+            selectedKeys={[`${this.state.nowclassid}`]}
             style={{ height: 'calc(100% - 120px)' }}
             className={style.menu}
             onClick={this.menuClick}
-            defaultOpenKeys={['sub']} >
+          // defaultOpenKeys={['sub']}
+          >
             {
               rodeType <= 20 ?
                 classList.data.list.map((item, i) => {
@@ -162,7 +163,7 @@ class StuReport extends React.Component {
                           }} defaultValue={item.className} /> : <span> {item.className}</span>}
 
                       （ {item.studentNum}人）
-                      </Menu.Item>
+                    </Menu.Item>
                   )
                 }) : classList.data.map((item, i) => {
                   return (
@@ -178,7 +179,7 @@ class StuReport extends React.Component {
                           onBlur={(e) => {
                             this.loseFocus(e)
                           }} defaultValue={item.className} /> : <span> {item.className}</span>}（ {item.studentNum}人）
-                      </Menu.Item>
+                    </Menu.Item>
                   )
                 })
             }
@@ -448,19 +449,35 @@ class StuReport extends React.Component {
       dispatch({
         type: 'classHome/pageClass',
         payload: data
-      });
+      }).then(() => {
+        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
+          dispatch({
+            type: 'homePage/infoClass',
+            payload: this.props.state.classList.data.list[0].classId
+          });
+          this.setState({
+            nowclassid: this.props.state.classList.data.list[0].classId
+          })
+          this.props.dispatch({
+            type: 'homePage/teacherList',
+            payload: {
+              type: 1,
+            }
+          });
+        }
+      })
 
-      dispatch({
-        type: 'homePage/infoClass',
-        payload: id[1]
-      });
+      // dispatch({
+      //   type: 'homePage/infoClass',
+      //   payload: id[1]
+      // });
       dispatch({
         type: 'homePage/infoSchool',
         payload: id[0]
       });
     } else if (userNews.rodeType == 20) {
 
-      let ids = hash.substr(hash.indexOf("&id=") + 4);
+      // let ids = hash.substr(hash.indexOf("&id=") + 4);
       let data = {
         schoolId: userNews.schoolId,
         pageSize: 9999,
@@ -470,12 +487,29 @@ class StuReport extends React.Component {
       dispatch({
         type: 'classHome/pageClass',
         payload: data
-      });
+      }).then(() => {
+        console.log(this.props.state)
+        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
+          dispatch({
+            type: 'homePage/infoClass',
+            payload: this.props.state.classList.data.list[0].classId
+          });
+          this.setState({
+            nowclassid: this.props.state.classList.data.list[0].classId
+          })
+          this.props.dispatch({
+            type: 'homePage/teacherList',
+            payload: {
+              type: 1,
+            }
+          });
+        }
+      })
 
-      dispatch({
-        type: 'homePage/infoClass',
-        payload: ids
-      });
+      // dispatch({
+      //   type: 'homePage/infoClass',
+      //   payload: ids
+      // });
       dispatch({
         type: 'homePage/infoSchool',
         payload: userNews.schoolId
@@ -496,19 +530,37 @@ class StuReport extends React.Component {
           year: this.props.state.years,
           schoolId: store.get('wrongBookNews').schoolId
         }
-      });
+      }).then(() => {
+        if (this.props.state.classList1 && this.props.state.classList1.data.length > 0 && this.props.state.classList1.data[0].classId) {
+          dispatch({
+            type: 'homePage/infoClass',
+            payload: this.props.state.classList1.data[0].classId
+          });
+          this.setState({
+            nowclassid: this.props.state.classList1.data[0].classId
+          })
+          this.props.dispatch({
+            type: 'homePage/teacherList',
+            payload: {
+              type: 1,
+            }
+          });
+        }
+      })
     }
 
     // this.props.dispatch({
     //   type: 'homePage/schoolTeacher',
     // });
-    // if(this.props.state.infoClass!='' || store.get('wrongBookNews').rodeType <= 20){
-    this.props.dispatch({
-      type: 'homePage/teacherList',
-      payload: {
-        type: 1
-      }
-    });
+    // if (this.props.state.infoClass != '' || store.get('wrongBookNews').rodeType <= 20) {
+
+    // this.props.dispatch({
+    //   type: 'homePage/teacherList',
+    //   payload: {
+    //     type: 1,
+    //   }
+    // });
+
     // }
     this.props.dispatch({
       type: 'homePage/subjectNodeList',
@@ -528,8 +580,39 @@ class StuReport extends React.Component {
       type: 'homePage/memType',
       payload: 1
     });
+  }
+
+  componentDidUpdate(prevProps) {
+
+    if (this.props.state.infoClass != this.state.nowclassid) {
+      console.log(prevProps)
+      if (store.get('wrongBookNews').rodeType <= 20) {
+        this.props.dispatch({
+          type: 'homePage/infoClass',
+          payload: this.props.state.classList.data.list[0].classId
+        });
+        this.setState({
+          nowclassid: this.props.state.classList.data.list[0].classId
+        })
+      } else {
+        this.props.dispatch({
+          type: 'homePage/infoClass',
+          payload: this.props.state.classList1.data[0].classId
+        });
+        this.setState({
+          nowclassid: this.props.state.classList1.data[0].classId
+        })
+      }
+      this.props.dispatch({
+        type: 'homePage/teacherList',
+        payload: {
+          type: 1,
+        }
+      });
+    }
 
   }
+
 
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import {
-    message, Select, Layout, Modal, Button, Icon
+    message, Select, Layout, Modal, Button, Icon, 
 } from 'antd';
 import style from './workCorrection.less';
 import observer from '../../utils/observer'
@@ -42,7 +42,10 @@ class workCorrection extends React.Component {
             reminder: false,
             checkinwho: 0,
             isAmend: false,
-            mouseType: false
+            mouseType: false,
+            loading: false,
+            sizeMultiple: 1,
+            focusIndex: false,
         }
         this.agoScrollTop = 0;
         observer.addSubscribe('updateList', (array) => {
@@ -119,7 +122,8 @@ class workCorrection extends React.Component {
         //切换批改页面的学科
         this.setState({
             nowPage: 0,
-            agoPage: -1
+            agoPage: -1,
+            focusIndex: false,
         })
         this.agoScrollTop = 0;
         this.props.dispatch({
@@ -141,7 +145,8 @@ class workCorrection extends React.Component {
 
         this.setState({
             nowPage: 0,
-            agoPage: -1
+            agoPage: -1,
+            focusIndex: false,
         })
         this.agoScrollTop = 0;
         this.props.dispatch({
@@ -156,7 +161,8 @@ class workCorrection extends React.Component {
     cutWork(value) {
         this.setState({
             nowPage: 0,
-            agoPage: -1
+            agoPage: -1,
+            focusIndex: false,
         })
         this.agoScrollTop = 0;
 
@@ -194,7 +200,8 @@ class workCorrection extends React.Component {
             idIndex: i,
             pitchCorrected: item.corrected,
             isAmend: item.corrected === 1 ? true : false,
-            mouseType: false
+            mouseType: false,
+            focusIndex: false,
         })
         this.agoScrollTop = 0;
 
@@ -234,7 +241,8 @@ class workCorrection extends React.Component {
                 pitchStuName: uncheck[nowindex].name,
                 pitchCorrected: uncheck[nowindex].corrected,
                 isAmend: uncheck[nowindex].corrected === 1 ? true : false,
-                mouseType: false
+                mouseType: false,
+                focusIndex: false,
             })
 
         } else {
@@ -262,7 +270,8 @@ class workCorrection extends React.Component {
                 pitchCorrected: checked[nowindex].corrected,
                 idIndex: nowindex,
                 isAmend: checked[nowindex].corrected === 1 ? true : false,
-                mouseType: false
+                mouseType: false,
+                focusIndex: false,
             })
         }
         document.getElementById('markedArea').scrollTop = 0;
@@ -396,7 +405,7 @@ class workCorrection extends React.Component {
                         })
                         this.nextStu(uncheck, checked)
                     }
-
+                    this.setState({ loading: false })
                 })
             }
 
@@ -433,7 +442,8 @@ class workCorrection extends React.Component {
     //改变页码
     changePage(i) {
         this.setState({
-            nowPage: i
+            nowPage: i,
+            focusIndex: false,
         })
         document.getElementById('markedArea').scrollTop = document.getElementById('markedArea').childNodes[i].offsetTop - 50
     }
@@ -454,7 +464,8 @@ class workCorrection extends React.Component {
         })
         this.setState({
             present: 1,
-            nowPage: 0
+            nowPage: 0,
+            focusIndex: false,
         })
     }
 
@@ -478,7 +489,6 @@ class workCorrection extends React.Component {
                 }
             })
         } else {
-            console.log(isExcellent)
             //更新评论
             this.props.dispatch({
                 type: 'correction/updateCommit',
@@ -492,10 +502,43 @@ class workCorrection extends React.Component {
                 }
             })
         }
-
+        this.setState({ loading: false })
     }
 
+    subjectScroll(e) {
+        let nowPage = this.state.nowPage, scrollTop = e.currentTarget.scrollTop, childNodes = document.getElementById('markedArea').childNodes;
 
+        if (scrollTop) {
+            if (scrollTop - this.agoScrollTop > 0 && nowPage < childNodes.length - 1 && scrollTop > childNodes[nowPage].offsetTop + (childNodes[nowPage + 1].offsetTop - childNodes[nowPage].offsetTop) * 0.7) {
+                this.agoScrollTop = scrollTop;
+                nowPage++
+                this.setState({ nowPage, focusIndex: false, })
+                //平滑滚动
+                if (!this.scrollDown) {
+                    var time = setInterval(function () {
+
+                        document.getElementById('markedArea').scrollTop += (childNodes[nowPage].offsetTop - childNodes[nowPage - 1].offsetTop) * 0.01;
+                        if (document.getElementById('markedArea').scrollTop >= childNodes[nowPage].offsetTop || childNodes[nowPage].clientHeight + childNodes[nowPage].offsetTop === document.getElementById('markedArea').scrollHeight) {
+                            clearInterval(time);
+                        }
+                    }, 1);
+                }
+            } else if (scrollTop - this.agoScrollTop < 0 && nowPage > 0 && scrollTop < childNodes[nowPage - 1].offsetTop + (childNodes[nowPage].offsetTop - childNodes[nowPage - 1].offsetTop) * 0.3) {
+                nowPage--
+                this.agoScrollTop = scrollTop;
+                this.setState({ nowPage, focusIndex: false, });
+                //平滑滚动
+                if (!this.scrollDown) {
+                    var time = setInterval(function () {
+                        document.getElementById('markedArea').scrollTop -= (childNodes[nowPage + 1].offsetTop - childNodes[nowPage].offsetTop) * 0.01;
+                        if (document.getElementById('markedArea').scrollTop <= childNodes[nowPage].offsetTop) {
+                            clearInterval(time);
+                        }
+                    }, 1);
+                }
+            }
+        }
+    }
 
     render() {
         let classList = this.props.state.classList1,
@@ -536,55 +579,53 @@ class workCorrection extends React.Component {
         } else if (checked.length > 0 && checked[this.state.idIndex]) {
             wtbHomeworkCorrect = checked[this.state.idIndex].wtbHomeworkCorrect;
         }
-        return (
-            <Content style={{ minHeight: 700, overflow: 'hidden', overflowX: 'auto', position: 'relative' }}>
+        return (<>
+            <Header className={style.headTop} >
+                {classList.data && classList.data.length > 0 && className != '' &&
+                    <Select style={{ width: 120 }}
+                        getPopupContainer={triggerNode => triggerNode.parentElement}
+                        placeholder="班级"
+                        value={this.props.state.classId}
+                        optionFilterProp="children"
+                        onChange={(value, option) => { this.cutClass(value, option) }}
+                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
+                        {classList.data.map((item, i) => (
+                            <Option key={i} value={item.classId}>{item.className}</Option>
+                        ))}
+                    </Select>}
+                {subjectList.length > 0 &&
+                    <Select style={{ width: 90, marginLeft: 5 }}
+                        showSearch
+                        getPopupContainer={triggerNode => triggerNode.parentElement}
+                        placeholder="学科"
+                        value={this.props.state.subjectId}
+                        optionFilterProp="children"
+                        onChange={(value, option) => { this.cutSubject(value, option) }}
+                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
+                        {subjectList.map((item, i) => (
+                            <Option key={i} value={item.v}>{item.k}</Option>
+                        ))}
+                    </Select>
+                }
+                {homeworkList.length > 0 &&
+                    <Select style={{ width: 150, marginLeft: 5 }}
+                        showSearch
+                        getPopupContainer={triggerNode => triggerNode.parentElement}
+                        placeholder="作业"
+                        optionFilterProp="children"
+                        value={this.props.state.workDate}
+                        onChange={(value) => { this.cutWork(value) }}
+                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
+                        {homeworkList.map((item, i) => (
+                            <Option key={item} value={item}>{item}</Option>
+                        ))}
+                    </Select>
+                }
+            </Header>
+            <Content style={{ overflow: 'auto', position: 'relative' }}>
                 <Layout className={style.layout}>
-                    <Header style={{ background: '#a3b0c3', height: '50px', padding: 0, minWidth: this.state.minWidth }}>
-                        <div style={{ height: '50px', lineHeight: '50px', background: 'rgba(198,206,218,1)' }}>
-                            {classList.data && classList.data.length > 0 && className != '' &&
-                                <Select style={{ width: 120, marginLeft: 25 }}
-                                    getPopupContainer={triggerNode => triggerNode.parentElement}
-                                    placeholder="班级"
-                                    value={this.props.state.classId}
-                                    optionFilterProp="children"
-                                    onChange={(value, option) => { this.cutClass(value, option) }}
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
-                                    {classList.data.map((item, i) => (
-                                        <Option key={i} value={item.classId}>{item.className}</Option>
-                                    ))}
-                                </Select>}
-                            {subjectList.length > 0 &&
-                                <Select style={{ width: 90, marginLeft: 5 }}
-                                    showSearch
-                                    getPopupContainer={triggerNode => triggerNode.parentElement}
-                                    placeholder="学科"
-                                    value={this.props.state.subjectId}
-                                    optionFilterProp="children"
-                                    onChange={(value, option) => { this.cutSubject(value, option) }}
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
-                                    {subjectList.map((item, i) => (
-                                        <Option key={i} value={item.v}>{item.k}</Option>
-                                    ))}
-                                </Select>
-                            }
-                            {homeworkList.length > 0 &&
-                                <Select style={{ width: 150, marginLeft: 5 }}
-                                    showSearch
-                                    getPopupContainer={triggerNode => triggerNode.parentElement}
-                                    placeholder="作业"
-                                    optionFilterProp="children"
-                                    value={this.props.state.workDate}
-                                    onChange={(value) => { this.cutWork(value) }}
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
-                                    {homeworkList.map((item, i) => (
-                                        <Option key={item} value={item}>{item}</Option>
-                                    ))}
-                                </Select>
-                            }
-                        </div>
-                    </Header>
-                    <Layout className={style.innerOut} style={{ minWidth: this.state.minWidth }}>
 
+                    <Layout className={style.innerOut} style={{ minWidth: this.state.minWidth }}>
                         <SiderNavigation
                             checked={checked}
                             uncheck={uncheck}
@@ -592,30 +633,20 @@ class workCorrection extends React.Component {
                             present={this.state.present}
                             pitchStuId={this.state.pitchStuId}
                             clickStu={(item, i) => { this.clickStu(item, i) }}
-                            checkinwho={(value) => {
-                                this.setState({
-                                    checkinwho: value
-                                })
-                            }}
-                            changePresent={(value) => {
-                                this.setState({
-                                    present: value
-                                })
-                            }}
+                            checkinwho={(value) => { this.setState({ checkinwho: value }) }}
+                            changePresent={(value) => { this.setState({ present: value }) }}
                         />
                         <div>
                             {this.state.phList.length > 0 && this.props.state.isCorrected !== 1 &&
-                                <div className={style.checkPicture} style={{
-                                    position: 'absolute',
-                                    zIndex: 30,
-                                    width: this.state.nowImgWidth,
-                                    marginLeft: 20
-                                }}>
+                                <div className={style.checkPicture} style={{ position: 'absolute', zIndex: 30, width: this.state.nowImgWidth, marginLeft: 20 }}>
                                     <Toolbar nowTopic={this.state.phList[this.state.nowPage]}
                                         isAmend={this.state.isAmend}
                                         pitchStuName={this.state.pitchStuName}
                                         mouseType={this.state.mouseType}
-                                        changeMouseType={(type) => this.setState({ mouseType: type })}
+                                        changeMouseType={(type) => {
+                                            this.setState({ mouseType: type })
+                                            if (type !== 'text') { this.setState({ focusIndex: false }) }
+                                        }}
                                         quandui={() => {
                                             if (this.state.agoPage === -1) {
                                                 this.setState({ agoPage: this.state.nowPage })
@@ -627,33 +658,20 @@ class workCorrection extends React.Component {
                                             this.setState({ phList: this.state.phList })
                                         }}
                                         gxphList={() => { this.setState({ phList: this.state.phList }) }}
+                                        sizeMultiple={this.state.sizeMultiple}
+                                        changeTextSize={(data) => {
+                                            if (this.state.focusIndex !== false) {
+                                                this.state.phList[this.state.nowPage].contentMarkList[this.state.focusIndex].fontSize = data
+                                            }
+                                            this.setState({ sizeMultiple: data });
+
+                                        }}
                                     />
                                 </div>}
                             <div className={style.correction} id='markedArea'
-                                onMouseDown={(e) => {
-                                    this.agoScrollTop = e.currentTarget.scrollTop;
-                                }}
-                                onScroll={(e) => {
-
-                                    let nowPage = this.state.nowPage, scrollTop = e.currentTarget.scrollTop, childNodes = document.getElementById('markedArea').childNodes;
-
-                                    if (scrollTop) {
-                                        if (scrollTop - this.agoScrollTop > 0 && nowPage < childNodes.length - 1 && scrollTop > childNodes[nowPage].offsetTop + (childNodes[nowPage + 1].offsetTop - childNodes[nowPage].offsetTop) * 0.7) {
-                                            nowPage++
-                                            this.agoScrollTop = scrollTop;
-                                            this.setState({
-                                                nowPage
-                                            })
-                                        } else if (scrollTop - this.agoScrollTop < 0 && nowPage > 0 && scrollTop < childNodes[nowPage - 1].offsetTop + (childNodes[nowPage].offsetTop - childNodes[nowPage - 1].offsetTop) * 0.3) {
-                                            nowPage--
-                                            this.agoScrollTop = scrollTop;
-                                            this.setState({
-                                                nowPage
-                                            })
-                                        }
-                                    }
-
-                                }}>
+                                onMouseDown={(e) => { this.agoScrollTop = e.currentTarget.scrollTop; this.scrollDown = true; }}
+                                onScroll={this.subjectScroll.bind(this)}
+                                onMouseUp={() => { this.scrollDown = false; }}>
                                 {this.props.state.isCorrected === 1 ?
                                     <Complete
                                         nowImgWidth={this.state.nowImgWidth}
@@ -661,7 +679,6 @@ class workCorrection extends React.Component {
                                         average={Math.round(allcuoti / studentList.submitted.length)}
                                         clickButton={() => { this.clickDetails() }}
                                     /> : <>
-
                                         {this.state.phList.length > 0 ? <>
                                             {this.state.phList.map((item, i) => (
                                                 <MarkedArea
@@ -689,7 +706,9 @@ class workCorrection extends React.Component {
                                                     nowImgWidth={this.state.nowImgWidth}
                                                     nowIcoWidth={this.state.nowIcoWidth}
                                                     nowTopic={item}
+                                                    sizeMultiple={this.state.sizeMultiple}
                                                     src={`${item.pageUrl}/thumbnail/1000x/interlace/1`}
+                                                    focusIndex={(index) => { this.setState({ focusIndex: index }); console.log(index) }}
                                                 />
                                             ))}
 
@@ -719,26 +738,19 @@ class workCorrection extends React.Component {
                                 })}
                             </div>
                             <div className={style.anniu}>
-                                <div className={style.tishi} onClick={() => {
-                                    this.setState({
-                                        reminder: true
-                                    })
-                                }}>
+                                <div className={style.tishi} onClick={() => { this.setState({ reminder: true }) }}>
                                     <div style={this.state.reminder ? { display: 'block' } : { display: 'none' }}>
                                         <div className={style.triangle}></div>
                                         <div className={style.howdoit}>
                                             <div className={style.howtitle}>如何批改作业</div>
                                             <div style={{ textAlign: "center" }}>
-                                                <img src={'http://homework.mizholdings.com/kacha/kcsj/708c34a7fc00bc05/.jpg'} style={{ width: 250, height: 202 }} />
+                                                <img src={'https://homework.mizholdings.com/kacha/xcx/page/4667399730825216.4804558421592064.1587034832688.jpg'} style={{ width: 250, height: 202 }} />
                                             </div>
                                             鼠标左键单击作业错题，可判错误；再次单击错号，更改为半对错；第三次单击半对错，判对；依次循环<br /><br />
 
                                             所有页面全部批完点击 <span style={{ color: '#4B8EFF' }}>【完成批改】</span>，可自动切换至下一学生的作业
                                                 <div className={style.howbutton} onClick={(e) => {
-                                                this.setState({
-                                                    reminder: false
-                                                })
-                                                e.stopPropagation();
+                                                this.setState({ reminder: false }); e.stopPropagation();
                                             }}>我知道了</div>
                                         </div>
                                     </div>
@@ -753,7 +765,9 @@ class workCorrection extends React.Component {
                                 userId={this.state.pitchStuId}
                                 isAmend={this.state.isAmend}
                                 change={() => { this.setState({ isAmend: false }) }}
+                                loading={this.state.loading}
                                 wancheng={(content, common, level, score, isExcellent) => {
+                                    if (studentList.submitted.length === 0) { return; }
                                     let that = this;
                                     if (approvedTopic === this.state.phList.length) {
                                         if (this.state.agoPage === -1) {
@@ -782,26 +796,30 @@ class workCorrection extends React.Component {
                                                 } else {
                                                     that.publishOrUpdate(content, common, level, score, isExcellent, true)
                                                 }
+                                            },
+                                            onCancel() {
+                                                that.setState({ loading: false })
                                             }
                                         });
                                     }
+                                    that.setState({ loading: true })
+
                                 }} />
                         </div>
 
-                        {Number(localStorage.getItem('jishu')) < 3 && this.state.meismyong === 0 &&
-
+                        {Number(localStorage.getItem('jishu2')) < 3 && this.state.meismyong === 0 &&
                             <div className={style.gifBox}>
-                                <img src={'http://homework.mizholdings.com/kacha/kcsj/708c34a7fc00bc05/.jpg'} style={{ width: 290 }} />
+                                <img src={'https://homework.mizholdings.com/kacha/xcx/page/4667399730825216.4804558421592064.1587034832688.jpg'} style={{ width: 290 }} />
                                 <div>
                                     <p style={{ margin: '25px 0 20px 14px', color: '#000004', fontSize: 16 }}>如何批改作业</p>
                                     <p style={{ margin: 14 }}>1.单击图片任意位置可判错，单击<img src={require('../images/mini-cha.png')} />更改
                             为半对，第三次单击<img src={require('../images/mini-cha.png')} />判对</p>
                                     <p style={{ margin: 14 }}>2. 单击并拖动鼠标可添加矩形框  </p>
                                     <div className={style.guanbi} onClick={() => {
-                                        if (localStorage.getItem('jishu')) {
-                                            localStorage.setItem('jishu', Number(localStorage.getItem('jishu')) + 1)
+                                        if (localStorage.getItem('jishu2')) {
+                                            localStorage.setItem('jishu2', Number(localStorage.getItem('jishu2')) + 1)
                                         } else {
-                                            localStorage.setItem('jishu', 1)
+                                            localStorage.setItem('jishu2', 1)
                                         }
                                         this.setState({
                                             meismyong: 1
@@ -811,13 +829,11 @@ class workCorrection extends React.Component {
                                 </div>
                                 </div>
                             </div>
-
                         }
-
                     </Layout>
-
                 </Layout >
             </Content >
+        </>
         )
 
     }
@@ -837,9 +853,9 @@ class workCorrection extends React.Component {
             })
         } else if (window.screen.availWidth < 1600) {
             this.setState({
-                minWidth: 1110,
-                nowImgWidth: 520,
-                nowIcoWidth: 21,
+                minWidth: 1160,
+                nowImgWidth: 600,
+                nowIcoWidth: 25,
             })
         }
         if (this.props.state.classId !== '') {

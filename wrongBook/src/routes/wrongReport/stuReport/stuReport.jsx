@@ -935,7 +935,7 @@ class StuReport extends React.Component {
         that.props.dispatch({
           type: 'report/WrongQuestionMarker',
           payload: {
-            uqId: that.state.nowWindows.questionId,
+            uqId: that.state.nowWindows.recommendId,
             userId: store.get('wrongBookNews').userId,
             way: 2
           }

@@ -20,6 +20,7 @@ import {
 	tree,
 	queDetail,
 	sign,
+	remove,
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -819,6 +820,15 @@ export default {
 		},
 		* sign({ payload }, { put, select }) {
 			let res = yield sign(payload);
+			if (res.data && res.data.result === 0) {
+				message.success(res.data.msg)
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+
+		* remove({ payload }, { put, select }) {
+			let res = yield remove(payload);
 			if (res.data && res.data.result === 0) {
 				message.success(res.data.msg)
 			} else {

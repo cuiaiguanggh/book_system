@@ -20,15 +20,8 @@ class intelligentDollors extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
-                sameDay: 'YYYY/MM/DD',
-                nextDay: 'YYYY/MM/DD',
-                nextWeek: 'YYYY/MM/DD',
-                lastDay: 'YYYY/MM/DD',
-                lastWeek: 'YYYY/MM/DD',
-                sameElse: 'YYYY/MM/DD'
-            })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
-            mouNow: -1,
+            selectTime: [],
+            mouNow: 0,
             dollorsKnowledge: [],
             topicList: [],
             pattern: [],
@@ -118,15 +111,16 @@ class intelligentDollors extends React.Component {
         //重置
         observer.addSubscribe('dollorsReset', () => {
             this.setState({
-                selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
-                    sameDay: 'YYYY/MM/DD',
-                    nextDay: 'YYYY/MM/DD',
-                    nextWeek: 'YYYY/MM/DD',
-                    lastDay: 'YYYY/MM/DD',
-                    lastWeek: 'YYYY/MM/DD',
-                    sameElse: 'YYYY/MM/DD'
-                })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
-                mouNow: -1,
+                // selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
+                //     sameDay: 'YYYY/MM/DD',
+                //     nextDay: 'YYYY/MM/DD',
+                //     nextWeek: 'YYYY/MM/DD',
+                //     lastDay: 'YYYY/MM/DD',
+                //     lastWeek: 'YYYY/MM/DD',
+                //     sameElse: 'YYYY/MM/DD'
+                // })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
+                selectTime: [],
+                mouNow: 0,
                 dollorsKnowledge: [],
                 topicList: [],
                 pattern: [],
@@ -135,15 +129,16 @@ class intelligentDollors extends React.Component {
         //切换学科时
         observer.addSubscribe('dollorsChange', (subId) => {
             this.setState({
-                selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
-                    sameDay: 'YYYY/MM/DD',
-                    nextDay: 'YYYY/MM/DD',
-                    nextWeek: 'YYYY/MM/DD',
-                    lastDay: 'YYYY/MM/DD',
-                    lastWeek: 'YYYY/MM/DD',
-                    sameElse: 'YYYY/MM/DD'
-                })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
-                mouNow: -1,
+                // selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
+                //     sameDay: 'YYYY/MM/DD',
+                //     nextDay: 'YYYY/MM/DD',
+                //     nextWeek: 'YYYY/MM/DD',
+                //     lastDay: 'YYYY/MM/DD',
+                //     lastWeek: 'YYYY/MM/DD',
+                //     sameElse: 'YYYY/MM/DD'
+                // })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
+                selectTime: [],
+                mouNow: 0,
             })
 
             //获取知识点
@@ -152,21 +147,13 @@ class intelligentDollors extends React.Component {
                 classId: this.props.state.classId,
                 subjectId: subId,
                 type: 0,
-                endTime: moment().format('YYYY-MM-DD'),
-                startTime: moment().subtract(7, 'days').calendar(null, {
-                    sameDay: 'YYYY-MM-DD',
-                    nextDay: 'YYYY-MM-DD',
-                    nextWeek: 'YYYY-MM-DD',
-                    lastDay: 'YYYY-MM-DD',
-                    lastWeek: 'YYYY-MM-DD',
-                    sameElse: 'YYYY-MM-DD'
-                }),
             })
 
             //题目列表
             this.getTitles({
                 classId: this.props.state.classId,
                 subjectId: subId,
+                year: this.props.state.years,
             })
 
         })
@@ -548,21 +535,14 @@ class intelligentDollors extends React.Component {
             classId: this.props.state.classId,
             subjectId: this.props.state.subId,
             type: 0,
-            endTime: moment().format('YYYY-MM-DD'),
-            startTime: moment().subtract(7, 'days').calendar(null, {
-                sameDay: 'YYYY-MM-DD',
-                nextDay: 'YYYY-MM-DD',
-                nextWeek: 'YYYY-MM-DD',
-                lastDay: 'YYYY-MM-DD',
-                lastWeek: 'YYYY-MM-DD',
-                sameElse: 'YYYY-MM-DD'
-            }),
         })
+
 
         //题目列表
         this.getTitles({
             classId: this.props.state.classId,
             subjectId: this.props.state.subId,
+            year: this.props.state.years,
         })
 
     }

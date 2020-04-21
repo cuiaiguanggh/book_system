@@ -712,7 +712,7 @@ class WorkReport extends React.Component {
                       color: '#409eff',
                       cursor: 'pointer',
                       marginTop: 5,
-                    }} onClick={this.tiaoz.bind(this, item.uqId)}>
+                    }} onClick={this.tiaoz.bind(this, item.recommendId)}>
                       <img src={require('../../images/seek.png')} style={{ marginRight: '6px' }} />
                       搜索题目</span>
 

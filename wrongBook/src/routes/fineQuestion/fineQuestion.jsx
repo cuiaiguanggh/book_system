@@ -64,10 +64,11 @@ class fineQuestion extends React.Component {
         if (this.state.electTopiced) {
             nowPageTopics = filterTopics.slice((this.state.pageNumber - 1) * 10, this.state.pageNumber * 10);
         }
+        console.log(nowPageTopics)
 
         return (
-            <Layout style={{ background: '#EBECEE', padding: '15px 4% 15px 8%' }}>
-                <Sider className={style.left} >
+            <Layout className={style.bigBox} id='topicId'>
+                <Sider className={style.left} style={{ height: 'calc(100% - 95px)' }}>
                     <Spin spinning={this.state.loading}>
                         <QuestionMenu treeStructure={this.state.treeStructure}
                             nowKnowledgeId={this.state.nowKnowledgeId}
@@ -83,12 +84,13 @@ class fineQuestion extends React.Component {
                                     }
                                 }).then(data => {
                                     this.setState({
-                                        topics: data
+                                        topics: data,
+                                        pageNumber: 1,
                                     })
+                                    document.getElementById('topicId').scrollTop = 0;
                                 })
                             }}
                             updataGrade={(suzu, number, subjectId) => {
-
                                 this.props.dispatch({
                                     type: 'report/tree',
                                     payload: {
@@ -107,14 +109,16 @@ class fineQuestion extends React.Component {
                                     checkedGrade: [...suzu],
                                     gradePeriod: number,
                                     loading: true,
+                                    topics: [],
+                                    pageNumber: 1,
+                                    nowKnowledgeId: '',
                                 })
 
                             }}
                         />
                     </Spin>
                 </Sider>
-
-                <Layout style={{ background: '#EBECEE', marginLeft: 20, maxWidth: 930 }}>
+                <Layout style={{ background: '#EBECEE', marginLeft: 270, maxWidth: 930, overflow: 'visible' }}>
                     <QuestionHeader
                         grade={this.state.grade}
                         checkedGrade={this.state.checkedGrade}
@@ -135,8 +139,10 @@ class fineQuestion extends React.Component {
                                     }
                                 }).then(data => {
                                     this.setState({
-                                        topics: data
+                                        topics: data,
+                                        pageNumber: 1,
                                     })
+                                    document.getElementById('topicId').scrollTop = 0;
                                 })
                             }
                         }}
@@ -158,24 +164,64 @@ class fineQuestion extends React.Component {
                                 for (let obj of nowPageTopics) {
                                     questionId.push(obj.questionId)
                                 }
+                                if (questionId.length === 0) {
+                                    return
+                                }
                                 this.props.dispatch({
                                     type: 'report/sign',
                                     payload: {
                                         questionId,
                                         isGood: 1
                                     }
+                                }).then(() => {
+                                    this.props.dispatch({
+                                        type: 'report/queDetail',
+                                        payload: {
+                                            ...this.state.parameter,
+                                            knowledgeId: this.state.nowKnowledgeId
+                                        }
+                                    }).then(data => {
+                                        this.setState({
+                                            topics: data
+                                        })
+                                    })
+
+                                    if (this.state.electTopiced) {
+                                        document.getElementById('topicId').scrollTop = 0;
+                                    }
                                 })
+
                             }}>选择本页全部试题</span>
                         </div>
 
                     </div>
-                    <Content style={{ overflow: `${this.state.topics.length === 0 ? 'hidden' : 'auto'}`, height: '100%' }} id='topicId'>
+                    <Content style={{ overflow: `${this.state.topics.length === 0 ? 'hidden' : 'visible'}`, height: '100%' }} >
                         {this.state.topics.length === 0 ?
                             <div style={{ background: '#fff', height: '100%', textAlign: "center" }}>
                                 <img src='http://homework.mizholdings.com/kacha/kcsj/bf15af1b5aee2444/.png' style={{ marginTop: 160 }} />
                                 <p style={{ color: '#111111' }}>没有找到对应的题目</p>
                             </div> :
                             <QuestionTopic topics={nowPageTopics}
+                                delect={(questionId) => {
+                                    this.props.dispatch({
+                                        type: 'report/remove',
+                                        payload: {
+                                            questionId: questionId
+                                        }
+                                    }).then(() => {
+                                        this.props.dispatch({
+                                            type: 'report/queDetail',
+                                            payload: {
+                                                ...this.state.parameter,
+                                                knowledgeId: this.state.nowKnowledgeId
+                                            }
+                                        }).then(data => {
+                                            this.setState({
+                                                topics: data
+                                            })
+                                        })
+                                    })
+                                }}
                                 joinRemove={(questionId, isGood, index) => {
                                     this.props.dispatch({
                                         type: 'report/sign',
@@ -184,36 +230,47 @@ class fineQuestion extends React.Component {
                                             isGood
                                         }
                                     })
-                                    this.state.topics[(this.state.pageNumber - 1) * 10 + index].isGood = isGood;
-                                    this.setState({
-                                        topics: this.state.topics
-                                    })
+                                    if (this.state.electTopiced) {
+                                        for (let i = 0; i < this.state.topics.length; i++) {
+                                            console.log(this.state.topics[i].questionId)
+                                            if (this.state.topics[i].questionId === questionId) {
+                                                this.state.topics[i].isGood = isGood;
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        this.state.topics[(this.state.pageNumber - 1) * 10 + index].isGood = isGood;
+                                    }
+                                    this.setState({ topics: this.state.topics })
                                 }} />}
+
+
+                        <div style={{ position: 'relative', textAlign: "center", padding: '5px 0 15px', display: `${this.state.topics.length === 0 ? 'none' : 'block'}` }}>
+                            <ConfigProvider locale={zhCN}>
+                                <Pagination
+                                    showQuickJumper
+                                    current={this.state.pageNumber}
+                                    showTotal={total => `共${total}条`}
+                                    total={this.state.electTopiced ? filterTopics.length : this.state.topics.length}
+                                    onChange={(pageNumber) => {
+                                        document.getElementById('topicId').scrollTop = 0;
+                                        this.setState({
+                                            pageNumber
+                                        })
+                                    }} />
+                            </ConfigProvider>
+                            <img src={'http://homework.mizholdings.com/kacha/kcsj/309f4c25a216fffe/.png'}
+                                style={{
+                                    position: 'fixed',
+                                    bottom: 70,
+                                    right: '8%',
+                                    cursor: 'pointer'
+                                }}
+                                onClick={() => { document.getElementById('topicId').scrollTop = 0; }} />
+                        </div>
                     </Content>
 
-                    <div style={{ position: 'relative', textAlign: "center", paddingTop: 5, display: `${this.state.topics.length === 0 ? 'none' : 'block'}` }}>
-                        <ConfigProvider locale={zhCN}>
-                            <Pagination
-                                showQuickJumper
-                                current={this.state.pageNumber}
-                                showTotal={total => `共${total}条`}
-                                total={this.state.electTopiced ? filterTopics.length : this.state.topics.length}
-                                onChange={(pageNumber) => {
-                                    document.getElementById('topicId').scrollTop = 0;
-                                    this.setState({
-                                        pageNumber
-                                    })
-                                }} />
-                        </ConfigProvider>
-                        <img src={'http://homework.mizholdings.com/kacha/kcsj/309f4c25a216fffe/.png'}
-                            style={{
-                                position: 'fixed',
-                                bottom: 70,
-                                right: '8%',
-                                cursor: 'pointer'
-                            }}
-                            onClick={() => { document.getElementById('topicId').scrollTop = 0; }} />
-                    </div>
+
 
 
                 </Layout>

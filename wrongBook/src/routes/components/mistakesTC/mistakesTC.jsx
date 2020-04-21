@@ -111,7 +111,7 @@ export default class MistakesTC extends React.Component {
                             id = errorDetails.uqId.split('uqid-')[1]
                           } else {
                             // 班级错题
-                            id = [errorDetails.picId.split('uqid-')[1], errorDetails.questionId]
+                            id = errorDetails.recommendId
                           }
                           errorDetails.type = 1;
                           that.props.pipeicw(id);

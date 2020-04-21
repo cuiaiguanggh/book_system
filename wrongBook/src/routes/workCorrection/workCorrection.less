@@ -5,9 +5,18 @@
   line-height: 50px
 }
 
+.headTop {
+  background: #fff;
+  height    : 50px;
+  padding   : 0px;
+  position  : absolute;
+  left      : 70px;
+}
+
+
 .innerOut {
   position       : absolute;
-  top            : 50px;
+  top            : 0px;
   bottom         : 0;
   padding        : 20px 0 10px;
   width          : 100%;
@@ -418,27 +427,80 @@
     background: url('../images/rotate.png') no-repeat center;
   }
 
-  .Atext {
 
+  .AtextBox {
+    float : right;
+    width : 25px;
+    height: 32px;
+    margin: 13px 5% 0px 0px;
+
+    &:hover {
+      // .triangle {
+      //   display: block;
+      // }
+
+      // .drawType {
+      //   display: flex;
+      // }
+
+      .Atext {
+        background: url('../images/Ahover.png') no-repeat center;
+      }
+
+    }
+  }
+
+  .Atext {
     &.nowSelect {
       background: url('../images/Ahover.png') no-repeat center;
     }
 
     &:hover {
-      .hintText {
-        display: block;
-      }
-
       background: url('../images/Ahover.png') no-repeat center;
     }
 
-    float     : right;
-    margin    : 13px 5% 0px 0px;
-    position  : relative;
-    cursor    : pointer;
-    width     : 22px;
-    height    : 22px;
-    background: url('../images/Adefault.png') no-repeat center;
+
+    position   : relative;
+    cursor     : pointer;
+    width      : 22px;
+    height     : 22px;
+    background : url('../images/Adefault.png') no-repeat center;
+
+    .nowSelect {
+      color: #409EFF
+    }
+
+    .triangle {
+      display           : none;
+      border            : 8px solid #fff;
+      position          : absolute;
+      top               : 35px;
+      border-left-color : transparent;
+      border-top-color  : transparent;
+      border-right-color: transparent;
+      left              : 2px;
+    }
+
+    // .drawType {
+    //   width          : 120px;
+    //   height         : 40px;
+    //   background     : rgba(255, 255, 255, 1);
+    //   box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+    //   border-radius  : 5px;
+    //   position       : absolute;
+    //   top            : 50px;
+    //   left           : -45px;
+    //   justify-content: center;
+    //   align-items    : center;
+    //   display        : none;
+    //   font-size      : 14px;
+
+    //   span:hover {
+    //     color: #409EFF
+    //   }
+    // }
+
+
   }
 
   .trash {
@@ -464,6 +526,150 @@
     background: url('../images/trash.png') no-repeat center;
     position  : relative;
   }
+
+  .circleBox {
+    float : right;
+    width : 24px;
+    height: 35px;
+    margin: 10px 5% 0px 0px;
+
+    &:hover {
+      .triangle {
+        display: block;
+      }
+
+      // .drawType {
+      //   display: flex;
+      // }
+
+      .circle {
+        background: url('../images/blueFang.png') no-repeat center;
+      }
+
+
+      // .circle.box {
+      //   background: url('../images/blueSide.png') no-repeat center;
+      // }
+
+      .circle.tilde {
+        background: url('../images/blueTilde.png') no-repeat center;
+      }
+
+      .circle.line {
+        background: url('../images/blueLine.png') no-repeat center;
+      }
+
+    }
+
+  }
+
+  .circle {
+    width          : 24px;
+    height         : 24px;
+    cursor         : pointer;
+    position       : relative;
+    background     : url('../images/fang.png') no-repeat center;
+
+    // &.box {
+    //   background: url('../images/side.png') no-repeat center;
+    // }
+
+    &.tilde {
+      background: url('../images/side.png') no-repeat center;
+    }
+
+    &.line {
+      background: url('../images/line.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background     : url('../images/blueFang.png') no-repeat center;
+    }
+
+    &.nowSelect.line {
+      background: url('../images/blueLine.png') no-repeat center;
+    }
+
+    &.nowSelect.tilde {
+      background: url('../images/blueTilde.png') no-repeat center;
+    }
+
+    // .triangle {
+    //   display           : none;
+    //   border            : 8px solid #fff;
+    //   position          : absolute;
+    //   top               : 35px;
+    //   border-left-color : transparent;
+    //   border-top-color  : transparent;
+    //   border-right-color: transparent;
+    //   left              : 2px;
+    // }
+
+    // .drawType {
+    //   width          : 120px;
+    //   height         : 40px;
+    //   background     : rgba(255, 255, 255, 1);
+    //   box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+    //   border-radius  : 5px;
+    //   position       : absolute;
+    //   top            : 50px;
+    //   left           : -45px;
+    //   justify-content: center;
+    //   align-items    : center;
+    //   display        : none;
+
+    //   .littleBox {
+    //     width     : 15px;
+    //     height    : 15px;
+    //     background: url('../images/side.png') no-repeat center;
+
+    //     &:hover {
+    //       background: url('../images/blueSide.png') no-repeat center;
+    //     }
+
+    //     &.nowSelect {
+    //       background: url('../images/blueSide.png') no-repeat center;
+    //     }
+    //   }
+
+    //   .line {
+    //     background: url('../images/line.png') no-repeat center;
+    //     width     : 22px;
+    //     height    : 22px;
+    //     display   : inline-block;
+    //     margin    : 0 14px;
+
+    //     &:hover {
+    //       background: url('../images/blueLine.png') no-repeat center;
+    //     }
+
+    //     &.nowSelect {
+    //       background: url('../images/blueLine.png') no-repeat center;
+    //     }
+
+    //   }
+
+    //   .tilde {
+    //     background: url('../images/tilde.png') no-repeat center;
+    //     width     : 22px;
+    //     height    : 22px;
+    //     display   : inline-block;
+
+    //     &:hover {
+    //       background: url('../images/blueTilde.png') no-repeat center;
+    //     }
+
+    //     &.nowSelect {
+    //       background: url('../images/blueTilde.png') no-repeat center;
+    //     }
+
+    //   }
+
+    // }
+
+  }
+
+
 
   .defaultIcon {
 
@@ -560,6 +766,24 @@
     border       : 2px solid rgba(255, 0, 0, 1);
     border-radius: 5px;
   }
+
+  .circleLine {
+    position  : absolute;
+    background: url('../images/lineTwo.png') center repeat-x;
+    background: radial-gradient(circle, red, red) repeat-x;
+  }
+
+  .circleTilde {
+    position                 : absolute;
+    background               : url('../images/tildeTwo.png') center repeat-x;
+    // background            : radial-gradient(circle at 10px -9px, transparent 8px, red 8px, red 11px, transparent 10px) repeat-x, radial-gradient(circle at 10px 27px, transparent 8px, red 8px, red 10px, transparent 10px) repeat-x;
+    // background-size       : 20px 20px;
+    // background-position   : 10px 3px, 0px -17px;
+
+  }
+
+
+
 }
 
 .checkCuo {
@@ -599,8 +823,8 @@
     margin       : 0 0 20px 23px;
     position     : relative;
     background   : url('../images/tintMark.png') no-repeat center;
-
-    // &:hover {
+    z-index      : 20;
+    // &         :hover {
     //   background: url('../images/blueHint.png') no-repeat center;
     // }
 
@@ -902,4 +1126,102 @@
     margin-right: 25px;
     cursor      : pointer;
   }
+}
+
+
+
+
+.drawTypeA {
+  width          : 120px;
+  height         : 40px;
+  background     : rgba(255, 255, 255, 1);
+  box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+  border-radius  : 5px;
+  position       : absolute;
+  left           : -55px;
+  justify-content: center;
+  align-items    : center;
+  display        : flex;
+  font-size      : 14px;
+
+  .nowSelect {
+    color: #409EFF
+  }
+
+  span {
+    cursor     : pointer;
+    font-weight: bold;
+    font-size  : 14px;
+  }
+
+  span:hover {
+    color: #409EFF
+  }
+
+}
+
+
+.drawTypeC {
+  width          : 120px;
+  height         : 40px;
+  background     : rgba(255, 255, 255, 1);
+  box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+  border-radius  : 5px;
+  position       : absolute;
+  left           : -55px;
+  justify-content: center;
+  align-items    : center;
+  display        : flex;
+
+  div {
+    cursor: pointer;
+  }
+
+  .littleBox {
+    width     : 15px;
+    height    : 15px;
+    background: url('../images/side.png') no-repeat center;
+
+    &:hover {
+      background: url('../images/blueSide.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background: url('../images/blueSide.png') no-repeat center;
+    }
+  }
+
+  .line {
+    background: url('../images/line.png') no-repeat center;
+    width     : 22px;
+    height    : 22px;
+    display   : inline-block;
+    margin    : 0 14px;
+
+    &:hover {
+      background: url('../images/blueLine.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background: url('../images/blueLine.png') no-repeat center;
+    }
+
+  }
+
+  .tilde {
+    background: url('../images/tilde.png') no-repeat center;
+    width     : 22px;
+    height    : 22px;
+    display   : inline-block;
+
+    &:hover {
+      background: url('../images/blueTilde.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background: url('../images/blueTilde.png') no-repeat center;
+    }
+
+  }
+
 }
