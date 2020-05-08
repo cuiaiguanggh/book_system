@@ -5,7 +5,6 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 import style from './topbar.less';
 import 'react-count-animation/dist/count.min.css';
-import store from 'store';
 moment.locale('zh-cn');
 
 const { Header } = Layout;
@@ -28,9 +27,6 @@ class topbar extends React.Component {
 		var y = time.getFullYear();
 		var m = time.getMonth() + 1;
 		var d = time.getDate();
-		var h = time.getHours();
-		var mm = time.getMinutes();
-		var s = time.getSeconds();
 		return y + '-' + this.add0(m) + '-' + this.add0(d);
 	}
 	handleClick = (item) => {
@@ -75,16 +71,17 @@ class topbar extends React.Component {
 		if (timeList.length > 0) {
 			sdate = this.format(timeList[0].startTimeStamp);
 			cdate = this.format(timeList[0].endTimeStamp);
-			defaultDate = [sdate, cdate]
+			defaultDate = [sdate, cdate];
 		}
 
 		return (
-			<Header style={{ background: '#fff', borderTop: '1px solid #eee', borderBottom: '1px solid #eee', overflow: 'hidden', padding: '0 20px', height: 44, lineHeight: '44px' }}>
-				<div className={style.topbar} style={{ background: '#fff', margin: '0' }}>
-					<div>
+			<>
+				<Header className={style.header}>
+					<div className={style.topbar} style={{ background: '#fff', margin: '0' }}>
+						{this.props.children}
 						<ul className={style.timemenu}>
 							{timeList.length > 0 ? timeList.map((item, i) => (
-								<li key={i}
+								<li key={i} style={i <= 1 ? { width: 73 } : { width: 46 }}
 									className={i === this.state.timeIndex ? 'selected' : ''}
 									onClick={() => {
 										sdate = this.format(item.startTimeStamp)
@@ -102,21 +99,21 @@ class topbar extends React.Component {
 									{item.name}</li>
 							)) : ''}
 						</ul>
-					</div>
-					<div style={{ marginLeft: 14 }}>
-						<RangePicker
-							style={{ width: 220 }}
-							placeholder={defaultDate}
-							value={this.state.date}
-							format="YYYY-MM-DD"
-							onPanelChange={this.workHandlePanelChange}
-							onChange={this.workOnChange}
-							disabledDate={this.disabledDate}
-						/>
-					</div>
+						<div style={{ marginLeft: 14 }}>
+							<RangePicker
+								style={{ width: 220 }}
+								placeholder={defaultDate}
+								value={this.state.date}
+								format="YYYY-MM-DD"
+								onPanelChange={this.workHandlePanelChange}
+								onChange={this.workOnChange}
+								disabledDate={this.disabledDate}
+							/>
+						</div>
 
-				</div>
-			</Header>
+					</div>
+				</Header>
+			</>
 		);
 	}
 

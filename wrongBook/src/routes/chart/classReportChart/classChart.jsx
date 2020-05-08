@@ -1,8 +1,6 @@
 import React from 'react';
-import { Layout, Select, Row, Col, Table } from 'antd';
+import { Layout, Select, Row, Col, Table, Icon, Input } from 'antd';
 import { connect } from 'dva';
-import ReactDOM from 'react-dom';
-import AnimationCount from 'react-count-animation';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import style from './classChart.less';
@@ -10,12 +8,15 @@ import 'react-count-animation/dist/count.min.css';
 import TopBar from '../topbar/topbar';
 import store from 'store';
 import { routerRedux } from 'dva/router';
-import { noResposeDataCon } from '../../../utils/common';
+import echarts from 'echarts';
+import fetch from 'dva/fetch';
+import { dataCenter } from '../../../config/dataCenter';
+
 moment.locale('zh-cn');
 
 const { Content } = Layout;
 const Option = Select.Option;
-const echarts = require('echarts');
+const Search = Input.Search;
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
 	constructor(props) {
@@ -27,7 +28,8 @@ class HomeworkCenter extends React.Component {
 			headUrl: store.get('wrongBookNews').avatarUrl,
 			subjectId: 100,
 			dateValue: ['开始时间', '结束时间'],
-			date: []
+			date: [],
+			tableData: null,
 		}
 
 	}
@@ -42,9 +44,9 @@ class HomeworkCenter extends React.Component {
 			payload: item.startTimeStamp
 		});
 		let cid = this.state.classId;
-		let sid = this.state.subId;
+		let sid = this.state.csubId;
 		let data = {
-			schoolId: store.get('wrongBookNews').schoolId,
+			// schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
 			timeStamp: item.startTimeStamp,
 			classId: cid,
@@ -58,8 +60,10 @@ class HomeworkCenter extends React.Component {
 	}
 
 	onChangeDate(startDate, endDate) {
-		if (this.state.classList1.data.length === 0 || this.state.subList.data.length === 0) return false;
+
 		let data = {};
+		let cid = this.state.classId;
+		let sid = this.state.csubId;
 		if (startDate !== '') {
 			this.dispatch({
 				type: 'reportChart/startTime',
@@ -69,8 +73,7 @@ class HomeworkCenter extends React.Component {
 				type: 'reportChart/endTime',
 				payload: endDate
 			});
-			let cid = this.state.classId;
-			let sid = this.state.subId;
+
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
 				timeStamp: 0,
@@ -89,48 +92,45 @@ class HomeworkCenter extends React.Component {
 				type: 'reportChart/timeStamp',
 				payload: this.state.reportTimeList[0].startTimeStamp
 			});
-			let cid = this.state.classId;
-			let sid = this.state.subId;
+
 			data = {
-				schoolId: store.get('wrongBookNews').schoolId,
+				// schoolId: store.get('wrongBookNews').schoolId,
 				classId: cid,
 				subjectId: sid,
 				periodTime: 1,
 				timeStamp: this.state.reportTimeList[0].startTimeStamp,
 			}
 		}
+		if (!this.state.csubId) return false;
+
 		this.dispatch({
 			type: 'reportChart/getClassDataReport',
 			payload: data
 		});
 	}
 	getSub() {
-		let subList = this.props.state.subList.data;
+		let subList = this.props.state.cSubList;
+		// let subList = this.props.state.subList.data;
 		//如果是超级管理员的话
-		if (store.get('wrongBookNews').rodeType === 10) {
-			subList = this.props.state.ssubList;
-		}
+		// if (store.get('wrongBookNews').rodeType === 10) {
+		// 	subList = this.props.state.ssubList;
+		// }
+
 		if (subList && subList.length > 0) {
 			return (
-				<Select
-					style={{ width: 100 }}
+				<Select style={{ width: 120, margin: '13px 15px 0 0', height: 30 }}
 					placeholder="学科"
 					getPopupContainer={triggerNode => triggerNode.parentElement}
-					value={this.props.state.subName}
+					value={this.props.state.csubId}
 					onChange={(value) => {
-						// this.props.dispatch({
-						// 	type: 'reportChart/csubjectId',
-						// 	payload: value
-						// });
+
 						this.props.dispatch({
-							type: 'temp/subId',
+							type: 'reportChart/csubId',
 							payload: value
 						});
-						// let cid = this.props.state.cclassId;
 						let cid = this.props.state.classId;
 						let sid = value;
 						let data = {
-							schoolId: store.get('wrongBookNews').schoolId,
 							classId: cid,
 							subjectId: sid,
 						};
@@ -142,24 +142,14 @@ class HomeworkCenter extends React.Component {
 							data.periodTime = this.props.state.periodTime;
 							data.timeStamp = this.props.state.timeStamp
 						}
-
 						this.props.dispatch({
 							type: 'reportChart/getClassDataReport',
 							payload: data
 						})
-
-					}}
-
-				>
-					{
-						subList.map((item, i) => (
-							<Option key={i} value={item.v}>{item.k}</Option>
-						))
-					}
+					}} >
+					{subList.map((item, i) => (<Option key={i} value={item.v}>{item.k}</Option>))}
 				</Select>
 			)
-		} else {
-
 		}
 	}
 	getClassList() {
@@ -171,15 +161,11 @@ class HomeworkCenter extends React.Component {
 		if (classList && classList.length > 0) {
 			return (
 				<Select
-					style={{ width: 140, marginRight: 20 }}
+					style={{ width: 120, margin: '13px 15px 0 0', height: 30 }}
 					placeholder="班级"
 					getPopupContainer={triggerNode => triggerNode.parentElement}
 					value={this.props.state.className}
 					onChange={(value, option) => {
-						// this.props.dispatch({
-						// 	type: 'reportChart/cclassId',
-						// 	payload: value
-						// });
 						this.props.dispatch({
 							type: 'temp/classId',
 							payload: value
@@ -191,14 +177,19 @@ class HomeworkCenter extends React.Component {
 						let cid = value;
 
 						this.props.dispatch({
-							type: 'temp/zybgSubjectList',
+							type: 'reportChart/chartSubList',
 							payload: {
 								classId: cid,
-								year: this.props.state.years
 							}
-						});
-					}}
-				>
+						})
+						// this.props.dispatch({
+						// 	type: 'temp/zybgSubjectList',
+						// 	payload: {
+						// 		classId: cid,
+						// 		year: this.props.state.years
+						// 	}
+						// });
+					}} >
 					{classList.map((item, i) => (
 						<Option key={i} value={store.get('wrongBookNews').rodeType === 10 ? item.id : item.classId}>{store.get('wrongBookNews').rodeType === 10 ? item.name : item.className}</Option>
 					))
@@ -207,213 +198,10 @@ class HomeworkCenter extends React.Component {
 			)
 		}
 	}
-	renderTeacherUserCount() {
-		let data = this.props.state.classSearchData
-		const columns = [
-			{
-				title: '序号',
-				dataIndex: 'number',
-				key: 'number',
-
-			},
-			{
-				title: '教师',
-				dataIndex: 'adminName',
-				key: 'adminName',
-			},
-			{
-				title: '学科',
-				dataIndex: 'subjectName',
-				key: 'subjectName',
-
-			},
-			{
-				title: '班级',
-				dataIndex: 'className',
-				key: 'className',
-
-			},
-			{
-				title: '组卷次数',
-				dataIndex: 'assembleTimes',
-				key: 'assembleTimes',
-				defaultSortOrder: 'descend',
-				sorter: (a, b) => a.assembleTimes - b.assembleTimes,
-
-			},
-			{
-				title: '视频讲解个数',
-				dataIndex: 'videoExplain',
-				key: 'videoExplain',
-				defaultSortOrder: 'descend',
-				sorter: (a, b) => a.videoExplain - b.videoExplain,
-
-			},
-			// {
-			//   title: '视频点赞数',
-			//   dataIndex: 'address',
-			// 	key: 'address2',
-			// 	filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
-			//   filteredValue: filteredInfo.address || null,
-			//   onFilter: (value, record) => record.address.includes(value),
-			//   sorter: (a, b) => a.address.length - b.address.length,
-			//   sortOrder: sortedInfo.columnKey === 'className' && sortedInfo.order,
-
-			// },
-		];
-		return (
-			<div className={style.cagtable}>
-				<Table bordered columns={columns} dataSource={data} pagination={false} />
-			</div>
-
-		)
-	}
-	renderStudentUseData(data) {
-		let myChart = echarts.init(document.getElementById('main6'));
-		const chartBox = document.getElementById('main6');
-		let _barWidth = '50%'
-
-		if (data.length === 0) {
-			chartBox.style.display = 'none'
-			return
-		} else {
-			chartBox.style.display = 'block'
-		}
-		let nameList = []
-		let numList = []
-		if (data.length > 10) {
-			_barWidth = '20'
-		}
-		for (let index = 0; index < data.length; index++) {
-			const element = data[index]
-			nameList.push(element.name)
-			numList.push(element.num)
-		}
-
-
-		let studentOption = {
-			title: {
-				text: '',
-				subtext: '',
-				x: 'left',
-				textStyle: {
-					fontSize: 14,
-					fontWeight: 'normal'
-				}
-			},
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-
-				},
-				formatter: function (params) {
-					var relVal = params[0].name;
-					for (var i = 0, l = params.length; i < l; i++) {
-						relVal += '<br/>' + params[i].marker + params[i].seriesName + ' : ' + params[i].value + "道";
-					}
-					return relVal;
-				}
-			},
-
-			legend: {
-				data: ['错题量'],
-				itemGap: 16,
-				selectedMode: false,
-			},
-			grid: {
-				left: '2%',
-				right: '2%',
-				bottom: '1%',
-				containLabel: true
-			},
-			xAxis: [
-				{
-					type: 'category',
-					data: nameList,
-					axisPointer: {
-						type: 'shadow'
-					},
-					axisTick: {
-						show: false
-					},
-					axisLabel: {
-						interval: 0,
-						formatter: function (value) {
-							// debugger  
-							var ret = "";
-							var maxLength = 4;
-							var valLength = value.length;
-							var rowN = Math.ceil(valLength / maxLength);
-							if (rowN > 1) {
-								for (var i = 0; i < rowN; i++) {
-									var temp = "";
-									var start = i * maxLength;
-									var end = start + maxLength;
-									temp = value.substring(start, end) + "\n";
-									ret += temp;
-								}
-								return ret;
-							}
-							else {
-								return value;
-							}
-						}
-					}
-
-				}
-			],
-			yAxis: [
-
-				{
-					type: 'value',
-					axisLine: {
-						show: false
-					},
-					axisLabel: {
-						formatter: '{value}'
-					},
-					splitLine: {
-						lineStyle: {
-							type: 'dashed',
-							color: '#ccc'
-						}
-					},
-					axisTick: {
-						show: false
-					}
-				},
-				{
-					show: false
-				}
-			],
-			series: [
-				{
-					name: '错题量',
-					type: 'bar',
-					symbol: 'circle',
-					barWidth: _barWidth,
-					barMaxWidth: '40',
-					symbolSize: 6,
-					lineStyle: { color: '#21A2F4' },
-					itemStyle: { color: "#21A2F4" },
-					data: numList
-				}
-			]
-		};
-		let obj = {
-			chart: myChart,
-			option: studentOption,
-		}
-		this.resizeChart(obj)
-		myChart.setOption(studentOption)
-
-	}
+	//班级使用数据
 	renderClassUseData(udata, wdata) {
-		let timelist = []
-		let userlist = []
-		let wronglist = []
+		let timelist = [], userlist = [], wronglist = [];
 		let cdate = moment(Date.now()).format('YYYY-MM-DD');
-		let _axisLabelRotate = 0
 
 		for (let i = 0; i < udata.length; i++) {
 			const ele = udata[i]
@@ -424,100 +212,84 @@ class HomeworkCenter extends React.Component {
 				wronglist.push(wdata[i].num)
 			}
 		}
-		// console.log(udata)
-		// console.log(timelist)
-		// console.log(userlist)
-		// console.log(wronglist)
-
-		let _gleft = '2%'
-		if (timelist.length > 20) {
-			_axisLabelRotate = 40
-			_gleft = '2%'
-		}
 		let myChart1 = echarts.init(document.getElementById('main5'));
 		let option1 = {
 			title: {
-				text: ''
-			},
-			tooltip: {
-				trigger: 'axis',
-				formatter: function (params) {
-					var relVal = params[0].name;
-					let str = ''
-					for (var i = 0, l = params.length; i < l; i++) {
-
-						if (params[i].seriesName === '错题量') {
-							str = '道'
-						} else {
-							str = '人'
-						}
-						relVal += '<br/>' + params[i].marker + params[i].seriesName + ' : ' + params[i].value + str;
-					}
-					return relVal;
+				text: '班级使用数据',
+				textStyle: {
+					fontSize: 16,
+					fontFmily: 'Microsoft YaHei',
+					fontWeight: 400,
+					color: '#666666',
 				}
 			},
 			legend: {
-				selectedMode: true,
-				data: ['错题量', '人数'],
-				itemGap: 16,
+				show: true,
+				icon: 'rect',
+				top: 40,
+				itemWidth: 13,
+				itemHeight: 3,
+			},
+			tooltip: {
+				trigger: 'axis',
+				padding: [5, 10],
+				backgroundColor: 'rgba(0,0,0,0.4)',
+				axisPointer: {
+					lineStyle: {
+						color: '#B9B9B9'
+					}
+				},
 			},
 			grid: {
-				left: _gleft,
-				right: '2%',
-				bottom: '1%',
+				left: 15,
+				right: 40,
+				bottom: 15,
+				top: 100,
 				containLabel: true
 			},
 			xAxis: {
-				type: 'category',
-				boundaryGap: false,
 				data: timelist,
-				axisTick: {
-					show: false
+				boundaryGap: false,
+				nameTextStyle: {
+					fontFamily: 'Microsoft YaHei',
 				},
-				axisLabel: {
-					interval: 0,
-					rotate: _axisLabelRotate
-				}
+				axisLine: {
+					lineStyle: { color: '#545454' }
+				},
 			},
 			yAxis: {
-				type: 'value',
 				axisLine: {
+					show: false
+				},
+				axisTick: {
 					show: false
 				},
 				splitLine: {
 					lineStyle: {
 						type: 'dashed',
-						color: '#ccc'
+						color: '#F3F3F3',
+						width: 1.5
 					}
 				},
-				axisTick: {
-					show: false
-				}
 			},
 			series: [
 				{
 					name: '错题量',
 					type: 'line',
-					stack: '总量1',
+					data: wronglist,
 					symbol: 'circle',
 					symbolSize: 6,
-					data: wronglist,
+					lineStyle: { color: '#1890FF' },
+					itemStyle: { color: "#1890FF" }
+				}, {
+					name: '人数',
+					type: 'line',
+					data: userlist,
+					symbol: 'circle',
+					symbolSize: 6,
 					lineStyle: { color: '#2FC25B' },
 					itemStyle: { color: "#2FC25B" }
 				},
-				{
-					name: '人数',
-					type: 'line',
-					symbol: 'circle',
-					symbolSize: 6,
-					stack: '总量2',
-					data: userlist,
-					lineStyle: { color: '#21A2F4' },
-					itemStyle: { color: "#21A2F4" }
-
-				}
-			],
-			dataZoom: [
 			],
 		};
 
@@ -527,130 +299,6 @@ class HomeworkCenter extends React.Component {
 		}
 		this.resizeChart(obj)
 		myChart1.setOption(option1);
-	}
-	render() {
-
-		let timeList = this.props.state.reportTimeList;
-		let classReport = this.props.state.classDataReport;
-
-		setTimeout(() => {
-			//if(this.props.state.subjectId===''){
-			if (classReport.classUserNumData) {
-				this.renderClassUseData(classReport.classUserNumData, classReport.classWrongNumData)
-			}
-			if (classReport.studentWrongNum) {
-				this.renderStudentUseData(classReport.studentWrongNum)
-			}
-			//}
-		}, 10);
-		return (
-			<Layout>
-				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)', flex: 'none' }}>
-					<div onClick={() => {
-						this.props.dispatch(
-							routerRedux.push({
-								pathname: '/schoolChart'
-							})
-						)
-					}}
-						style={{
-							width: 120, lineHeight: '34px', background: '#fff', borderRadius: 3, color: '#606266', textAlign: 'center', margin: '8px 20px', cursor: 'pointer'
-						}}>
-						校级报表
-					</div>
-					<div onClick={() => {
-						this.props.dispatch(
-							routerRedux.push({
-								pathname: '/classChart'
-							})
-						)
-					}}
-						style={{
-							width: 120, lineHeight: '34px', background: 'rgba(64,158,255,1)', borderRadius: 3, color: '#fff', textAlign: 'center', margin: '8px 20px', cursor: 'pointer'
-						}}>
-						班级报表
-					</div>
-				</div>
-				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
-				<Content style={{ background: '#eee', overflow: 'auto', position: 'relative' }}>
-
-					{classReport === 'none' || JSON.stringify(classReport) === '{}' ? this.nodata() : <div>
-						<Row style={{ marginTop: 20 }}>
-							<Col md={24}>
-								<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden' }}>
-									<div>
-										{this.getClassList()}
-										{this.getSub()}
-									</div>
-									<div id='main5' style={{ height: 400 }}>
-
-									</div>
-								</div>
-							</Col>
-						</Row>
-
-						<Row style={{ marginTop: 20 }}>
-							<Col md={24}>
-								<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden' }}>
-									<p>学生使用情况</p>
-									<div id='main6' style={{ height: 400 }} >
-
-									</div>
-									{classReport.studentWrongNum !== undefined && classReport.studentWrongNum.length === 0 ?
-										<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
-
-								</div>
-							</Col>
-						</Row>
-
-						{/* <Row style={{marginTop:20}}>
-							<Col md={24}> 
-									<div style={{margin:'0 20px',width:'calc( 100% - 40px )',padding:'20px',backgroundColor:'#fff',overflowX:'auto',overflowY:'hidden',marginBottom:30}}>
-										<div className={style.searchInput}>
-										<p>教师使用情况</p>
-										<Search
-												placeholder="请输入教师姓名"
-												enterButton="搜索"
-												size="large"
-												style={{width:240,position:'absolute',right:0,top:0}}
-												onSearch={value =>{
-
-													if(value===''){
-														this.props.dispatch({
-															type: 'reportChart/classSearchData',
-															payload:this.props.state.classDataReport.teacherUseDataList
-														});
-													}else{
-														let arr=[]
-														for (let i = 0; i < classReport.teacherUseDataList.length; i++) {
-															const ele = classReport.teacherUseDataList[i];
-															if(ele.adminName.indexOf(value)>-1){
-																arr.push(ele)
-															}
-														}
-														this.props.dispatch({
-															type: 'reportChart/classSearchData',
-															payload:arr
-														});
-													}
-
-													this.renderTeacherUserCount()
-												} 
-													
-												}
-											/>
-										</div>
-										{classReport.teacherUseDataList?
-											this.renderTeacherUserCount():''
-										}
-										</div>
-								</Col>
-							</Row> */}
-					</div>}
-
-				</Content>
-			</Layout>
-		);
 	}
 	nodata() {
 		return (
@@ -671,23 +319,190 @@ class HomeworkCenter extends React.Component {
 
 	resizeChart(obj) {
 		window.addEventListener('resize', function (e) {
-			let winWidth = e.target.innerWidth
-			const chartBox1 = document.getElementById('main5');
-			const chartBox2 = document.getElementById('main6');
-			if (!chartBox2 || !chartBox1) return
-			if (winWidth <= 1400) {
-				chartBox1.style.width = '1200px'
-				chartBox2.style.width = '1200px'
-			} else {
-
-				chartBox1.style.width = '100%'
-				chartBox2.style.width = '100%'
-			}
-
 			obj.chart.resize()
-
 		}, false);
 	}
+
+	format(shijianchuo) {
+		//shijianchuo是整数，否则要parseInt转换
+		var time = new Date(shijianchuo);
+		var y = time.getFullYear();
+		var m = time.getMonth() + 1;
+		var d = time.getDate();
+		return y + '-' + `${m < 10 ? '0' + m : m}` + '-' + `${d < 10 ? '0' + d : d}`;
+	}
+
+	//班级使用数据导出
+	classDaochu() {
+		let timeList = this.props.state.reportTimeList,
+			startTime = this.props.state.startTime,
+			endTime = this.props.state.endTime;
+
+		if (this.props.state.startTime === '') {
+			startTime = this.format(timeList[this.props.state.periodTime - 1].startTimeStamp);
+			endTime = this.format(timeList[this.props.state.periodTime - 1].endTimeStamp);
+		}
+
+		fetch(dataCenter(`/export/excel/exportClassData?schoolId=${store.get('wrongBookNews').schoolId}&startTime=${startTime}&endTime=${endTime}&subjectId=${this.props.state.csubId || 0}&classId=${this.props.state.classId}`))
+			.then(resp => resp.blob())
+			.then(blob => {
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${store.get('wrongBookNews').schoolName}班级使用数据.xlsx`;
+				a.click();
+			})
+	}
+
+	//学生使用数据导出
+	stuDaochu() {
+		let timeList = this.props.state.reportTimeList,
+			startTime = this.props.state.startTime,
+			endTime = this.props.state.endTime;
+
+		if (this.props.state.startTime === '') {
+			startTime = this.format(timeList[this.props.state.periodTime - 1].startTimeStamp);
+			endTime = this.format(timeList[this.props.state.periodTime - 1].endTimeStamp);
+		}
+		fetch(dataCenter(`/export/excel/exportStudentData?schoolId=${store.get('wrongBookNews').schoolId}&startTime=${startTime}&endTime=${endTime}&subjectId=${this.props.state.csubId || 0}&classId=${this.props.state.classId}`))
+			.then(resp => resp.blob())
+			.then(blob => {
+
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${store.get('wrongBookNews').schoolName}${this.props.state.className}学生使用数据.xlsx`;
+				a.click();
+			})
+	}
+
+
+
+	render() {
+		const columns = [
+			{
+				title: '使用率排行',
+				key: 'userId',
+				align: 'center',
+				render: (text, record, index) => (index + 1),
+			},
+			{
+				title: '学生',
+				dataIndex: 'name',
+			},
+			{
+				title: '学科错题总量',
+				dataIndex: 'questionNum',
+			},
+			{
+				title: '学科作业数',
+				dataIndex: 'workNum',
+			},
+			{
+				title: '学科优秀作业数',
+				dataIndex: 'excellentNum',
+			},
+
+		];
+		let timeList = this.props.state.reportTimeList;
+		let classReport = this.props.state.classDataReport;
+
+		setTimeout(() => {
+			if (classReport.classUserNumData) {
+				this.renderClassUseData(classReport.classUserNumData, classReport.classWrongNumData)
+			}
+		}, 10);
+		return (
+			<>
+
+				<div style={{ display: 'flex', position: 'absolute', left: 70, top: 15 }}>
+					<div onClick={() => {
+						this.props.dispatch(routerRedux.push({ pathname: '/schoolChart' }));
+						this.props.dispatch({
+							type: 'reportChart/stateTimeIndex',
+							payload: 0
+						});
+					}} className={style.whiteButton}>
+						校级报表
+					</div>
+					<div onClick={() => { this.props.dispatch(routerRedux.push({ pathname: '/classChart' })) }} className={style.blueButton}>
+						班级报表
+					</div>
+				</div>
+
+				<Layout>
+					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}>
+						{this.getClassList()}
+						{this.getSub()}
+
+					</TopBar>
+					<Content style={{ background: '#eee', overflow: 'auto', position: 'relative' }}>
+
+						{classReport === 'none' || JSON.stringify(classReport) === '{}' ? this.nodata() : <div>
+							<Row style={{ marginTop: 30 }}>
+								<Col md={24}>
+									<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )', paddingRight: 0 }}>
+										<div className={style.chartExport} onClick={() => { this.classDaochu() }}>
+											<img src={require('../../images/chartDerive.png')} />
+												导出
+											</div>
+										<div id='main5' style={{ height: 420 }}>
+										</div>
+									</div>
+								</Col>
+							</Row>
+
+							<Row >
+								<Col md={24}>
+									<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )' }}>
+										<div className={style.chartExport} onClick={() => { this.stuDaochu() }}>
+											<img src={require('../../images/chartDerive.png')} />
+												导出
+											</div>
+										<Search placeholder="请输入学生名字"
+											enterButton="搜索"
+											style={{ width: 250, position: 'absolute', right: 100, top: 23, zIndex: 10 }}
+											onSearch={value => {
+												if (value === '') {
+													this.setState({
+														tableData: null
+													})
+												} else {
+													let arr = []
+													for (let i = 0; i < classReport.studentWrongNum.length; i++) {
+														const ele = classReport.studentWrongNum[i];
+														if (ele.name.indexOf(value) > -1) {
+															arr.push(ele)
+														}
+													}
+													this.setState({
+														tableData: arr
+													})
+												}
+											}} />
+
+										<div className={style.searchInput}>
+											<p>学生使用数据
+										 <span style={{ fontSize: 12, color: '#909090' }}><Icon type="question-circle" style={{ color: '#409EFF', margin: '0px 3px 0px 15px' }} />学生<span style={{ color: '#409EFF' }}>“使用率排行”</span>指学生错题收集量、作业数及优秀作业数的综合指数排名 </span></p>
+
+										</div>
+										<div className={style.cagtable}>
+											<Table rowKey='userId' bordered columns={columns} dataSource={this.state.tableData ? this.state.tableData : classReport.studentWrongNum} pagination={false}
+											// scroll={{ y: 400 }} 
+											/>
+										</div>
+									</div>
+								</Col>
+							</Row>
+
+						</div>}
+
+					</Content>
+				</Layout>
+			</>
+		);
+	}
+
 	componentWillMount() {
 
 		let schoolId = store.get('wrongBookNews').schoolId;
@@ -717,27 +532,14 @@ class HomeworkCenter extends React.Component {
 		}
 	}
 	componentDidMount() {
-		const { dispatch } = this.props;
-		dispatch({
+		this.props.dispatch({
 			type: 'reportChart/getReportTimeList',
 			payload: {
 				classReport: true
 			}
 		});
-
-		let winwidth = document.body.offsetWidth
-		const chartBox1 = document.getElementById('main5');
-		const chartBox2 = document.getElementById('main6');
-		if (!chartBox1) return
-		if (winwidth <= 1400) {
-			chartBox1.style.width = '1200px'
-			chartBox2.style.width = '1200px'
-		} else {
-
-			chartBox1.style.width = '100%'
-			chartBox2.style.width = '100%'
-		}
 	}
+
 }
 
 export default connect((state) => ({

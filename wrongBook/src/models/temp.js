@@ -48,8 +48,12 @@ export default {
 		workDetail: [],
 		subjectId: '',
 		knowledgeList: [],
+		topBarHide: 1
 	},
 	reducers: {
+		topBarHide(state, { payload }) {
+			return { ...state, topBarHide: payload };
+		},
 		knowledgeList(state, { payload }) {
 			return { ...state, knowledgeList: payload };
 		},

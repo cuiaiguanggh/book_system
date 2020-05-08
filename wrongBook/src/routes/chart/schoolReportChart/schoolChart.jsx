@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Layout, Input, Modal, Button, Select, Row, Col, DatePicker, AutoComplete, Table } from 'antd';
+import { Layout, Input, Modal, Button, Select, Row, Col, DatePicker, Icon, Table, Empty } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -10,15 +10,15 @@ import store from 'store';
 import echarts from 'echarts';
 import { routerRedux } from 'dva/router';
 import { noResposeDataCon } from '../../../utils/common';
-import { join } from 'path';
+import fetch from 'dva/fetch';
+import { dataCenter } from '../../../config/dataCenter';
 moment.locale('zh-cn');
 
 const { Content } = Layout;
 const Option = Select.Option;
 const Search = Input.Search;
 
-//作业中心界面内容
-class HomeworkCenter extends React.Component {
+class SchoolChart extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -28,16 +28,14 @@ class HomeworkCenter extends React.Component {
 			sbid: 0,
 			cid: 0,
 			searchData: [],
-			updatePei: true
+			gradeDataSelect: 1
 		}
 		this.onChangeTime = this.onChangeTime.bind(this)
 		this.onChangeDate = this.onChangeDate.bind(this)
 	}
 
 	onChangeTime(item) {
-		this.setState({
-			updatePei: true
-		})
+
 		if (!item) return
 		this.props.dispatch({
 			type: 'reportChart/periodTime',
@@ -71,11 +69,7 @@ class HomeworkCenter extends React.Component {
 		});
 	}
 	onChangeDate(startDate, endDate) {
-		this.setState({
-			updatePei: true
-		})
 		let data = {}
-
 		if (startDate !== '') {
 			this.props.dispatch({
 				type: 'reportChart/startTime',
@@ -120,42 +114,40 @@ class HomeworkCenter extends React.Component {
 			payload: data
 		});
 	}
+	//错题总量
 	renderQustionCount(data) {
-		if (!this.state.updatePei) return
-		let myChart1 = echarts.init(document.getElementById('main'));
+		let myChart1 = echarts.init(document.getElementById('main'), 'light');
 		const chartBox = document.getElementById('main');
-		if (JSON.stringify(data) === '{}') {
-			chartBox.style.display = 'none'
-			return
-		} else {
-			chartBox.style.display = 'block'
-		}
+		// if (JSON.stringify(data) === '{}') {
+		// 	chartBox.style.display = 'none'
+		// 	return
+		// } else {
+		// 	chartBox.style.display = 'block'
+		// }
 		const winWidth = document.body.offsetWidth
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1 = arr.map(function (i) { return data[i] })
 		let sdata = []
-
+		let colors = ['#F76056', '#FFA63B', '#FFCA3F', '#67BB6A', '#46A7F5', '#975FE5']
 		for (let i = 0; i < arr.length; i++) {
-			let scolor = ''
-			if (i === 0) {
-				scolor = '#21A2F4'
-			} else if (i === 1) {
-				scolor = '#B8A5DF'
-			} else if (i === 2) {
-				scolor = '#36C9CB'
-			} else if (i === 3) {
-				scolor = '#FBD437'
-			} else if (i === 4) {
-				scolor = '#DA7F85'
-			}
-			sdata.push({ name: arr[i], value: arr1[i], itemStyle: { color: scolor } })
+			sdata.push({ name: arr[i], value: arr1[i], itemStyle: { color: colors[i] } })
 		}
 		let option = {
 			title: {
+				text: '错题总量',
+				textStyle: {
+					fontSize: 16,
+					fontFmily: 'Microsoft YaHei',
+					fontWeight: 400,
+					color: '#666666',
+				}
 			},
 			tooltip: {
 				trigger: 'item',
-				formatter: "{a} <br/>{b} : {c} ({d}%)"
+				formatter: "{b} : {c}道",
+				padding: [5, 10],
+				backgroundColor: 'rgba(0,0,0,0.4)'
+
 			},
 			legend: {
 				x: 'right',
@@ -163,6 +155,7 @@ class HomeworkCenter extends React.Component {
 				itemGap: 18,
 				data: sdata,
 				align: 'left',
+				icon: 'circle',
 				formatter: function (params) {
 					for (var i = 0; i < option.series[0].data.length; i++) {
 						if (option.series[0].data[i].name == params) {
@@ -173,56 +166,37 @@ class HomeworkCenter extends React.Component {
 				orient: 'vertical',
 				type: 'plain',
 			},
-			calculable: true,
 			series: [
 				{
 					name: '错题量',
 					type: 'pie',
-					radius: ['20', '63%'],
-					center: ['25%', '50%'],
-					roseType: 'radius',
+					radius: [80, 115],
+					center: ['35%', '50%'],
 					label: {
-						normal: {
-							show: true
-						},
-						emphasis: {
-							show: true
+						show: false
+					},
+					emphasis: {
+						label: {
+							show: true,
+							fontSize: '12',
+							fontWeight: '400',
+							color: '#3B3B3B',
+							formatter: '{d}%'
 						}
 					},
-					lableLine: {
-						normal: {
-							show: false
-						},
-						emphasis: {
-							show: true
-						}
-					},
-					// data:[
-					// 		{value:0, name:'一年级',itemStyle:{color:'#21A2F4'}},
-					// 		{value:0,  name:'二年级', itemStyle:{color:'#B8A5DF'}},
-					// 		{value:0, name:'三年级',itemStyle:{color:'#36C9CB'}},
-					// 		{value:0, name:'四年级',itemStyle:{color:'#FBD437'}},
-					// 		{value:0, name:'五年级',itemStyle:{color:'#DA7F85'}}
-					// ]
+
 					data: sdata
 				},
 
 			]
 		};
 
-		if (!chartBox) return
-		if (chartBox.offsetWidth <= 600 || winWidth <= 1366) {
-
+		//适配
+		if (winWidth <= 1400) {
 			option.legend.y = 'bottom'
 			option.legend.x = 'center'
 			option.legend.orient = 'horizontal'
 			option.series[0].center = ['50%', '50%']
-		} else {
-			option.legend.y = 'center'
-			option.legend.x = 'right'
-			option.legend.orient = 'vertical'
-			option.series[0].center = ['25%', '50%']
-
 		}
 		let obj = {
 			chart: myChart1,
@@ -231,57 +205,51 @@ class HomeworkCenter extends React.Component {
 		}
 		this.resizeChart(obj)
 		myChart1.setOption(option);
-		if (arr.length > 1) {
-			myChart1.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: 0 })
-		}
 
 	}
-
+	//使用人数
 	renderUserCount(data) {
-		if (!this.state.updatePei) return
-		let myChart = echarts.init(document.getElementById('main1'));
+		let myChart = echarts.init(document.getElementById('main1'), 'light');
 		const chartBox = document.getElementById('main1');
-		if (JSON.stringify(data) === '{}') {
-			chartBox.style.display = 'none'
-			return
-		} else {
-			chartBox.style.display = 'block'
-		}
-		const winWidth = document.body.offsetWidth
+		// if (JSON.stringify(data) === '{}') {
+		// 	chartBox.style.display = 'none'
+		// 	return
+		// } else {
+		// 	chartBox.style.display = 'block'
+		// }
 		var arr = Object.getOwnPropertyNames(data)
 		var arr1 = arr.map(function (i) { return data[i] })
-		let sdata = []
+		let sdata = [], zong = 0, colors = ['#3AA1FF', '#36CBCB', '#4ECB73', '#FBD437', '#F2637B', '#975FE5', '#FFA63B']
+
 		for (let i = 0; i < arr.length; i++) {
-			let scolor = ''
-			if (i === 0) {
-				scolor = '#21A2F4'
-			} else if (i === 1) {
-				scolor = '#B8A5DF'
-			} else if (i === 2) {
-				scolor = '#36C9CB'
-			} else if (i === 3) {
-				scolor = '#FBD437'
-			} else if (i === 4) {
-				scolor = '#DA7F85'
-			}
-			sdata.push({ name: arr[i], value: arr1[i], itemStyle: { color: scolor }, icon: 'circle' })
+			sdata.push({ name: arr[i], value: arr1[i], itemStyle: { color: colors[i] } })
+			zong += arr1[i]
 		}
 
 		let option = {
 			title: {
-
+				text: '错题使用人数',
+				textStyle: {
+					fontSize: 16,
+					fontFmily: 'Microsoft YaHei',
+					fontWeight: 400,
+					color: '#666666',
+				}
 			},
 			tooltip: {
 				trigger: 'item',
-				formatter: "{a} <br/>{b}: {c} ({d}%)"
+				formatter: "{b} : {c}人",
+				padding: [5, 10],
+				backgroundColor: 'rgba(0,0,0,0.4)'
 			},
 			legend: {
 				x: 'right',
 				y: 'center',
 				itemGap: 18,
+				icon: 'circle',
 				data: sdata,
-				orient: 'vertical',
 				align: 'left',
+				orient: 'vertical',
 				formatter: function (params) {
 					for (var i = 0; i < option.series[0].data.length; i++) {
 						if (option.series[0].data[i].name == params) {
@@ -294,304 +262,200 @@ class HomeworkCenter extends React.Component {
 				{
 					name: '使用人数',
 					type: 'pie',
-					radius: ['50%', '65%'],
-					center: ['25%', '50%'],
+					radius: [80, 115],
+					center: ['35%', '50%'],
 					avoidLabelOverlap: false,
 					label: {
-						normal: {
-							show: false,
-							position: 'center'
-						},
-						emphasis: {
-							show: true,
-							textStyle: {
-								fontSize: '30',
-								fontWeight: 'bold'
-							}
-						}
+						show: false,
 					},
-					labelLine: {
-						normal: {
-							show: false
+					label: {
+						show: false,
+						position: 'center',
+					},
+					emphasis: {
+						label: {
+							show: true,
+							fontSize: '18',
+							fontWeight: '400',
+							color: '#666666',
+							formatter: `共${zong}人`,
 						}
 					},
 					data: sdata
 				}
 			]
 		};
-		if (chartBox.offsetWidth <= 600 || winWidth <= 1366) {
+		//适配
+		if (document.body.offsetWidth <= 1400) {
 			option.legend.y = 'bottom'
 			option.legend.x = 'center'
 			option.legend.orient = 'horizontal'
 			option.series[0].center = ['50%', '50%']
-			option.series[0].radius = ['40%', '55%']
-		} else {
-			option.legend.y = 'center'
-			option.legend.x = 'right'
-			option.legend.orient = 'vertical'
-			option.series[0].center = ['25%', '50%']
-			option.series[0].radius = ['50%', '65%']
-
 		}
+
 		let obj = {
 			chart: myChart,
 			option: option,
 			id: 1
 		}
 		this.resizeChart(obj)
-		let index = 0
 		myChart.setOption(option);
-		if (arr.length > 1) {
-			myChart.dispatchAction({
-				type: "highlight",
-				seriesIndex: index,
-				dataIndex: index
-			});
-		}
 
-		myChart.on("mouseover", function (e) {
-			if (e.dataIndex != index) {
-				myChart.dispatchAction({
-					type: "downplay",
-					seriesIndex: 0,
-					dataIndex: index
-				});
-			}
-		});
 	}
 	renderTeacherUserCount() {
-		let data = this.props.state.searchData
+		let data = this.props.state.searchData;
 		const columns = [
 			{
-				title: '序号',
+				title: '使用率排行',
 				dataIndex: 'number',
-				key: 'number',
-
+				align: 'center',
+				render: (text, record, index) => (index + 1),
 			},
 			{
 				title: '教师',
-				dataIndex: 'adminName',
-				key: 'adminName',
+				dataIndex: 'userName',
 			},
 			{
 				title: '学科',
 				dataIndex: 'subjectName',
-				key: 'subjectName',
-
 			},
 			{
 				title: '班级',
 				dataIndex: 'className',
-				key: 'className',
-
 			},
 			{
+				title: '作业总数',
+				dataIndex: 'workNum',
+			}, {
+				title: '作业批改率',
+				dataIndex: 'workRate',
+				render: (text, record, index) => `${Math.round(text * 100)}%`,
+
+			}, {
 				title: '组卷次数',
 				dataIndex: 'assembleTimes',
-				key: 'assembleTimes',
-				defaultSortOrder: 'descend',
-				sorter: (a, b) => a.assembleTimes - b.assembleTimes,
-				// sorter: (a, b) => a.address.length - b.address.length,
-				// sortOrder: sortedInfo.columnKey === 'assembleTimes' && sortedInfo.order,
-
-			},
-			{
-				title: '视频讲解个数',
+			}, {
+				title: '视频录制数',
 				dataIndex: 'videoExplain',
-				key: 'videoExplain',
-				defaultSortOrder: 'descend',
-				sorter: (a, b) => a.videoExplain - b.videoExplain,
-				// sorter: (a, b) => a.videoExplain.length - b.videoExplain.length,
-				// sortOrder: sortedInfo.columnKey === 'videoExplain' && sortedInfo.order,
-				// onFilter: (value, record) => record.videoExplain.includes(value),
 			},
-			// {
-			//   title: '视频点赞数',
-			//   dataIndex: 'address',
-			// 	key: 'address2',
-			// 	filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
-			//   filteredValue: filteredInfo.address || null,
-			//   onFilter: (value, record) => record.address.includes(value),
-			//   sorter: (a, b) => a.address.length - b.address.length,
-			//   sortOrder: sortedInfo.columnKey === 'className' && sortedInfo.order,
-
-			// },
 		];
 		return (
 			<div className={style.cagtable}>
-				<Table bordered columns={columns} dataSource={data} pagination={false} />
+				<Table bordered columns={columns} dataSource={data} pagination={false} rowKey={record => record.userId + record.classId} 
+				// scroll={{ y: 400 }} 
+				/>
 			</div>
 
 		)
 	}
-	renderClassData(udata, wdata) {
+	//年级使用数据
+	renderClassData(udata) {
 		let myChart = echarts.init(document.getElementById('main3'));
 		const chartBox = document.getElementById('main3');
-		if (udata === undefined || udata.length === 0 || wdata.length === 0) {
-			chartBox.style.display = 'none'
-			return
-		} else {
-			chartBox.style.display = 'block'
+		// if (udata === undefined || udata.length === 0) {
+		// 	chartBox.style.display = 'none'
+		// 	return
+		// } else {
+		// 	chartBox.style.display = 'block'
+		// }
+
+		let classList = [], userList = [], usageRate = [];
+		for (let key in udata) {
+			for (let j = 0; j < udata[key].length; j++) {
+				classList.push(udata[key][j].className);
+				if (this.state.gradeDataSelect === 1) {
+					userList.push(udata[key][j].questionNum);
+					usageRate.push(udata[key][j].userRate);
+				} else if (this.state.gradeDataSelect === 2) {
+					userList.push(udata[key][j].userNum);
+				} else if (this.state.gradeDataSelect === 3) {
+					userList.push(udata[key][j].workNum);
+					usageRate.push(udata[key][j].correctRate);
+					console.log(udata[key][j].correctRate * 100)
+
+				}
+			}
 		}
 
-		let classList = []
-		for (let i = 0; i < udata.length; i++) {
-			classList.push(udata[i].className)
-		}
-
-		let userList = []
-		for (let i = 0; i < udata.length; i++) {
-			userList.push(udata[i].num)
-		}
-
-		let wrongList = []
-		for (let i = 0; i < udata.length; i++) {
-			wrongList.push(wdata[i].num)
-
-		}
 
 		let option3 = {
 			title: {
-				text: '',
-				subtext: '',
-				x: 'left',
+				text: '年级使用数据',
 				textStyle: {
-					fontSize: 14,
-					fontWeight: 'normal'
+					fontSize: 16,
+					fontFmily: 'Microsoft YaHei',
+					fontWeight: 400,
+					color: '#666666',
 				}
+			},
+			legend: {
+				show: false
 			},
 			tooltip: {
 				trigger: 'axis',
-				axisPointer: {
-
-				},
+				padding: [5, 10],
+				backgroundColor: 'rgba(0,0,0,0.4)',
 				formatter: function (params) {
-					var relVal = params[0].name;
-					let str = ''
-					for (var i = 0, l = params.length; i < l; i++) {
-
-						if (params[i].seriesName === '错题量') {
-							str = '道'
-						} else {
-							str = '人'
-						}
-						relVal += '<br/>' + params[i].marker + params[i].seriesName + ' : ' + params[i].value + str;
+					let str = '';
+					if (params[0].seriesName === '人数') {
+						return str = `${params[0].name}   <br/> 错题使用人数：${params[0].value}人`;
+					} else if (params[0].seriesName === '错题量') {
+						return str = `${params[0].name} <br/> 错题总量：${params[0].value}道<br/>错题使用率:${Math.round(usageRate[params[0].dataIndex] * 100)}%`;
+					} else if (params[0].seriesName === '作业数') {
+						return str = `${params[0].name} <br/>作业数：${params[0].value}份<br/>作业批改率:${Math.round(usageRate[params[0].dataIndex] * 100)}%`;
 					}
-					return relVal;
+				},
+				axisPointer: {
+					lineStyle: {
+						color: '#2FC25B'
+					}
 				}
-			},
-
-			legend: {
-				data: ['错题量', '人数'],
-				itemGap: 16,
 			},
 			grid: {
-				left: '2%',
-				right: '1%',
-				bottom: '1%',
+				left: 15,
+				right: 40,
+				bottom: 15,
+				top: 100,
 				containLabel: true
 			},
-			xAxis: [
-				{
-					type: 'category',
-					data: classList,
-					axisPointer: {
-						type: 'shadow'
-					},
-					axisTick: {
-						show: false
-					},
-					axisLabel: {
-						interval: 0,
-						formatter: function (value) {
-							// debugger  
-							var ret = "";
-							var maxLength = 6;
-							var valLength = value.length;
-							var rowN = Math.ceil(valLength / maxLength);
-							if (rowN > 1) {
-								for (var i = 0; i < rowN; i++) {
-									var temp = "";
-									var start = i * maxLength;
-									var end = start + maxLength;
-									temp = value.substring(start, end) + "\n";
-									ret += temp;
-								}
-								return ret;
-							}
-							else {
-								return value;
-							}
-						}
-					}
-
-
-				}
-			],
-			yAxis: [
-
-				{
-					type: 'value',
-					axisLine: {
-						show: false
-					},
-					axisLabel: {
-						formatter: '{value}'
-					},
-					splitLine: {
-						lineStyle: {
-							type: 'dashed',
-							color: '#ccc'
-						}
-					},
-					axisTick: {
-						show: false
+			xAxis: {
+				data: classList,
+				boundaryGap: false,
+				nameTextStyle: {
+					fontFamily: 'Microsoft YaHei',
+				},
+				axisLine: {
+					lineStyle: { color: '#545454' }
+				},
+			},
+			yAxis: {
+				axisLine: {
+					show: false
+				},
+				axisTick: {
+					show: false
+				},
+				splitLine: {
+					lineStyle: {
+						type: 'dashed',
+						color: '#F3F3F3',
+						width: 1.5
 					}
 				},
-				{
-					type: 'value',
-					axisLine: {
-						show: false
-					},
-					axisLabel: {
-						formatter: '{value}'
-					},
-					splitLine: {
-						lineStyle: {
-							type: 'dashed',
-							color: '#ccc'
-						}
-					},
-					axisTick: {
-						show: false
-					}
-				}
-			],
+			},
 			series: [
 				{
-					name: '错题量',
-					type: 'bar',
-					symbol: 'circle',
-					barWidth: '30%',
-					barMaxWidth: '40',
-					symbolSize: 6,
-					lineStyle: { color: '#2FC25B' },
-					itemStyle: { color: "#2FC25B" },
-					data: wrongList
-				},
-
-				{
-					name: '人数',
+					name: `${(this.state.gradeDataSelect === 1 && '错题量') || (this.state.gradeDataSelect === 2 && '人数') || (this.state.gradeDataSelect === 3 && '作业数')}`,
 					type: 'line',
-					yAxisIndex: 1,
 					data: userList,
 					symbol: 'circle',
 					symbolSize: 6,
-					lineStyle: { color: '#21A2F4' },
-					itemStyle: { color: "#21A2F4" }
+					lineStyle: { color: '#2FC25B' },
+					itemStyle: { color: "#2FC25B" }
 				}
-			]
+			],
 		};
+
 		let obj = {
 			chart: myChart,
 			option: option3,
@@ -599,135 +463,10 @@ class HomeworkCenter extends React.Component {
 		}
 		this.resizeChart(obj)
 		myChart.setOption(option3)
-		myChart.resize()
 	}
 
-	renderClassData0(udata, wdata) {
-		let cdate = moment(Date.now()).format('YYYY-MM-DD');
-		let myChart = echarts.init(document.getElementById('main2'));
-		var dList = Object.getOwnPropertyNames(udata)
-		const winWidth = document.body.offsetWidth
-		let gright = '2%'
-		if (winWidth <= 1400) {
-			gright = '3%'
-		}
-		let dateArr = []
-		for (let index = 0; index < dList.length; index++) {
-			const element = dList[index]
-			if (moment(cdate) >= moment(element)) {
-				dateArr.push(element)
-			}
-		}
-		let _axisLabelRotate = 0
-		if (dateArr.length > 20) {
-			_axisLabelRotate = 40
-		}
-		let dateList = dateArr
-		var userList = dateList.map(function (i) { return udata[i] })
-
-		var wList = Object.getOwnPropertyNames(wdata)
-		var wrongList = wList.map(function (i) { return wdata[i] })
-
-		let option2 = {
-			title: {
-				text: ''
-			},
-			tooltip: {
-				trigger: 'axis',
-				formatter: function (params) {
-					var relVal = params[0].name;
-					let str = ''
-					for (var i = 0, l = params.length; i < l; i++) {
-
-						if (params[i].seriesName === '错题量') {
-							str = '道'
-						} else {
-							str = '人'
-						}
-						relVal += '<br/>' + params[i].marker + params[i].seriesName + ' : ' + params[i].value + str;
-					}
-					return relVal;
-				}
-			},
-			legend: {
-				selectedMode: true,
-				data: ['错题量', '人数'],
-				itemGap: 16,
-			},
-			grid: {
-				left: '2%',
-				right: gright,
-				bottom: '1%',
-				containLabel: true
-			},
-			xAxis: {
-				type: 'category',
-				boundaryGap: false,
-				data: dateList,
-				axisTick: {
-					show: false
-				},
-				axisLabel: {
-					interval: 0,
-					rotate: _axisLabelRotate
-				}
-			},
-			yAxis: {
-				type: 'value',
-				axisLine: {
-					show: false
-				},
-				splitLine: {
-					lineStyle: {
-						type: 'dashed',
-						color: '#ccc'
-					}
-				},
-				axisTick: {
-					show: false
-				}
-			},
-			series: [
-				{
-					name: '错题量',
-					type: 'line',
-					stack: '总量1',
-					symbol: 'circle',
-					symbolSize: 6,
-					data: wrongList,
-					lineStyle: { color: '#2FC25B' },
-					itemStyle: { color: "#2FC25B" }
-				},
-				{
-					name: '人数',
-					type: 'line',
-					symbol: 'circle',
-					symbolSize: 6,
-					stack: '总量2',
-					data: userList,
-					lineStyle: { color: '#21A2F4' },
-					itemStyle: { color: "#21A2F4" }
-
-				}
-			],
-			dataZoom: [
-				// {
-				//     type: 'inside'
-				// }
-			],
-		};
-		let obj = {
-			chart: myChart,
-			option: option2,
-			id: 2
-		}
-		this.resizeChart(obj)
-		myChart.setOption(option2)
-
-	}
 	getSub() {
 		let subList = this.props.state.ssubList;
-
 		if (subList && subList.length > 0) {
 			return (
 				<Select
@@ -789,10 +528,7 @@ class HomeworkCenter extends React.Component {
 							type: 'reportChart/sclassId',
 							payload: value
 						});
-						//更新图表
-						this.setState({
-							updatePei: false
-						})
+
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
 							classId: value,
@@ -829,10 +565,7 @@ class HomeworkCenter extends React.Component {
 							type: 'reportChart/gradeId',
 							payload: value
 						});
-						//更新图表
-						this.setState({
-							updatePei: false
-						})
+
 						let data = {
 							schoolId: store.get('wrongBookNews').schoolId,
 							classId: this.props.state.sclassId,
@@ -854,9 +587,100 @@ class HomeworkCenter extends React.Component {
 					}
 				</Select>
 			)
-		} else {
-
 		}
+	}
+	resizeChart(obj) {
+
+		window.addEventListener('resize', function (e) {
+			let winWidth = e.target.innerWidth
+			const chartBox = document.getElementById('main');
+			const chartBox1 = document.getElementById('main1');
+			if (!chartBox) return
+
+			if (chartBox.offsetWidth <= 600 || winWidth <= 1400) {
+				if (obj.id === 0 || obj.id === 1) {
+					chartBox.style.height = '400px'
+					chartBox1.style.height = '400px'
+					obj.option.legend.y = 'bottom'
+					obj.option.legend.x = 'center'
+					obj.option.legend.orient = 'horizontal'
+					obj.option.series[0].center = ['50%', '50%']
+				}
+
+			} else {
+				if (obj.id === 0 || obj.id === 1) {
+					chartBox.style.height = '300px'
+					chartBox1.style.height = '300px'
+					obj.option.legend.y = 'center'
+					obj.option.legend.x = 'right'
+					obj.option.legend.orient = 'vertical'
+					obj.option.series[0].center = ['35%', '50%']
+				}
+			}
+
+			obj.chart.setOption(obj.option)
+			obj.chart.resize()
+
+		}, false);
+	}
+
+	gradeSelectChange(num) {
+		if (num === this.state.gradeDataSelect) { return };
+		this.setState({
+			gradeDataSelect: num
+		}, () => {
+			this.renderClassData(this.props.state.schoolDataReport.classWrongData);
+		})
+	}
+
+	format(shijianchuo) {
+		//shijianchuo是整数，否则要parseInt转换
+		var time = new Date(shijianchuo);
+		var y = time.getFullYear();
+		var m = time.getMonth() + 1;
+		var d = time.getDate();
+		return y + '-' + `${m < 10 ? '0' + m : m}` + '-' + `${d < 10 ? '0' + d : d}`;
+	}
+	//年级使用数据导出
+	gradeDaochu() {
+		let timeList = this.props.state.reportTimeList,
+			startTime = this.props.state.startTime,
+			endTime = this.props.state.endTime;
+
+		if (this.props.state.startTime === '') {
+			startTime = this.format(timeList[this.props.state.periodTime - 1].startTimeStamp);
+			endTime = this.format(timeList[this.props.state.periodTime - 1].endTimeStamp);
+		}
+		fetch(dataCenter(`/export/excel/exportSchoolData?schoolId=${store.get('wrongBookNews').schoolId}&startTime=${startTime}&endTime=${endTime}`))
+			.then(resp => resp.blob())
+			.then(blob => {
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${store.get('wrongBookNews').schoolName}年级使用数据.xlsx`;
+				a.click();
+			})
+	}
+	//教师使用情况导出
+	teacherDaochu() {
+		let timeList = this.props.state.reportTimeList,
+			startTime = this.props.state.startTime,
+			endTime = this.props.state.endTime;
+
+		if (this.props.state.startTime === '') {
+			startTime = this.format(timeList[this.props.state.periodTime - 1].startTimeStamp);
+			endTime = this.format(timeList[this.props.state.periodTime - 1].endTimeStamp);
+		}
+		fetch(dataCenter(`/export/excel/exportTeacherData?schoolId=${store.get('wrongBookNews').schoolId}&startTime=${startTime}&endTime=${endTime}`))
+			.then(resp => resp.blob())
+			.then(blob => {
+				console.log(blob)
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${store.get('wrongBookNews').schoolName}教师使用情况.xlsx`;
+				a.click();
+			})
 	}
 
 	render() {
@@ -864,112 +688,79 @@ class HomeworkCenter extends React.Component {
 		let timeList = this.props.state.reportTimeList;
 		let schoolReport = this.props.state.schoolDataReport;
 
-		setTimeout(() => {
-			// if(this.props.state.subjectId!==''){			
-			if (schoolReport.gradeWrongNumMap) {
-				this.renderQustionCount(schoolReport.gradeWrongNumMap)
-			}
-			if (schoolReport.gradeUseNumMap) {
-				this.renderUserCount(schoolReport.gradeUseNumMap)
-			}
-			if (schoolReport.schoolUserNumData && this.props.state.ssubList.length > 0) {
-				this.renderClassData0(schoolReport.schoolUserNumData, schoolReport.schoolWrongNumData)
-			}
-			if (schoolReport.classUseData) {
-				this.renderClassData(schoolReport.classUseData, schoolReport.classWrongData)
-			}
-
-			// }
-
-		}, 10);
 		return (
-			<Layout>
-				<div style={{ display: 'flex', background: 'rgba(198,206,218,1)', flex: 'none' }}>
-					<div onClick={() => {
-						this.props.dispatch(
-							routerRedux.push({
-								pathname: '/schoolChart'
-							})
-						)
-					}}
-						style={{
-							width: 120, lineHeight: '34px', background: 'rgba(64,158,255,1)', borderRadius: 3, color: '#fff', textAlign: 'center', margin: '8px 20px', cursor: 'pointer'
-						}}>
+			<>
+				<div style={{ display: 'flex', position: 'absolute', left: 70, top: 15 }}>
+					<div onClick={() => { this.props.dispatch(routerRedux.push({ pathname: '/schoolChart' })) }} className={style.blueButton}>
 						校级报表
 					</div>
 					<div onClick={() => {
-						this.props.dispatch(
-							routerRedux.push({
-								pathname: '/classChart'
-							})
-						)
-					}}
-						style={{
-							width: 120, lineHeight: '34px', background: '#fff', borderRadius: 3, color: '#606266', textAlign: 'center', margin: '8px 20px', cursor: 'pointer'
-						}}>
+						this.props.dispatch(routerRedux.push({ pathname: '/classChart' }));
+						this.props.dispatch({
+							type: 'reportChart/stateTimeIndex',
+							payload: 0
+						});
+					}} className={style.whiteButton}>
 						班级报表
 					</div>
 				</div>
-				<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
-				<Content style={{ background: '#eee', overflow: 'auto', position: 'relative' }}>
-					{this.props.state.sgradeList.length === 0 && (schoolReport === "none" || JSON.stringify(schoolReport) === '{}') ? noResposeDataCon() :
-						<div>
-							<Row style={{ marginTop: 20 }} >
-								<Col xl={12} md={24} >
-									<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 20 }}>
-										<p>错题总量</p>
-										<div id='main' style={{ height: 400 }}>
+				<Layout>
+
+					<TopBar timeList={timeList} onChangeTime={this.onChangeTime} onChangeDate={this.onChangeDate}></TopBar>
+					<Content style={{ background: '#eee', overflow: 'auto', position: 'relative' }}>
+						{this.props.state.sgradeList.length === 0 && (schoolReport === "none" || JSON.stringify(schoolReport) === '{}') ? noResposeDataCon() :
+							<div>
+								<Row style={{ marginTop: 30 }} >
+									<Col xl={12} md={24} >
+										<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 30 }}>
+											<div id='main' style={document.body.offsetWidth <= 1400 ? { height: 400 } : { height: 300 }}>
+											</div>
+											{/* {JSON.stringify(schoolReport.gradeWrongNumMap) === '{}' ?
+												<div style={document.body.offsetWidth <= 1400 ? { height: 400 } : { height: 300 }}>{noResposeDataCon()}</div> : ""} */}
+										</div>
+									</Col>
+									<Col xl={12} md={24}>
+										<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 30 }}>
+											<div id='main1' style={document.body.offsetWidth <= 1400 ? { height: 400 } : { height: 300 }}>
+											</div>
+											{/* {JSON.stringify(schoolReport.gradeUseNumMap) === '{}' ?
+												<div style={document.body.offsetWidth <= 1400 ? { height: 400 } : { height: 300 }}><Empty /></div> : ""} */}
+										</div>
+									</Col>
+								</Row>
+
+								<Row >
+									<Col md={24}>
+										<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )', paddingRight: 0, }}>
+
+											<div className={style.classSelects}>
+												<span style={this.state.gradeDataSelect === 1 ? { width: 70, borderColor: '#2F9BFF' } : { width: 70 }} onClick={() => { this.gradeSelectChange(1) }}> 错题量</span>
+												<span style={this.state.gradeDataSelect === 2 ? { width: 100, borderColor: '#2F9BFF' } : { width: 100 }} onClick={() => { this.gradeSelectChange(2) }}>错题使用人数</span>
+												<span style={this.state.gradeDataSelect === 3 ? { width: 70, borderColor: '#2F9BFF' } : { width: 70 }} onClick={() => { this.gradeSelectChange(3) }}>作业数</span>
+											</div>
+											<div className={style.chartExport} onClick={() => { this.gradeDaochu() }}>
+												<img src={require('../../images/chartDerive.png')} />
+												导出
+											</div>
+
+											<div id='main3' style={{ height: 440 }}> </div>
+											{/* {schoolReport.classWrongData === undefined || schoolReport.classWrongData.length === 0 ?
+												<div style={{ height: 440 }}>{noResposeDataCon()}</div> : ""} */}
 
 										</div>
-										{JSON.stringify(schoolReport.gradeWrongNumMap) === '{}' ?
-											<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
-									</div>
-								</Col>
-								<Col xl={12} md={24}>
-									<div style={{ margin: '0 20px', padding: '20px', backgroundColor: '#fff', marginBottom: 20 }}>
-										<p>使用人数</p>
-										<div id='main1' style={{ height: 400 }}>
-										</div>
-										{JSON.stringify(schoolReport.gradeUseNumMap) === '{}' ?
-											<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
-									</div>
-								</Col>
-							</Row>
-
-							<Row >
-								<Col md={24}>
-									<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden', marginBottom: 20 }}>
-										{this.getGradeList()}
-										{this.getClassList()}
-										{this.getSub()}
-										<div id='main2' className={this.props.state.noClassData ? 'hidden' : ''} style={{ height: '400px' }}>
-										</div>
-										{this.props.state.noClassData === true ? <div style={{ height: 400 }}>{noResposeDataCon()}</div> : ''}
-									</div>
-								</Col>
-							</Row>
-
-							<Row >
-								<Col md={24}>
-									<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden', marginBottom: 30 }}>
-										<p>班级使用情况</p>
-										<div id='main3' style={{ height: 400 }}>
-										</div>
-										{schoolReport.classUseData === undefined || schoolReport.classUseData.length === 0 ?
-											<div style={{ height: 400 }}>{noResposeDataCon()}</div> : ""}
-
-									</div>
-								</Col>
-							</Row>
-							<Row >
-								<Col md={24}>
-									<div style={{ margin: '0 20px', width: 'calc( 100% - 40px )', padding: '20px', backgroundColor: '#fff', overflowX: 'auto', overflowY: 'hidden', marginBottom: 30 }}>
-										<div className={style.searchInput}>
-											<p>教师使用情况</p>
+									</Col>
+								</Row>
+								<Row >
+									<Col md={24}>
+										<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )' }}>
+											<div className={style.chartExport} onClick={() => { this.teacherDaochu() }}>
+												<img src={require('../../images/chartDerive.png')} />
+												导出
+											</div>
 											<Search
 												placeholder="请输入教师姓名"
 												enterButton="搜索"
-												style={{ width: 240, position: 'absolute', right: 0, top: 0 }}
+												style={{ width: 250, position: 'absolute', right: 100, top: 23, zIndex: 10 }}
 												onSearch={value => {
 													if (value === '') {
 														this.props.dispatch({
@@ -980,7 +771,7 @@ class HomeworkCenter extends React.Component {
 														let arr = []
 														for (let i = 0; i < schoolReport.teacherUseDataList.length; i++) {
 															const ele = schoolReport.teacherUseDataList[i];
-															if (ele.adminName.indexOf(value) > -1) {
+															if (ele.userName.indexOf(value) > -1) {
 																arr.push(ele)
 															}
 														}
@@ -989,90 +780,22 @@ class HomeworkCenter extends React.Component {
 															payload: arr
 														});
 													}
-
 													this.renderTeacherUserCount()
-												}
-
-												}
-											/>
+												}} />
+											<div className={style.searchInput}>
+												<p>教师使用情况  <span style={{ fontSize: 12, color: '#909090' }}><Icon type="question-circle" style={{ color: '#409EFF', margin: '0px 3px 0px 15px' }} />教师<span style={{ color: '#409EFF' }}>“使用率排行”</span>指教师作业批改率、组卷次数、视频录制数的综合指数排名</span></p>
+											</div>
+											{schoolReport.teacherUseDataList ? this.renderTeacherUserCount() : ''}
 										</div>
-										{schoolReport.teacherUseDataList ?
-											this.renderTeacherUserCount() : ''
-										}
-									</div>
-								</Col>
-							</Row>
-						</div>
-					}
+									</Col>
+								</Row>
+							</div>
+						}
 
-
-				</Content>
-			</Layout>
-
-
+					</Content>
+				</Layout>
+			</>
 		);
-	}
-	resizeChart(obj) {
-
-		window.addEventListener('resize', function (e) {
-			let winWidth = e.target.innerWidth
-			const chartBox = document.getElementById('main');
-			const chartBox1 = document.getElementById('main1');
-			const chartBox2 = document.getElementById('main2');
-			const chartBox3 = document.getElementById('main3');
-			if (!chartBox) return
-			if (winWidth <= 1400) {
-				chartBox3.style.width = '1000px'
-				chartBox2.style.width = '1000px'
-			} else {
-
-				chartBox3.style.width = '100%'
-				chartBox2.style.width = '100%'
-				if (obj.id >= 2) {
-					obj.chart.resize()
-				}
-			}
-
-			if (chartBox.offsetWidth <= 600 || winWidth <= 1366) {
-				if (obj.id === 0 || obj.id === 1) {
-					chartBox.style.height = '500px'
-					chartBox1.style.height = '500px'
-					obj.option.legend.y = 'bottom'
-					obj.option.legend.x = 'center'
-					obj.option.legend.orient = 'horizontal'
-					obj.option.series[0].center = ['50%', '50%']
-				}
-
-				if (obj.id === 1) {
-					obj.option.series[0].radius = ['40%', '55%']
-				}
-				if (obj.id === 0) {
-					obj.option.series[0].radius = [20, '55%']
-				}
-			} else {
-				if (obj.id === 0 || obj.id === 1) {
-					chartBox.style.height = '400px'
-					chartBox1.style.height = '400px'
-					obj.option.legend.y = 'center'
-					obj.option.legend.x = 'right'
-					obj.option.legend.orient = 'vertical'
-					obj.option.series[0].center = ['25%', '50%']
-				}
-
-				if (obj.id === 1) {
-					obj.option.series[0].radius = ['50%', '63%']
-				}
-				if (obj.id === 0) {
-					obj.option.series[0].radius = [20, '60%']
-				}
-			}
-
-			obj.chart.setOption(obj.option)
-			if (obj.id === 0 || obj.id === 1) {
-				obj.chart.resize()
-			}
-
-		}, false);
 	}
 	componentWillMount() {
 		if (store.get('wrongBookNews').rodeType === 10) {
@@ -1101,6 +824,14 @@ class HomeworkCenter extends React.Component {
 			type: 'reportChart/subjectId',
 			payload: '',
 		});
+		this.props.dispatch({
+			type: 'reportChart/startTime',
+			payload: ''
+		});
+		this.props.dispatch({
+			type: 'reportChart/endTime',
+			payload: ''
+		});
 		window.removeEventListener('resize', function (e) {
 			//卸载resize
 		}, false);
@@ -1114,28 +845,38 @@ class HomeworkCenter extends React.Component {
 		}
 	}
 	componentDidMount() {
-
-		const { dispatch } = this.props;
-		dispatch({
+		this.props.dispatch({
 			type: 'reportChart/getReportTimeList',
 			payload: {
 				classReport: false
 			}
 		});
+	}
+	shouldComponentUpdate(nextProps) {
+		let data = nextProps.state.schoolDataReport;
 
-		let winwidth = document.body.offsetWidth
-		const chartBox1 = document.getElementById('main2');
-		const chartBox2 = document.getElementById('main3');
-		if (!chartBox1 || chartBox2) return
-		if (winwidth <= 1400) {
-			chartBox1.style.width = '1200px'
-			chartBox2.style.width = '1200px'
-		} else {
-			chartBox1.style.width = '100%'
-			chartBox2.style.width = '100%'
+		if (!(JSON.stringify(data) === '{}' || data === "none") && data !== this.props.state.schoolDataReport) {
+
+			if (data.gradeWrongNumMap) {
+				this.renderQustionCount(data.gradeWrongNumMap)
+			}
+			if (data.gradeUseNumMap) {
+				this.renderUserCount(data.gradeUseNumMap)
+			}
+			if (data.classWrongData) {
+				this.renderClassData(data.classWrongData)
+			}
+		} else if ((JSON.stringify(data) === '{}' || data === "none") && document.getElementById('main')) {
+
+			this.renderQustionCount({})
+			this.renderUserCount({})
+			this.renderClassData({})
+
 		}
 
+		return true
 	}
+
 }
 
 export default connect((state) => ({
@@ -1143,4 +884,4 @@ export default connect((state) => ({
 		...state.temp,
 		...state.reportChart,
 	}
-}))(HomeworkCenter);
+}))(SchoolChart);

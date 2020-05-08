@@ -488,7 +488,6 @@ class StuReport extends React.Component {
         type: 'classHome/pageClass',
         payload: data
       }).then(() => {
-        console.log(this.props.state)
         if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
           dispatch({
             type: 'homePage/infoClass',
@@ -587,13 +586,18 @@ class StuReport extends React.Component {
     if (this.props.state.infoClass != this.state.nowclassid) {
       console.log(prevProps)
       if (store.get('wrongBookNews').rodeType <= 20) {
-        this.props.dispatch({
-          type: 'homePage/infoClass',
-          payload: this.props.state.classList.data.list[0].classId
-        });
-        this.setState({
-          nowclassid: this.props.state.classList.data.list[0].classId
-        })
+        try {
+          this.props.dispatch({
+            type: 'homePage/infoClass',
+            payload: this.props.state.classList.data.list[0].classId
+          });
+          this.setState({
+            nowclassid: this.props.state.classList.data.list[0].classId
+          })
+        } catch (e) {
+          console.error(e)
+        }
+
       } else {
         this.props.dispatch({
           type: 'homePage/infoClass',

@@ -313,7 +313,7 @@ export default {
             if (res.data && res.data.result === 0) {
                 message.success('更新评价成功')
             } else {
-                message.error(res.data.msg)
+                message.error(res.data.message)
             }
         },
         *deleteCommit({ payload }, { put }) {

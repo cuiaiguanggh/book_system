@@ -7,8 +7,9 @@ import {
   , queryClassListByGradeId, querySubListByClassId, queryClassDataReport,
 } from '../services/reportService';
 import {
-  getUserSubjectList,
-} from '../services/tempService';
+  subjectList,
+} from '../services/correctionService';
+
 import store from 'store';
 import { message } from 'antd';
 
@@ -37,8 +38,16 @@ export default {
     noClassData: true,
     startTime: '',
     endTime: '',
+    cSubList: [],
+    csubId: '',
   },
   reducers: {
+    csubId(state, { payload }) {
+      return { ...state, csubId: payload };
+    },
+    cSubList(state, { payload }) {
+      return { ...state, cSubList: payload };
+    },
     endTime(state, { payload }) {
       return { ...state, endTime: payload };
     },
@@ -109,6 +118,66 @@ export default {
   },
 
   effects: {
+    * chartSubList({ payload }, { put, select }) {
+      let res = yield subjectList(payload)
+
+      if (res.data.result === 0) {
+        if (res.data.data.length > 0) {
+          yield put({
+            type: 'cSubList',
+            payload: res.data.data
+          });
+          yield put({
+            type: 'csubId',
+            payload: res.data.data[0].v
+          });
+          //切换班级后获取到学科信息调用接口获取数据
+          let { classId } = yield select(state => state.temp);
+          let { stateTimeIndex, startTime, endTime, periodTime, timeStamp } = yield select(state => state.reportChart);
+          let data = {
+            schoolId: store.get('wrongBookNews').schoolId,
+            classId,
+            subjectId: res.data.data[0].v,
+          };
+          console.log(startTime)
+          if (stateTimeIndex === 100 && startTime) {
+            data.startTime = startTime;
+            data.endTime = endTime;
+            data.timeStamp = 0
+          } else {
+            data.periodTime = periodTime;
+            data.timeStamp = timeStamp;
+          };
+          yield put({
+            type: 'getClassDataReport',
+            payload: data
+          });
+        } else {
+          yield put({
+            type: 'cSubList',
+            payload: []
+          });
+          yield put({
+            type: 'csubId',
+            payload: ''
+          });
+
+          yield put({
+            type: 'classDataReport',
+            payload: {
+              studentWrongNum: [],
+              classUserNumData: [],
+              classWrongNumData: [],
+              teacherUseDataList: []
+            }
+          })
+
+        }
+      } else {
+        message.error(res.data.msg)
+      }
+    },
+
     * getReportTimeList({ payload }, { put, select }) {
       let { years } = yield select(state => state.temp)
       let res = yield getReportTimeList({ year: years });
@@ -120,9 +189,9 @@ export default {
           } else if (arr[i].periodTime === 2) {
             arr[i].name = '本学期'
           } else if (arr[i].periodTime === 3) {
-            arr[i].name = '月'
+            arr[i].name = '本月'
           } else if (arr[i].periodTime === 4) {
-            arr[i].name = '周'
+            arr[i].name = '本周'
           }
         }
         yield put({
@@ -141,34 +210,29 @@ export default {
         if (payload.classReport === true) {
           //获取班级报表
           const _state = yield select(state => state.reportChart);
-          let { classId, subId } = yield select(state => state.temp);
-          //如果是超级管理员的话
-          if (store.get('wrongBookNews').rodeType === 10) {
-            let { sclassId, csubjectId } = yield select(state => state.reportChart);
-            classId = sclassId;
-            subId = csubjectId;
-          }
-          // let _ccid = _class.classList1.data[0].classId
-          // let _sid = _class.subList.data[0].v
-          // yield put({
-          //   type: 'cclassId',
-          //   payload: _ccid
-          // })
-          // yield put({
-          //   type: 'csubjectId',
-          //   payload: _sid
-          // })
-          let data = {
-            classId: classId,
-            schoolId: store.get('wrongBookNews').schoolId,
-            periodTime: _state.periodTime,
-            timeStamp: _state.timeStamp,
-            subjectId: subId
-          }
+          let { classId } = yield select(state => state.temp);
+          let { sclassId, csubId } = yield select(state => state.reportChart);
+          if (store.get('wrongBookNews').rodeType === 10) { classId = sclassId; }
+
           yield put({
-            type: 'getClassDataReport',
-            payload: data,
+            type: 'chartSubList',
+            payload: { classId }
           })
+          // //如果是超级管理员的话
+          // let data = {
+          //   classId: classId,
+          //   schoolId: store.get('wrongBookNews').schoolId,
+          //   periodTime: _state.periodTime,
+          //   timeStamp: _state.timeStamp,
+          //   subjectId: csubId
+          // }
+          // console.log(data)
+          // yield put({
+          //   type: 'getClassDataReport',
+          //   payload: data,
+          // })
+
+
         } else {
           yield put({
             type: 'getGradeList',
@@ -289,7 +353,6 @@ export default {
               schoolId: payload.schoolId,
               periodTime: payload.periodTime,
               timeStamp: payload.timeStamp,
-              classId: payload.classId,
             }
           })
 
@@ -337,12 +400,9 @@ export default {
         if (startTime !== '' && endTime !== '') {
           data = {
             schoolId: payload.schoolId,
-            classId: payload.classId,
             timeStamp: 0,
             startTime: startTime,
             endTime: endTime,
-            subjectId: _subjectId
-
           }
         }
 
@@ -378,7 +438,7 @@ export default {
           type: 'schoolDataReport',
           payload: 'none'
         })
-        //message.warning(schoolRes.data.msg)
+        message.warning(schoolRes.data.msg)
       } else {
         message.error('获取报表失败')
       }
@@ -417,7 +477,6 @@ export default {
           classRes.data.data.classUserNumData = [];
           classRes.data.data.classWrongNumData = [];
         }
-
         yield put({
           type: 'classDataReport',
           payload: classRes.data.data

@@ -582,10 +582,11 @@ class HomeworkCenter extends React.Component {
             <Table className={style.scoreDetTable}
               dataSource={dataSource}
               columns={columns}
-              pagination={true}
+              pagination={{ pageSize: 10, defaultPageSize: 10 }}
               bordered={true}
               rowKey={(record, index) => index} />
-            {
+              
+            {/* {
               total > 1 ?
                 <Pagination defaultCurrent={cur} style={{ textAlign: 'right', marginTop: 10 }}
                   onChange={(pageNumber) => {
@@ -619,7 +620,7 @@ class HomeworkCenter extends React.Component {
                   }}
                   pageSize={10} defaultPageSize={10} total={total} /> :
                 ''
-            }
+            } */}
           </div>
           <Modal
             title="编辑"

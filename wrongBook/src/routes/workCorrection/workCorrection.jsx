@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import {
-    message, Select, Layout, Modal, Button, Icon, 
+    message, Select, Layout, Modal, Button, Icon,
 } from 'antd';
 import style from './workCorrection.less';
 import observer from '../../utils/observer'
@@ -329,11 +329,13 @@ class workCorrection extends React.Component {
         }
 
         let pageIds = [];
+
         for (let obj of this.state.phList) {
-            if (obj.markList && obj.markList.length > 0) {
+            if ((obj.markList && obj.markList.length > 0) || (obj.supMarkList && obj.supMarkList.length > 0) || (obj.contentMarkList && obj.contentMarkList.length > 0)) {
                 pageIds.push(obj.pageId)
             }
         }
+
         //上传批改痕迹
         let newmarkList = [], angle = nowTopic.angle;
 
@@ -412,21 +414,8 @@ class workCorrection extends React.Component {
         });
 
         //这个学生，所有题目都批改完成，提醒学生
-        let panduan = true;
-        for (let obj of this.state.phList) {
-            if (obj.status === 0 && (!obj.markList || obj.markList.length === 0)) {
-                panduan = false;
-                break;
-            }
-        }
-        if (panduan) {
-            this.props.dispatch({
-                type: 'correction/check',
-                payload: {
-                    subjectId: this.props.state.subjectId,
-                    userId: this.state.pitchStuId
-                }
-            })
+
+        if (pageIds.length === this.state.phList.length) {
             this.props.dispatch({
                 type: 'correction/teacherCommit',
                 payload: {
@@ -434,6 +423,14 @@ class workCorrection extends React.Component {
                     studentId: this.state.pitchStuId,
                     classId: this.props.state.classId,
                     workDate: this.props.state.workDate,
+                }
+            })
+
+            this.props.dispatch({
+                type: 'correction/check',
+                payload: {
+                    subjectId: this.props.state.subjectId,
+                    userId: this.state.pitchStuId
                 }
             })
         }
@@ -507,8 +504,20 @@ class workCorrection extends React.Component {
 
     subjectScroll(e) {
         let nowPage = this.state.nowPage, scrollTop = e.currentTarget.scrollTop, childNodes = document.getElementById('markedArea').childNodes;
+        if (scrollTop === 0) {
+            this.props.dispatch({
+                type: 'temp/topBarHide',
+                payload: 1
+            })
+        } else {
+            this.props.dispatch({
+                type: 'temp/topBarHide',
+                payload: 0
+            })
+        }
 
         if (scrollTop) {
+
             if (scrollTop - this.agoScrollTop > 0 && nowPage < childNodes.length - 1 && scrollTop > childNodes[nowPage].offsetTop + (childNodes[nowPage + 1].offsetTop - childNodes[nowPage].offsetTop) * 0.7) {
                 this.agoScrollTop = scrollTop;
                 nowPage++
@@ -563,12 +572,12 @@ class workCorrection extends React.Component {
             }
         }
 
-        //已批题目数
-        let approvedTopic = 0;
-        //当前学生的所有错题数
+        //是否有批改痕迹
+        let isTrace = true;
         for (let obj of this.state.phList) {
-            if (obj.markList && obj.markList.length) {
-                approvedTopic++;
+            if (!(obj.markList && obj.markList.length > 0) && !(obj.supMarkList && obj.supMarkList.length > 0) && !(obj.contentMarkList && obj.contentMarkList.length > 0)) {
+                isTrace = false;
+                break;
             }
         }
         //教师评价   
@@ -580,7 +589,7 @@ class workCorrection extends React.Component {
             wtbHomeworkCorrect = checked[this.state.idIndex].wtbHomeworkCorrect;
         }
         return (<>
-            <Header className={style.headTop} >
+            <Header className={style.headTop} style={this.props.state.topBarHide === 0 ? { display: 'none' } : {}}>
                 {classList.data && classList.data.length > 0 && className != '' &&
                     <Select style={{ width: 120 }}
                         getPopupContainer={triggerNode => triggerNode.parentElement}
@@ -708,7 +717,7 @@ class workCorrection extends React.Component {
                                                     nowTopic={item}
                                                     sizeMultiple={this.state.sizeMultiple}
                                                     src={`${item.pageUrl}/thumbnail/1000x/interlace/1`}
-                                                    focusIndex={(index) => { this.setState({ focusIndex: index }); console.log(index) }}
+                                                    focusIndex={(index) => { this.setState({ focusIndex: index }); }}
                                                 />
                                             ))}
 
@@ -769,7 +778,7 @@ class workCorrection extends React.Component {
                                 wancheng={(content, common, level, score, isExcellent) => {
                                     if (studentList.submitted.length === 0) { return; }
                                     let that = this;
-                                    if (approvedTopic === this.state.phList.length) {
+                                    if (isTrace) {
                                         if (this.state.agoPage === -1) {
                                             that.sclickFinish(this.state.phList[this.state.nowPage], studentList, uncheck, checked)
                                         } else {
@@ -866,6 +875,12 @@ class workCorrection extends React.Component {
         }
 
     }
+    componentWillUnmount() {
+        this.props.dispatch({
+            type: 'temp/topBarHide',
+            payload: 1
+        })
+    }
 
 }
 export default connect((state) => ({
@@ -873,6 +888,7 @@ export default connect((state) => ({
         classList1: state.temp.classList1,
         className: state.temp.className,
         classId: state.temp.classId,
+        topBarHide: state.temp.topBarHide,
         ...state.correction
     }
 }))(workCorrection);

@@ -117,6 +117,7 @@ export default function MarkedArea(props) {
             //图片正在加载中，不能操作
             return false
         }
+
         //生成输入框
         let nowdom = e.currentTarget;
         let x = e.nativeEvent.offsetX;
@@ -137,22 +138,32 @@ export default function MarkedArea(props) {
                 type: 6,
                 fontSize: props.sizeMultiple || 1
             }];
+            //光标
+            setTimeout(() => {
+                nowdom.children[nowTopic.contentMarkList.length - 1].children[0].focus()
+            }, 1);
         } else {
             //已批过
-            nowTopic.contentMarkList.push({
-                x,
-                y,
-                content: '',
-                type: 6,
-                fontSize: props.sizeMultiple || 1
-            });
+            if (nowTopic.contentMarkList[nowTopic.contentMarkList.length - 1].content.length === 0) {
+                nowTopic.contentMarkList[nowTopic.contentMarkList.length - 1].x = x;
+                nowTopic.contentMarkList[nowTopic.contentMarkList.length - 1].y = y;
+
+            } else {
+                nowTopic.contentMarkList.push({
+                    x,
+                    y,
+                    content: '',
+                    type: 6,
+                    fontSize: props.sizeMultiple || 1
+                });
+                //光标
+                setTimeout(() => {
+                    nowdom.children[nowTopic.contentMarkList.length - 1].children[0].focus()
+                }, 1);
+            }
         }
         props.gxphList()
-        //光标定位
 
-        setTimeout(() => {
-            nowdom.children[nowTopic.contentMarkList.length - 1].children[0].focus()
-        }, 100);
     }
 
 
@@ -352,7 +363,7 @@ export default function MarkedArea(props) {
                                 maxHeight: `calc(100% - ${item.y}px)`,
                                 border: `${props.mouseType === 'text' || props.mouseType === 'trash' ? '1px solid' : '1px solid  transparent'}`,
                                 width: item.width,
-                                cursor: `${props.mouseType === 'text' ? 'default' : `${props.mouseType === 'trash' ? 'unset' : 'move'}`}`,
+                                cursor: `${props.mouseType === 'text' ? `${props.mouseType === 'trash' ? 'unset' : 'move'}` : 'default'}`,
                             }}>
 
 
@@ -367,6 +378,14 @@ export default function MarkedArea(props) {
                                     item.content = e.currentTarget.textContent;
                                     item.width = e.currentTarget.clientWidth;
                                     item.height = e.currentTarget.clientHeight;
+                                }}
+                                onBlur={(e) => {
+                                    console.log(j, props.nowTopic.contentMarkList.length)
+                                    if (e.currentTarget.textContent.length === 0 && j === props.nowTopic.contentMarkList.length - 1) {
+                                        props.nowTopic.contentMarkList.splice(j, 1);
+                                        props.gxphList();
+                                        e.stopPropagation();
+                                    }
                                 }}
                                 onMouseOver={(e) => {
                                     if (mouseMoveType === 'trash') {

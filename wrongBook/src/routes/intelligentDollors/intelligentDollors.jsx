@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Layout, Icon, DatePicker, Empty, Modal
+    Layout, Icon, DatePicker, Empty, Modal, Spin
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -349,7 +349,7 @@ class intelligentDollors extends React.Component {
 
         return (
             <>
-                <Header className={style.layoutHead}>
+                <Header className={style.layoutHead} style={this.props.state.topBarHide === 0 ? { display: 'none' } : {}}>
                     <span style={{
                         fontSize: 14,
                         fontFamily: 'MicrosoftYaHei-Bold',
@@ -421,6 +421,17 @@ class intelligentDollors extends React.Component {
                             document.getElementById('back').style.opacity = 0.3 * e.currentTarget.scrollTop / 500
                         } else {
                             document.getElementById('back').style.opacity = 0.3
+                        }
+                        if (e.currentTarget.scrollTop === 0) {
+                            this.props.dispatch({
+                                type: 'temp/topBarHide',
+                                payload: 1
+                            })
+                        } else {
+                            this.props.dispatch({
+                                type: 'temp/topBarHide',
+                                payload: 0
+                            })
                         }
                     }}>
                         {length > 0 ?
@@ -495,11 +506,16 @@ class intelligentDollors extends React.Component {
                         <Icon type="up" />
                     </div>
                 </Layout >
-                <Footer className={style.bottom}>
-                    <div className={style.anniu} style={{ width: 116 }} onClick={this.oneDonw.bind(this)}>
-                        <Icon type="loading" hidden={this.state.loading !== 1} /><Icon type="download" /> 一键组卷  </div>
+                <div className={style.dingwei}>
+                    <Spin spinning={this.state.loading === 1}>
+                        <div className={style.zujuan} onClick={this.oneDonw.bind(this)}>
+                            <img src={require('../images/zujuanDown.png')} style={{ marginBottom: 5 }} />
+                         一<br />键<br />组<br />卷<br />
+                            <span className={style.yuan}>{length}</span>
+                        </div>
+                    </Spin>
+                </div>
 
-                </Footer>
                 <Modal
                     visible={this.state.showPdfModal}
                     maskClosable={false}
@@ -545,6 +561,12 @@ class intelligentDollors extends React.Component {
             year: this.props.state.years,
         })
 
+    }
+    componentWillUnmount() {
+        this.props.dispatch({
+            type: 'temp/topBarHide',
+            payload: 1
+        })
     }
 
 }

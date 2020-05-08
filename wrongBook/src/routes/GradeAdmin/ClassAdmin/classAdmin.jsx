@@ -168,13 +168,7 @@ class HomeworkCenter extends React.Component {
 			key: 'phone',
 			align: 'center',
 			editable: true,
-			render: (text, record) => (
-				<div className={style.space}
-					onClick={() => {
-					}}>
-					{text}
-				</div>
-			)
+			render: (text, record) => (<div className={style.space} > {text} </div>)
 		},
 		{
 			title: <div className={style.space}>学科</div>,
@@ -183,9 +177,7 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div className={style.space}>
-					{text}
-				</div>
+				<div className={style.space}> {text} </div>
 			)
 		},
 		{
@@ -195,9 +187,7 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div className={style.space}>
-					{text}
-				</div>
+				<div className={style.space}> {text} </div>
 			)
 		},
 		{
@@ -207,10 +197,7 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (
-				<div
-					className={style.space}>
-					{text}
-				</div>
+				<div className={style.space}> {text} </div>
 			)
 		},
 		{
@@ -373,9 +360,7 @@ class HomeworkCenter extends React.Component {
 			render: (text, record, index) => {
 				return record.userId === this.state.pitchOn ? <input defaultValue={text} onBlur={(e) => {
 					record.nowname = e.currentTarget.value;
-				}} /> : <div className={style.space}>
-						{text}
-					</div>
+				}} /> : <div className={style.space}> {text} </div>
 			}
 		},
 		{
@@ -384,11 +369,7 @@ class HomeworkCenter extends React.Component {
 			key: 'account',
 			align: 'center',
 			editable: true,
-			render: (text, record, index) => (
-				<div className={style.space}>
-					{text}
-				</div>
-			)
+			render: (text, record, index) => (<div className={style.space}> {text} </div>)
 
 		},
 		{
@@ -397,11 +378,7 @@ class HomeworkCenter extends React.Component {
 			key: 'wrongNum',
 			align: 'center',
 			editable: false,
-			render: (text, record) => (
-				<div className={style.space}>
-					{text}
-				</div>
-			)
+			render: (text, record) => (<div className={style.space}> {text} </div>)
 		},
 		{
 			title: <div className={style.space}>联系电话</div>,
@@ -410,13 +387,7 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: false,
 			render: (text, record) => (
-				<div
-					className={style.space}
-					onClick={() => {
-					}}>
-					{text}
-				</div>
-			)
+				<div className={style.space}> {text} </div>)
 		},
 		{
 			title: <div className={style.space}>视频数量</div>,
@@ -424,84 +395,99 @@ class HomeworkCenter extends React.Component {
 			key: 'videoNum',
 			align: 'center',
 			editable: false,
-			render: (text, record) => (
-				<div
-					className={style.space}
-					onClick={() => {
-					}}>
-					{text}
-				</div>
-			)
+			render: (text) => (<div className={style.space} > {text} </div>)
 		},
 		{
 			title: <div className={style.space}>操作</div>,
 			editable: true,
 			align: 'center',
 			render: (text, record, index) => {
-				const rodeType = store.get('wrongBookNews').rodeType
+				const rodeType = store.get('wrongBookNews').rodeType;
 				if (rodeType <= 20) {
-					return (
-						<div>
-							{/* <span style={{ background: '#13CE66' }} className={style.annniu} onClick={() => {
-								// this.setState({ pitchOn: record.userId });
-							}}>已关注</span> */}
-							{/* <span className={style.annniu} style={{ border: '1px solid rgba(220,223,230,1)', color: '#606266' }} onClick={() => {
+					return (<div>
+						{record.isCare === 1 ?
+							<span style={{ background: '#13CE66' }} className={style.annniu} onClick={() => {
 								this.props.dispatch({
 									type: 'homePage/care',
 									payload: {
 										userId: record.userId,
+										isCare: 0,
 										classId: this.props.state.infoClass,
 									}
-								})
-							}}>关注</span> */}
-							{record.userId === this.state.pitchOn ? <span style={{ background: '#85CE61' }} className={style.annniu} onClick={() => {
-								this.setState({ pitchOn: '' });
-								if (record.nowname) {
+								}).then(() => {
 									this.props.dispatch({
-										type: 'homePage/updateChild',
+										type: 'homePage/teacherList',
 										payload: {
-											childId: record.userId,
-											name: record.nowname,
+											type: 3
 										}
-									}).then(() => {
-										this.props.dispatch({
-											type: 'homePage/teacherList',
-											payload: {
-												type: 3
-											}
-										})
+									});
+								})
+							}}>已关注</span> :
+							<span className={style.annniu} style={{ border: '1px solid rgba(220,223,230,1)', color: '#606266' }} onClick={() => {
+								this.props.dispatch({
+									type: 'homePage/care',
+									payload: {
+										userId: record.userId,
+										isCare: 1,
+										classId: this.props.state.infoClass,
+									}
+								}).then(() => {
+									this.props.dispatch({
+										type: 'homePage/teacherList',
+										payload: {
+											type: 3
+										}
+									});
+								})
+							}}>关注</span>}
+						{record.userId === this.state.pitchOn ? <span style={{ background: '#85CE61' }} className={style.annniu} onClick={() => {
+							this.setState({ pitchOn: '' });
+							if (record.nowname) {
+								this.props.dispatch({
+									type: 'homePage/updateChild',
+									payload: {
+										childId: record.userId,
+										name: record.nowname,
+									}
+								}).then(() => {
+									this.props.dispatch({
+										type: 'homePage/teacherList',
+										payload: {
+											type: 3
+										}
 									})
-								}
-							}}>确认</span> :
-								<span style={{ background: 'rgb(24, 144, 255)' }} className={style.annniu} onClick={() => {
-									this.setState({ pitchOn: record.userId });
-								}}>编辑</span>
+								})
 							}
+						}}>确认</span> :
+							<span style={{ background: 'rgb(24, 144, 255)' }} className={style.annniu} onClick={() => {
+								this.setState({ pitchOn: record.userId });
+							}}>编辑</span>
+						}
 
-							<span style={{ background: 'rgb(245, 108, 108)' }} className={style.annniu} onClick={() => {
-								let This = this;
-								confirm({
-									title: `确定删除${record.name}么?`,
-									okText: '是',
-									cancelText: '否',
-									onOk() {
-										let data = {
-											classId: This.props.state.infoClass,
-											childId: record.userId,
-										}
-										This.props.dispatch({
-											type: 'homePage/exit',
-											payload: data
-										}).then((res) => {
-											This.refreshStu()
-										})
-									},
-									onCancel() {
-										console.log('Cancel');
-									},
-								});
-							}}>删除</span>
-						</div >
+						<span style={{ background: 'rgb(245, 108, 108)' }} className={style.annniu} onClick={() => {
+							let This = this;
+							confirm({
+								title: `确定删除${record.name}么?`,
+								okText: '是',
+								cancelText: '否',
+								onOk() {
+									let data = {
+										classId: This.props.state.infoClass,
+										childId: record.userId,
+									}
+									This.props.dispatch({
+										type: 'homePage/exit',
+										payload: data
+									}).then((res) => {
+										This.refreshStu()
+									})
+								},
+								onCancel() {
+									console.log('Cancel');
+								},
+							});
+						}}>删除</span>
+					</div >
 					)
 				}
 			}
@@ -589,6 +575,7 @@ class HomeworkCenter extends React.Component {
 						p['isPush'] = det.isPush;
 						p['isHeadteacher'] = det.isHeadteacher;
 						p['isGradeLeader'] = det.isGradeLeader;
+						p['isCare'] = det.isCare;
 						dataSource.push(p);
 					}
 				} else {
@@ -606,6 +593,7 @@ class HomeworkCenter extends React.Component {
 					p['isPush'] = det.isPush;
 					p['isHeadteacher'] = det.isHeadteacher;
 					p['isGradeLeader'] = det.isGradeLeader;
+					p['isCare'] = det.isCare;
 					dataSource.push(p);
 				}
 			}
@@ -699,8 +687,8 @@ class HomeworkCenter extends React.Component {
 							<div style={{ overflow: 'hidden', textAlign: 'left ', padding: '10px' }}>
 								<Search
 									// value={this.props.state.showMen}
-									placeholder="姓名"
-									style={{ width: '300px', marginRight: '10px' }}
+									placeholder="请输入姓名"
+									style={{ width: '250px', marginRight: '10px' }}
 									enterButton="搜索"
 									onSearch={value => {
 										console.log(value)

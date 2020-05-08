@@ -195,7 +195,19 @@ function remove(payload) {
         data: payload,
     });
 }
+function homeworkCommit(payload) {
+    return request(dataCenter('/export/excel/homeworkCommit'), {
+        data: payload,
+    });
+}
+function exportClassDate(payload) {
+    return request(dataCenter('/export/excel/exportClassDate'), {
+        data: payload,
+    });
+}
 export {
+    homeworkCommit,
+    exportClassDate,
     remove,
     sign,
     queDetail,

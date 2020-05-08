@@ -234,7 +234,8 @@ class HomePageLeft extends Component {
   getyear() {
     let yearList = this.props.state.yearList;
     return (
-      <Select value={`${this.props.state.years}-${Number(this.props.state.years) + 1}学年`}
+      <Select value={`${this.props.state.years}-${Number(this.props.state.years) + 1}`}
+        suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
         className={'academicBox'} onChange={(value) => {
           this.props.dispatch({
             type: 'temp/years',
@@ -418,7 +419,6 @@ class HomePageLeft extends Component {
       }
     }).then(() => {
       let classId = this.props.state.classId;
-      let subId = this.props.state.subId;
       let year = this.props.state.years;
 
       let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
@@ -430,7 +430,27 @@ class HomePageLeft extends Component {
           year,
           schoolId: value
         }
+      }).then(() => {
+
+        if (hashStrings === '/classChart') {
+          if (classId !== '' && year !== '') {
+            console.log('classChart')
+            //重置月份为0
+            this.props.dispatch({
+              type: 'report/changeMouth',
+              payload: 0
+            })
+            //重新调用接口
+            this.props.dispatch({
+              type: 'reportChart/getReportTimeList',
+              payload: {
+                classReport: true
+              }
+            });
+          }
+        }
       })
+      
       if (hashStrings.includes('/classUser')) {
         console.log('classUser')
         this.props.dispatch({
@@ -440,7 +460,6 @@ class HomePageLeft extends Component {
             schoolId: value
           }
         });
-
 
         this.props.dispatch({
           type: 'classHome/pageClass',
@@ -463,26 +482,8 @@ class HomePageLeft extends Component {
           }
         })
 
-
-
-      } else if (hashStrings == '/classChart') {
-        if (classId !== '' && subId != '' && year !== '') {
-          console.log('classChart')
-          //重置月份为0
-          this.props.dispatch({
-            type: 'report/changeMouth',
-            payload: 0
-          })
-          //重新调用接口
-          this.props.dispatch({
-            type: 'reportChart/getReportTimeList',
-            payload: {
-              classReport: true
-            }
-          });
-        }
-      } else if (hashStrings == '/schoolChart') {
-        if (classId !== '' && subId != '' && year !== '') {
+      } else if (hashStrings === '/schoolChart') {
+        if (classId !== '' && year !== '') {
           console.log('schoolChart')
           //重置月份为0
           this.props.dispatch({
@@ -498,8 +499,8 @@ class HomePageLeft extends Component {
           });
         }
       }
-    })
 
+    })
   }
 
   render() {
@@ -615,7 +616,7 @@ class HomePageLeft extends Component {
             type: 'temp/subName',
             payload: ''
           });
-          //退出帐号时候，重新刷新，清空mould。（暂时没有什么好办法）给测试那边切换帐号好测点
+          //退出帐号时候，重新刷新，清空mould
           window.location.reload(true)
         }}>退出</p>
       </div>
@@ -671,7 +672,7 @@ class HomePageLeft extends Component {
           </Menu>
         </Sider>
         <Layout style={{ position: "relative" }}>
-          <Header style={{ background: '#fff', padding: 0 }}>
+          <Header style={this.props.state.topBarHide === 0 ? { display: 'none' } : { background: '#fff', padding: 0 }}>
             <Icon
               style={{ cursor: 'pointer' }}
               className="trigger"
@@ -682,10 +683,25 @@ class HomePageLeft extends Component {
 
               {userNews == undefined ? '' :
                 <div>
+                  {this.props.type == 'findPsd' ? '' :
+                    <div className={style.usinfo}>
+                      <img alt='' src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
+                      <Popover
+                        content={content}
+                        type="primary"
+                        placement="bottom">
+                        <div className="btnBack"
+                          type="primary">
+                          <span>{user != '' ? user.name : ''}</span>
+                          <Icon type="caret-down" style={{ color: "#646464", fontSize: 10, marginLeft: 5 }} />
+                        </div>
+                      </Popover>
+                    </div>}
+
                   {this.props.state.yearList.data ? this.getyear() : ''}
 
                   {userNews && userNews.rodeType > 10 ?
-                    <Select defaultValue={userNews.schoolId} className={style.moreschool}
+                    <Select defaultValue={userNews.schoolId} className={style.moreschool} suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
                       onChange={this.switchSchool.bind(this)}>
                       {moreschool && moreschool.map((item) => (
                         <Option value={item.schoolId} begingrade={item.beginGrade} endgrade={item.endGrade} key={item.schoolId}>{item.schoolName}</Option>
@@ -697,26 +713,6 @@ class HomePageLeft extends Component {
                     {leftName}
                   </span> */}
 
-                  {this.props.type == 'findPsd' ? '' :
-                    <div className={style.usinfo}>
-
-                      {/* <img  alt='' src={userNews.avatarUrl !==null ? userNews.avatarUrl : 'http://images.mizholdings.com/face/default/02.gif' }/> */}
-                      <img alt=''
-                        src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
-                      <Popover
-                        content={content}
-                        // trigger="click"
-                        type="primary"
-                        placement="bottom">
-                        <div className="btnBack"
-                          type="primary">
-                          {/* {user != '' ?this.getUserPosition(rodeType,user.name):''} */}
-                          <span>{user != '' ? user.name : ''}</span>
-                          <Icon type="caret-down" style={{ color: "#e1e1e1" }} />
-                        </div>
-                      </Popover>
-                    </div>
-                  }
                 </div>
               }
 
@@ -724,7 +720,7 @@ class HomePageLeft extends Component {
           </Header>
           {
             defaultKey.indexOf('workDetail') != -1 || defaultKey.indexOf('Dollors') > -1 ?
-              <Header style={{ background: '#fff', height: '50px', padding: 0, position: "absolute", left: 70 }}>
+              <Header style={this.props.state.topBarHide === 0 ? { display: 'none' } : { background: '#fff', height: '50px', padding: 0, position: "absolute", left: 70 }}>
                 <WrongTop type={this.props.location} />
               </Header> : ''
           }
