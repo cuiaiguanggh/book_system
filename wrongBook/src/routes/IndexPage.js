@@ -14,7 +14,7 @@ class HomePage extends Component {
    		)
 	}
 
-	componentWillMount () {
+	UNSAFE_componentWillMount () {
 		const {dispatch} = this.props;
 		dispatch({
 			type: 'homePage/functionList'

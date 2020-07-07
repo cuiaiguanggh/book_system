@@ -15,6 +15,9 @@ import store from 'store';
 import commonCss from '../../css/commonCss.css';
 import MistakesTC from '../../components/mistakesTC/mistakesTC';
 import Guidance from '../../components/guidance/guidance';
+import DownloadGroup from '../../components/downloadGroup/downloadGroup';
+
+
 //作业中心界面内容
 const Option = Select.Option;
 const confirm = Modal.confirm;
@@ -41,16 +44,14 @@ class classReport extends React.Component {
       uqId: '',
       allPdf: false,
       toupload: false,
-      pull: false,
       topicxy: false,
       xqtc: false,
       errorDetails: {},
       tcxuhao: 0,
       zoom: false,
-      similarTopic: 1,
       optimizationcuotiMistakes: [],
       nowRecommendId: '',
-      videoId: ''
+      videoId: '',
     };
   }
 
@@ -119,11 +120,11 @@ class classReport extends React.Component {
                 </div>
                 <div style={{ padding: '20px', height: '217px', overflow: 'hidden' }} onClick={() => {
 
-                  if (ques.questionList[i].recommendId !== 0) {
+                  if (ques.questionList[i].picId) {
                     this.props.dispatch({
                       type: 'report/recommend',
                       payload: {
-                        uqId: ques.questionList[i].recommendId
+                        uqId: ques.questionList[i].picId.split('-')[1]
                       }
                     }).then((res) => {
                       this.setState({
@@ -195,14 +196,11 @@ class classReport extends React.Component {
                       });
                     }
                   }}>
-                    {
-                      name == '选题' ?
-                        <img style={{ marginTop: '-4px', marginRight: '4px' }}
-                          src={require('../../images/sp-xt-n.png')} /> :
-                        <img style={{ marginTop: '-4px', marginRight: '4px' }}
-                          src={require('../../images/sp-yc-n.png')} />
 
-                    }
+                    {name == '选题' ?
+                      <img style={{ marginTop: '-4px', marginRight: '4px' }} src={require('../../images/sp-xt-n.png')} /> :
+                      <img style={{ marginTop: '-4px', marginRight: '4px' }} src={require('../../images/sp-yc-n.png')} />}
+
                     {name}</span>
                 </div>
               </div>
@@ -692,47 +690,39 @@ class classReport extends React.Component {
   }
 
   //下载所选中的组卷事件
-  downloadPitch(e) {
-    e.stopPropagation();
-    if (this.props.state.classDown.length != 0) {
-      //是否允许点击下载错题按钮事件
+  downloadPitch(practise) {
+    this.props.dispatch({
+      type: 'report/maidian',
+      payload: { functionId: 12, actId: 1 }
+    })
+
+    //是否允许点击下载错题按钮事件
+    this.props.dispatch({
+      type: 'down/downQue',
+      payload: true
+    });
+    //下载pdf
+    let downparameters = {
+      uqIdsStr: this.props.state.classDownPic.join(','),
+      classId: this.props.state.classId,
+      subjectId: this.props.state.subId,
+      practise: practise
+    };
+
+    this.props.dispatch({
+      type: 'down/makeTestPagePdf',
+      payload: downparameters
+    }).then(() => {
+      // 下载清空选题
       this.props.dispatch({
-        type: 'down/downQue',
-        payload: true
-      });
-      //下载pdf
-      let downparameters = {
-        uqIdsStr: this.props.state.classDownPic.join(','),
-        classId: this.props.state.classId,
-        subjectId: this.props.state.subId,
-      };
-      console.log(this.state.similarTopic);
-      if (this.state.similarTopic === 1) {
-        downparameters.practise = 0
-      } else {
-        downparameters.practise = 1
-      };
-      this.props.dispatch({
-        type: 'down/makeTestPagePdf',
-        payload: downparameters
-      });
-      //关闭下拉弹窗
-      this.setState({
-        pull: false
+        type: 'down/delAllClass',
       });
       // 添加导出次数
       this.props.dispatch({
         type: 'report/addClassup',
         payload: this.props.state.classDownPic
       });
-      // 下载清空选题
-      this.props.dispatch({
-        type: 'down/delAllClass',
-      });
-
-    } else {
-      message.warning('请选择题目')
-    }
+    })
   }
 
 
@@ -808,7 +798,6 @@ class classReport extends React.Component {
   render() {
     let mounthList = this.props.state.mounthList;
     let knowledgeList = this.props.state.knowledgeList;
-    let QuestionDetail = this.props.state.qrdetailList;
     let fileLink = this.props.state.pdfUrl.fileLink;
 
     return (
@@ -816,12 +805,7 @@ class classReport extends React.Component {
         <iframe style={{ display: 'none' }} src={this.state.wordUrl} />
         <Layout className={style.layout}>
           <Header className={style.layoutHead} style={{ zIndex: 2 }}>
-            <span style={{
-              fontSize: 14,
-              fontFamily: 'MicrosoftYaHei-Bold',
-              fontWeight: 'bold',
-              color: 'rgba(96,98,102,1)',
-            }}>时间：</span>
+            <span style={{ fontSize: 14, color: 'rgba(96,98,102,1)' }}>时间：</span>
             <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
               style={{ marginLeft: 24 }} onClick={this.alltime.bind(this)}>全部</span>
             {
@@ -841,68 +825,33 @@ class classReport extends React.Component {
               placeholder={['开始时间', '结束时间']}
               value={this.props.state.begtoendTime}
               disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
-              onChange={
-                this.quantumtime.bind(this)
-              } />
-            <div style={{ float: 'right', position: 'relative' }}>
-              {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
-                <Button style={{ background: '#67c23a', color: '#fff', float: 'right', marginTop: "9px", border: 'none', width: 140, padding: '0 15px' }}
-                  loading={this.props.state.downQue}
-                  disabled={this.props.state.classDown.length === 0 && !this.props.state.downQue}
-                  onClick={() => { this.setState({ pull: !this.state.pull }) }}>
-                  <img style={{ margin: '0 3px 4px 2px', height: '15px' }}
-                    src={require('../../images/xc-cl-n.png')}></img>
-                  下载组卷({this.props.state.classDown.length})
-              </Button> : ''}
-              {/*引导流程*/}
-              {QuestionDetail.data && QuestionDetail.data.questionList && QuestionDetail.data.questionList.length > 0 ?
-                <Guidance title='下载错题' content='选择组卷后，可选择下载错题或优选错题' />
-                : ''}
-              {this.state.pull ?
-                <div className={style.buttonPull}
-                  style={{ right: 0 }}
-                  onClick={(e) => {
-                    if (this.state.similarTopic === 1) {
-                      this.setState({
-                        similarTopic: 2
-                      })
-                    } else if (this.state.similarTopic === 2) {
-                      this.setState({
-                        similarTopic: 1
-                      })
-                    }
-                  }}>
-                  <Row className={style.downloadrow}>
-                    {this.state.similarTopic === 1 ?
-                      <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvxz.png')}></img> :
-                      <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvwxz.png')}></img>}
-                    <span className={style.inputk} >下载原错题</span>
-                  </Row>
-                  <Row className={style.downloadrow} style={{ lineHeight: 1, textAlign: 'left' }}>
-                    {this.state.similarTopic === 2 ?
-                      <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvxz.png')}></img> :
-                      <img style={{ margin: '0 9px 0 15px', height: '14px' }} src={require('../../images/lvwxz.png')}></img>}
-                    <span className={style.inputk} >
-                      <p style={{ margin: '15px 0 0 0' }}>下载原错题＋</p>
-                      <p style={{ margin: 0 }}>优选练习</p> </span>
-                  </Row>
-                  <Row>
-                    <div className={style.yulangbutton} onClick={this.downloadPitch.bind(this)}>
-                      预览
-                    </div>
-                  </Row>
-                </div> : ''}
-            </div>
+              onChange={this.quantumtime.bind(this)} />
+
+            <Checkbox style={{ marginLeft: 50 }}
+              checked={this.props.state.qrdetailList.data && this.props.state.classDown.length === this.props.state.qrdetailList.data.questionList.length} onChange={(e) => {
+                this.props.dispatch({
+                  type: 'down/delAllClass',
+                });
+                if (e.target.checked) {
+                  for (let obj of this.props.state.qrdetailList.data.questionList) {
+                    this.props.dispatch({
+                      type: 'down/classDown',
+                      payload: obj.questionId
+                    });
+                    this.props.dispatch({
+                      type: 'down/classDownPic',
+                      payload: obj.picId
+                    });
+                  }
+                }
+              }}>题目全选</Checkbox>
+
+
           </Header>
           <Header className={style.layoutHead}
             style={this.state.zoom ? { lineHeight: 3, height: 50, boxShadow: 'rgba(0, 0, 0, 0.05) 0px 0px 20px', marginBottom: 10, overflow: 'hidden' } :
               { lineHeight: 1.5, height: 'auto', }}>
-            <span style={{
-              fontSize: 14,
-              fontFamily: 'MicrosoftYaHei-Bold',
-              fontWeight: 'bold',
-              color: 'rgba(96,98,102,1)',
-            }}>知识点：</span>
+            <span style={{ fontSize: 14, color: 'rgba(96,98,102,1)' }}>知识点：</span>
             <div className={this.state.zoom ? `xiaoshi ${style.knowledgeBoxGai}` : `${style.knowledgeBox}`} style={{ width: 'calc(100% - 56px)' }}>
               <span key={0} className={0 == this.props.state.knowledgenow.length ? 'choseMonthOn' : 'choseMonth'}
                 onClick={this.allknowledgenow.bind(this)}>全部</span>
@@ -914,10 +863,17 @@ class classReport extends React.Component {
                     >{item.knowledgeName}({item.num})</span>
                   )
                 })
-                : ''
-              }
+                : ''}
             </div>
           </Header>
+          <DownloadGroup data={this.props.state.classDown}
+            loading={this.props.state.downQue}
+            previewClick={(practise) => { this.downloadPitch(practise) }}
+            qkongClick={() => {
+              this.props.dispatch({
+                type: 'down/delAllClass',
+              });
+            }} />
 
           <Content id='gundt'
             style={{ background: '#fff', overflow: 'auto', position: 'relative' }}
@@ -964,7 +920,11 @@ class classReport extends React.Component {
           maskClosable={false}
           keyboard={false}
           onOk={() => {
-            window.location.href = this.props.state.pdfUrl.downloadLink
+            window.location.href = this.props.state.pdfUrl.downloadLink;
+            this.props.dispatch({
+              type: 'report/maidian',
+              payload: { functionId: 13, actId: 1 }
+            })
           }}
           onCancel={() => {
             this.props.dispatch({
@@ -1035,9 +995,12 @@ class classReport extends React.Component {
         payload: data
       });
     }
-
+    this.props.dispatch({
+      type: 'report/maidian',
+      payload: { functionId: 6, actId: 2 }
+    })
   }
-  componentWillMount() {
+  componentWillUnmount() {
     //清空知识点
     this.props.dispatch({
       type: 'report/knowledgenow',

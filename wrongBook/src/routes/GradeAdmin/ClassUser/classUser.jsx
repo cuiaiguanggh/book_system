@@ -19,8 +19,6 @@ const {
 } = Layout;
 const CheckboxGroup = Checkbox.Group;
 
-let hei = 0
-
 class StuReport extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +26,6 @@ class StuReport extends React.Component {
       this.refDom = ref
     };
     this.state = {
-      current: '',
       loading: false,
       wordUrl: '',
       visible: false,
@@ -42,13 +39,10 @@ class StuReport extends React.Component {
       indeterminate: false,
       checkAll: false,
       checkedList: [],
-      plainOptions: []
-    }
-  }
+      plainOptions: [],
+      current: 'teacher',
 
-  handleScroll(e) {
-    const { clientHeight } = this.refDom;
-    hei = clientHeight;
+    }
   }
 
   menuClick = (e) => {
@@ -65,7 +59,6 @@ class StuReport extends React.Component {
           payload: e.key
         });
       } else {
-        let id = hash.substr(hash.indexOf("&id=") + 4);
         dispatch({
           type: 'homePage/infoClass',
           payload: e.key
@@ -112,9 +105,7 @@ class StuReport extends React.Component {
   }
 
   menulist() {
-    let location = this.props.location.hash;
     let classList = [];
-    // let id = location.substr(location.indexOf("&id=") + 4);
 
     const rodeType = store.get('wrongBookNews').rodeType
     if (rodeType <= 20) {
@@ -126,7 +117,7 @@ class StuReport extends React.Component {
       return (
         <div className={style.leftInfo}>
 
-          <Menu onSelect={(item, key, keyPath, selectedKeys) => {
+          <Menu onSelect={(item,) => {
             this.setState({
               nowclassid: item.key
             })
@@ -137,14 +128,10 @@ class StuReport extends React.Component {
             //清空班级邀请码
             observer.publish('fuyuan')
           }}
-            mode="inline"
-            // defaultSelectedKeys={[id]}
             selectedKeys={[`${this.state.nowclassid}`]}
-            style={{ height: 'calc(100% - 120px)' }}
+            style={{ height: 'calc(100% - 115px)' }}
             className={style.menu}
-            onClick={this.menuClick}
-          // defaultOpenKeys={['sub']}
-          >
+            onClick={this.menuClick}  >
             {
               rodeType <= 20 ?
                 classList.data.list.map((item, i) => {
@@ -162,7 +149,6 @@ class StuReport extends React.Component {
                             this.loseFocus(e)
                           }} defaultValue={item.className} /> : <span> {item.className}</span>}
 
-                      （ {item.studentNum}人）
                     </Menu.Item>
                   )
                 }) : classList.data.map((item, i) => {
@@ -209,14 +195,15 @@ class StuReport extends React.Component {
               }
 
             }}>
-              一键升级班级
-          <Icon type="question-circle" theme="filled" style={{ marginLeft: 10, color: '#ccc' }}
+              一键升级
+              <Icon type="question-circle" style={{ marginLeft: 10 }}
                 onMouseOver={() => { this.setState({ reminder: true }) }}
                 onMouseOut={() => { this.setState({ reminder: false }) }} />
 
             </div>
             : ''
           }
+
           {store.get('wrongBookNews').rodeType <= 20 ?
             <div className={style.daorubj} onClick={() => {
               this.props.dispatch(
@@ -225,10 +212,8 @@ class StuReport extends React.Component {
                 })
               )
             }}>
-              <Icon type="plus-circle" style={{ paddingRight: 10 }} />导入班级
-              </div>
-            : ''
-          }
+              <img src={require('../../images/sp-xt-n.png')} style={{ width: 12, margin: '0 4px 4px' }} />导入班级 </div> : ''}
+
           {this.state.reminder ?
             <div className={style.explain}>
               <img src={require('../../images/explain.png')}></img>
@@ -239,113 +224,88 @@ class StuReport extends React.Component {
     }
   }
 
-  questions() {
-    let detail = this.props.state.qrdetailList1.data.questionList;
-    if (detail.length > 0) {
-      return (
-        <div className={style.outBody}
-          ref={this.Ref}
-          onWheel={(e) => this.handleScroll(e)}>
-          {
-            detail.map((item, i) => {
-              let cls = 'down', name = '加入错题篮'
-              let downs = this.props.state.stuDown;
-              for (let j = 0; j < downs.length; j++) {
-                if (downs[j] == item.questionId) {
-                  cls = 'down ndown';
-                  name = '移出错题篮'
-                }
-              }
-              return (
-                <div key={i} className={style.questionBody}>
-                  <div className={style.questionTop}>
-                    <span style={{ marginRight: '20px' }}>第{i + 1}题</span>
-                    {/* <span>班级错误率：{}%（答错15人）</span> */}
-                  </div>
-                  <div style={{ padding: '10px', height: '250px', overflow: "hidden" }} onClick={() => {
-                    this.setState({ visible: true, Img: item.userAnswerList[0].answer })
-                  }}>
-                    {
-                      item.userAnswerList[0].answer.split(',').map((item, i) => (
-                        <img key={i} style={{ width: '100%' }} src={item}></img>
-                      ))
-                    }
-                  </div>
-                  <div style={{ overflow: 'hidden', padding: '10px' }}>
+  onWho(who) {
+    this.setState({ current: who })
+    this.props.dispatch({
+      type: 'homePage/showMen',
+      payload: ''
+    });
+    this.props.dispatch({
+      type: 'homePage/tealist',
+      payload: []
+    });
+    if (who === 'teacher') {
+      this.props.dispatch({
+        type: 'homePage/memType',
+        payload: 1
+      });
+      this.props.dispatch({
+        type: 'homePage/teacherList',
+        payload: {
+          type: 1
+        }
+      });
 
-                    <span className={cls} onClick={() => {
-                      let dom = document.getElementsByClassName('down');
-                      let downs = this.props.state.stuDown;
-                      if (dom[i].innerHTML == '加入错题篮') {
-                        this.props.dispatch({
-                          type: 'down/stuDown',
-                          payload: item.questionId
-                        });
-                        this.props.dispatch({
-                          type: 'down/stuDownPic',
-                          payload: item.picId
-                        });
-                      } else {
-                        this.props.dispatch({
-                          type: 'down/delstuDown',
-                          payload: item.questionId
-                        });
-                        this.props.dispatch({
-                          type: 'down/delstuDownPic',
-                          payload: item.picId
-                        });
-                      }
-                    }}>{name}</span>
-                  </div>
-                </div>
-              )
-            })
-          }
-        </div>
-      )
     } else {
-      return (
-        <div></div>
-      )
+      this.props.dispatch({
+        type: 'homePage/memType',
+        payload: 3
+      });
+      this.props.dispatch({
+        type: 'homePage/teacherList',
+        payload: {
+          type: 3
+        }
+      });
     }
   }
 
   render() {
     return (
-      <Content style={{
-        background: '#fff',
-        minHeight: 280,
-        overflow: 'auto',
-        position: 'relative'
-      }}
-        ref='warpper'
-      >
-        <div className={style.layout}>
-          <Layout className={style.innerOut}>
-            <Sider className={style.sider}>
-              {this.menulist()}
-            </Sider>
-            <Content className={style.content}
-              ref='warpper'>
-              <ClassAdmin location={this.props.location}></ClassAdmin>
-            </Content>
-          </Layout>
+      <>
+        <div className={style.whoBox}>
+          <span style={this.state.current === 'teacher' ? { background: '#2593FC' } : { color: '#161616' }} onClick={() => { this.onWho('teacher') }}>教师</span>
+          <span style={this.state.current === 'student' ? { background: '#2593FC' } : { color: '#161616' }} onClick={() => { this.onWho('student') }}>学生</span>
+        </div>
+        <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
+          <div className={style.layout}>
+            <Layout className={style.innerOut}>
+              <Sider className={style.sider}>
+                {this.menulist()}
+              </Sider>
+              <Content className={style.content} ref='warpper'>
+                <ClassAdmin current={this.state.current} location={this.props.location}></ClassAdmin>
+              </Content>
+            </Layout>
 
-          <Modal
-            title="一键升级班级"
-            visible={this.state.upgradeClass}
-            cancelText='取消'
-            okText='确认'
-            className={'shenji'}
-            width={950}
-            onOk={() => {
-              if (this.state.checkedList.length > 0) {
-                this.props.dispatch({
-                  type: 'classHome/upgrade',
-                  payload: {
-                    OldClassId: this.state.checkedList,
-                  }
-                });
+            <Modal
+              title="一键升级"
+              visible={this.state.upgradeClass}
+              cancelText='取消'
+              okText='确认'
+              className={'shenji'}
+              width={950}
+              onOk={() => {
+                if (this.state.checkedList.length > 0) {
+                  this.props.dispatch({
+                    type: 'classHome/upgrade',
+                    payload: {
+                      OldClassId: this.state.checkedList,
+                    }
+                  });
+                  this.setState({
+                    upgradeClass: false,
+                    indeterminate: false,
+                    checkAll: false,
+                    checkedList: [],
+                    plainOptions: []
+                  });
+                } else {
+                  message.warning('未选中班级')
+                }
+
+              }}
+              onCancel={() => {
                 this.setState({
                   upgradeClass: false,
                   indeterminate: false,
@@ -353,74 +313,61 @@ class StuReport extends React.Component {
                   checkedList: [],
                   plainOptions: []
                 });
-              } else {
-                message.warning('未选中班级')
-              }
+              }} >
+              <p className={style.title}>请勾选需要升级的班级（可多选）</p>
 
-            }}
-            onCancel={() => {
-              this.setState({
-                upgradeClass: false,
-                indeterminate: false,
-                checkAll: false,
-                checkedList: [],
-                plainOptions: []
-              });
-            }} >
-            <p className={style.title}>请勾选需要升级的班级（可多选）</p>
+              <Checkbox
+                indeterminate={this.state.indeterminate}
+                onChange={(e) => {
+                  let all = [];
+                  for (let i = 0; i < this.state.plainOptions.length; i++) {
+                    all.push(this.state.plainOptions[i].value)
+                  }
 
-            <Checkbox
-              indeterminate={this.state.indeterminate}
-              onChange={(e) => {
-                let all = [];
-                for (let i = 0; i < this.state.plainOptions.length; i++) {
-                  all.push(this.state.plainOptions[i].value)
-                }
-
-                this.setState({
-                  checkedList: e.target.checked ? all : [],
-                  indeterminate: false,
-                  checkAll: e.target.checked,
-                });
-              }}
-              checked={this.state.checkAll}
-            >
-              全选
+                  this.setState({
+                    checkedList: e.target.checked ? all : [],
+                    indeterminate: false,
+                    checkAll: e.target.checked,
+                  });
+                }}
+                checked={this.state.checkAll} >
+                全选
           </Checkbox>
-            <CheckboxGroup
-              options={this.state.plainOptions}
-              value={this.state.checkedList}
-              onChange={(checkedList) => {
-                this.setState({
-                  checkedList,
-                  indeterminate: !!checkedList.length && checkedList.length < this.state.plainOptions.length,
-                  checkAll: checkedList.length === this.state.plainOptions.length,
-                });
-              }} />
+              <CheckboxGroup
+                options={this.state.plainOptions}
+                value={this.state.checkedList}
+                onChange={(checkedList) => {
+                  this.setState({
+                    checkedList,
+                    indeterminate: !!checkedList.length && checkedList.length < this.state.plainOptions.length,
+                    checkAll: checkedList.length === this.state.plainOptions.length,
+                  });
+                }} />
 
-            <p className={style.bottom}>注：进入新的学年后，可一键升级班级的学年，自动更新班级名称；同时班级内的错题数据仍可查看。</p>
-          </Modal>
+              <p className={style.bottom}>注：进入新的学年后，可一键升级班级的学年，自动更新班级名称；同时班级内的错题数据仍可查看。</p>
+            </Modal>
 
-          <Modal
-            visible={this.state.visible}
-            width='1000px'
-            className="showques"
-            footer={null}
-            onOk={() => {
-              this.setState({ visible: false })
-            }}
-            onCancel={() => {
-              this.setState({ visible: false })
-            }}
-          >
-            {
-              this.state.Img.split(',').map((item, i) => (
-                <img key={i} style={{ width: '100%' }} src={item}></img>
-              ))
-            }
-          </Modal>
-        </div>
-      </Content>
+            <Modal
+              visible={this.state.visible}
+              width='1000px'
+              className="showques"
+              footer={null}
+              onOk={() => {
+                this.setState({ visible: false })
+              }}
+              onCancel={() => {
+                this.setState({ visible: false })
+              }}
+            >
+              {
+                this.state.Img.split(',').map((item, i) => (
+                  <img key={i} style={{ width: '100%' }} src={item}></img>
+                ))
+              }
+            </Modal>
+          </div>
+        </Content>
+      </>
     )
   }
 
@@ -467,17 +414,13 @@ class StuReport extends React.Component {
         }
       })
 
-      // dispatch({
-      //   type: 'homePage/infoClass',
-      //   payload: id[1]
-      // });
+
       dispatch({
         type: 'homePage/infoSchool',
         payload: id[0]
       });
     } else if (userNews.rodeType == 20) {
 
-      // let ids = hash.substr(hash.indexOf("&id=") + 4);
       let data = {
         schoolId: userNews.schoolId,
         pageSize: 9999,
@@ -505,10 +448,7 @@ class StuReport extends React.Component {
         }
       })
 
-      // dispatch({
-      //   type: 'homePage/infoClass',
-      //   payload: ids
-      // });
+
       dispatch({
         type: 'homePage/infoSchool',
         payload: userNews.schoolId
@@ -548,25 +488,10 @@ class StuReport extends React.Component {
       })
     }
 
-    // this.props.dispatch({
-    //   type: 'homePage/schoolTeacher',
-    // });
-    // if (this.props.state.infoClass != '' || store.get('wrongBookNews').rodeType <= 20) {
-
-    // this.props.dispatch({
-    //   type: 'homePage/teacherList',
-    //   payload: {
-    //     type: 1,
-    //   }
-    // });
-
-    // }
-    this.props.dispatch({
-      type: 'homePage/subjectNodeList',
-    });
   }
 
   componentWillUnmount() {
+    console.log(222)
     if (store.get('wrongBookNews').rodeType === 10) {
       this.props.dispatch({
         type: 'homePage/yearList',
@@ -584,28 +509,28 @@ class StuReport extends React.Component {
   componentDidUpdate(prevProps) {
 
     if (this.props.state.infoClass != this.state.nowclassid) {
-      console.log(prevProps)
-      if (store.get('wrongBookNews').rodeType <= 20) {
-        try {
+
+      try {
+
+        if (store.get('wrongBookNews').rodeType <= 20) {
+
           this.props.dispatch({
             type: 'homePage/infoClass',
             payload: this.props.state.classList.data.list[0].classId
           });
-          this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId
-          })
-        } catch (e) {
-          console.error(e)
-        }
+          this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
 
-      } else {
-        this.props.dispatch({
-          type: 'homePage/infoClass',
-          payload: this.props.state.classList1.data[0].classId
-        });
-        this.setState({
-          nowclassid: this.props.state.classList1.data[0].classId
-        })
+        } else {
+          this.props.dispatch({
+            type: 'homePage/infoClass',
+            payload: this.props.state.classList1.data[0].classId
+          });
+
+          this.setState({ nowclassid: this.props.state.classList1.data[0].classId })
+
+        }
+      } catch (e) {
+        console.error(e)
       }
       this.props.dispatch({
         type: 'homePage/teacherList',

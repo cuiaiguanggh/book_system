@@ -1,28 +1,27 @@
 .layout {
-    background: #fff;
-    overflow  : hidden;
-    position  : absolute;
-    top       : 0;
-    bottom    : 0px;
-    width     : 100%;
-    padding   : 20px;
+    overflow: hidden;
+    position: absolute;
+    top     : 0;
+    bottom  : 0px;
+    width   : 100%;
+    padding : 15px 25px 35px;
 
     .innerOut {
-        background: #fff;
-        position  : absolute;
-        top       : 20px;
-        bottom    : 20px;
-        // width  : 100%;
-        left      : 20px;
-        right     : 20px;
-        border    : 1px solid #ebeef5;
+        position: absolute;
+        top     : 20px;
+        bottom  : 20px;
+        left    : 20px;
+        right   : 20px;
+        border  : 1px solid #ebeef5;
     }
 
     .sider {
-        background   : #fff;
-        box-shadow   : 0 1px 3px #1a1a1a1a;
-        // overflow  : hidden;
-        position     : relative;
+        background: #fff;
+        box-shadow: 0 1px 3px #1a1a1a1a;
+        position  : relative;
+        min-width : 140px !important;
+        max-width : 140px !important;
+        width     : 140px !important;
 
         .leftInfo {
             position: absolute;
@@ -35,17 +34,18 @@
             position  : absolute;
             top       : 0px;
             bottom    : 0;
-            width     : 200px;
             overflow  : auto;
             overflow-x: hidden;
+            width     : 100%;
         }
     }
 
     .content {
         width      : 100%;
-        background : #fff;
-        margin-left: 1px;
+        margin-left: 15px;
         position   : relative;
+        background : #fff;
+        padding    : 20px 30px 0;
 
         .questionBody {
             width : 450px;
@@ -83,117 +83,35 @@
     color        : #fff;
 }
 
-// :global(.choseMonth):hover {
-//     background: #1890ff;
-//     color     : #fff;
-// }
-
-// :global(.down) {
-//     float           : right;
-//     background      : #1890ff;
-//     line-height     : 30px;
-//     color           : #ffff;
-//     display         : inline-block;
-//     font-weight     : 400;
-//     text-align      : center;
-//     -ms-touch-action: manipulation;
-//     touch-action    : manipulation;
-//     cursor          : pointer;
-//     background-image: none;
-//     border          : 1px solid transparent;
-//     white-space     : nowrap;
-//     padding         : 0 15px;
-//     font-size       : 14px;
-//     border-radius   : 4px;
-//     height          : 32px;
-// }
-
-
-
-
-:global(.ndown) {
-    float           : right;
-    background      : #b8c3d1;
-    line-height     : 41px;
-    color           : #fff;
-    display         : inline-block;
-    font-weight     : 400;
-    text-align      : center;
-    -ms-touch-action: manipulation;
-    touch-action    : manipulation;
-    cursor          : pointer;
-    background-image: none;
-    border          : 1px solid transparent;
-    white-space     : nowrap;
-    padding         : 0 15px;
-    font-size       : 14px;
-    border-radius   : 4px;
-    height          : 41px;
-    border-radius   : 0;
-    width           : 63px;
-}
-
-/* 定义滚动条 */
-.menu::-webkit-scrollbar {
-    width              : 30px;
-    height             : 16px;
-    /* background-color: rgb(98,98,98); */
-    background-color   : rgba(0, 0, 0, 0.2);
-}
-
-.menu::-webkit-scrollbar {
-    width           : 10px;
-    height          : 11px;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.menu::-webkit-scrollbar:hover {
-    background-color: rgb(0, 0, 0);
-}
-
-/*定义滚动条轨道 内阴影+圆角*/
-.menu::-webkit-scrollbar-track {
-    border-radius   : 0;
-    background-color: #FFF;
-}
-
-/*定义滑块 内阴影+圆角*/
-.menu::-webkit-scrollbar-thumb {
-    border-radius   : 8px;
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
 .classCase {
     border: 0;
 }
 
 .daorubj {
-    text-align   : center;
-    color        : #fff;
-    cursor       : pointer;
-    position     : absolute;
-    bottom       : 15px;
-    left         : 25px;
-    width        : 150px;
-    height       : 40px;
-    line-height  : 40px;
-    background   : #409EFF;
-    border-radius: 5px;
+    text-align : center;
+    color      : #fff;
+    cursor     : pointer;
+    position   : absolute;
+    bottom     : 17px;
+    left       : 17px;
+    width      : 106px;
+    height     : 32px;
+    line-height: 32px;
+    background : #409EFF;
 }
 
 .shenjibj {
-    text-align   : center;
-    color        : #409EFF;
-    cursor       : pointer;
-    position     : absolute;
-    bottom       : 65px;
-    left         : 25px;
-    width        : 150px;
-    height       : 40px;
-    line-height  : 40px;
-    border       : 1px solid #409EFF;
-    background   : transparent;
-    border-radius: 5px;
+    text-align : center;
+    color      : #595959;
+    cursor     : pointer;
+    position   : absolute;
+    bottom     : 63px;
+    left       : 17px;
+    width      : 106px;
+    height     : 30px;
+    line-height: 30px;
+    border     : 1px solid #D9D9D9;
+    background : transparent;
 
 }
 
@@ -223,6 +141,23 @@
         font-size  : 14px;
         font-weight: 400;
         color      : rgba(153, 153, 153, 1);
-        margin: 25px 0 0 0;
+        margin     : 25px 0 0 0;
+    }
+}
+
+.whoBox {
+    position: absolute;
+    left    : 70px;
+    top     : 15px;
+
+    span {
+        display    : inline-block;
+        width      : 68px;
+        height     : 36px;
+        line-height: 36px;
+        text-align : center;
+        color      : #fff;
+        border     : 1px solid rgba(220, 223, 230, 1);
+        cursor     : pointer;
     }
 }

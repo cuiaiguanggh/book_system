@@ -13,9 +13,7 @@ const Option = Select.Option;
 
 const { Content } = Layout;
 
-//作业中心界面内容
-class HomeworkCenter extends React.Component {
-
+class AddClass extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -93,44 +91,7 @@ class HomeworkCenter extends React.Component {
 		};
 		fileReader.readAsBinaryString(acceptedFiles[0]);
 	}
-	// chooseSchool(){
-	// 	const rodeType = store.get('wrongBookNews').rodeType;
-	// 	if(rodeType === 10){
-	// 	let schoolList = this.props.state.schoolList;
-	// 		const children = [];
-	// 		if(schoolList.data){
-	// 			for (let i = 0; i < schoolList.data.list.length; i++) {
-	// 				let data = schoolList.data.list[i]
-	// 				children.push(<Option key={data.schoolId}>{data.schoolName}</Option>);
-	// 			}
-	// 			return(
-	// 				<Select
-	// 					showSearch
-	// 					style={{ width: 200,marginRight:'10px' }}
-	// 					placeholder='请选择学校'
-	// 					optionFilterProp="children"
-	// 					onChange={(value)=>{
-	// 						this.props.dispatch({
-	// 							type: 'classHome/schoolId',
-	// 							payload:value
-	// 						});
-	// 						this.setState({schoolId:value})
-	// 						this.props.dispatch({
-	// 							type: 'classHome/getYears',
-	// 							payload:{
-	// 								schoolId:value
-	// 							}
-	// 						});
-	// 					}}
-	// 					filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-	// 				>
-	// 					{children}
-	// 				</Select>
-	// 			)
-	// 		}
-	//
-	// 	}
-	// }
+
 	chooseYear() {
 		const rodeType = store.get('wrongBookNews').rodeType;
 		if (rodeType <= 20) {
@@ -308,18 +269,13 @@ class HomeworkCenter extends React.Component {
 												dianji: true
 											})
 
-											// let fileObj = document.getElementById('file').files[0];
 											let fileObj = this.state.uploadFile;
 											console.log(fileObj)
 											let form = new FormData();
 											form.append('excelFile', fileObj);
 											let token = store.get('wrongBookToken');
-											// let schoolId ='';
-											// if(rodeType === 10){
-											// 	schoolId=this.state.schoolId
-											// }else{
+
 											let schoolId = store.get('wrongBookNews').schoolId;
-											// }
 											if (store.get('wrongBookNews').rodeType === 1) {
 												if (schoolId === '') {
 													message.warning('请选择学校')
@@ -417,4 +373,4 @@ export default connect((state) => ({
 	state: {
 		...state.classHome,
 	}
-}))(HomeworkCenter);
+}))(AddClass);

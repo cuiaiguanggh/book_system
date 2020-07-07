@@ -46,6 +46,7 @@ class workCorrection extends React.Component {
             loading: false,
             sizeMultiple: 1,
             focusIndex: false,
+            maidianStart: false,
         }
         this.agoScrollTop = 0;
         observer.addSubscribe('updateList', (array) => {
@@ -129,6 +130,13 @@ class workCorrection extends React.Component {
         this.props.dispatch({
             type: 'correction/pgSubjectList',
             payload: { classId: value },
+        });
+        this.props.dispatch({
+            type: 'temp/getUserSubjectList',
+            payload: value,
+        });
+        this.setState({
+            maidianStart: false
         })
     }
     //切换学科
@@ -156,6 +164,9 @@ class workCorrection extends React.Component {
                 subjectId: value,
             },
         })
+        this.setState({
+            maidianStart: false
+        })
     }
     //切换作业
     cutWork(value) {
@@ -173,6 +184,9 @@ class workCorrection extends React.Component {
                 subjectId: this.props.state.subjectId,
                 workDate: value
             }
+        })
+        this.setState({
+            maidianStart: false
         })
     }
 
@@ -385,6 +399,23 @@ class workCorrection extends React.Component {
                 }).then(() => {
                     message.success('提交成功')
 
+                    if (this.state.maidianStart) {
+                        console.log(Math.floor((new Date() - this.state.maidianStart) / 1000));
+                        this.props.dispatch({
+                            type: 'report/maidian',
+                            payload: { functionId: 23, actId: 1, useTime: Math.floor((new Date() - this.state.maidianStart) / 1000) }
+                        })
+
+                        this.setState({
+                            maidianStart: new Date()
+                        })
+                    } else {
+                        console.log('计时开始' + new Date())
+                        this.setState({
+                            maidianStart: new Date()
+                        })
+                    }
+
                     if (uncheck.length === 1) {
                         //如果批的是最后一个学生待批改学生
                         this.props.dispatch({
@@ -594,6 +625,7 @@ class workCorrection extends React.Component {
                     <Select style={{ width: 120 }}
                         getPopupContainer={triggerNode => triggerNode.parentElement}
                         placeholder="班级"
+                        suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
                         value={this.props.state.classId}
                         optionFilterProp="children"
                         onChange={(value, option) => { this.cutClass(value, option) }}
@@ -607,6 +639,7 @@ class workCorrection extends React.Component {
                         showSearch
                         getPopupContainer={triggerNode => triggerNode.parentElement}
                         placeholder="学科"
+                        suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
                         value={this.props.state.subjectId}
                         optionFilterProp="children"
                         onChange={(value, option) => { this.cutSubject(value, option) }}

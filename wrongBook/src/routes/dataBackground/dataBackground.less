@@ -1,0 +1,195 @@
+.top {
+    display : flex;
+    position: absolute;
+    left    : 70px;
+    top     : 15px;
+}
+
+.blueButton {
+    width        : 96px;
+    height       : 36px;
+    background   : rgba(47, 155, 255, 1);
+    border-radius: 3px 0px 0px 3px;
+    cursor       : pointer;
+    text-align   : center;
+    line-height  : 36px;
+    color        : rgba(255, 255, 255, 1);
+}
+
+.whiteButton {
+    width        : 96px;
+    height       : 36px;
+    border       : 1px solid rgba(220, 223, 230, 1);
+    border-radius: 0px 3px 3px 0px;
+    cursor       : pointer;
+    text-align   : center;
+    line-height  : 36px;
+    color        : rgba(96, 98, 102, 1);
+}
+
+.anniuBox {
+    &>span {
+        display    : inline-block;
+        width      : 75px;
+        height     : 30px;
+        line-height: 30px;
+        border     : 1px solid rgba(221, 221, 221, 1);
+        text-align : center;
+        cursor     : pointer;
+    }
+
+    .blueColor {
+        color       : #1890FF;
+        border-color: #1890FF;
+    }
+}
+
+.visits {
+    display: flex;
+
+    .visitsBox {
+        background: #fff;
+        width     : 33%;
+
+        &>div {
+            height: 260px;
+        }
+
+        &>span {
+            border-top : 1px solid #e8e8e8;
+            display    : block;
+            width      : 92%;
+            margin     : auto;
+            line-height: 39px;
+            color      : #333333;
+        }
+    }
+}
+
+.sidesBox {
+    margin-top     : 32px;
+    display        : flex;
+    justify-content: space-between;
+
+    &>div {
+        width     : 49%;
+        background: #fff;
+        height    : 405px;
+    }
+
+    .activeAccounted {
+        .title {
+            color    : rgba(38, 38, 38, 1);
+            margin   : 25px 0 15px 30px;
+            font-size: 16px;
+        }
+
+        .anniuBox {
+            margin: 0 0 60px 30px;
+        }
+
+        .zhanbi {
+            display        : flex;
+            justify-content: space-evenly;
+
+            p {
+                text-align: center;
+                color     : #666666;
+                margin-top: 25px;
+                font-size : 16px;
+
+            }
+        }
+    }
+
+    .payUser {
+        position: relative;
+
+        .anniuBox {
+            position: absolute;
+            top     : 60px;
+            left    : 33px;
+        }
+    }
+}
+
+
+.activeBox {
+    position  : relative;
+    background: #fff;
+    width     : 100%;
+    margin-top: 30px;
+
+    .anniuBox {
+        position: absolute;
+        top     : 10px;
+        left    : 33px;
+    }
+
+    .screenTime {
+        width        : 100%;
+        height       : 50px;
+        line-height  : 50px;
+        border-bottom: 1px solid #E8E8E8;
+        color        : #606266;
+
+
+        &>span {
+            margin-right: 25px;
+            cursor      : pointer;
+            float       : right;
+        }
+
+    }
+
+    .schoolUsers {
+        height: 470px;
+
+        .title {
+            font-size: 16px;
+            color    : rgba(102, 102, 102, 1);
+            margin   : 25px 0;
+        }
+
+        .rightRanking {
+            float      : left;
+            width      : 27%;
+            margin-left: 3%;
+
+
+            .yuan {
+                display      : inline-block;
+                width        : 20px;
+                height       : 20px;
+                background   : rgba(242, 242, 242, 1);
+                border-radius: 50%;
+                color        : #575757;
+                text-align   : center;
+                line-height  : 20px;
+                margin-right : 17px;
+                font-size    : 12px;
+            }
+        }
+
+    }
+
+}
+
+
+
+.bottomSidesBox {
+    margin-top     : 32px;
+    display        : flex;
+    justify-content: space-between;
+
+    &>div {
+        width     : 49%;
+        background: #fff;
+        height    : 610px;
+    }
+
+}
+
+.details {
+    background: #fff;
+}

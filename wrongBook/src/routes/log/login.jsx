@@ -3,10 +3,8 @@ import 'antd/dist/antd.css';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { Input, Checkbox, message, Popover, Modal } from 'antd';
-import { dataCen } from '../../config/dataCenter';
 import style from './login.css';
 import cookie from 'react-cookies'
-import WxLogin from 'wxlogin.react';
 let loginType = [
   { key: 0, cho: true, name: '扫码登录' },
   { key: 1, cho: false, name: '账号登录' },
@@ -58,6 +56,7 @@ class Login extends Component {
   }
 
   getCode() {
+
     // let This = this;
     // var websocket = null;
     // //判断当前浏览器是否支持WebSocket
@@ -119,7 +118,7 @@ class Login extends Component {
           </span>
             <Popover placement="bottom" trigger="hover" content={(
               <div style={{ textAlign: "center", padding: '12px 16px' }}>
-                <img src={'https://homework.mizholdings.com/kacha/xcx/page/4477684596443136.4657771556161536.1574847202493.jpg'} />
+                <img src={'https://homework.mizholdings.com/kacha/xcx/page/4477684596443136.4657771556161536.1574847202493.jpg'} alt='' />
                 <div>扫描二维码加我微信</div>
               </div>
             )} trigger="click">
@@ -262,6 +261,10 @@ class Login extends Component {
                             pathname: '/fin_psd',
                           })
                         )
+                        this.props.dispatch({
+                          type: 'report/maidian',
+                          payload: { functionId: 3, actId: 1 }
+                        })
                       }}
                     >忘记密码</span>
                   </div>
@@ -384,7 +387,7 @@ class Login extends Component {
       </div >
     );
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     let token = window.location.hash.indexOf('token') > 0 ? window.location.hash.split('token=')[1] : ""
     if (token) {
       this.props.dispatch({
@@ -426,6 +429,11 @@ class Login extends Component {
         })
       )
     }
+
+    this.props.dispatch({
+      type: 'report/maidian',
+      payload: { functionId: 1, actId: 2 }
+    })
   }
 }
 export default connect((state) => ({

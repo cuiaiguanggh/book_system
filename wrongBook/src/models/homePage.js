@@ -24,6 +24,11 @@ import {
 	create,
 	importData,
 	care,
+	batchExit,
+	refundStudents,
+	addStudent,
+	changeStudent,
+	resetPassword,
 } from '../services/homePageService';
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
@@ -74,6 +79,7 @@ export default {
 		nowschool: '',
 		beginGrade: 0,
 		endGrade: 0,
+
 	},
 	reducers: {
 		grades(state, { payload }) {
@@ -408,7 +414,7 @@ export default {
 			yield put({
 				type: 'areas',
 				payload: ''
-			});
+			})
 
 		},
 		*functionList({ payload }, { put, select }) {
@@ -608,7 +614,7 @@ export default {
 		},
 		*addSchool({ payload }, { put, select }) {
 			// 修改学校信息
-			let { phaseId, schoolName, masterName, masterPhone, address, des, schoolPay, citys, provinces, areas, schoolType } = yield select(state => state.homePage)
+			let { phaseId, schoolName, masterName, masterPhone, address, schoolPay, citys, provinces, areas, schoolType } = yield select(state => state.homePage)
 			let data = {
 				schoolName: schoolName,
 				address: address,
@@ -628,17 +634,12 @@ export default {
 					payload: schoolPay
 				})
 			}
-			else if (res.hasOwnProperty("err")) {
-				// yield put(routerRedux.push('/login'))
+			else if (res.data.result === 2) {
+				yield put(routerRedux.push('/login'))
 			} else {
-				if (res.data.result === 2) {
-					yield put(routerRedux.push('/login'))
-				} else if (res.data.message == '服务器异常') {
-
-				} else {
-					message.error(res.data.message)
-				}
+				message.error(res.data.message)
 			}
+
 
 		},
 		*schoolTeacher({ payload }, { put, select }) {
@@ -672,7 +673,6 @@ export default {
 
 		},
 		teacherList: [function* ({ payload }, { put, select }) {
-			// 获取教师列表
 			let { infoClass, infoSchool } = yield select(state => state.homePage);
 			let data = {
 				type: payload.type,
@@ -750,37 +750,20 @@ export default {
 				}
 
 		},
-		*kickClass({ payload }, { put, select }) {
-			// 用户踢出班级
-			let { infoClass, memType } = yield select(state => state.homePage)
-			if (!infoClass) {
+		*batchExit({ payload }, { put, select }) {
+
+			if (!payload.classId) {
 				message.warning('未选中班级')
 				return
 			}
-			let data = {
-				userId: payload.userId,
-				classId: infoClass,
-			}
-			let res = yield kickClass(data);
+			let res = yield batchExit(payload);
+
 			if (res.data && res.data.result === 0) {
 				message.success(res.data.msg)
-				yield put({
-					type: 'teacherList',
-					payload: {
-						type: memType
-					}
-				})
-			}
-			else if (res.hasOwnProperty("err")) {
-				// yield put(routerRedux.push('/login'))
+			} else if (res.data.result === 2) {
+				yield put(routerRedux.push('/login'))
 			} else {
-				if (res.data.result === 2) {
-					yield put(routerRedux.push('/login'))
-				} else if (res.data.msg == '服务器异常') {
-
-				} else {
-					message.error(res.data.msg)
-				}
+				message.error(res.data.msg)
 			}
 
 		},
@@ -832,7 +815,53 @@ export default {
 				message.error(res.data.msg)
 			}
 		},
+		*refundStudents({ payload }, { put, select }) {
+			let res = yield refundStudents(payload);
+			if (res.data && res.data.result === 0) {
+				message.success('退款成功')
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		*addStudent({ payload }, { put, select }) {
+			let res = yield addStudent(payload);
+			if (res.data && res.data.result === 0) {
+				message.success('添加成功')
+			} else {
+				message.error(res.data.msg)
+			}
+		},
 
+		*changeStudent({ payload }, { put, select }) {
+			let res = yield changeStudent(payload);
+			if (res.data && res.data.result === 0) {
+				message.success('修改成功')
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		*resetPassword({ payload }, { put, select }) {
+			let res = yield resetPassword(payload);
+			if (res.data && res.data.result === 0) {
+				message.success('重置密码成功')
+			} else {
+				message.error(res.data.msg)
+			}
+		},
+		*kickClass({ payload }, { put, select }) {
+			let res = yield kickClass(payload);
+			if (res.data && res.data.result === 0) {
+				message.success('删除成功')
+				yield put({
+					type: 'teacherList',
+					payload: {
+						type: 1
+					}
+				})
+			} else {
+				message.error(res.data.msg)
+			}
+		},
 	},
 
 

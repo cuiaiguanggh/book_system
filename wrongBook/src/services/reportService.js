@@ -205,7 +205,15 @@ function exportClassDate(payload) {
         data: payload,
     });
 }
+
+function maidian(payload) {
+    return request(dataCenter('/school/users/act'), {
+        data: payload,
+    });
+}
+
 export {
+    maidian,
     homeworkCommit,
     exportClassDate,
     remove,

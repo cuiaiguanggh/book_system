@@ -15,7 +15,7 @@ class fineQuestion extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            electTopiced: false,
+            electTopiced: 0,
             treeStructure: [],
             topics: [],
             parameter: {
@@ -53,12 +53,19 @@ class fineQuestion extends React.Component {
         }
         //过滤后的题目
         let filterTopics = [];
-        for (let obj of this.state.topics) {
-            if (obj.isGood === 0) {
-                filterTopics.push(obj)
+        if (this.state.electTopiced === 1) {
+            for (let obj of this.state.topics) {
+                if (obj.isGood === 1) {
+                    filterTopics.push(obj)
+                }
+            }
+        } else if (this.state.electTopiced === 2) {
+            for (let obj of this.state.topics) {
+                if (obj.isGood === 0) {
+                    filterTopics.push(obj)
+                }
             }
         }
-
         //当前页数的题目
         let nowPageTopics = this.state.topics.slice((this.state.pageNumber - 1) * 10, this.state.pageNumber * 10);
         if (this.state.electTopiced) {
@@ -148,50 +155,26 @@ class fineQuestion extends React.Component {
                         }}
                     />
                     <div className={style.middle}>
-                        <Checkbox checked={this.state.electTopiced}
+                        <Checkbox checked={this.state.electTopiced === 1}
                             onChange={(e) => {
                                 this.setState({
                                     pageNumber: 1,
-                                    electTopiced: e.target.checked
+                                    electTopiced: e.target.checked ? 1 : 0
                                 })
                                 document.getElementById('topicId').scrollTop = 0;
-                            }}>过滤已选题目</Checkbox>
-                        <div style={{ float: "right" }}>
-                            <span>共计 <span style={{ color: '#409EFF' }}>{this.state.topics.length}</span> 题目</span>
-                            <span style={{ margin: '0 20px' }}>已选 <span style={{ color: '#FF690F' }}> {selected} </span> 题目</span>
-                            <span className={style.allIn} onClick={() => {
-                                let questionId = [];
-                                for (let obj of nowPageTopics) {
-                                    questionId.push(obj.questionId)
-                                }
-                                if (questionId.length === 0) {
-                                    return
-                                }
-                                this.props.dispatch({
-                                    type: 'report/sign',
-                                    payload: {
-                                        questionId,
-                                        isGood: 1
-                                    }
-                                }).then(() => {
-                                    this.props.dispatch({
-                                        type: 'report/queDetail',
-                                        payload: {
-                                            ...this.state.parameter,
-                                            knowledgeId: this.state.nowKnowledgeId
-                                        }
-                                    }).then(data => {
-                                        this.setState({
-                                            topics: data
-                                        })
-                                    })
+                            }}>已选题目</Checkbox>
 
-                                    if (this.state.electTopiced) {
-                                        document.getElementById('topicId').scrollTop = 0;
-                                    }
+                        <Checkbox checked={this.state.electTopiced === 2}
+                            onChange={(e) => {
+                                this.setState({
+                                    pageNumber: 1,
+                                    electTopiced: e.target.checked ? 2 : 0
                                 })
+                                document.getElementById('topicId').scrollTop = 0;
+                            }}>未选题目</Checkbox>
 
-                            }}>选择本页全部试题</span>
+                        <div style={{ float: "right" }}>
+                            <span>共计 <span style={{ color: '#409EFF' }}>{this.state.topics.length}</span> 题</span>
                         </div>
 
                     </div>
@@ -232,7 +215,6 @@ class fineQuestion extends React.Component {
                                     })
                                     if (this.state.electTopiced) {
                                         for (let i = 0; i < this.state.topics.length; i++) {
-                                            console.log(this.state.topics[i].questionId)
                                             if (this.state.topics[i].questionId === questionId) {
                                                 this.state.topics[i].isGood = isGood;
                                                 break;
@@ -259,7 +241,7 @@ class fineQuestion extends React.Component {
                                         })
                                     }} />
                             </ConfigProvider>
-                            <img src={'http://homework.mizholdings.com/kacha/kcsj/309f4c25a216fffe/.png'}
+                            <img src={'http://homework.mizholdings.com/kacha/kcsj/2b95d97f9acf8189/.png'}
                                 style={{
                                     position: 'fixed',
                                     bottom: 70,
@@ -271,7 +253,11 @@ class fineQuestion extends React.Component {
                     </Content>
 
 
-
+                    <div className={style.collect}>
+                        <img src='http://homework.mizholdings.com/kacha/kcsj/cc74907be9d951f7/.png' style={{ marginBottom: 10 }} />
+                        已<br />收<br />藏
+                    <span className={style.yuan}> {selected} </span>
+                    </div>
 
                 </Layout>
             </Layout>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Select, Row, Col, Table, Icon, Input } from 'antd';
+import { Layout, Select, Row, Col, Table, Icon, Input, Spin } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -30,6 +30,8 @@ class HomeworkCenter extends React.Component {
 			dateValue: ['开始时间', '结束时间'],
 			date: [],
 			tableData: null,
+			spin1: false,
+			spin2: false,
 		}
 
 	}
@@ -334,6 +336,8 @@ class HomeworkCenter extends React.Component {
 
 	//班级使用数据导出
 	classDaochu() {
+		if (this.state.spin1) { return false; }
+		this.setState({ spin1: true })
 		let timeList = this.props.state.reportTimeList,
 			startTime = this.props.state.startTime,
 			endTime = this.props.state.endTime;
@@ -351,11 +355,18 @@ class HomeworkCenter extends React.Component {
 				a.href = url;
 				a.download = `${store.get('wrongBookNews').schoolName}班级使用数据.xlsx`;
 				a.click();
+				this.setState({ spin1: false })
+				this.props.dispatch({
+					type: 'report/maidian',
+					payload: { functionId: 21, actId: 1 }
+				})
 			})
 	}
 
 	//学生使用数据导出
 	stuDaochu() {
+		if (this.state.spin2) { return false; }
+		this.setState({ spin2: true })
 		let timeList = this.props.state.reportTimeList,
 			startTime = this.props.state.startTime,
 			endTime = this.props.state.endTime;
@@ -373,6 +384,11 @@ class HomeworkCenter extends React.Component {
 				a.href = url;
 				a.download = `${store.get('wrongBookNews').schoolName}${this.props.state.className}学生使用数据.xlsx`;
 				a.click();
+				this.setState({ spin2: false })
+				this.props.dispatch({
+					type: 'report/maidian',
+					payload: { functionId: 22, actId: 1 }
+				})
 			})
 	}
 
@@ -443,9 +459,11 @@ class HomeworkCenter extends React.Component {
 								<Col md={24}>
 									<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )', paddingRight: 0 }}>
 										<div className={style.chartExport} onClick={() => { this.classDaochu() }}>
-											<img src={require('../../images/chartDerive.png')} />
-												导出
-											</div>
+											<Spin spinning={this.state.spin1}>
+												<img src={require('../../images/chartDerive.png')} /> 导出
+											 </Spin>
+										</div>
+
 										<div id='main5' style={{ height: 420 }}>
 										</div>
 									</div>
@@ -456,9 +474,10 @@ class HomeworkCenter extends React.Component {
 								<Col md={24}>
 									<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )' }}>
 										<div className={style.chartExport} onClick={() => { this.stuDaochu() }}>
-											<img src={require('../../images/chartDerive.png')} />
-												导出
-											</div>
+											<Spin spinning={this.state.spin2}>
+												<img src={require('../../images/chartDerive.png')} /> 	导出
+										 </Spin>
+										</div>
 										<Search placeholder="请输入学生名字"
 											enterButton="搜索"
 											style={{ width: 250, position: 'absolute', right: 100, top: 23, zIndex: 10 }}
@@ -503,7 +522,7 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 
 		let schoolId = store.get('wrongBookNews').schoolId;
 		this.props.dispatch({
@@ -519,6 +538,14 @@ class HomeworkCenter extends React.Component {
 			type: 'periodTime',
 			payload: 1
 		})
+		this.props.dispatch({
+			type: 'reportChart/startTime',
+			payload: ''
+		});
+		this.props.dispatch({
+			type: 'reportChart/endTime',
+			payload: ''
+		});
 		window.removeEventListener('resize', function (e) {
 			//卸载resize
 		}, false);
@@ -538,6 +565,10 @@ class HomeworkCenter extends React.Component {
 				classReport: true
 			}
 		});
+		this.props.dispatch({
+			type: 'report/maidian',
+			payload: { functionId: 18, actId: 2 }
+		})
 	}
 
 }

@@ -28,10 +28,7 @@ const Home = Loadable({
   loader: () => import('./routes/Layout/Menus'),
   loading: () => <List />,
 });
-// const GradeAdmin = Loadable({
-//   loader: () => import('./routes/GradeAdmin/gradeAdmin'),
-//   loading: () => <List />,
-// });
+
 const ClassUser = Loadable({
   loader: () => import('./routes/GradeAdmin/ClassUser/classUser'),
   loading: () => <List />,
@@ -108,6 +105,19 @@ const fineQuestion = Loadable({
   loader: () => import('./routes/fineQuestion/fineQuestion'),
   loading: () => <List />,
 });
+const dataBackground = Loadable({
+  loader: () => import('./routes/dataBackground/dataBackground'),
+  loading: () => <List />,
+});
+
+const dataDetails = Loadable({
+  loader: () => import('./routes/dataBackground/dataDetails'),
+  loading: () => <List />,
+});
+const bulkPrint = Loadable({
+  loader: () => import('./routes/bulkPrint/bulkPrint'),
+  loading: () => <List />,
+});
 
 function RouterConfig({ history }) {
 
@@ -123,7 +133,6 @@ function RouterConfig({ history }) {
         {/* <Route path="/classInfo" component={ClassInfo} /> */}
         <Route path="/studentDetail" component={StudentDetail} />
         <Home>
-          {/* <Route path="/grade" component={GradeAdmin} /> */}
           <Route path="/classUser" component={ClassUser} />
           <Route path="/class" component={ClassAdmin} />
           <Route path="/addclass" component={AddClass} />
@@ -142,6 +151,9 @@ function RouterConfig({ history }) {
           <Route path="/userImport" component={userImport} />
           <Route path="/specialDownload" component={specialDownload} />
           <Route path="/fineQuestion" component={fineQuestion} />
+          <Route path="/dataBackground" component={dataBackground} />
+          <Route path="/dataDetails" component={dataDetails} />
+          <Route path="/bulkPrint" component={bulkPrint} />
 
         </Home>
       </Switch>

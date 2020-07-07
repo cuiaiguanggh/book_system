@@ -3,10 +3,9 @@ import {
   Modal, Layout, Icon,
 } from 'antd';
 import style from './mistakesTc.less';
+import { serverType } from '../../../config/dataCenter';
 
-const {
-  Content,
-} = Layout;
+const { Content, } = Layout;
 const { confirm } = Modal;
 export default class MistakesTC extends React.Component {
 
@@ -130,13 +129,15 @@ export default class MistakesTC extends React.Component {
                         <div className={style.txlefttitle}> 【答案与解析】</div>
                         <div dangerouslySetInnerHTML={{ __html: errorDetails.parse }} />
 
-                        <h2 className={style.txlefttitle}>优选错题</h2>
+                        <h2 className={style.txlefttitle}>
+                          {serverType === 0 && optimizationcuotiMistakes.length > 0 && optimizationcuotiMistakes[0].isGood === 1 ? '【优选错题】' : '优选错题'}
+                        </h2>
                         {optimizationcuotiMistakes.length === 0 ?
                           '暂无优选错题' :
                           <>
                             <div dangerouslySetInnerHTML={{ __html: optimizationcuotiMistakes[0].title }} />
                             <div className={style.txlefttitle}>【知识点】</div>
-                            <div dangerouslySetInnerHTML={{ __html: (optimizationcuotiMistakes[0].knowledges && optimizationcuotiMistakes[0].knowledges[0].knowledgeName) || '暂无知识点' }} />
+                            <div dangerouslySetInnerHTML={{ __html: optimizationcuotiMistakes[0].knowledges || '暂无知识点' }} />
                             <div className={style.txlefttitle}>【答案】</div>
                             <div dangerouslySetInnerHTML={{ __html: optimizationcuotiMistakes[0].answer || '暂无答案' }} />
                             <div className={style.txlefttitle}>【解析】</div>

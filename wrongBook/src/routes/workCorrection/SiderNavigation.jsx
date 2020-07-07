@@ -160,6 +160,10 @@ function SiderNavigation(props) {
         ];
         openDownloadDialog(sheet2blob(sheet), `${title}.xlsx`);
 
+        props.dispatch({
+            type: 'report/maidian',
+            payload: { functionId: 14, actId: 1 }
+        })
     }
 
     return (
@@ -295,6 +299,11 @@ function SiderNavigation(props) {
                                     workDate: props.state.workDate.split('作业')[0],
                                     studentId: excellentId,
                                 }
+                            }).then(() => {
+                                props.dispatch({
+                                    type: 'report/maidian',
+                                    payload: { functionId: 11, actId: 1 }
+                                })
                             })
                         }
 

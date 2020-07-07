@@ -86,7 +86,7 @@ export default {
 					message.error('没有权限');
 					return false
 				}
-
+				data.data.roleName = quanx.data.data.roleName;
 				//筛选最高权限   校管 校长 年级组长 班主任 任课老师
 				for (let i = 0; i < quanx.data.data.roleName.length; i++) {
 					switch (quanx.data.data.roleName[i]) {
@@ -186,6 +186,10 @@ export default {
 						pathname: '/school',
 						hash: 'page=1'
 					}))
+				} else if (data.data.roleName.includes('adminSale')) {
+					yield put(routerRedux.push({
+						pathname: '/bulkPrint',
+					}))
 				} else {
 					document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}作业批改`
 					yield put(routerRedux.push({
@@ -217,6 +221,8 @@ export default {
 						window.location.href = "http://kacha.xin/";
 						return false
 					}
+					data.data.roleName = quanx.data.data.roleName;
+
 					//筛选最高权限   校管 校长 年级组长 班主任 任课老师
 					for (let i = 0; i < quanx.data.data.roleName.length; i++) {
 						switch (quanx.data.data.roleName[i]) {
@@ -315,6 +321,10 @@ export default {
 							pathname: '/school',
 							hash: 'page=1'
 						}))
+					} else if (data.data.roleName.includes('adminSale')) {
+						yield put(routerRedux.push({
+							pathname: '/bulkPrint',
+						}))
 					} else {
 						document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}作业批改`
 						yield put(routerRedux.push({
@@ -353,7 +363,12 @@ export default {
 						type: 'getPower',
 						payload: res
 					})
-
+					yield put({
+						type: 'report/maidian',
+						payload: {
+							functionId: 2, actId: 1
+						}
+					})
 				} else {
 					if (res.data.result === 2) {
 						yield put(routerRedux.push('/login'))
@@ -411,6 +426,7 @@ export default {
 						yield put(routerRedux.push('/getPhone'))
 						return false;
 					}
+					data.data.roleName = quanx.data.data.roleName;
 					//筛选最高权限   校管 校长 年级组长 班主任 任课老师
 					for (let i = 0; i < quanx.data.data.roleName.length; i++) {
 						switch (quanx.data.data.roleName[i]) {
@@ -509,6 +525,10 @@ export default {
 							pathname: '/school',
 							hash: 'page=1'
 						}))
+					} else if (data.data.roleName.includes('adminSale')) {
+						yield put(routerRedux.push({
+							pathname: '/bulkPrint',
+						}))
 					} else {
 						document.title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}作业批改`
 						yield put(routerRedux.push({
@@ -516,6 +536,14 @@ export default {
 						}))
 					}
 					// }
+
+					yield put({
+						type: 'report/maidian',
+						payload: {
+							functionId: 4, actId: 1
+						}
+					})
+
 				} else {
 					message.error(res.data.msg)
 				}

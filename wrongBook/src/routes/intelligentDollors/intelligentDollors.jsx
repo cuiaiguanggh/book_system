@@ -80,45 +80,45 @@ class intelligentDollors extends React.Component {
                 type: 'temp/combinedPaper',
                 payload: data
             }).then(list => {
+                let dollorsKnowledge = [];
                 for (let obj of list) {
-                    obj.title = obj.title && obj.title.replace(/宋体/g, "微软雅黑")
-                    obj.answer = obj.answer && obj.answer.replace(/宋体/g, "微软雅黑")
-                    obj.parse = obj.parse && obj.parse.replace(/宋体/g, "微软雅黑")
+                    obj.title = obj.title && obj.title.replace(/宋体/g, "微软雅黑");
+                    obj.answer = obj.answer && obj.answer.replace(/宋体/g, "微软雅黑");
+                    obj.parse = obj.parse && obj.parse.replace(/宋体/g, "微软雅黑");
+                    dollorsKnowledge.push({
+                        knowledgeId: obj.knowledgeId,
+                        knowledgeName: obj.knowledgeName,
+                    })
                 }
                 this.setState({
-                    topicList: list
+                    topicList: list,
+                    dollorsKnowledge
                 })
                 this.getType(list)
             })
         }
         //获取知识点方法
-        this.getKnowledge = (data) => {
-            this.props.dispatch({
-                type: 'temp/dollorsKnowledge',
-                payload: data
-            }).then(data => {
-                if (data) {
-                    this.setState({
-                        dollorsKnowledge: data
-                    })
-                } else {
-                    this.setState({
-                        dollorsKnowledge: []
-                    })
-                }
-            })
-        }
+        // this.getKnowledge = (data) => {
+        //     console.log('getKnowledge')
+        //     return;
+        //     this.props.dispatch({
+        //         type: 'temp/dollorsKnowledge',
+        //         payload: data
+        //     }).then(data => {
+        //         if (data) {
+        //             this.setState({
+        //                 dollorsKnowledge: data
+        //             })
+        //         } else {
+        //             this.setState({
+        //                 dollorsKnowledge: []
+        //             })
+        //         }
+        //     })
+        // }
         //重置
         observer.addSubscribe('dollorsReset', () => {
             this.setState({
-                // selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
-                //     sameDay: 'YYYY/MM/DD',
-                //     nextDay: 'YYYY/MM/DD',
-                //     nextWeek: 'YYYY/MM/DD',
-                //     lastDay: 'YYYY/MM/DD',
-                //     lastWeek: 'YYYY/MM/DD',
-                //     sameElse: 'YYYY/MM/DD'
-                // })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
                 selectTime: [],
                 mouNow: 0,
                 dollorsKnowledge: [],
@@ -129,25 +129,17 @@ class intelligentDollors extends React.Component {
         //切换学科时
         observer.addSubscribe('dollorsChange', (subId) => {
             this.setState({
-                // selectTime: [moment(`${moment().subtract(7, 'days').calendar(null, {
-                //     sameDay: 'YYYY/MM/DD',
-                //     nextDay: 'YYYY/MM/DD',
-                //     nextWeek: 'YYYY/MM/DD',
-                //     lastDay: 'YYYY/MM/DD',
-                //     lastWeek: 'YYYY/MM/DD',
-                //     sameElse: 'YYYY/MM/DD'
-                // })}`, "YYYY-MM-DD"), moment(`${moment().format('YYYY/MM/DD')}`, "YYYY-MM-DD")],
                 selectTime: [],
                 mouNow: 0,
             })
 
             //获取知识点
-            this.getKnowledge({
-                year: this.props.state.years,
-                classId: this.props.state.classId,
-                subjectId: subId,
-                type: 0,
-            })
+            // this.getKnowledge({
+            //     year: this.props.state.years,
+            //     classId: this.props.state.classId,
+            //     subjectId: subId,
+            //     type: 0,
+            // })
 
             //题目列表
             this.getTitles({
@@ -167,12 +159,12 @@ class intelligentDollors extends React.Component {
         })
 
         //获取知识点
-        this.getKnowledge({
-            year: this.props.state.years,
-            classId: this.props.state.classId,
-            subjectId: this.props.state.subId,
-            type: 0,
-        })
+        // this.getKnowledge({
+        //     year: this.props.state.years,
+        //     classId: this.props.state.classId,
+        //     subjectId: this.props.state.subId,
+        //     type: 0,
+        // })
 
         //题目列表
         this.getTitles({
@@ -189,13 +181,13 @@ class intelligentDollors extends React.Component {
         })
 
         //获取知识点
-        this.getKnowledge({
-            year: this.props.state.years,
-            classId: this.props.state.classId,
-            subjectId: this.props.state.subId,
-            type: 0,
-            month: item.v
-        })
+        // this.getKnowledge({
+        //     year: this.props.state.years,
+        //     classId: this.props.state.classId,
+        //     subjectId: this.props.state.subId,
+        //     type: 0,
+        //     month: item.v
+        // })
         //题目列表
         this.getTitles({
             classId: this.props.state.classId,
@@ -210,14 +202,14 @@ class intelligentDollors extends React.Component {
             selectTime: date,
         })
         //获取知识点
-        this.getKnowledge({
-            year: this.props.state.years,
-            classId: this.props.state.classId,
-            subjectId: this.props.state.subId,
-            type: 0,
-            startTime: dateString[0],
-            endTime: dateString[1]
-        })
+        // this.getKnowledge({
+        //     year: this.props.state.years,
+        //     classId: this.props.state.classId,
+        //     subjectId: this.props.state.subId,
+        //     type: 0,
+        //     startTime: dateString[0],
+        //     endTime: dateString[1]
+        // })
         //题目列表
         this.getTitles({
             classId: this.props.state.classId,
@@ -229,6 +221,12 @@ class intelligentDollors extends React.Component {
     }
     //一键组卷
     oneDonw() {
+
+        this.props.dispatch({
+            type: 'report/maidian',
+            payload: { functionId: 9, actId: 1 }
+        });
+
         this.setState({
             loading: 1
         })
@@ -526,6 +524,10 @@ class intelligentDollors extends React.Component {
                         this.setState({
                             showPdfModal: false
                         })
+                        this.props.dispatch({
+                            type: 'report/maidian',
+                            payload: { functionId: 10, actId: 1 }
+                        })
                     }}
                     onCancel={() => {
                         this.setState({
@@ -546,12 +548,12 @@ class intelligentDollors extends React.Component {
     componentDidMount() {
 
         //获取知识点
-        this.getKnowledge({
-            year: this.props.state.years,
-            classId: this.props.state.classId,
-            subjectId: this.props.state.subId,
-            type: 0,
-        })
+        // this.getKnowledge({
+        //     year: this.props.state.years,
+        //     classId: this.props.state.classId,
+        //     subjectId: this.props.state.subId,
+        //     type: 0,
+        // })
 
 
         //题目列表
@@ -560,7 +562,10 @@ class intelligentDollors extends React.Component {
             subjectId: this.props.state.subId,
             year: this.props.state.years,
         })
-
+        this.props.dispatch({
+            type: 'report/maidian',
+            payload: { functionId: 8, actId: 2 }
+        })
     }
     componentWillUnmount() {
         this.props.dispatch({

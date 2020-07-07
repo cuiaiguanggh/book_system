@@ -1,16 +1,15 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Row, Spin, DatePicker, Empty
+  Layout, Menu, Button, message, Select, Modal, Icon, Checkbox, Spin, DatePicker, Empty
 } from 'antd';
-import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './stuReport.less';
 import moment from 'moment';
 import { dataCen, dataCenter, serverType } from '../../../config/dataCenter'
 import store from 'store';
 import commonCss from '../../css/commonCss.css'
 import TracksVideo from "../TracksVideo/TracksVideo";
+import DownloadGroup from '../../components/downloadGroup/downloadGroup';
 import QRCode from "qrcode.react";
 import 'moment/locale/zh-cn';
 //作业中心界面内容
@@ -36,12 +35,10 @@ class StuReport extends React.Component {
       visible: false,
       next: true,
       toupload: false,
-      pull: false,
       begtoendTime: [],
       stbegtoendTime: [],
       topicxy: false,
       zoom: false,
-      similarTopic: 1,
       //匹配错误显示
       pptype: 0,
       nowWindows: {},
@@ -473,11 +470,11 @@ class StuReport extends React.Component {
                     </span>
                   </div>
                   <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
-                    if (item.recommendId !== 0) {
+                    if (item.picId) {
                       this.props.dispatch({
                         type: 'report/recommend',
                         payload: {
-                          uqId: item.recommendId
+                          uqId: item.picId.split('-')[1]
                         }
                       }).then((res) => {
                         this.setState({
@@ -815,40 +812,35 @@ class StuReport extends React.Component {
   }
 
   //下载所选中的组卷事件
-  downloadPitch(e) {
-    e.stopPropagation();
-    if (this.props.state.stuDown.length != 0) {
-      //是否允许点击下载错题按钮事件
-      this.props.dispatch({
-        type: 'down/downQue',
-        payload: true
-      });
-      //下载pdf
-      let downparameters = {
-        uqIdsStr: this.props.state.stuDownPic.join(','),
-        childId: this.props.state.userId,
-        operationClass: this.props.state.classId,
-        subjectId: this.props.state.subId,
-      };
-      if (this.state.similarTopic === 1) {
-        downparameters.practise = 0
-      } else {
-        downparameters.practise = 1
-      };
+  downloadPitch(practise) {
+    this.props.dispatch({
+      type: 'report/maidian',
+      payload: { functionId: 15, actId: 1 }
+    })
+    //是否允许点击下载错题按钮事件
+    this.props.dispatch({
+      type: 'down/downQue',
+      payload: true
+    });
+    //下载pdf
+    let downparameters = {
+      uqIdsStr: this.props.state.stuDownPic.join(','),
+      childId: this.props.state.userId,
+      operationClass: this.props.state.classId,
+      subjectId: this.props.state.subId,
+      practise: practise
+    };
 
-      if (this.props.state.stbegtoendTime.length > 0) {
-        downparameters.beginDate = this.props.state.stbegtoendTime[0];
-        downparameters.endDate = this.props.state.stbegtoendTime[1];
-      }
 
-      this.props.dispatch({
-        type: 'down/makeSelectWB',
-        payload: downparameters
-      });
-      //关闭下拉弹窗
-      this.setState({
-        pull: false
-      });
+    if (this.props.state.stbegtoendTime.length > 0) {
+      downparameters.beginDate = this.props.state.stbegtoendTime[0];
+      downparameters.endDate = this.props.state.stbegtoendTime[1];
+    }
+
+    this.props.dispatch({
+      type: 'down/makeSelectWB',
+      payload: downparameters
+    }).then(() => {
       // 添加导出次数
       this.props.dispatch({
         type: 'report/addStudentUp',
@@ -858,9 +850,10 @@ class StuReport extends React.Component {
       this.props.dispatch({
         type: 'down/delAllStu',
       });
-    } else {
-      message.warning('请选择题目到错题篮')
-    }
+    })
+
+
+
   }
 
   //滚动加载错题
@@ -956,24 +949,12 @@ class StuReport extends React.Component {
 
     this.sfgun = detail.data && detail.data.end;
     return (
-      <Content style={{
-        background: '#fff',
-        minHeight: 280,
-        overflow: 'auto',
-        position: 'relative'
-      }}
-        ref='warpper'
-      >
+      <Content style={{ background: '#fff', minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper'>
         <div className={style.layout}>
           <iframe style={{ display: 'none' }} src={this.state.wordUrl} />
           <div style={{ height: '50px', lineHeight: '50px' }}>
             <div style={{ padding: '0 20px', background: "#fff", borderBottom: '1px solid #ccc' }}>
-              <span style={{
-                fontSize: 14,
-                fontFamily: 'MicrosoftYaHei-Bold',
-                fontWeight: 'bold',
-                color: 'rgba(96,98,102,1)',
-              }}>时间：</span>
+              <span style={{ fontSize: 14, color: 'rgba(96,98,102,1)' }}>时间：</span>
               <span key={0} className={0 == this.props.state.mouNow ? 'choseMonthOn' : 'choseMonth'}
                 onClick={this.alltime.bind(this)}>全部</span>
               {
@@ -991,94 +972,43 @@ class StuReport extends React.Component {
                 value={this.props.state.begtoendTime}
                 disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
                 onChange={this.quantumtime.bind(this)} />
-              <div style={{ float: 'right' }}>
-                {detail.data && detail.data.questionList.length !== 0 ?
-                  <Button
-                    style={{
-                      background: '#67c23a',
-                      color: '#fff',
-                      float: 'right',
-                      marginTop: "9px",
-                      border: 'none',
-                      width: 140,
-                      padding: '0 15px'
-                    }}
-                    loading={this.props.state.downQue}
-                    disabled={this.props.state.stuDown.length === 0 && !this.props.state.downQue}
-                    onClick={() => {
-                      this.setState({ pull: !this.state.pull })
-                    }}>
-                    <img style={{ margin: '0 3px 4px 2px', height: '15px', marginBottom: '4px' }}
-                      src={require('../../images/xc-cl-n.png')}></img>
-                    下载组卷({this.props.state.stuDown.length})
-                  </Button> : ''}
-                {this.state.pull ?
-                  <div className={style.buttonPull}
-                    onClick={(e) => {
-                      if (this.state.similarTopic === 1) {
-                        this.setState({
-                          similarTopic: 2
-                        })
-                      } else if (this.state.similarTopic === 2) {
-                        this.setState({
-                          similarTopic: 1
-                        })
-                      }
-                    }}>
-                    <Row className={style.downloadrow}>
-                      {this.state.similarTopic === 1 ?
-                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
-                          src={require('../../images/lvxz.png')}></img> :
-                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
-                          src={require('../../images/lvwxz.png')}></img>}
-                      <span className={style.inputk} value="1">下载原错题</span>
-                    </Row>
-                    <Row className={style.downloadrow} style={{ lineHeight: 1, textAlign: 'left' }}>
-                      {this.state.similarTopic === 2 ?
-                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
-                          src={require('../../images/lvxz.png')}></img> :
-                        <img style={{ margin: '0 9px 0 15px', height: '14px' }}
-                          src={require('../../images/lvwxz.png')}></img>}
-                      <span className={style.inputk} value="1">
-                        <p style={{ margin: '15px 0 0 0' }}>下载原错题＋</p>
-                        <p style={{ margin: 0 }}>优选练习</p> </span>
-                    </Row>
-                    <Row>
-                      <div className={style.yulangbutton} onClick={this.downloadPitch.bind(this)}>
-                        预览
-                      </div>
-                    </Row>
-                  </div> : ''}
-              </div>
-              {/* {
-                (detail.data && detail.data.questionList.length != 0 && this.props.state.AllPdf && 0 != this.props.state.mouNow) ?
-                  <Button
-                    style={{
-                      background: '#67c23a',
-                      color: '#fff',
-                      float: 'right',
-                      marginTop: "9px",
-                      border: 'none',
-                      marginRight: '10px'
-                    }}
-                    loading={this.props.state.toDown}
-                    onClick={this.downloadAll.bind(this)}>
-                    {
-                      this.props.state.toDown ?
-                        '组卷中' : '下载全部'
+
+              <Checkbox style={{ marginLeft: 50 }}
+                checked={this.props.state.qrdetailList1.data && this.props.state.stuDown.length === this.props.state.qrdetailList1.data.questionList.length}
+                onChange={(e) => {
+                  this.props.dispatch({
+                    type: 'down/delAllStu',
+                  });
+                  if (e.target.checked) {
+                    for (let obj of this.props.state.qrdetailList1.data.questionList) {
+                      this.props.dispatch({
+                        type: 'down/stuDown',
+                        payload: obj.questionId
+                      });
+                      this.props.dispatch({
+                        type: 'down/stuDownPic',
+                        payload: obj.picId
+                      });
                     }
-                  </Button> : ''
-              } */}
+                  }
+                }}>题目全选</Checkbox>
+
             </div>
           </div>
+          <DownloadGroup data={this.props.state.stuDown}
+            right={26}
+            loading={this.props.state.downQue}
+            previewClick={(practise) => { this.downloadPitch(practise) }}
+            qkongClick={() => {
+              this.props.dispatch({
+                type: 'down/delAllStu',
+              });
+            }} />
           <Layout className={style.innerOut}>
-            {/* {
-              studentList.data && studentList.data.length > 0 ? */}
             <Sider className={style.sider}>
               {this.menulist()}
             </Sider>
-            {/*       : ''
-             } */}
+
 
             <Content className={style.content}
               style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
@@ -1178,22 +1108,22 @@ class StuReport extends React.Component {
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.knowledgeName }} />
                     <div className={style.leftText}> 【答案与解析】 </div>
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.parse }} />
-                    <h2 className={style.leftText}>优选错题</h2>
+                    <h2 className={style.leftText}>
+                      {serverType === 0 && this.state.optimizationcuotiMistakes.length > 0 && this.state.optimizationcuotiMistakes[0].isGood === 1 ? '【优选错题】' : '优选错题'}
+                    </h2>
 
                     {this.state.optimizationcuotiMistakes.length === 0 ?
                       '暂无优选错题' :
                       <>
                         <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].title }} />
                         <div className={style.leftText}>【知识点】</div>
-                        <div dangerouslySetInnerHTML={{ __html: (this.state.optimizationcuotiMistakes[0].knowledges && this.state.optimizationcuotiMistakes[0].knowledges[0].knowledgeName) || '暂无知识点' }} />
+                        <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].knowledges || '暂无知识点' }} />
                         <div className={style.leftText}>【答案】</div>
                         <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].answer || '暂无答案' }} />
                         <div className={style.leftText}>【解析】</div>
                         <div dangerouslySetInnerHTML={{ __html: this.state.optimizationcuotiMistakes[0].parse || '暂无解析' }} />
                       </>
                     }
-
-
 
                   </div>
                 </div>
@@ -1254,7 +1184,11 @@ class StuReport extends React.Component {
             maskClosable={false}
             visible={this.props.state.showPdfModal}
             onOk={() => {
-              window.location.href = this.props.state.pdfUrl.downloadLink
+              window.location.href = this.props.state.pdfUrl.downloadLink;
+              this.props.dispatch({
+                type: 'report/maidian',
+                payload: { functionId: 16, actId: 1 }
+              })
             }}
             onCancel={() => {
               this.props.dispatch({
@@ -1312,11 +1246,14 @@ class StuReport extends React.Component {
           }
         });
       })
-
     }
+    this.props.dispatch({
+      type: 'report/maidian',
+      payload: { functionId: 7, actId: 2 }
+    })
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     //清空知识点
     this.props.dispatch({
       type: 'report/knowledgenow',

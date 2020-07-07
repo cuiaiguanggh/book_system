@@ -111,6 +111,19 @@ export default {
     csubjectId(state, { payload }) {
       return { ...state, csubjectId: payload };
     },
+    qkongClassChart(state, { payload }) {
+      return {
+        ...state,
+        classDataReport: {
+          studentWrongNum: [],
+          classUserNumData: [],
+          classWrongNumData: [],
+          teacherUseDataList: [],
+        },
+        csubId: '',
+        cSubList: [],
+      };
+    },
   },
   subscriptions: {
     // setup({ dispatch, history }) {  // eslint-disable-line
@@ -119,6 +132,7 @@ export default {
 
   effects: {
     * chartSubList({ payload }, { put, select }) {
+
       let res = yield subjectList(payload)
 
       if (res.data.result === 0) {
@@ -133,9 +147,12 @@ export default {
           });
           //切换班级后获取到学科信息调用接口获取数据
           let { classId } = yield select(state => state.temp);
-          let { stateTimeIndex, startTime, endTime, periodTime, timeStamp } = yield select(state => state.reportChart);
+          let { sclassId, stateTimeIndex, startTime, endTime, periodTime, timeStamp } = yield select(state => state.reportChart);
+
+          // if (store.get('wrongBookNews').rodeType === 10 && !classId) { classId = sclassId; }
+
           let data = {
-            schoolId: store.get('wrongBookNews').schoolId,
+            // schoolId: store.get('wrongBookNews').schoolId,
             classId,
             subjectId: res.data.data[0].v,
           };
@@ -153,25 +170,7 @@ export default {
             payload: data
           });
         } else {
-          yield put({
-            type: 'cSubList',
-            payload: []
-          });
-          yield put({
-            type: 'csubId',
-            payload: ''
-          });
-
-          yield put({
-            type: 'classDataReport',
-            payload: {
-              studentWrongNum: [],
-              classUserNumData: [],
-              classWrongNumData: [],
-              teacherUseDataList: []
-            }
-          })
-
+          yield put({ type: 'qkongClassChart' });
         }
       } else {
         message.error(res.data.msg)
@@ -212,12 +211,17 @@ export default {
           const _state = yield select(state => state.reportChart);
           let { classId } = yield select(state => state.temp);
           let { sclassId, csubId } = yield select(state => state.reportChart);
+
           if (store.get('wrongBookNews').rodeType === 10) { classId = sclassId; }
 
-          yield put({
-            type: 'chartSubList',
-            payload: { classId }
-          })
+          if (classId) {
+            yield put({
+              type: 'chartSubList',
+              payload: { classId }
+            })
+          } else {
+            yield put({ type: 'qkongClassChart' });
+          }
           // //如果是超级管理员的话
           // let data = {
           //   classId: classId,
@@ -269,7 +273,10 @@ export default {
 
         yield put({
           type: 'getClassList',
-          payload: { schoolId: _schoolid, gradeId: glist[0].id }
+          payload: {
+            schoolId: _schoolid,
+            // gradeId: glist[0].id 
+          }
         })
 
       } else {
@@ -347,13 +354,24 @@ export default {
             type: 'noClassData',
             payload: true
           })
+          let data = {
+            schoolId: payload.schoolId,
+            periodTime: payload.periodTime,
+            timeStamp: payload.timeStamp,
+          };
+          let { startTime, endTime } = yield select(state => state.reportChart);
+
+          if (startTime !== '' && endTime !== '') {
+            data = {
+              schoolId: payload.schoolId,
+              timeStamp: 0,
+              startTime: startTime,
+              endTime: endTime,
+            }
+          }
           yield put({
             type: 'getSchoolDataReport',
-            payload: {
-              schoolId: payload.schoolId,
-              periodTime: payload.periodTime,
-              timeStamp: payload.timeStamp,
-            }
+            payload: data
           })
 
           return
@@ -391,7 +409,6 @@ export default {
           schoolId: payload.schoolId,
           periodTime: payload.periodTime,
           timeStamp: payload.timeStamp,
-          classId: payload.classId,
           subjectId: _subjectId
         }
 

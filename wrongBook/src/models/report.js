@@ -21,6 +21,7 @@ import {
 	queDetail,
 	sign,
 	remove,
+	maidian,
 } from '../services/reportService';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -221,10 +222,9 @@ export default {
 		*recommend({ payload }, { put, select, }) {
 			let res = yield recommend(payload)
 			if (res.data.result === 0) {
-				return res.data.data
+				return [res.data.data]
 			} else {
 				return []
-
 			}
 
 		},
@@ -835,7 +835,15 @@ export default {
 				message.error(res.data.msg)
 			}
 		},
+		* maidian({ payload }, { put, select }) {
+			// console.log(`${payload.functionId}埋点`)
 
+			let res = yield maidian(payload);
+
+			if (res.data && res.data.result === 0) {
+				console.log(`${payload.functionId}埋点`)
+			}
+		},
 	},
 
 };

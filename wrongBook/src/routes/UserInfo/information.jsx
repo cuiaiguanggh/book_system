@@ -1,15 +1,12 @@
 import React from 'react';
 import { Layout, Input, Modal, Radio, Button, Select } from 'antd';
-import { Link, } from "dva/router";
 import { connect } from 'dva';
 import style from './information.less';
 import store from 'store';
-import { dataCenter, dataCen, serverType } from '../../config/dataCenter'
 const { Content } = Layout;
 // const Search = Input.Search;
 const RadioGroup = Radio.Group;
 const confirm = Modal.confirm;
-const { TextArea } = Input;
 const Option = Select.Option;
 //作业中心界面内容
 class HomeworkCenter extends React.Component {
@@ -71,11 +68,7 @@ class HomeworkCenter extends React.Component {
 	// 	}
 	// }
 	render() {
-		let userNews = store.get('wrongBookNews')
-		let classArray = this.props.state.classList1.data
 		let userData = this.props.state.userData;
-
-		let originalPhone = userData.phone
 
 		return (
 			<Layout>
@@ -96,7 +89,7 @@ class HomeworkCenter extends React.Component {
 											<div style={{ padding: '0 10px' }}>
 												{item.className}
 												{item.isAdmin === 1 ? <span className={style.banzhuren_icon}>
-													<img src={require('../images/banzhuren@2x.png')} />
+													<img src={require('../images/banzhuren@2x.png')} alt=''/>
 												</span> : ''
 												}
 												&nbsp;
@@ -108,7 +101,7 @@ class HomeworkCenter extends React.Component {
 									{/* 学科 */}
 									{this.state.classTeacher.length > 0 && this.state.classTeacher[0].subjectName ?
 										<p>
-											<img src={require('../images/nianji@2x.png')} />
+											<img src={require('../images/nianji@2x.png')} alt=''/>
 											<span>{this.state.classTeacher[0].subjectName}</span>
 										</p> : ''
 									}

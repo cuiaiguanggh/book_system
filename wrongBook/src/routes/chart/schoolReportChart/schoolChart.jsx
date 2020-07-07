@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Layout, Input, Modal, Button, Select, Row, Col, DatePicker, Icon, Table, Empty } from 'antd';
+import { Layout, Input, Modal, Button, Select, Row, Col, DatePicker, Icon, Table, Spin } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -28,7 +28,9 @@ class SchoolChart extends React.Component {
 			sbid: 0,
 			cid: 0,
 			searchData: [],
-			gradeDataSelect: 1
+			gradeDataSelect: 1,
+			spin1: false,
+			spin2: false,
 		}
 		this.onChangeTime = this.onChangeTime.bind(this)
 		this.onChangeDate = this.onChangeDate.bind(this)
@@ -46,15 +48,11 @@ class SchoolChart extends React.Component {
 			payload: item.startTimeStamp
 		});
 		if (this.props.state.sclassList.length === 0) return
-		let cid = this.props.state.sclassId || this.props.state.sclassList[0].id;
-		let sid = this.props.state.ssubList.length > 0 && this.props.state.ssubList[0].v;
 		let data = {
 			schoolId: store.get('wrongBookNews').schoolId,
 			periodTime: item.periodTime,
 			timeStamp: item.startTimeStamp,
-			classId: cid,
 		}
-		if (sid) data.subjectId = this.props.state.subjectId || sid;
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload: data
@@ -80,17 +78,12 @@ class SchoolChart extends React.Component {
 				payload: endDate
 			});
 			if (this.props.state.sclassList.length === 0) return
-			let cid = this.props.state.sclassList[0].id;
-			let sid = this.props.state.ssubList.length > 0 && this.props.state.ssubList[0].v;
-
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
-				classId: cid,
 				timeStamp: 0,
 				startTime: startDate,
 				endTime: endDate,
 			}
-			if (sid) data.subjectId = this.props.state.subjectId || sid;
 		} else {
 			this.props.dispatch({
 				type: 'reportChart/periodTime',
@@ -102,13 +95,10 @@ class SchoolChart extends React.Component {
 			});
 			data = {
 				schoolId: store.get('wrongBookNews').schoolId,
-				classId: this.props.state.sclassId,
-				subjectId: this.props.state.subjectId,
 				periodTime: 1,
 				timeStamp: this.props.state.reportTimeList[0].startTimeStamp,
 			}
 		}
-		if (!data.classId) return false;
 		this.props.dispatch({
 			type: 'reportChart/getSchoolDataReport',
 			payload: data
@@ -341,7 +331,7 @@ class SchoolChart extends React.Component {
 		];
 		return (
 			<div className={style.cagtable}>
-				<Table bordered columns={columns} dataSource={data} pagination={false} rowKey={record => record.userId + record.classId} 
+				<Table bordered columns={columns} dataSource={data} pagination={false} rowKey={record => record.userId + record.classId}
 				// scroll={{ y: 400 }} 
 				/>
 			</div>
@@ -465,132 +455,8 @@ class SchoolChart extends React.Component {
 		myChart.setOption(option3)
 	}
 
-	getSub() {
-		let subList = this.props.state.ssubList;
-		if (subList && subList.length > 0) {
-			return (
-				<Select
-					style={{ width: 100, marginLeft: 20 }}
-					placeholder="学科"
-					getPopupContainer={triggerNode => triggerNode.parentElement}
-					// optionFilterProp="children"
-					value={this.props.state.subjectId}
-					onChange={(value) => {
-						this.props.dispatch({
-							type: 'reportChart/subjectId',
-							payload: value
-						});
 
-						let data = {
-							schoolId: store.get('wrongBookNews').schoolId,
-							classId: this.props.state.sclassId,
-							subjectId: value,
-							periodTime: this.props.state.periodTime,
-							timeStamp: this.props.state.timeStamp,
-						}
-						if (this.props.state.startTime !== '' && this.props.state.endTime !== '') {
-							data = {
-								schoolId: store.get('wrongBookNews').schoolId,
-								classId: this.props.state.sclassId,
-								subjectId: value,
-								timeStamp: 0,
-								startTime: this.props.state.startTime,
-								endTime: this.props.state.endTime,
-							}
-						}
-						this.props.dispatch({
-							type: 'reportChart/changeSubList',
-							payload: data
-						});
-
-					}} >
-					{
-						subList.map((item, i) => (
-							<Option key={i} value={item.v}>{item.k}</Option>
-						))
-					}
-				</Select>
-			)
-		}
-	}
-	getClassList() {
-
-		let classList = this.props.state.sclassList;
-		if (classList && classList.length > 0) {
-			return (
-				<Select
-					style={{ width: 140, marginLeft: 20 }}
-					placeholder="班级"
-					getPopupContainer={triggerNode => triggerNode.parentElement}
-					value={this.props.state.sclassId}
-					onChange={(value) => {
-						this.props.dispatch({
-							type: 'reportChart/sclassId',
-							payload: value
-						});
-
-						let data = {
-							schoolId: store.get('wrongBookNews').schoolId,
-							classId: value,
-							periodTime: this.props.state.periodTime,
-							timeStamp: this.props.state.timeStamp,
-						}
-						this.props.dispatch({
-							type: 'reportChart/getSubList',
-							payload: data
-						});
-					}}>
-					{
-						classList.map((item, i) => (
-							<Option key={i} value={item.id}>{item.name}</Option>
-						))
-					}
-				</Select>
-			)
-		} else {
-
-		}
-	}
-	getGradeList() {
-		let gradeList = this.props.state.sgradeList;
-		if (gradeList && gradeList.length > 0) {
-			return (
-				<Select
-					style={{ width: 100 }}
-					placeholder="年级"
-					getPopupContainer={triggerNode => triggerNode.parentElement}
-					value={this.props.state.gradeId}
-					onChange={(value) => {
-						this.props.dispatch({
-							type: 'reportChart/gradeId',
-							payload: value
-						});
-
-						let data = {
-							schoolId: store.get('wrongBookNews').schoolId,
-							classId: this.props.state.sclassId,
-							subjectId: this.props.state.subId,
-							periodTime: this.props.state.periodTime,
-							timeStamp: this.props.state.timeStamp,
-							gradeId: value
-						}
-						this.props.dispatch({
-							type: 'reportChart/getClassList',
-							payload: data
-						});
-
-					}} >
-					{
-						gradeList.map((item, i) => (
-							<Option key={i} value={item.id}>{item.name}</Option>
-						))
-					}
-				</Select>
-			)
-		}
-	}
 	resizeChart(obj) {
-
 		window.addEventListener('resize', function (e) {
 			let winWidth = e.target.innerWidth
 			const chartBox = document.getElementById('main');
@@ -643,6 +509,8 @@ class SchoolChart extends React.Component {
 	}
 	//年级使用数据导出
 	gradeDaochu() {
+		if (this.state.spin1) { return false; }
+		this.setState({ spin1: true })
 		let timeList = this.props.state.reportTimeList,
 			startTime = this.props.state.startTime,
 			endTime = this.props.state.endTime;
@@ -659,10 +527,17 @@ class SchoolChart extends React.Component {
 				a.href = url;
 				a.download = `${store.get('wrongBookNews').schoolName}年级使用数据.xlsx`;
 				a.click();
+				this.setState({ spin1: false })
+				this.props.dispatch({
+					type: 'report/maidian',
+					payload: { functionId: 19, actId: 1 }
+				})
 			})
 	}
 	//教师使用情况导出
 	teacherDaochu() {
+		if (this.state.spin2) { return false; }
+		this.setState({ spin2: true })
 		let timeList = this.props.state.reportTimeList,
 			startTime = this.props.state.startTime,
 			endTime = this.props.state.endTime;
@@ -680,6 +555,11 @@ class SchoolChart extends React.Component {
 				a.href = url;
 				a.download = `${store.get('wrongBookNews').schoolName}教师使用情况.xlsx`;
 				a.click();
+				this.setState({ spin2: false })
+				this.props.dispatch({
+					type: 'report/maidian',
+					payload: { functionId: 20, actId: 1 }
+				})
 			})
 	}
 
@@ -739,8 +619,10 @@ class SchoolChart extends React.Component {
 												<span style={this.state.gradeDataSelect === 3 ? { width: 70, borderColor: '#2F9BFF' } : { width: 70 }} onClick={() => { this.gradeSelectChange(3) }}>作业数</span>
 											</div>
 											<div className={style.chartExport} onClick={() => { this.gradeDaochu() }}>
-												<img src={require('../../images/chartDerive.png')} />
+												<Spin spinning={this.state.spin1}>
+													<img src={require('../../images/chartDerive.png')} />
 												导出
+												</Spin>
 											</div>
 
 											<div id='main3' style={{ height: 440 }}> </div>
@@ -754,9 +636,11 @@ class SchoolChart extends React.Component {
 									<Col md={24}>
 										<div className={style.chartbox} style={{ width: 'calc( 100% - 40px )' }}>
 											<div className={style.chartExport} onClick={() => { this.teacherDaochu() }}>
-												<img src={require('../../images/chartDerive.png')} />
-												导出
+												<Spin spinning={this.state.spin2}>
+													<img src={require('../../images/chartDerive.png')} /> 导出
+												 </Spin>
 											</div>
+
 											<Search
 												placeholder="请输入教师姓名"
 												enterButton="搜索"
@@ -797,7 +681,7 @@ class SchoolChart extends React.Component {
 			</>
 		);
 	}
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		if (store.get('wrongBookNews').rodeType === 10) {
 			let schoolId = store.get('wrongBookNews').schoolId;
 			this.props.dispatch({
@@ -819,10 +703,6 @@ class SchoolChart extends React.Component {
 		this.props.dispatch({
 			type: 'periodTime',
 			payload: 1
-		});
-		this.props.dispatch({
-			type: 'reportChart/subjectId',
-			payload: '',
 		});
 		this.props.dispatch({
 			type: 'reportChart/startTime',
@@ -851,6 +731,10 @@ class SchoolChart extends React.Component {
 				classReport: false
 			}
 		});
+		this.props.dispatch({
+			type: 'report/maidian',
+			payload: { functionId: 17, actId: 2 }
+		})
 	}
 	shouldComponentUpdate(nextProps) {
 		let data = nextProps.state.schoolDataReport;

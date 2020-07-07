@@ -174,7 +174,7 @@ class UserImport extends React.Component {
 
 	render() {
 		return (
-			<Layout style={{ background: '#fff' }}>
+			<Layout style={{ background: '#F0F2F5' }}>
 				<Content style={{ overflow: 'scroll' }}>
 					<div className={style.gradeboder}>
 						<div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
@@ -224,15 +224,15 @@ class UserImport extends React.Component {
 					</div>
 					<div className={style.tableBox}>
 						<p className={style.header}>
-							<span style={{ fontWeight: 'bold' }}>
+							<span >
 								学校：<span style={{ fontWeight: 400 }}> {this.state.schoolName} </span>
 							</span>
 
-							<span style={{ margin: '0 100px', fontWeight: 'bold' }}>
+							<span style={{ margin: '0 100px' }}>
 								校管：<span style={{ fontWeight: 400 }}>{this.state.managerName}</span>
 							</span>
 
-							<span style={{ fontWeight: 'bold' }}>
+							<span >
 								帐号：<span style={{ fontWeight: 400 }}>{this.state.managerPhone}</span>
 							</span>
 						</p>
@@ -244,12 +244,11 @@ class UserImport extends React.Component {
 							}
 
 						}}>
-							<span id='tea' className={this.state.teaOrSte === 'tea' ? style.baise : ''} style={{ borderRight: '1px solid #dfe4ed' }}>教师</span>
-							<span id='ste' className={this.state.teaOrSte === 'ste' ? style.baise : ''} style={this.state.teaOrSte === 'ste' ? { borderRight: '1px solid #dfe4ed' } : {}}>学生</span>
+							<span id='tea' className={this.state.teaOrSte === 'tea' ? style.baise : ''} style={{ marginLeft: 20 }} >教师</span>
+							<span id='ste' className={this.state.teaOrSte === 'ste' ? style.baise : ''} >学生</span>
 						</p>
 						<Table
-							style={{ padding: 15 }}
-							bordered
+							style={{ padding: 15, background: '#fff' }}
 							dataSource={this.state.teaOrSte === 'tea' ? this.state.teacherTable : this.state.studentTable}
 							columns={this.state.teaOrSte === 'tea' ? this.teacherColumns : this.studentColumns}
 							rowKey={(record, index) => index}
@@ -265,18 +264,17 @@ class UserImport extends React.Component {
 
 				</Content>
 
-				<Footer style={this.state.schoolType === 0 && this.state.isOtherSchool === 1 ?
-					{
-						paddingTop: 35,
-						background: '#fff',
-						textAlign: 'center',
-						borderTop: '1px solid #E7E7E7',
-					} : {
-						background: '#fff',
-						textAlign: 'center',
-						borderTop: '1px solid #E7E7E7',
-					}
-
+				<Footer style={
+					this.state.schoolType === 0 && this.state.isOtherSchool === 1 ?
+						{
+							padding: '20px 0px 10px',
+							background: '#fff',
+							textAlign: 'center',
+						} : {
+							padding: '0px 0px 10px',
+							background: '#fff',
+							textAlign: 'center',
+						}
 				}>
 					<Button className={style.drbutton} onClick={() => {
 						this.setState({
@@ -321,7 +319,7 @@ class UserImport extends React.Component {
 					{this.state.schoolType === 0 && this.state.isOtherSchool === 1 &&
 						<Checkbox style={{
 							position: 'absolute',
-							bottom: 75,
+							bottom: 55,
 							transform: 'translateX(-80%)'
 						}} onChange={(e) => {
 							this.setState({

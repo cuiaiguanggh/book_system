@@ -44,6 +44,8 @@ class HomeworkCenter extends React.Component {
       cunprovincesId: '',
       dateString: [],
       morexg: [{ name: '', phone: '' }],
+      adminName: '',
+      adminPhone: '',
     };
   }
 
@@ -71,7 +73,7 @@ class HomeworkCenter extends React.Component {
       cityId: '',
       areasId: '',
       morexg: [{ name: '', phone: '' }],
-      dateString: []
+      dateString: [],
     });
   }
   handleCancel = (e) => {
@@ -82,7 +84,9 @@ class HomeworkCenter extends React.Component {
       provincesId: this.state.cunprovincesId,
       areasId: '',
       morexg: [{ name: '', phone: '' }],
-      dateString: []
+      dateString: [],
+      adminName: '',
+      adminPhone: '',
     });
     //清空弹窗数据
     this.props.dispatch({
@@ -335,6 +339,7 @@ class HomeworkCenter extends React.Component {
               onClick={() => {
                 let cun = store.get('wrongBookNews');
                 cun.schoolId = record.key;
+                cun.schoolName = record.name;
 
                 store.set('wrongBookNews', cun);
                 this.props.dispatch(
@@ -585,7 +590,7 @@ class HomeworkCenter extends React.Component {
               pagination={{ pageSize: 10, defaultPageSize: 10 }}
               bordered={true}
               rowKey={(record, index) => index} />
-              
+
             {/* {
               total > 1 ?
                 <Pagination defaultCurrent={cur} style={{ textAlign: 'right', marginTop: 10 }}
@@ -897,6 +902,9 @@ class HomeworkCenter extends React.Component {
                 payload: {
                   effStart: this.state.dateString[0],
                   effEnd: this.state.dateString[1],
+                  adminPhone: this.state.adminPhone,
+                  adminName: this.state.adminName,
+
                 }
               });
               this.setState({
@@ -904,7 +912,9 @@ class HomeworkCenter extends React.Component {
                 areasId: '',
                 cityId: this.state.cuncityId,
                 provincesId: this.state.cunprovincesId,
-                dateString: []
+                dateString: [],
+                adminName: '',
+                adminPhone: '',
               });
               //清空弹窗数据
               this.props.dispatch({
@@ -914,7 +924,7 @@ class HomeworkCenter extends React.Component {
             onCancel={this.handleCancel}
             okText='确定'
             cancelText='取消'
-            bodyStyle={{ height: '540px' }}
+            bodyStyle={{ height: '670px' }}
             width={960}
           >
             <div style={{ paddingLeft: 70 }}>
@@ -1027,18 +1037,13 @@ class HomeworkCenter extends React.Component {
               <div style={{ marginBottom: '30px' }}>
                 <span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: 'red' }}>*</span>服务期限</span>
                 <RangePicker placeholder={['开始时间', '结束时间']}
-                  onChange={(date, dateString) => {
-                    this.setState({
-                      dateString
-                    })
-                  }}
+                  onChange={(date, dateString) => { this.setState({ dateString }) }}
                   allowClear={false}
                   format={'YYYY/MM/DD'} />
               </div>
               <div style={{ marginBottom: '30px' }}>
                 <span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: 'red' }}>*</span>校管理员</span>
-                <Input
-                  placeholder="请输入校管理员名字"
+                <Input placeholder="请输入校管理员名字"
                   onChange={(e) => {
                     this.props.dispatch({
                       type: 'homePage/changeMasterName',
@@ -1049,8 +1054,7 @@ class HomeworkCenter extends React.Component {
 
               <div style={{ marginBottom: '30px' }}>
                 <span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: 'red' }}>*</span>手机号</span>
-                <Input
-                  placeholder="请输入校管理员手机号"
+                <Input placeholder="请输入校管理员手机号"
                   onChange={(e) => {
                     this.props.dispatch({
                       type: 'homePage/changeMasterPhone',
@@ -1059,27 +1063,27 @@ class HomeworkCenter extends React.Component {
                   }} style={{ width: '200px' }} />
               </div>
               <div style={{ marginBottom: '30px' }}>
+                <span style={{ width: "80px", display: 'inline-block' }}>管理名字</span>
+                <Input placeholder="请输入管理名字" style={{ width: '200px' }}
+                  onChange={(e) => { this.setState({ adminName: e.target.value }) }} />
+              </div>
+              <div style={{ marginBottom: '30px' }}>
+                <span style={{ width: "80px", display: 'inline-block' }}>管理手机号</span>
+                <Input placeholder="请输入管理手机号" style={{ width: '200px' }}
+                  onChange={(e) => { this.setState({ adminPhone: e.target.value }) }} />
+              </div>
+              <div style={{ marginBottom: '30px' }}>
                 <span style={{ width: "80px", display: 'inline-block' }}>位置</span>
-                <Input
-                  placeholder="请输入位置"
+                <Input placeholder="请输入位置" style={{ width: '200px' }}
                   onChange={(e) => {
                     this.props.dispatch({
                       type: 'homePage/changeaddress',
                       payload: e.target.value
                     });
-                  }}
-                  style={{ width: '200px' }} />
+                  }} />
               </div>
-              {/*<div>*/}
-              {/*	<span style={{width:"80px",display:'inline-block',verticalAlign: 'top'}}>介绍</span>*/}
-              {/*	<TextArea */}
-              {/*	onChange={(e)=>{*/}
-              {/*		this.props.dispatch({*/}
-              {/*			type: 'homePage/changedes',*/}
-              {/*			payload:e.target.value*/}
-              {/*		});*/}
-              {/*	}} style={{width:'200px'}}/>*/}
-              {/*</div>*/}
+
+
             </div>
           </Modal>
           <Modal

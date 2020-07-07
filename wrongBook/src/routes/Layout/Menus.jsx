@@ -12,7 +12,6 @@ import { serverType } from '../../config/dataCenter';
 import moment from 'moment';
 // import ydt from '../images/guideFigure.png';
 
-
 const Option = Select.Option;
 const {
   Header, Sider,
@@ -29,15 +28,17 @@ class HomePageLeft extends Component {
   }
   //延迟改变hash切换组件
   ycgaihash(hahs) {
-    //修改浏览器标题
+
     let that = this;
+
+    //修改浏览器标题
     let title = `咔嚓拍 ${store.get('wrongBookNews').schoolName}`
     switch (hahs) {
       case '/classReport':
-        document.title = `${title}班级错题`
+        document.title = `${title}班级错题`;
         break;
       case '/stuReport':
-        document.title = `${title}学生错题`
+        document.title = `${title}学生错题`;
         break;
       case '/workReport':
         document.title = `${title}作业报告`
@@ -49,10 +50,10 @@ class HomePageLeft extends Component {
         document.title = `${title}使用数据`
         break;
       case '/classChart':
-        document.title = `${title}使用数据`
+        document.title = `${title}使用数据`;
         break;
       case '/intelligentDollors':
-        document.title = `${title}智能组卷`
+        document.title = `${title}智能组卷`;
         break;
     }
     //延迟跳转的原因：解决menu样式切换卡顿
@@ -168,11 +169,18 @@ class HomePageLeft extends Component {
                 <Icon type="import" /><span>精品题库</span>
               </Link>
             </Menu.Item>)
-            // menus.push(<Menu.Item key="specialDownload" >
-            //   <Link to='specialDownload'>
-            //     <Icon type="select" /><span>专题下载</span>
-            //   </Link>
-            // </Menu.Item>)
+            menus.push(<Menu.Item key="dataBackground" >
+              <Link to='dataBackground'>
+                <Icon type="line-chart" /><span>数据后台</span>
+              </Link>
+            </Menu.Item>)
+
+            menus.push(<Menu.Item key="specialDownload" >
+              <Link to='specialDownload'>
+                <Icon type="select" /><span>专题下载</span>
+              </Link>
+            </Menu.Item>)
+
           }
         }
 
@@ -216,6 +224,23 @@ class HomePageLeft extends Component {
                 <Icon type="pie-chart" /><span>使用数据</span>
               </Menu.Item>
             )
+            // menus.push(<Menu.Item key="bulkPrint" >
+            //   <Link to='bulkPrint'>
+            //     <Icon type="user" /><span>批量打印</span>
+            //   </Link>
+            // </Menu.Item>)
+
+          }
+
+          if (store.get('wrongBookNews').roleName && store.get('wrongBookNews').roleName.includes('adminSale')) {
+            menus = [(<Menu.Item key="bulkPrint" >
+              <Link to='bulkPrint'>
+                <Icon type="user" /><span>批量打印</span>
+              </Link>
+            </Menu.Item>),
+            (<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
+              <Icon type="align-left" /><span>班级管理</span>
+            </Menu.Item>)]
           }
         }
       })
@@ -405,6 +430,11 @@ class HomePageLeft extends Component {
     }
     userData.schoolId = value;
     userData.schoolName = option.props.children;
+
+    //记忆用户选择中的学校
+    localStorage.setItem(wrongBookNews.userId, JSON.stringify({ name: option.props.children, id: value }))
+
+
     //替换浏览器标题
     document.title = document.title.replace(oldSchoolName, option.props.children)
 
@@ -435,11 +465,6 @@ class HomePageLeft extends Component {
         if (hashStrings === '/classChart') {
           if (classId !== '' && year !== '') {
             console.log('classChart')
-            //重置月份为0
-            this.props.dispatch({
-              type: 'report/changeMouth',
-              payload: 0
-            })
             //重新调用接口
             this.props.dispatch({
               type: 'reportChart/getReportTimeList',
@@ -450,7 +475,7 @@ class HomePageLeft extends Component {
           }
         }
       })
-      
+
       if (hashStrings.includes('/classUser')) {
         console.log('classUser')
         this.props.dispatch({
@@ -483,13 +508,9 @@ class HomePageLeft extends Component {
         })
 
       } else if (hashStrings === '/schoolChart') {
-        if (classId !== '' && year !== '') {
+        console.log(classId, year)
+        if (year !== '') {
           console.log('schoolChart')
-          //重置月份为0
-          this.props.dispatch({
-            type: 'report/changeMouth',
-            payload: 0
-          })
           //重新调用接口
           this.props.dispatch({
             type: 'reportChart/getReportTimeList',
@@ -701,7 +722,7 @@ class HomePageLeft extends Component {
                   {this.props.state.yearList.data ? this.getyear() : ''}
 
                   {userNews && userNews.rodeType > 10 ?
-                    <Select defaultValue={userNews.schoolId} className={style.moreschool} suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
+                    <Select value={userNews.schoolId} className={style.moreschool} suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
                       onChange={this.switchSchool.bind(this)}>
                       {moreschool && moreschool.map((item) => (
                         <Option value={item.schoolId} begingrade={item.beginGrade} endgrade={item.endGrade} key={item.schoolId}>{item.schoolName}</Option>
@@ -719,7 +740,7 @@ class HomePageLeft extends Component {
             </div>
           </Header>
           {
-            defaultKey.indexOf('workDetail') != -1 || defaultKey.indexOf('Dollors') > -1 ?
+            defaultKey.indexOf('workDetail') != -1 || defaultKey.indexOf('Dollors') > -1 || defaultKey.indexOf('bulkPrint') > -1 ?
               <Header style={this.props.state.topBarHide === 0 ? { display: 'none' } : { background: '#fff', height: '50px', padding: 0, position: "absolute", left: 70 }}>
                 <WrongTop type={this.props.location} />
               </Header> : ''
@@ -730,7 +751,7 @@ class HomePageLeft extends Component {
     )
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     //判断引导图是否出现。切换版本的时修改判断的缓存key来重新显示流程图
     // if (localStorage.getItem('guide1')) {
     //   let guide = localStorage.getItem('guide1');
@@ -803,7 +824,14 @@ class HomePageLeft extends Component {
         })
       )
     } else if (store.get('wrongBookNews').rodeType !== 10) {
-
+      if (localStorage.getItem(store.get('wrongBookNews').userId)) {
+        let ago = JSON.parse(localStorage.getItem(store.get('wrongBookNews').userId));
+        let now = store.get('wrongBookNews');
+        now.schoolId = ago.id;
+        now.schoolName = ago.name;
+        store.set('wrongBookNews', now);
+        console.log(ago)
+      }
       dispatch({
         type: 'homePage/getEnableYears',
         payload: {
@@ -833,6 +861,13 @@ class HomePageLeft extends Component {
     //   type: 'report/getUserSubjectList'
     // });
 
+    if (!store.get('wrongBookNews').rodeType && !store.get('wrongBookNews').roleName) {
+      this.props.dispatch(
+        routerRedux.push({
+          pathname: '/login'
+        })
+      )
+    }
 
     //关闭浏览器钱，进行记忆班级，学科，学年，学校功能
     window.onunload = () => {

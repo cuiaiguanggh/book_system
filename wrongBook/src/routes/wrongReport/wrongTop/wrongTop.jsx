@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	Layout, Tabs, Input, Modal, Select, Popover, message
+	Layout, Tabs, Input, Modal, Select, Popover, Icon
 } from 'antd';
 import { routerRedux, } from "dva/router";
 import { connect } from 'dva';
@@ -26,6 +26,7 @@ class WrongTop extends React.Component {
 					style={{ width: 120 }}
 					placeholder="班级"
 					value={this.props.state.classId}
+					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
 					onChange={(value, option) => {
 						this.props.dispatch({
@@ -48,7 +49,12 @@ class WrongTop extends React.Component {
 							type: 'report/userId',
 							payload: '',
 						});
-						//清空知识点
+						this.props.dispatch({
+							type: 'down/delAllClass',
+						});
+						this.props.dispatch({
+							type: 'down/delAllStu',
+						});
 						this.props.dispatch({
 							type: 'report/knowledgenow',
 							payload: []
@@ -80,6 +86,7 @@ class WrongTop extends React.Component {
 					style={{ width: 90, marginLeft: 5 }}
 					placeholder="学科"
 					value={this.props.state.subId}
+					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
 					onChange={(value) => {
 						//清空时间段
@@ -127,7 +134,10 @@ class WrongTop extends React.Component {
 								subjectId: value
 							}
 						});
-
+						this.props.dispatch({
+							type: 'temp/subId',
+							payload: value
+						});
 						let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
 						if (hashStrings === '/classReport') {
 							//处在班级错题页面
@@ -151,6 +161,9 @@ class WrongTop extends React.Component {
 									pageNum: 1
 								}
 							});
+							this.props.dispatch({
+								type: 'down/delAllClass',
+							});
 						} else if (hashStrings === '/stuReport') {
 							//处在学生错题页面
 							this.props.dispatch({
@@ -171,6 +184,9 @@ class WrongTop extends React.Component {
 									subjectId: value
 								}
 							});
+							this.props.dispatch({
+								type: 'down/delAllStu',
+							});
 						} else if (hashStrings === '/workReport') {
 							//处在作业报告页面
 							this.props.dispatch({
@@ -183,12 +199,11 @@ class WrongTop extends React.Component {
 						} else if (hashStrings === '/intelligentDollors') {
 							//处在智能组卷页面
 							observer.publish('dollorsChange', value)
+						} else if (hashStrings === '/bulkPrint') {
+							//处在批量打印页面
+							observer.publish('printCut', value)
 						}
 
-						this.props.dispatch({
-							type: 'temp/subId',
-							payload: value
-						});
 
 					}}
 					filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}

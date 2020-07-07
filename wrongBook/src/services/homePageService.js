@@ -47,6 +47,11 @@ function kickClass(payload) {
         data: payload
     });
 }
+function batchExit(payload) {
+    return request(dataCenter('/school/class/student/batchExit'), {
+        data: payload
+    });
+}
 function createSchoolUser(payload) {
     return request(dataCenter('/school/users/creat'), {
         data: payload
@@ -136,8 +141,31 @@ function care(payload) {
         data: payload,
     });
 }
+function refundStudents(payload) {
+    return request(dataCenter('/school/class/refundStudents'), {
+        data: payload,
+    });
+}
+function addStudent(payload) {
+    return request(dataCenter('/school/class/addStudent'), {
+        data: payload,
+    });
+}
+function changeStudent(payload) {
+    return request(dataCenter('/school/class/changeStudent'), {
+        data: payload,
+    });
+}
 
+function resetPassword(payload) {
+    return request(dataCenter('/user/resetPassword'), {
+        data: payload,
+    });
+}
 export {
+    resetPassword,
+    addStudent,
+    changeStudent,
     care,
     importData,
     create,
@@ -163,4 +191,6 @@ export {
     subjectNodeList,
     administrativeDivision,
     getEnableYears,
+    batchExit,
+    refundStudents,
 };

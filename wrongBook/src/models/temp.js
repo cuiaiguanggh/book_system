@@ -189,6 +189,15 @@ export default {
 							payload: res.data.data[0].classId
 						})
 
+						if (window.location.href.split('/#/')[1] == 'classChart') {
+							yield put({
+								type: 'reportChart/chartSubList',
+								payload: {
+									classId: res.data.data[0].classId
+								}
+							});
+						}
+
 						if (window.location.href.split('/#/')[1] == 'workCorrection') {
 							//重新调用作业批改页面接口
 							yield put({
@@ -197,7 +206,6 @@ export default {
 									classId: res.data.data[0].classId
 								}
 							});
-
 						}
 
 					} else {
@@ -444,6 +452,9 @@ export default {
 					} else if (hashStrings === '/intelligentDollors') {
 						//智能组卷页面
 						observer.publish('dollorsChange', subjectId)
+					} else if (hashStrings === '/bulkPrint') {
+						//批量打印页面
+						observer.publish('printCut', subjectId)
 					}
 
 				} else {
@@ -496,6 +507,9 @@ export default {
 					if (hashStrings === '/intelligentDollors') {
 						//智能组卷
 						observer.publish('dollorsReset')
+					} else if (hashStrings === '/bulkPrint') {
+						//批量打印页面
+						observer.publish('printCut')
 					}
 				}
 			} else {
