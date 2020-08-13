@@ -376,7 +376,7 @@ export default function MarkedArea(props) {
                                         return;
                                     }
                                     item.content = e.currentTarget.textContent;
-                                    item.width = e.currentTarget.clientWidth;
+                                    item.width = e.currentTarget.clientWidth + 4;
                                     item.height = e.currentTarget.clientHeight;
                                 }}
                                 onBlur={(e) => {

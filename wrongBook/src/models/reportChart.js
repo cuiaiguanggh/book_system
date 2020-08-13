@@ -147,7 +147,7 @@ export default {
           });
           //切换班级后获取到学科信息调用接口获取数据
           let { classId } = yield select(state => state.temp);
-          let { sclassId, stateTimeIndex, startTime, endTime, periodTime, timeStamp } = yield select(state => state.reportChart);
+          let { stateTimeIndex, startTime, endTime, periodTime, timeStamp } = yield select(state => state.reportChart);
 
           // if (store.get('wrongBookNews').rodeType === 10 && !classId) { classId = sclassId; }
 
@@ -461,7 +461,7 @@ export default {
       }
 
     },
-    * getSubjectList({ }, { put, select }) {
+    * getSubjectList({ payload }, { put, select }) {
       // 返回教师所在班级科目
       let res = yield getSubjectList();
       if (res.data && res.data.result === 0) {

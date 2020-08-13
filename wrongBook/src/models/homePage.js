@@ -576,6 +576,8 @@ export default {
 					type: 'pageRelevantSchool',
 					payload: schoolPay
 				})
+				message.success('修改成功')
+
 			}
 			else if (res.err) {
 				// yield put(routerRedux.push('/login'))
@@ -633,6 +635,7 @@ export default {
 					type: 'pageRelevantSchool',
 					payload: schoolPay
 				})
+				message.success('添加成功')
 			}
 			else if (res.data.result === 2) {
 				yield put(routerRedux.push('/login'))

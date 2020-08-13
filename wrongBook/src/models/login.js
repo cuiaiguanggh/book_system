@@ -213,12 +213,11 @@ export default {
 					let data = res.data;
 					data.data.userId = data.data.id;
 					store.set('wrongBookToken', data.data.token);
-
 					let rodeType;
 					//获取权限
 					let quanx = yield info({});
 					if (!quanx.data.data.hasOwnProperty('roleName')) {
-						window.location.href = "http://kacha.xin/";
+						window.location.href = "http://www.kacha.xin/";
 						return false
 					}
 					data.data.roleName = quanx.data.data.roleName;
@@ -315,8 +314,12 @@ export default {
 						type: 'report/changeMouth',
 						payload: 0
 					})
+					if (window.location.hash.indexOf('TokenTo') > 0) {
+						yield put(routerRedux.push({
+							pathname: `/${window.location.hash.split('?')[1].split('TokenTo=')[0]}`,
+						}))
 
-					if (rodeType === 10) {
+					} else if (rodeType === 10) {
 						yield put(routerRedux.push({
 							pathname: '/school',
 							hash: 'page=1'
@@ -338,7 +341,8 @@ export default {
 						yield put(routerRedux.push('/login'))
 					} else if (res.data.result === -1) {
 
-						window.location.href = "http://kacha.xin/";
+						window.location.href = "http://www.kacha.xin/";
+						message.error(res.data.msg)
 
 					} else {
 						message.error(res.data.msg)

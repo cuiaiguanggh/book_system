@@ -3,8 +3,10 @@ export default {
   entry: 'src/index.js',
   define: { //定义环境变量中的值
     "process.env": {
-      INIT_LEVEL: process.env.INIT_LEVEL
+      INIT_LEVEL: process.env.INIT_LEVEL,
+      API_ENV: process.env.API_ENV,
     }
+
   },
   extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
   env: {

@@ -34,8 +34,11 @@ export default function QuestionMenu(props) {
             setAntistop(false)
             return
         }
+        console.log(props.treeStructure)
         props.treeStructure.map(item => {
+            console.log(item)
             let cun = item.knowledgeId;
+            if (!item.children) { item.children = [] }
             getKey(item.children, cun, value, expandedKeys);
         })
 

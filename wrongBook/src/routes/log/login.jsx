@@ -113,7 +113,7 @@ class Login extends Component {
       <div>
         <div className={style.loginTop}>
           <div className={style.box}>
-            <span onClick={() => { window.location.href = "http://kacha.xin/" }}>
+            <span onClick={() => { window.location.href = "https://www.kacha.xin" }}>
               咔嚓拍官网
           </span>
             <Popover placement="bottom" trigger="hover" content={(
@@ -388,7 +388,13 @@ class Login extends Component {
     );
   }
   UNSAFE_componentWillMount() {
-    let token = window.location.hash.indexOf('token') > 0 ? window.location.hash.split('token=')[1] : ""
+    let token = "";
+    if (window.location.hash.indexOf('token') > 0) {
+      token = window.location.hash.split('token=')[1];
+    } else if (window.location.hash.indexOf('TokenTo') > 0) {
+      token = window.location.hash.split('TokenTo=')[1];
+    };
+
     if (token) {
       this.props.dispatch({
         type: 'login/tokenLogin',

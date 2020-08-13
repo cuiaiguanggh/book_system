@@ -13,6 +13,7 @@ import {
     teacherCommit,
     homeworkCommit,
     share,
+    setTrue,
 } from '../services/correctionService';
 
 import { message } from 'antd';
@@ -362,6 +363,16 @@ export default {
                 message.error(res.data.msg)
             }
         },
+        *setTrue({ payload }, { put }) {
+            //分享优秀作业
+            let res = yield setTrue(payload)
+            if (res.data && res.data.result === 0) {
+                // message.success(res.data.msg)
+            } else {
+                // message.error(res.data.msg)
+            }
+        },
+        
     }
 
 };

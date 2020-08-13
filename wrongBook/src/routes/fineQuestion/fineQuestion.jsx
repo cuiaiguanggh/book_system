@@ -71,7 +71,6 @@ class fineQuestion extends React.Component {
         if (this.state.electTopiced) {
             nowPageTopics = filterTopics.slice((this.state.pageNumber - 1) * 10, this.state.pageNumber * 10);
         }
-        console.log(nowPageTopics)
 
         return (
             <Layout className={style.bigBox} id='topicId'>

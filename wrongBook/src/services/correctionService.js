@@ -88,8 +88,16 @@ function share(payload) {
         data: payload,
     });
 }
+function setTrue(payload) {
+    return request(dataCenter('/report/homework/setTrue'), {
+        data: payload,
+        method: 'post',
+    });
+}
+
 
 export {
+    setTrue,
     share,
     homeworkCommit,
     teacherCommit,

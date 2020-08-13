@@ -19,7 +19,7 @@ class dataBackground extends React.Component {
             activeWhere: 1,
             monthOrYear: 1,
             activeSchool: 1,
-            timePeriod: 1,
+            timePeriod: 2,
             overallData: {},
             timeArry: [],
             dateStrings: [moment().format("YYYY-M-DD"), moment().format("YYYY-M-DD")]
@@ -32,10 +32,10 @@ class dataBackground extends React.Component {
     userNmberForApp() {
         this.setState({ activeSchool: 1 });
         echarts.init(document.getElementById('yhl')).setOption({
+            xAxis: {
+                data: Object.keys(this.state.overallData.userNumByAppData)
+            },
             series: [{
-                xAxis: {
-                    data: Object.keys(this.state.overallData.userNumByAppData)
-                },
                 data: Object.values(this.state.overallData.userNumByAppData)
             }]
         });
@@ -43,10 +43,10 @@ class dataBackground extends React.Component {
     userNmberForWeb() {
         this.setState({ activeSchool: 2 });
         echarts.init(document.getElementById('yhl')).setOption({
+            xAxis: {
+                data: Object.keys(this.state.overallData.userNumByWebData)
+            },
             series: [{
-                xAxis: {
-                    data: Object.keys(this.state.overallData.userNumByWebData)
-                },
                 data: Object.values(this.state.overallData.userNumByWebData)
             }]
         });
@@ -64,31 +64,36 @@ class dataBackground extends React.Component {
                     periodTime: this.state.timeArry[2].periodTime,
                 }
             }).then((res) => {
-                echarts.init(document.getElementById('ffyhl')).setOption({
-                    xAxis: {
-                        data: Object.keys(res)
-                    },
-                    series: [{
-                        data: Object.values(res),
-                    }]
-                })
+                if (res) {
+                    echarts.init(document.getElementById('ffyhl')).setOption({
+                        xAxis: {
+                            data: Object.keys(res)
+                        },
+                        series: [{
+                            data: Object.values(res),
+                        }]
+                    })
+                }
             })
         } else {
             this.props.dispatch({
                 type: 'market/vipReport',
                 payload: {
-                    timeStamp: this.state.timeArry[1].startTimeStamp,
-                    periodTime: this.state.timeArry[1].periodTime,
+                    timeStamp: moment(`${moment().year()}-01-01`).valueOf(),
+                    startTime: `${moment().year()}-01-01`,
+                    endTime: `${moment().year()}-12-31`,
                 }
             }).then((res) => {
-                echarts.init(document.getElementById('ffyhl')).setOption({
-                    xAxis: {
-                        data: Object.keys(res)
-                    },
-                    series: [{
-                        data: Object.values(res),
-                    }]
-                })
+                if (res) {
+                    echarts.init(document.getElementById('ffyhl')).setOption({
+                        xAxis: {
+                            data: Object.keys(res)
+                        },
+                        series: [{
+                            data: Object.values(res),
+                        }]
+                    })
+                }
             })
         }
 
@@ -98,15 +103,8 @@ class dataBackground extends React.Component {
         if (e.target.getAttribute('data-value')) {
             let selectValue = Number(e.target.getAttribute('data-value'));
             this.setState({ timePeriod: selectValue })
-
-            if (selectValue === 1) {
-                this.selectTime({
-                    timeStamp: moment().valueOf(),
-                    startTime: moment().format("YYYY-MM-DD"),
-                    endTime: moment().format("YYYY-MM-DD"),
-                })
-                this.setState({ dateStrings: [moment().format("YYYY-MM-DD"), moment().format("YYYY-MM-DD")] })
-            } else if (selectValue === 2) {
+            if (selectValue === this.state.timePeriod) { return }
+            if (selectValue === 2) {
                 this.selectTime({
                     timeStamp: this.state.timeArry[3].startTimeStamp,
                     startTime: moment(this.state.timeArry[3].startTimeStamp).format("YYYY-MM-DD"),
@@ -126,12 +124,11 @@ class dataBackground extends React.Component {
 
             } else if (selectValue === 4) {
                 this.selectTime({
-                    timeStamp: this.state.timeArry[0].startTimeStamp,
-                    startTime: moment(this.state.timeArry[0].startTimeStamp).format("YYYY-MM-DD"),
-                    endTime: moment(this.state.timeArry[0].endTimeStamp).format("YYYY-MM-DD"),
-                    periodTime: 1
-                })
-                this.setState({ dateStrings: [moment(this.state.timeArry[0].startTimeStamp).format("YYYY-MM-DD"), moment(this.state.timeArry[0].endTimeStamp).format("YYYY-MM-DD")] })
+                    timeStamp: moment(`${moment().year()}-01-01`).valueOf(),
+                    startTime: `${moment().year()}-01-01`,
+                    endTime: `${moment().year()}-12-31`,
+                });
+                this.setState({ dateStrings: [`${moment().year()}-01-01`, `${moment().year()}-12-31`] })
             }
         }
     }
@@ -172,13 +169,12 @@ class dataBackground extends React.Component {
 
                             <div style={{ float: 'right', marginRight: 25 }}>
                                 <RangePicker style={{ width: 213 }} format={['YYYY-MM-DD', 'YYYY-MM-DD']} placeholder={['开始时间', '结束时间']}
-                                    value={[moment(this.state.dateStrings[0]), moment(this.state.dateStrings[1])]} onChange={(dates, dateStrings) => { this.changeRange(dateStrings) }} />
+                                    value={[moment(this.state.dateStrings[0], "YYYY-MM-DD"), moment(this.state.dateStrings[1], "YYYY-MM-DD")]} onChange={(dates, dateStrings) => { this.changeRange(dateStrings) }} />
                             </div>
 
                             <span data-value={4} style={this.state.timePeriod === 4 ? { color: '#1890FF' } : undefined}>全年</span>
                             <span data-value={3} style={this.state.timePeriod === 3 ? { color: '#1890FF' } : undefined}>本月</span>
                             <span data-value={2} style={this.state.timePeriod === 2 ? { color: '#1890FF' } : undefined}>本周</span>
-                            <span data-value={1} style={this.state.timePeriod === 1 ? { color: '#1890FF' } : undefined}>今日</span>
 
                         </div>
 
@@ -464,7 +460,7 @@ class dataBackground extends React.Component {
                     axisTick: {
                         alignWithLabel: 'true'
                     },
-                    data: Object.keys(res.userNumByAppData)
+                    data: this.state.activeSchool === 1 ? Object.keys(res.userNumByAppData) : Object.keys(res.userNumByWebData)
                 },
                 grid: {
                     left: 70,
@@ -481,7 +477,7 @@ class dataBackground extends React.Component {
                 barMaxWidth: 41,
                 series: [{
                     name: '用户量',
-                    data: Object.values(res.userNumByAppData),
+                    data: this.state.activeSchool === 1 ? Object.values(res.userNumByAppData) : Object.values(res.userNumByWebData),
                     type: 'bar',
                     itemStyle: { color: '#58AFFF' },
                 }]
@@ -514,8 +510,8 @@ class dataBackground extends React.Component {
 
             res.photoConversionRate.map((item, i) => {
                 photoData[i].value = item.num;
-                if (i !== 0) { photoRate[i].percent = `${item.rate * 100}%`; };
-                photoRatio[i].percent = `${item.ratio * 100}%`;
+                if (i !== 0) { photoRate[i].percent = `${Math.round(item.rate * 100)}%` };
+                photoRatio[i].percent = `${Math.round(item.ratio * 100)}%`;
             });
 
             //拍照全流程转化率
@@ -654,8 +650,14 @@ class dataBackground extends React.Component {
 
             res.loginConversionRate.map((item, i) => {
                 loginData[i].value = item.num;
-                if (i !== 0) { loginRate[i].percent = `${item.rate * 100}%`; };
-                loginRatio[i].percent = `${item.ratio * 100}%`;
+                try {
+                    if (i !== 0) { loginRate[i].percent = `${Math.round(item.rate * 100)}%`; };
+                } catch (e) {
+                    console.log(e)
+                }
+                loginRatio[i].percent = `${Math.round(item.ratio * 100)}%`;
+
+
             });
             //登陆流程转化率
             echarts.init(document.getElementById('dllczhl')).setOption({
@@ -789,7 +791,8 @@ class dataBackground extends React.Component {
             payload: { year: (new Date).getFullYear() }
         }).then((res) => {
             this.setState({
-                timeArry: res
+                timeArry: res,
+                dateStrings: [moment(res[3].startTimeStamp).format("YYYY-MM-DD"), moment(res[3].endTimeStamp).format("YYYY-MM-DD")]
             });
             this.props.dispatch({
                 type: 'market/vipReport',
@@ -798,71 +801,73 @@ class dataBackground extends React.Component {
                     periodTime: res[2].periodTime,
                 }
             }).then((res) => {
+                if (res) {
 
-                //付费用户量
-                echarts.init(document.getElementById('ffyhl')).setOption({
-                    title: {
-                        text: `付费用户量`,
-                        top: 25,
-                        left: 33,
-                        textStyle: {
-                            fontFamily: 'MicrosoftYaHei',
-                            color: '#262626',
-                            fontSize: 16,
-                            fontWeight: 400
-                        }
-                    },
-                    yAxis: {
-                        axisLine: { show: false },
-                        axisTick: { show: false },
-                        splitLine: {
-                            lineStyle: {
-                                type: 'dashed',
-                                color: '#EAEAEA',
-                            }
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        axisLine: {
-                            lineStyle: {
-                                color: '#BFBFBF'
+                    //付费用户量
+                    echarts.init(document.getElementById('ffyhl')).setOption({
+                        title: {
+                            text: `付费用户量`,
+                            top: 25,
+                            left: 33,
+                            textStyle: {
+                                fontFamily: 'MicrosoftYaHei',
+                                color: '#262626',
+                                fontSize: 16,
+                                fontWeight: 400
                             }
                         },
-                        axisLabel: {
-                            color: '#545454'
+                        yAxis: {
+                            axisLine: { show: false },
+                            axisTick: { show: false },
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed',
+                                    color: '#EAEAEA',
+                                }
+                            }
                         },
-                        axisTick: {
-                            alignWithLabel: 'true'
+                        xAxis: {
+                            type: 'category',
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#BFBFBF'
+                                }
+                            },
+                            axisLabel: {
+                                color: '#545454'
+                            },
+                            axisTick: {
+                                alignWithLabel: 'true'
+                            },
+                            data: Object.keys(res)
                         },
-                        data: Object.keys(res)
-                    },
-                    grid: {
-                        left: 63,
-                        right: '4%',
-                        bottom: 60,
-                        top: 140,
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)'
-                    },
-                    series: [{
-                        name: '付费用户量',
-                        data: Object.values(res),
-                        type: 'line',
-                        itemStyle: { color: '#2292EB', borderWidth: 5 },
-                        lineStyle: { color: '#2292EB', width: 2 }
-                    }]
-                })
-
+                        grid: {
+                            left: 63,
+                            right: '4%',
+                            bottom: 60,
+                            top: 140,
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            backgroundColor: 'rgba(0, 0, 0, 0.4)'
+                        },
+                        series: [{
+                            name: '付费用户量',
+                            data: Object.values(res),
+                            type: 'line',
+                            itemStyle: { color: '#2292EB', borderWidth: 5 },
+                            lineStyle: { color: '#2292EB', width: 2 }
+                        }]
+                    })
+                }
             })
 
             this.selectTime({
-                timeStamp: moment().valueOf(),
-                startTime: moment().format("YYYY-MM-DD"),
-                endTime: moment().format("YYYY-MM-DD"),
-            }, () => { this.changeRate(); console.log })
+                timeStamp: this.state.timeArry[3].startTimeStamp,
+                startTime: moment(this.state.timeArry[3].startTimeStamp).format("YYYY-MM-DD"),
+                endTime: moment(this.state.timeArry[3].endTimeStamp).format("YYYY-MM-DD"),
+                periodTime: 4
+            }, () => { this.changeRate() })
 
 
             window.addEventListener('resize', this.updateChart.bind(this))

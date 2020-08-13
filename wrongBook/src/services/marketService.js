@@ -32,7 +32,12 @@ function printList(payload) {
         method: 'get'
     });
 }
-
+function actReportDetail(payload) {
+    return request(dataCenter('/report/db/actReportDetail'), {
+        data: payload,
+        method: 'get'
+    });
+}
 // function changeQueForPrint(payload) {
 //     return request(dataCenter('/report/questions/changeQueForPrint'), {
 //         data: payload,
@@ -41,6 +46,7 @@ function printList(payload) {
 // }
 export {
     // changeQueForPrint,
+    actReportDetail,
     actReport,
     vipReport,
     timeStamp,

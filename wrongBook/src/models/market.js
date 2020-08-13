@@ -4,6 +4,7 @@ import {
     timeStamp,
     classList,
     printList,
+    actReportDetail,
     // changeQueForPrint,
 } from '../services/marketService';
 
@@ -70,7 +71,15 @@ export default {
         //     }
         // },
 
-
+        *actReportDetail({ payload }, { put, select }) {
+            let res = yield actReportDetail(payload);
+            if (res.data && res.data.result === 0) {
+                return res.data.data
+            } else {
+                message.error(res.data.msg)
+            }
+        },
+        
     },
 
 }

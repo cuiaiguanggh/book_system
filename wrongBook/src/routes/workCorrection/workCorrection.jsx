@@ -342,12 +342,15 @@ class workCorrection extends React.Component {
             return;
         }
 
-        let pageIds = [];
+        let pageIds = [], noPageIds = [];
 
         for (let obj of this.state.phList) {
             if ((obj.markList && obj.markList.length > 0) || (obj.supMarkList && obj.supMarkList.length > 0) || (obj.contentMarkList && obj.contentMarkList.length > 0)) {
                 pageIds.push(obj.pageId)
             }
+
+            noPageIds.push(obj.pageId)
+
         }
 
         //上传批改痕迹
@@ -390,11 +393,19 @@ class workCorrection extends React.Component {
                 commitType: 1
             },
         }).then(() => {
-            if (pageIds.length > 0) {
+            // if (noPageIds.length > 0) {
+            //     this.props.dispatch({
+            //         type: 'correction/setTrue',
+            //         payload: {
+            //             pageIds: noPageIds,
+            //         },
+            //     })
+            // }
+            if (noPageIds.length > 0) {
                 this.props.dispatch({
                     type: 'correction/pgPageCommit',
                     payload: {
-                        pageIds: pageIds,
+                        pageIds: noPageIds,
                     },
                 }).then(() => {
                     message.success('提交成功')
@@ -457,13 +468,13 @@ class workCorrection extends React.Component {
                 }
             })
 
-            this.props.dispatch({
-                type: 'correction/check',
-                payload: {
-                    subjectId: this.props.state.subjectId,
-                    userId: this.state.pitchStuId
-                }
-            })
+            // this.props.dispatch({
+            //     type: 'correction/check',
+            //     payload: {
+            //         subjectId: this.props.state.subjectId,
+            //         userId: this.state.pitchStuId
+            //     }
+            // })
         }
 
     }
@@ -774,7 +785,7 @@ class workCorrection extends React.Component {
                             <div className={style.pagination} id={'pagination'} style={this.props.state.isCorrected === 1 ? { visibility: 'hidden' } : { visibility: 'visible' }}>
                                 <span className={style.text}> 页码</span>
                                 {this.state.phList.map((item, i) => {
-                                    return (!item.markList && item.status === 0) || (item.markList && item.markList.length === 0) ?
+                                    return (!item.markList && item.status === 2) || (!item.markList && item.status === 0) || (item.markList && item.markList.length === 0) ?
                                         <span key={i} className={this.state.nowPage === i ? `${style.number} ${style.current}` : `${style.number}`} onClick={() => { this.changePage(i) }}> {i + 1}</span> :
                                         <span key={i} className={this.state.nowPage === i ? `${style.number}  ${style.finish} ${style.current}` : `${style.number}  ${style.finish}`} onClick={() => { this.changePage(i) }}> {i + 1}</span>
                                 })}
@@ -824,7 +835,7 @@ class workCorrection extends React.Component {
                                         }
                                     } else {
                                         Modal.confirm({
-                                            title: '还有页面未批改，是否完成批改',
+                                            title: '还有页面未批改，是否已阅',
                                             okText: '确认',
                                             cancelText: '取消',
                                             onOk() {

@@ -66,6 +66,17 @@ class HomePageLeft extends Component {
     }, 300)
   }
 
+  gotoyun() {
+    if (process.env.API_ENV === 't') {
+      // window.open(`http://localhost:3000/#/login?TokenTo=${store.get('wrongBookToken')}`)
+
+      window.open(`https://yunke.vr168.cn/t/index.html#/login?TokenTo=${store.get('wrongBookToken')}`)
+
+    } else {
+      window.open(`https://yunke.vr168.cn/p/index.html#/login?TokenTo=${store.get('wrongBookToken')}`)
+    }
+  }
+
   //返回导航栏目
 
   Menus() {
@@ -224,12 +235,27 @@ class HomePageLeft extends Component {
                 <Icon type="pie-chart" /><span>使用数据</span>
               </Menu.Item>
             )
-            // menus.push(<Menu.Item key="bulkPrint" >
-            //   <Link to='bulkPrint'>
-            //     <Icon type="user" /><span>批量打印</span>
-            //   </Link>
-            // </Menu.Item>)
-
+            // menus.push(
+            //   <Menu.Item >
+            //     <div onClick={(e) => { e.stopPropagation(); this.gotoyun(); }}>
+            //       <Icon type="link" /><span>课程管理</span>
+            //     </div>
+            //   </Menu.Item>
+            // )
+            // menus.push(
+            //   <Menu.Item>
+            //     <div onClick={(e) => { e.stopPropagation(); this.gotoyun(); }}>
+            //       <Icon type="link" /><span>直播课管理</span>
+            //     </div>
+            //   </Menu.Item>
+            // )
+            // menus.push(
+            //   <Menu.Item>
+            //     <div onClick={(e) => { e.stopPropagation(); this.gotoyun(); }}>
+            //       <Icon type="link" /><span>考勤报告</span>
+            //     </div>
+            //   </Menu.Item>
+            // )
           }
 
           if (store.get('wrongBookNews').roleName && store.get('wrongBookNews').roleName.includes('adminSale')) {
@@ -243,6 +269,7 @@ class HomePageLeft extends Component {
             </Menu.Item>)]
           }
         }
+
       })
       return (menus)
     }
@@ -677,21 +704,19 @@ class HomePageLeft extends Component {
         {/*    }}>*/}
         {/*  </div>*/}
         {/*</div>*/}
-
         <Sider
           trigger={null}
           collapsible
-          collapsed={this.state.collapsed}
-        >
+          collapsed={this.state.collapsed}>
           <div className="logo" />
           <Menu
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={[defaultKey]}
-          >
+            defaultSelectedKeys={[defaultKey]}>
             {this.Menus()}
           </Menu>
         </Sider>
+
         <Layout style={{ position: "relative" }}>
           <Header style={this.props.state.topBarHide === 0 ? { display: 'none' } : { background: '#fff', padding: 0 }}>
             <Icon
@@ -811,11 +836,11 @@ class HomePageLeft extends Component {
       })
     }
 
-
-
   }
 
+
   componentDidMount() {
+
     const { dispatch } = this.props;
     if (!store.get('wrongBookNews')) {
       this.props.dispatch(

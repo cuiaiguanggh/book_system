@@ -7,7 +7,7 @@ import store from 'store';
 import moment from 'moment';
 import observer from '../../utils/observer'
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Content } = Layout;
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -154,11 +154,9 @@ class bulkPrint extends React.Component {
                     //     obj.classQue = storeClassQue
                     // }
                 }
-                console.log(res.classQue)
                 this.setState({
                     printList: res.printList,
                 })
-                console.log(res.classQue)
 
             }
         })
@@ -170,6 +168,8 @@ class bulkPrint extends React.Component {
         if (This.state.selectShowTitle.length === 0 || This.state.downPlan !== -1) { return }
         if ("WebSocket" in window) {
             // 打开一个 web socket
+            // let url = process.env.API_ENV === 't' ? `ws://101.132.88.134:81/websocket?userId=${store.get('wrongBookNews').userId}` : dataCen(`/export/websocket?userId=${store.get('wrongBookNews').userId}`);
+
             ws = new WebSocket(dataCen(`/export/websocket?userId=${store.get('wrongBookNews').userId}`));
 
             ws.onopen = function () {
@@ -599,7 +599,7 @@ class bulkPrint extends React.Component {
                                                     {item.title ?
                                                         < div dangerouslySetInnerHTML={{ __html: item.title }} id={item.uqId} contentEditable={this.state.editableTopic === item.uqId}
                                                             style={{ borderBottom: '1px dashed #E7E7E7', paddingBottom: 20, marginBottom: 20 }} />
-                                                        : <img src={item.url} style={{ width: '100%' }} />}
+                                                        : <img src={item.url} style={{ width: '100%' }} alt='' />}
 
                                                     <p>优选练习 </p>
 
@@ -615,14 +615,14 @@ class bulkPrint extends React.Component {
                                                                         selectShowTitle: this.state.selectShowTitle
                                                                     })
                                                                 }}>
-                                                                <img style={{ marginTop: '-4px', marginRight: '4px' }} src={require('../images/sp-yc-n.png')} /> 移除  </span>
+                                                                <img style={{ marginTop: '-4px', marginRight: '4px' }} alt='' src={require('../images/sp-yc-n.png')} /> 移除  </span>
                                                             :
                                                             <span className={style.selectTopic}
                                                                 onClick={() => {
                                                                     this.state.selectShowTitle.push(item.uqId);
                                                                     this.setState({ selectShowTitle: this.state.selectShowTitle })
                                                                 }}>
-                                                                <img style={{ marginTop: '-4px', marginRight: '4px' }} src={require('../images/sp-xt-n.png')} />选题 </span>}
+                                                                <img style={{ marginTop: '-4px', marginRight: '4px' }} src={require('../images/sp-xt-n.png')} alt='' />选题 </span>}
                                                     </div>
                                                 </div>))
                                         )
@@ -635,7 +635,7 @@ class bulkPrint extends React.Component {
 
 
                     <div className={style.printButton} onClick={this.clickPrint.bind(this)}>
-                        <img src='http://homework.mizholdings.com/kacha/kcsj/562bfef7c9d97ba3/.png' style={{ marginBottom: 10 }} />
+                        <img src='http://homework.mizholdings.com/kacha/kcsj/562bfef7c9d97ba3/.png' style={{ marginBottom: 10 }} alt='' />
                         一<br />键<br />打<br />印  <span className={style.yuan}> {this.state.selectShowTitle.length} </span>
                     </div>
 

@@ -10,9 +10,7 @@ import Topics from './topics'
 import commonCss from '../css/commonCss.css';
 import store from 'store';
 
-const {
-    Header, Footer, Sider, Content,
-} = Layout;
+const { Header, Sider, Content, } = Layout;
 const { RangePicker } = DatePicker;
 
 
@@ -327,7 +325,7 @@ class intelligentDollors extends React.Component {
         if (item.nowNum > 0) {
             let data = this.state.topicList;
             data.reverse();
-            list: for (let i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 if (data[i].knowledgeName === item.knowledgeName) {
                     data.splice(i, 1);
                     data.reverse();
@@ -335,7 +333,7 @@ class intelligentDollors extends React.Component {
                     this.setState({
                         topicList: data
                     })
-                    break list;
+                    break;
                 }
             }
         }
