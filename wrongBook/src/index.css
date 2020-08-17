@@ -55,7 +55,7 @@ body,
 }
 
 
-@font-face {
+/* @font-face {
 	font-family: PingFang SC;
 	src        : url('../pages/PF.ttf');
 	font-display: swap
@@ -76,4 +76,4 @@ body,
 	font-family: PingFang-SC-Medium;
 	src        : url('../pages/pingfang sc medium.otf');
 	font-display: swap
-}
+} */
