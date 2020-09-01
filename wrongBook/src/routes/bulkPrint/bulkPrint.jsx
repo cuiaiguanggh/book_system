@@ -353,7 +353,8 @@ class bulkPrint extends React.Component {
         } else {
             this.setState({
                 selectStu: [],
-                showTitle: []
+                showTitle: [],
+                selectShowTitle:[]
             })
         }
     }
@@ -520,7 +521,7 @@ class bulkPrint extends React.Component {
                         <div className={style.leftBox} >
                             <div className={`${style.leftHeader} ${style.stumargin}`}>
                                 <span style={{ marginLeft: -5 }}>
-                                    <Checkbox checked={this.state.selectStu.length === this.state.printList.length}
+                                    <Checkbox checked={this.state.selectStu.length&&this.state.selectStu.length === this.state.printList.length}
                                         onClick={this.selectStuAll.bind(this)} >学生 &nbsp;</Checkbox></span>
                                 <span> 帐号</span>
                                 <span style={{ marginRight: -20 }}>已选 <span className={style.displayBox}>{this.state.soloNum}</span> 题</span>
@@ -547,7 +548,7 @@ class bulkPrint extends React.Component {
                         </div>
                         <div className={style.topicBox}>
                             <div className={style.topicTop}>
-                                <Checkbox onChange={this.selectAll.bind(this)} checked={this.state.showTitle.length === this.state.selectShowTitle.length}>全选</Checkbox>
+                                <Checkbox onChange={this.selectAll.bind(this)} checked={this.state.selectShowTitle.length&&this.state.showTitle.length === this.state.selectShowTitle.length}>全选</Checkbox>
                                 <span>共计 <span style={{ color: '#409EFF' }}>{this.state.showTitle.length}</span> 题</span>
                             </div>
 
