@@ -200,6 +200,7 @@ export default {
 	},
 
 	effects: {
+
 		*importData({ payload }, { put, select }) {
 			let res = yield importData(payload);
 			if (res.data.result === 0) {
@@ -232,6 +233,24 @@ export default {
 			yield put({
 				type: 'grades',
 				payload: res.data.data
+			})
+		},
+		*initStudentList({ payload }, { put, select }) {
+			let { tealist } = yield select(state => state.homePage);
+			if(payload.init&&tealist.data.length){
+				let arr=tealist.data.map(item => {
+					return {...item,qustionlist:payload.data}
+				})
+				yield put({
+					type: 'tealist',
+					payload: {...tealist,data:arr}
+				})
+			}
+		},
+		*initStudentList1({ payload }, { put, select }) {
+			yield put({
+				type: 'tealist',
+				payload: payload.data
 			})
 		},
 		*remove({ payload }, { put, select }) {

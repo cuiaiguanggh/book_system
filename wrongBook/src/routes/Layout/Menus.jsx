@@ -219,6 +219,9 @@ class HomePageLeft extends Component {
             menus.push(<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
               <Icon type="align-left" /><span>班级管理</span>
             </Menu.Item>)
+            menus.push(<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
+            <Icon type="retweet" /><span>题目同步</span>
+          </Menu.Item>)
           } else {
             if (rodeType !== 10) {
               menus.push(
@@ -226,6 +229,9 @@ class HomePageLeft extends Component {
                   <Icon type="team" /><span>班级管理</span>
                 </Menu.Item>
               )
+              menus.push(<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
+              <Icon type="retweet" /><span>题目同步</span>
+            </Menu.Item>)
             }
 
           }
@@ -266,7 +272,10 @@ class HomePageLeft extends Component {
             </Menu.Item>),
             (<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
               <Icon type="align-left" /><span>班级管理</span>
-            </Menu.Item>)]
+            </Menu.Item>)
+            (<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
+            <Icon type="retweet" /><span>题目同步</span>
+          </Menu.Item>)]
           }
         }
 

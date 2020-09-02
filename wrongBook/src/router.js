@@ -33,6 +33,10 @@ const ClassUser = Loadable({
   loader: () => import('./routes/GradeAdmin/ClassUser/classUser'),
   loading: () => <List />,
 });
+const QuestionFetch = Loadable({
+  loader: () => import('./routes/QuestionFetch/questionFetch'),
+  loading: () => <List />,
+});
 const ClassAdmin = Loadable({
   loader: () => import('./routes/GradeAdmin/ClassAdmin/classAdmin'),
   loading: () => <List />,
@@ -118,7 +122,6 @@ const bulkPrint = Loadable({
   loader: () => import('./routes/bulkPrint/bulkPrint'),
   loading: () => <List />,
 });
-
 function RouterConfig({ history }) {
 
   return (
@@ -134,6 +137,7 @@ function RouterConfig({ history }) {
         <Route path="/studentDetail" component={StudentDetail} />
         <Home>
           <Route path="/classUser" component={ClassUser} />
+          <Route path="/questionFetch" component={QuestionFetch} />
           <Route path="/class" component={ClassAdmin} />
           <Route path="/addclass" component={AddClass} />
           <Route path="/school" component={SchoolAdmin} />

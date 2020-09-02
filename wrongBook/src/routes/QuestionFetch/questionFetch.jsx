@@ -1,16 +1,17 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Input, Checkbox
+  Layout, Menu, Button, message,InputNumber, Select, Modal, Icon, Input, Checkbox
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
-import style from './classUser.less';
+import style from './questionFetch.less';
 import moment from 'moment';
-import { dataCenter } from '../../../config/dataCenter'
+// import { dataCenter } from '../../../config/dataCenter'
 import store from 'store';
-import ClassAdmin from '../ClassAdmin/classAdmin'
-import observer from '../../../utils/observer'
+import StudentList from './studentList/StudentList'
+import observer from '../../utils/observer'
+
 
 //作业中心界面内容
 const Option = Select.Option;
@@ -40,14 +41,105 @@ class StuReport extends React.Component {
       checkAll: false,
       checkedList: [],
       plainOptions: [],
-      current: 'teacher',
-
+      current: 'student',
+      currentSudent:{},
+      currentSubdata:{
+        id:10,
+        value:'科学'
+      },
+      questions:[],
+      quering:false
     }
   }
-
+  checkQuestions(){
+    let _arr=this.props.state.tealist.data
+    let prdata=[]
+    for (let index = 0; index < _arr.length; index++) {
+      const ele = _arr[index]
+      let item={
+        userId:ele.userId,
+        uqIds:[]
+      }
+      if(ele&&ele.bb){
+        for (let key in ele.bb) {
+          item.uqIds.push(key)
+        }
+      }
+      item.uqIds=item.uqIds.toString()
+      prdata.push(item)
+    }
+    let op={
+      body:[{"userId":5035401752333312,"uqIds":"350986,350988"},{"userId":5035401752333318,"uqIds":""},{"userId":5035401752333317,"uqIds":""},{"userId":5035401752333316,"uqIds":""},{"userId":5035401752333315,"uqIds":""},{"userId":5035401752333314,"uqIds":""},{"userId":5035401752333320,"uqIds":""},{"userId":5035401752333313,"uqIds":""},{"userId":5035401752333319,"uqIds":""}],
+      headers : {
+        'Content-Type':'application/json'
+      }
+    }
+    console.log('prdata',prdata,JSON.stringify(prdata))
+    this.request('http://dayour.mizholdings.com:8080/mizhu/api/exam/quick?token=FC255FDF-0618-4B41-B8C5-671A7640BE25',op)
+  
+  }
+  request(url, op) {
+    let options =op;
+    options.method = options.method || 'post';
+    // options.mode = options.mode || 'cors';
+    let data = options.data || {};
+    let dataBody;
+    // let loginSession = store.get('wrongBookToken');
+    // // if(loginSession !== '' && data.token == undefined  ){
+    // //     data.token = loginSession;
+    // // }
+    // if (loginSession !== '' && data.token == undefined) {
+    //   options.headers.Authorization = loginSession;
+    // }
+    // dataBody = formatOpt(data);
+    // if (options.body && dataBody) {
+    //   dataBody = options.body + '&' + dataBody;
+    // }
+    // if (options.method === 'post') {
+    //   options.body = dataBody;
+    // } else {
+    //   url = `${url}?${dataBody}`;
+    // }
+  
+    // if (options.headers['Content-Type'] === 'application/json') {
+    //   options.body = JSON.stringify(data);
+    // }
+    options.body = JSON.stringify(options.body)
+    return fetch(url, options)
+      .then(this.checkStatus)
+      .then(res => res.json())
+      .then(data => ({ data }))
+      .catch(err => console.log('error is', err))
+  }
+  checkStatus(response) {
+    if (response.status >= 200 && response.status <= 500) {
+      // if (response.status >= 200 && response.status < 300) {
+      return response;
+    }
+  
+    // const error = new Error(response.statusText);
+    // error.response = response;
+    // throw error;
+  }
   menuClick = (e) => {
-   // return
+    console.log('e: ', e);
     const { dispatch } = this.props;
+    dispatch({
+      type: 'homePage/infoClass',
+      payload: e.key
+    });
+    dispatch({
+      type: 'classHome/classId',
+      payload:  e.key
+    })
+    dispatch({
+      type: 'homePage/teacherList',
+      payload: {
+        type: 3,
+      }
+    });
+    // this.getQuestions(e.key)
+    return
     let location = this.props.location.hash;
     let hash = location.substr(location.indexOf("sId=") + 4);
     let id = location.substr(location.indexOf("&id=") + 4);
@@ -126,8 +218,8 @@ class StuReport extends React.Component {
               type: 'classHome/classId',
               payload: item.key
             })
-            //清空班级邀请码
-            //observer.publish('fuyuan')
+            // //清空班级邀请码
+            // observer.publish('fuyuan')
           }}
             selectedKeys={[`${this.state.nowclassid}`]}
             style={{ height: 'calc(100% - 115px)' }}
@@ -137,19 +229,8 @@ class StuReport extends React.Component {
               rodeType <= 20 ?
                 classList.data.list.map((item, i) => {
                   return (
-                    <Menu.Item key={item.classId}
-                      onDoubleClick={(e) => {
-                        this.setState({
-                          whetherbz: true
-                        })
-                      }}>
-                      {this.state.whetherbz ?
-                        <Input className={style.classCase}
-                          autoFocus={item.classId == this.state.nowclassid ? true : false}
-                          onBlur={(e) => {
-                            this.loseFocus(e)
-                          }} defaultValue={item.className} /> : <span> {item.className}</span>}
-
+                    <Menu.Item key={item.classId}>
+                      <span> {item.className}</span>
                     </Menu.Item>
                   )
                 }) : classList.data.map((item, i) => {
@@ -205,7 +286,7 @@ class StuReport extends React.Component {
             : ''
           }
 
-          {store.get('wrongBookNews').rodeType <= 20 ?
+          {/* {store.get('wrongBookNews').rodeType <= 20 ?
             <div className={style.daorubj} onClick={() => {
               this.props.dispatch(
                 routerRedux.push({
@@ -213,11 +294,11 @@ class StuReport extends React.Component {
                 })
               )
             }}>
-              <img src={require('../../images/sp-xt-n.png')} style={{ width: 12, margin: '0 4px 4px' }} />导入班级 </div> : ''}
+              <img src={require('../images/sp-xt-n.png')} style={{ width: 12, margin: '0 4px 4px' }} />导入班级 </div> : ''} */}
 
           {this.state.reminder ?
             <div className={style.explain}>
-              <img src={require('../../images/explain.png')}></img>
+              <img src={require('../images/explain.png')}></img>
             </div> : ""
           }
         </div>
@@ -225,48 +306,117 @@ class StuReport extends React.Component {
     }
   }
 
-  onWho(who) {
-    this.setState({ current: who })
-    this.props.dispatch({
-      type: 'homePage/showMen',
-      payload: ''
-    });
-    this.props.dispatch({
-      type: 'homePage/tealist',
-      payload: []
-    });
-    if (who === 'teacher') {
-      this.props.dispatch({
-        type: 'homePage/memType',
-        payload: 1
-      });
-      this.props.dispatch({
-        type: 'homePage/teacherList',
-        payload: {
-          type: 1
-        }
-      });
-
-    } else {
-      this.props.dispatch({
-        type: 'homePage/memType',
-        payload: 3
-      });
-      this.props.dispatch({
-        type: 'homePage/teacherList',
-        payload: {
-          type: 3
-        }
-      });
+  
+  getQuestions=()=>{
+    this.setState({
+      quering:true
+    })
+    // console.log('this.state: ', this.state);
+    //return
+    let data = {
+      classId: this.state.nowclassid,
+      year: this.props.state.years,
+      subjectId: this.state.currentSubdata.id,
+      userId: 5035401752333312||4813307222198274||0||this.state.currentSudent.userId,
+      info: 0,
+      pageSize: 20,
+      pageNum: 1,
+      startTime:'2020-08-10'
     }
-  }
+    console.log('this.state.currentSudent: ', this.state.currentSudent);
+    console.log('data: ', data);
 
+    //时间段
+    // if (this.props.state.stbegtoendTime.length > 0) {
+    //   data.startTime = this.props.state.stbegtoendTime[0];
+    //   // data.endTime = this.props.state.stbegtoendTime[1];
+    // }
+
+    this.props.dispatch({
+      type: 'report/userQRdetail',
+      payload: data
+    }).then(res=>{
+      console.log('res: ', res);  
+      if(res.data&&res.data.questionList){
+        let arr=res.data.questionList.map(item => {
+					console.log('item: ', item);
+					return {...item,aa:[]}
+        })
+        this.setState({
+          questions:arr
+        })
+        this.props.dispatch({
+          type: 'homePage/initStudentList',
+          payload: {
+            init:true,
+            data:arr
+          }
+        })
+      }else{
+        this.setState({
+          questions:[]
+        })
+      }
+      this.setState({
+        quering:false
+      })
+    })
+
+  }
+  selectStudentFun(student){
+    this.setState({
+      currentSudent:student
+    })
+  }
+  getStudentListPageSub() {
+    let beginTime = moment()
+    .subtract(30, "days")
+    .format("YYYY-MM-DD");
+    console.log('beginTime: ', beginTime);
+    let sublist = this.props.state.sublist;
+		const children = [];
+		if (sublist.data) {
+			for (let i = 0; i < sublist.data.length; i++) {
+				let data = sublist.data[i]
+				children.push(<Option key={data.k}>{data.v}</Option>);
+			}
+		}
+
+		if (sublist&&sublist.data && sublist.data.length > 0) {
+			return (
+        <>
+        <Select
+          style={{ width: 90, marginLeft: 5 }}
+					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
+					optionFilterProp="children"
+          defaultValue={this.state.currentSubdata.value}
+          onChange={(value,a) => {
+            this.setState({
+              currentSubdata:{
+                id:value
+              }
+            })
+        }}>
+          {children}
+      </Select>
+        </>
+			)
+		}
+	}
   render() {
     return (
       <>
-        <div className={style.whoBox}>
-          <span style={this.state.current === 'teacher' ? { background: '#2593FC' } : { color: '#161616' }} onClick={() => { this.onWho('teacher') }}>教师</span>
-          <span style={this.state.current === 'student' ? { background: '#2593FC' } : { color: '#161616' }} onClick={() => { this.onWho('student') }}>学生</span>
+        <div className={style.whoBox}>  
+          {
+            this.getStudentListPageSub()
+          }
+          <div style={{display:'inline-block',margin:'0 20px'}}>
+            最近
+            <InputNumber  style={{width:60,margin:'0 5px'}} min={1} max={30} defaultValue={3} />
+            天
+          </div>
+          <Button type="primary" onClick={this.getQuestions} loading={this.state.quering}>查询</Button>
+          <span style={{marginLeft:'20px'}}>{this.state.questions.length}题</span>
         </div>
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
           <div className={style.layout}>
@@ -275,7 +425,13 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-                <ClassAdmin current={this.state.current} location={this.props.location}></ClassAdmin>
+                <StudentList current='student' selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}></StudentList>
+                {
+                  this.props.state.tealist.data&&this.props.state.tealist.data.length?
+                  <Button type="primary" style={{float:'right',marginTop:'10px'}} onClick={this.checkQuestions.bind(this)} >提交</Button>
+                  :''
+                }
+                
               </Content>
             </Layout>
 
@@ -406,12 +562,12 @@ class StuReport extends React.Component {
           this.setState({
             nowclassid: this.props.state.classList.data.list[0].classId
           })
-          this.props.dispatch({
-            type: 'homePage/teacherList',
-            payload: {
-              type: 1,
-            }
-          });
+          // this.props.dispatch({
+          //   type: 'homePage/teacherList',
+          //   payload: {
+          //     type: 1,
+          //   }
+          // });
         }
       })
 
@@ -443,9 +599,9 @@ class StuReport extends React.Component {
           this.props.dispatch({
             type: 'homePage/teacherList',
             payload: {
-              type: 1,
+              type: 3,
             }
-          });
+          });//查询班级学生信息
         }
       })
 
@@ -503,7 +659,7 @@ class StuReport extends React.Component {
     }
     this.props.dispatch({
       type: 'homePage/memType',
-      payload: 1
+      payload: 3
     });
   }
 
@@ -548,6 +704,7 @@ class StuReport extends React.Component {
 
 export default connect((state) => ({
   state: {
+    ...state.report,
     ...state.classHome,
     ...state.homePage,
     years: state.temp.years

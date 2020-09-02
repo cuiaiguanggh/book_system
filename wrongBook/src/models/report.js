@@ -536,6 +536,7 @@ export default {
 					type: 'qrStudentDetailList',
 					payload: res.data
 				})
+				return res.data
 			}
 			else {
 				if (res.data.result === 2) {
