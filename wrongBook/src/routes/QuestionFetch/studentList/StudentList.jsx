@@ -287,7 +287,6 @@ class HomeworkCenter extends React.Component {
 				return record.qustionlist?record.qustionlist.map((item, i) => {
 					//console.log('item: ', item);
 					let _item=item
-					console.log('record.bb&&record.bb.includes(item.recommendId): ',record, record.bb);
 					return (
 						<Checkbox
 							key={i}
@@ -309,6 +308,8 @@ class HomeworkCenter extends React.Component {
 
 	}
 	onChangeCheck(index,i,item,ele,e){
+		
+		// return
 		console.log('e: ', index,i,item,e);
 		let aa=ele.bb||{}
 		if(aa[item.questionId]){
@@ -327,6 +328,39 @@ class HomeworkCenter extends React.Component {
 				data:_pageHomeworkDetiles
 			}
 		})
+	}
+	initQuestionChecked(){
+		let _tes = this.props.state.tealist.data
+		
+		let data=[
+			[1,1],[0,0]
+		]
+		for (let index = 0; index < data.length; index++) {
+			const e = data[index]
+			for (let j = 0; j < e.length; j++) {
+				const a = e[j]
+				let _t=_tes[index].qustionlist[j].questionId
+				if(a===1){
+					// console.log('_tes[index][j]: ', _tes[index].qustionlist[j],_tes);
+					// return
+					if(!_tes[index].bb){
+						_tes[index].bb={}
+					}
+					_tes[index].bb[_t]=true
+				}else{
+					if(_tes[index].bb)
+					delete _tes[index].bb[_t]
+				}
+			}
+		}
+		this.props.dispatch({
+			type: 'homePage/initStudentList1',
+			payload: {
+				init:false,
+				data:{...this.props.state.tealist,data:_tes}
+			}
+		})
+		console.log('_tes: ', _tes);
 	}
 	//删除按钮
 	stuRemove() {
@@ -572,6 +606,7 @@ class HomeworkCenter extends React.Component {
 							</div>
 
 						</div>
+						<button onClick={this.initQuestionChecked.bind(this)}>11</button>
 					</Content>
 
 					<Modal

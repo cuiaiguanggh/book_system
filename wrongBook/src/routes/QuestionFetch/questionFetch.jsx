@@ -433,7 +433,21 @@ class StuReport extends React.Component {
 				}
         // this.setState({ fileArr: data })
         console.log('data: ', data);
-        
+        let _arr=[]
+				for (let index = 0; index < data.length; index++) {
+					const d = data[index]
+					// Object.values(d)
+          console.log('Object.values(d): ', Object.values(d));
+          _arr.push(Object.values(d))
+        }
+        for (let index = 0; index < _arr.length; index++) {
+          const e = _arr[index]
+          for (let j = 0; j < e.length; j++) {
+            const a = e[j]
+            
+          }
+        }
+        console.log('_arr: ', _arr);
 			} catch (e) {
 				// 这里可以抛出文件类型错误不正确的相关提示
 				message.warning('文件类型不正确')

@@ -54,6 +54,12 @@ class AddClass extends React.Component {
 					}
 				}
 				this.setState({ fileArr: data })
+
+				for (let index = 0; index < data.length; index++) {
+					const d = data[index]
+					// Object.values(d)
+					console.log('Object.values(d): ', Object.values(d));
+				}
 			} catch (e) {
 				// 这里可以抛出文件类型错误不正确的相关提示
 				message.warning('文件类型不正确')
