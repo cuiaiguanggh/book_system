@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message,InputNumber, Select, Modal, Icon, Input, Checkbox
+  Layout, Menu,Spin , Button, message,InputNumber, Select, Modal, Icon, Input, Checkbox
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -12,7 +12,7 @@ import store from 'store';
 import StudentList from './studentList/StudentList'
 import * as XLSX from 'xlsx';
 import observer from '../../utils/observer'
-
+import fetchQuestions from '../../services/yukeService'
 
 //作业中心界面内容
 const Option = Select.Option;
@@ -29,9 +29,7 @@ class StuReport extends React.Component {
     };
     this.state = {
       loading: false,
-      wordUrl: '',
       visible: false,
-      Img: '',
       page: 1,
       next: true,
       whetherbz: false,
@@ -51,10 +49,18 @@ class StuReport extends React.Component {
       questions:[],
       quering:false,
       file: [],
-			uploadFile: {},
+      uploadFile: {},
+      queryDate:20,
+      excelData:[],
+      buttonLoading:[0,0],
+      tableLoding:true,
+      chechBtnLoaing:false
     }
   }
   checkQuestions(){
+    this.setState({
+      chechBtnLoaing:true
+    })
     let _arr=this.props.state.tealist.data
     let prdata=[]
     for (let index = 0; index < _arr.length; index++) {
@@ -63,69 +69,30 @@ class StuReport extends React.Component {
         userId:ele.userId,
         uqIds:[]
       }
-      if(ele&&ele.bb){
-        for (let key in ele.bb) {
-          item.uqIds.push(key)
-        }
-      }
+      if(ele&&ele.questionHook){
+        for (let key in ele.questionHook) {
+          let _keys=key.split('-')
+          let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].questionId||0
+          item.uqIds.push(_qid)
+        }
+      }
       item.uqIds=item.uqIds.toString()
       prdata.push(item)
     }
-    let op={
-      body:[{"userId":5035401752333312,"uqIds":"350986,350988"},{"userId":5035401752333318,"uqIds":""},{"userId":5035401752333317,"uqIds":""},{"userId":5035401752333316,"uqIds":""},{"userId":5035401752333315,"uqIds":""},{"userId":5035401752333314,"uqIds":""},{"userId":5035401752333320,"uqIds":""},{"userId":5035401752333313,"uqIds":""},{"userId":5035401752333319,"uqIds":""}],
-      headers : {
-        'Content-Type':'application/json'
-      }
-    }
-    console.log('prdata',prdata,JSON.stringify(prdata))
-    this.request('http://dayour.mizholdings.com:8080/mizhu/api/exam/quick?token=FC255FDF-0618-4B41-B8C5-671A7640BE25',op)
-  
+    
+    let data=[{"userId":5035401752333312,"uqIds":"350986,350988"},{"userId":5035401752333318,"uqIds":""},{"userId":5035401752333317,"uqIds":""},{"userId":5035401752333316,"uqIds":""},{"userId":5035401752333315,"uqIds":""},{"userId":5035401752333314,"uqIds":""},{"userId":5035401752333320,"uqIds":""},{"userId":5035401752333313,"uqIds":""},{"userId":5035401752333319,"uqIds":""}]
+    data=prdata
+    this.props.dispatch({
+      type: 'classHome/fetchQuestions',
+      payload:  data
+    }).then(()=>{
+      this.setState({
+        chechBtnLoaing:false
+      })
+    })
   }
-  request(url, op) {
-    let options =op;
-    options.method = options.method || 'post';
-    // options.mode = options.mode || 'cors';
-    let data = options.data || {};
-    let dataBody;
-    // let loginSession = store.get('wrongBookToken');
-    // // if(loginSession !== '' && data.token == undefined  ){
-    // //     data.token = loginSession;
-    // // }
-    // if (loginSession !== '' && data.token == undefined) {
-    //   options.headers.Authorization = loginSession;
-    // }
-    // dataBody = formatOpt(data);
-    // if (options.body && dataBody) {
-    //   dataBody = options.body + '&' + dataBody;
-    // }
-    // if (options.method === 'post') {
-    //   options.body = dataBody;
-    // } else {
-    //   url = `${url}?${dataBody}`;
-    // }
   
-    // if (options.headers['Content-Type'] === 'application/json') {
-    //   options.body = JSON.stringify(data);
-    // }
-    options.body = JSON.stringify(options.body)
-    return fetch(url, options)
-      .then(this.checkStatus)
-      .then(res => res.json())
-      .then(data => ({ data }))
-      .catch(err => console.log('error is', err))
-  }
-  checkStatus(response) {
-    if (response.status >= 200 && response.status <= 500) {
-      // if (response.status >= 200 && response.status < 300) {
-      return response;
-    }
-  
-    // const error = new Error(response.statusText);
-    // error.response = response;
-    // throw error;
-  }
   menuClick = (e) => {
-    console.log('e: ', e);
     const { dispatch } = this.props;
     dispatch({
       type: 'homePage/infoClass',
@@ -140,41 +107,11 @@ class StuReport extends React.Component {
       payload: {
         type: 3,
       }
+    }).then(()=>{
+      this.setState({
+        tableLoding:false
+      })
     });
-    // this.getQuestions(e.key)
-    return
-    let location = this.props.location.hash;
-    let hash = location.substr(location.indexOf("sId=") + 4);
-    let id = location.substr(location.indexOf("&id=") + 4);
-    let head = hash.split('&id=');
-    let userNews = store.get('wrongBookNews')
-    if (e.key !== id) {
-      if (userNews.rodeType === 10) {
-        dispatch({
-          type: 'homePage/infoClass',
-          payload: e.key
-        });
-      } else {
-        dispatch({
-          type: 'homePage/infoClass',
-          payload: e.key
-        });
-
-      }
-      dispatch(
-        routerRedux.push({
-          pathname: '/classUser',
-          hash: `sId=${head[0]}&id=${e.key}`
-        })
-      )
-      dispatch({
-        type: 'homePage/teacherList',
-        payload: {
-          type: this.props.state.memType
-        }
-      });
-
-    }
 
   }
 
@@ -225,7 +162,7 @@ class StuReport extends React.Component {
             // observer.publish('fuyuan')
           }}
             selectedKeys={[`${this.state.nowclassid}`]}
-            style={{ height: 'calc(100% - 115px)' }}
+            style={{ height: '100%' }}
             className={style.menu}
             onClick={this.menuClick}  >
             {
@@ -289,16 +226,6 @@ class StuReport extends React.Component {
             : ''
           }
 
-          {/* {store.get('wrongBookNews').rodeType <= 20 ?
-            <div className={style.daorubj} onClick={() => {
-              this.props.dispatch(
-                routerRedux.push({
-                  pathname: '/addclass',
-                })
-              )
-            }}>
-              <img src={require('../images/sp-xt-n.png')} style={{ width: 12, margin: '0 4px 4px' }} />导入班级 </div> : ''} */}
-
           {this.state.reminder ?
             <div className={style.explain}>
               <img src={require('../images/explain.png')}></img>
@@ -310,58 +237,69 @@ class StuReport extends React.Component {
   }
 
   
-  getQuestions=()=>{
+  getQuestions=(newSubid)=>{
+    if(!this.state.currentSudent.userId){
+      message.destroy()
+      if(!newSubid){
+        message.warn('请选择一个要查询的学生')
+      }
+      return
+    }
+    if(!this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id){
+      return
+    }
     this.setState({
-      quering:true
+      tableLoding:true
     })
-    // console.log('this.state: ', this.state);
-    //return
+    let beginTime = moment()
+    .subtract(this.state.queryDate, "days")
+    .format("YYYY-MM-DD");
     let data = {
       classId: this.state.nowclassid,
       year: this.props.state.years,
-      subjectId: this.state.currentSubdata.id,
-      userId: 5035401752333312||4813307222198274||0||this.state.currentSudent.userId,
+      subjectId: newSubid||this.state.currentSubdata.id,
+      userId: this.state.currentSudent.userId||5035401752333312,
       info: 0,
       pageSize: 20,
       pageNum: 1,
-      startTime:'2020-08-10'
+      startTime:beginTime||'2020-08-10'
     }
-    console.log('this.state.currentSudent: ', this.state.currentSudent);
-    console.log('data: ', data);
-
-    //时间段
-    // if (this.props.state.stbegtoendTime.length > 0) {
-    //   data.startTime = this.props.state.stbegtoendTime[0];
-    //   // data.endTime = this.props.state.stbegtoendTime[1];
-    // }
-
     this.props.dispatch({
       type: 'report/userQRdetail',
       payload: data
     }).then(res=>{
       console.log('res: ', res);  
       if(res.data&&res.data.questionList){
-        let arr=res.data.questionList.map(item => {
-					console.log('item: ', item);
-					return {...item,aa:[]}
-        })
         this.setState({
-          questions:arr
+          questions:res.data.questionList
         })
         this.props.dispatch({
           type: 'homePage/initStudentList',
           payload: {
             init:true,
-            data:arr
+            data:res.data.questionList
           }
         })
       }else{
+        message.destroy()
+        message.warn(`当前学生最近${this.state.queryDate}天没有题目`)
         this.setState({
           questions:[]
         })
+        this.props.dispatch({
+          type: 'homePage/initStudentList',
+          payload: {
+            init:true,
+            data:[]
+          }
+        })
       }
       this.setState({
-        quering:false
+        tableLoding:false
+      })
+    }).catch(()=>{
+      this.setState({
+        tableLoding:false
       })
     })
 
@@ -372,10 +310,7 @@ class StuReport extends React.Component {
     })
   }
   getStudentListPageSub() {
-    let beginTime = moment()
-    .subtract(30, "days")
-    .format("YYYY-MM-DD");
-    console.log('beginTime: ', beginTime);
+
     let sublist = this.props.state.sublist;
 		const children = [];
 		if (sublist.data) {
@@ -393,12 +328,13 @@ class StuReport extends React.Component {
 					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
           defaultValue={this.state.currentSubdata.value}
-          onChange={(value,a) => {
+          onChange={(value) => {
             this.setState({
               currentSubdata:{
                 id:value
               }
             })
+            this.getQuestions(value)
         }}>
           {children}
       </Select>
@@ -408,7 +344,6 @@ class StuReport extends React.Component {
   }
   onImportExcel = file => {
 		const { files } = file.target;
-
 		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
@@ -432,11 +367,10 @@ class StuReport extends React.Component {
 					}
 				}
         // this.setState({ fileArr: data })
-        console.log('data: ', data);
+        console.log('原始excel数据', data);
         let _arr=[]
 				for (let index = 0; index < data.length; index++) {
 					const d = data[index]
-					// Object.values(d)
           console.log('Object.values(d): ', Object.values(d));
           _arr.push(Object.values(d))
         }
@@ -447,7 +381,11 @@ class StuReport extends React.Component {
             
           }
         }
-        console.log('_arr: ', _arr);
+        this.setState({
+          excelData:_arr
+        })
+        console.log('excelData: ', this.state.excelData);
+        this.initQuestionChecked()
 			} catch (e) {
 				// 这里可以抛出文件类型错误不正确的相关提示
 				message.warning('文件类型不正确')
@@ -456,7 +394,41 @@ class StuReport extends React.Component {
 		};
 		// 以二进制方式打开文件
 		fileReader.readAsBinaryString(files[0]);
+  }
+  initQuestionChecked(){
+		let _tes = this.props.state.tealist.data
+    let data=this.state.excelData||[[1,1],[0,0]]
+		for (let index = 0; index < data.length; index++) {
+			const e = data[index]
+			for (let j = 0; j < e.length; j++) {
+				const a = e[j]
+				let key=`${index}-${j}`
+				if(a===1){
+					if(!_tes[index].questionHook){
+						_tes[index].questionHook={}
+					}
+					_tes[index].questionHook[key]=true
+				}else{
+					if(_tes[index].questionHook)
+					delete _tes[index].questionHook[key]
+				}
+			}
+		}
+		this.props.dispatch({
+			type: 'homePage/initStudentList1',
+			payload: {
+				init:false,
+				data:{...this.props.state.tealist,data:_tes}
+			}
+		})
+    console.log('excel match data', _tes);
+    message.success('数据导入成功');
 	}
+  onChangeDate(value) {
+    this.setState({
+      queryDate:value
+    })
+  }
   render() {
     return (
       <>
@@ -466,10 +438,10 @@ class StuReport extends React.Component {
           }
           <div style={{display:'inline-block',margin:'0 20px'}}>
             最近
-            <InputNumber  style={{width:60,margin:'0 5px'}} min={1} max={30} defaultValue={3} />
+            <InputNumber  style={{width:60,margin:'0 5px'}} min={0} max={30} defaultValue={this.state.queryDate} onChange={this.onChangeDate.bind(this)} />
             天
           </div>
-          <Button type="primary" onClick={this.getQuestions} loading={this.state.quering}>查询</Button>
+          <Button type="primary" onClick={()=>{this.getQuestions()}} disabled={this.state.tableLoding}>查询</Button>
           <span style={{marginLeft:'20px'}}>{this.state.questions.length}题</span>
         </div>
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
@@ -479,113 +451,29 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-                <StudentList current='student' selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}></StudentList>
+              <Spin spinning={this.state.tableLoding}>
+              <StudentList  current='student' selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
+                </StudentList>
                 {
                   this.props.state.tealist.data&&this.props.state.tealist.data.length?
-                  <>
-                  <input
-                    type='file'
-                    id='file'
-                    accept='.xlsx, .xls'
-                   
-                    onChange={this.onImportExcel}
-                    
-                  ></input>
-                  <Button type="primary" style={{float:'right',marginTop:'10px'}} onClick={this.checkQuestions.bind(this)} >提交</Button>
-                  </>
+                  <div className={style.queFetchFooter}>
+                  
+                   <Button loading={false} className={style.fetchBtn}  >批量匹配
+                    <input
+                      type='file'
+                      id='file'
+                      accept='.xlsx, .xls'
+                      onChange={this.onImportExcel}             
+                    ></input>
+                   </Button>
+                  <Button type="primary" loading={this.state.chechBtnLoaing}  onClick={this.checkQuestions.bind(this)} >提交</Button>
+                  </div>
                   :''
                 }
+							</Spin>
                 
               </Content>
             </Layout>
-
-            <Modal
-              title="一键升级"
-              visible={this.state.upgradeClass}
-              cancelText='取消'
-              okText='确认'
-              className={'shenji'}
-              width={950}
-              onOk={() => {
-                if (this.state.checkedList.length > 0) {
-                  this.props.dispatch({
-                    type: 'classHome/upgrade',
-                    payload: {
-                      OldClassId: this.state.checkedList,
-                    }
-                  });
-                  this.setState({
-                    upgradeClass: false,
-                    indeterminate: false,
-                    checkAll: false,
-                    checkedList: [],
-                    plainOptions: []
-                  });
-                } else {
-                  message.warning('未选中班级')
-                }
-
-              }}
-              onCancel={() => {
-                this.setState({
-                  upgradeClass: false,
-                  indeterminate: false,
-                  checkAll: false,
-                  checkedList: [],
-                  plainOptions: []
-                });
-              }} >
-              <p className={style.title}>请勾选需要升级的班级（可多选）</p>
-
-              <Checkbox
-                indeterminate={this.state.indeterminate}
-                onChange={(e) => {
-                  let all = [];
-                  for (let i = 0; i < this.state.plainOptions.length; i++) {
-                    all.push(this.state.plainOptions[i].value)
-                  }
-
-                  this.setState({
-                    checkedList: e.target.checked ? all : [],
-                    indeterminate: false,
-                    checkAll: e.target.checked,
-                  });
-                }}
-                checked={this.state.checkAll} >
-                全选
-          </Checkbox>
-              <CheckboxGroup
-                options={this.state.plainOptions}
-                value={this.state.checkedList}
-                onChange={(checkedList) => {
-                  this.setState({
-                    checkedList,
-                    indeterminate: !!checkedList.length && checkedList.length < this.state.plainOptions.length,
-                    checkAll: checkedList.length === this.state.plainOptions.length,
-                  });
-                }} />
-
-              <p className={style.bottom}>注：进入新的学年后，可一键升级班级的学年，自动更新班级名称；同时班级内的错题数据仍可查看。</p>
-            </Modal>
-
-            <Modal
-              visible={this.state.visible}
-              width='1000px'
-              className="showques"
-              footer={null}
-              onOk={() => {
-                this.setState({ visible: false })
-              }}
-              onCancel={() => {
-                this.setState({ visible: false })
-              }}
-            >
-              {
-                this.state.Img.split(',').map((item, i) => (
-                  <img key={i} style={{ width: '100%' }} src={item}></img>
-                ))
-              }
-            </Modal>
           </div>
         </Content>
       </>
@@ -665,6 +553,10 @@ class StuReport extends React.Component {
             payload: {
               type: 3,
             }
+          }).then(()=>{
+            this.setState({
+              tableLoding:false
+            })
           });//查询班级学生信息
         }
       })
@@ -712,19 +604,6 @@ class StuReport extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log(222)
-    if (store.get('wrongBookNews').rodeType === 10) {
-      this.props.dispatch({
-        type: 'homePage/yearList',
-        payload: {
-          yearList: []
-        }
-      })
-    }
-    this.props.dispatch({
-      type: 'homePage/memType',
-      payload: 3
-    });
   }
 
   componentDidUpdate(prevProps) {

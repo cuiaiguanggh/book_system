@@ -273,26 +273,19 @@ class HomeworkCenter extends React.Component {
 			dataIndex: 'parentPhones',
 			align: 'center',
 			editable: false,
+			className:'thphone',
 			render: (text, record) => (text)
 		}, {
 			title: <div >请勾选一个学生按照时间查询错题</div>,
-			// dataIndex: 'questionList',
 			align: 'center',
 			editable: false,
 			render: (text, record,index) => {
-				// console.log('text, record,index: ', record,index);
-				//console.log('record: ', record,record.qustionlist);
-				// console
-				// return record.questionList
 				return record.qustionlist?record.qustionlist.map((item, i) => {
-					//console.log('item: ', item);
-					let _item=item
 					return (
 						<Checkbox
 							key={i}
-							checked={record.bb&&record.bb[item.questionId]}
+							checked={record.questionHook&&record.questionHook[`${index}-${i}`]}
 							onClick={(e) => {
-								//console.log('item, i: ', i,index);
 								e.preventDefault()
 								e.stopPropagation()
 								this.onChangeCheck(index,i,item,record,e)
@@ -308,19 +301,14 @@ class HomeworkCenter extends React.Component {
 
 	}
 	onChangeCheck(index,i,item,ele,e){
-		
-		// return
-		console.log('e: ', index,i,item,e);
-		let aa=ele.bb||{}
-		if(aa[item.questionId]){
-			delete aa[item.questionId]
+		let qh=ele.questionHook||{}
+		if(qh[`${index}-${i}`]){
+			delete qh[`${index}-${i}`]
 		}else{
-			aa[item.questionId]=true
+			qh[`${index}-${i}`]=true
 		}
-		
 		let _pageHomeworkDetiles = this.props.state.tealist;
-		_pageHomeworkDetiles.data[index].bb=aa
-		console.log('_pageHomeworkDetiles: ', _pageHomeworkDetiles);
+		_pageHomeworkDetiles.data[index].questionHook=qh
 		this.props.dispatch({
 			type: 'homePage/initStudentList1',
 			payload: {
@@ -329,119 +317,8 @@ class HomeworkCenter extends React.Component {
 			}
 		})
 	}
-	initQuestionChecked(){
-		let _tes = this.props.state.tealist.data
-		
-		let data=[
-			[1,1],[0,0]
-		]
-		for (let index = 0; index < data.length; index++) {
-			const e = data[index]
-			for (let j = 0; j < e.length; j++) {
-				const a = e[j]
-				let _t=_tes[index].qustionlist[j].questionId
-				if(a===1){
-					// console.log('_tes[index][j]: ', _tes[index].qustionlist[j],_tes);
-					// return
-					if(!_tes[index].bb){
-						_tes[index].bb={}
-					}
-					_tes[index].bb[_t]=true
-				}else{
-					if(_tes[index].bb)
-					delete _tes[index].bb[_t]
-				}
-			}
-		}
-		this.props.dispatch({
-			type: 'homePage/initStudentList1',
-			payload: {
-				init:false,
-				data:{...this.props.state.tealist,data:_tes}
-			}
-		})
-		console.log('_tes: ', _tes);
-	}
-	//删除按钮
-	stuRemove() {
-		let This = this;
-		if (!This.state.selectedRowKeys.length > 0) { message.warning('请先选择学生'); return }
-		confirm({
-			title: `确认删除吗？`,
-			content: '删除学生后，将解除与班级的绑定关系，教师无法查看学生学情',
-			okText: '确认',
-			cancelText: '取消',
-			width: 480,
-			icon: null,
-			onOk() {
-				This.props.dispatch({
-					type: 'homePage/batchExit',
-					payload: {
-						childIds: This.state.selectedRowKeys,
-						classId: This.props.state.infoClass,
-					}
-				}).then(() => {
-					This.setState({
-						selectedRowKeys: []
-					})
-					This.props.dispatch({
-						type: 'homePage/teacherList',
-						payload: { type: 3 }
-					});
-				})
-			},
-		});
-	}
-	//退款按钮
-	stuReimburse() {
-		let This = this;
-		if (!This.state.selectedRowKeys.length > 0) { message.warning('请先选择学生'); return }
-		confirm({
-			content: `退款后，学生身份降为普通用户，无法在小程序中 使用原题匹配和优选题目推送功能。`,
-			okText: '确认',
-			cancelText: '取消',
-			onOk() {
-				This.props.dispatch({
-					type: 'homePage/refundStudents',
-					payload: {
-						classId: This.props.state.infoClass,
-						userIds: This.state.selectedRowKeys
-					}
-				}).then(() => {
-					This.props.dispatch({
-						type: 'homePage/teacherList',
-						payload: {
-							type: 3
-						}
-					});
-				})
-			},
-		});
-	}
-	//关注按钮
-	stuConcern() {
 
-		if (!this.state.selectedRowKeys.length > 0) { message.warning('请先选择学生'); return }
-		this.props.dispatch({
-			type: 'homePage/care',
-			payload: {
-				userIds: this.state.selectedRowKeys,
-				isCare: this.state.isCare,
-				classId: this.props.state.infoClass,
-			}
-		}).then(() => {
-			this.props.dispatch({
-				type: 'homePage/teacherList',
-				payload: {
-					type: 3
-				}
-			});
-			this.setState({
-				isCare: Number(!this.state.isCare),
-			})
 
-		})
-	}
 
 
 
@@ -482,8 +359,6 @@ class HomeworkCenter extends React.Component {
 			}
 		}
 		
-		console.log('dataSource: ', dataSource);
-
 		let columns = this.stu;
 
 		let sublist = this.props.state.sublist;
@@ -517,96 +392,28 @@ class HomeworkCenter extends React.Component {
 		};
 		return (
 			<>
-				<Layout>
-					<Content style={{ overflow: 'initial' }}>
+				<Layout style={{
+							overflow: 'auto'
+					}}>
+					<Content style={{ overflow: 'initial',background:"#fff" }}>
 						<div className={style.gradeboder} >
+							<div style={{position:'relative'}}>
+								<Spin spinning={false}>
+									<div className={style.table}>
+										<Table
+											rowSelection={rowRadioSelection}
+											rowKey={record => record.userId}
+											className={style.scoreDetTable}
+											dataSource={dataSource}
+											columns={columns}
+											pagination={true}
+											style={{ userSelect: 'text' }}
+											rowClassName="editable-row" />
 
-							<div>
-								{/* <div style={{ overflow: 'hidden', textAlign: 'left' }}>
-									{this.props.state.infoClass && this.props.current === 'student' &&
-										<Select value={this.state.selectUser} style={{ width: 120, float: 'right', marginLeft: 15 }}
-											onChange={(value) => { this.setState({ selectUser: value }) }}>
-											<Option value="">全部用户</Option>
-											<Option value="0">普通用户</Option>
-											<Option value="1">试用用户</Option>
-											<Option value="2">付费用户</Option>
-										</Select>}
-
-									<Search
-										placeholder="请输入姓名搜索"
-										style={{ width: '160px', float: 'right' }}
-										value={this.props.state.showMen}
-										onSearch={value => {
-											this.props.dispatch({
-												type: 'homePage/showMen',
-												payload: value
-											});
-										}}
-										onChange={e => {
-											this.props.dispatch({
-												type: 'homePage/showMen',
-												payload: e.target.value
-											});
-										}} />
-
-
-									{rodeType <= 20 && this.props.current === 'teacher' ?
-										<span className={style.addGrade} onClick={() => {
-											this.setState({ visible: true })
-										}}><img src={require('../../images/sp-xt-n.png')} style={{ width: 12, margin: '0px 8px 4px 0' }} />添加教师</span> : ''}
-
-									{rodeType <= 20 && this.props.state.infoClass && this.props.current === 'student' ?
-										<StuPopup classId={this.props.state.infoClass} refresh={this.refreshStu} title={'添加学生'} /> : ''}
-
-									{rodeType <= 20 && this.props.state.infoClass && this.props.current === 'teacher' ?
-										<Popover placement="bottom" trigger="focus" content={this.state.content}>
-											<Button className={style.yqma} onClick={() => {
-												this.props.dispatch({
-													type: 'homePage/wxCode',
-													payload: {
-														classId: this.props.state.infoClass
-													}
-												}).then((res) => {
-													if (res.hasOwnProperty('data')) {
-														this.setState({
-															content: <div style={{ textAlign: "center", borderRadius: '6%', overflow: 'hidden', width: 300, height: 280 }}>
-																<img style={{ width: 300 }} src={res.data.url} />
-															</div>,
-														})
-													}
-												})
-											}}>班级邀请码</Button >
-										</Popover> : ''
-									}
-									{rodeType <= 20 && this.props.state.infoClass && this.props.current === 'student' ?
-										<> <Button style={{ margin: '0 10px', borderRadius: 0 }}
-											onClick={() => { window.open("http://homework.mizholdings.com/kacha/kcct/94d905052534956b/学生导入模板.XLSX", '_blank'); }}>下载模版</Button >
-											<Upload {...configuration}> <Button style={{ borderRadius: 0 }}>批量导入学生</Button></Upload>
-										</> : ''}
-
-								</div> */}
-								<div className={style.table}>
-									<Table
-										rowSelection={rowRadioSelection}
-										rowKey={record => record.userId}
-										className={style.scoreDetTable}
-										dataSource={dataSource}
-										columns={columns}
-										pagination={true}
-										style={{ userSelect: 'text' }}
-										rowClassName="editable-row" />
-
-									{/* {this.props.current === 'student' && store.get('wrongBookNews').rodeType !== 40 && <>
-										<div className={style.tableBottomButton} onClick={this.stuReimburse.bind(this)}>退款</div>
-										<div className={style.tableBottomButton} style={{ left: 78 }} onClick={this.stuConcern.bind(this)}>{this.state.isCare ? '关注' : '取关'}</div>
-										<div className={style.tableBottomButton} style={{ left: 156 }} onClick={this.stuRemove.bind(this)}>删除</div>
-									</>} */}
-
-								</div>
+									</div>
+								</Spin>
 							</div>
-
 						</div>
-						<button onClick={this.initQuestionChecked.bind(this)}>11</button>
 					</Content>
 
 					<Modal
