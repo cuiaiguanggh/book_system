@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,InputNumber, Select, Modal, Icon, Input, Checkbox
+  Layout, Menu,Spin , Button, message,InputNumber, Select, Popover, Icon, Input, Checkbox
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -49,15 +49,19 @@ class StuReport extends React.Component {
       questions:[],
       quering:false,
       file: [],
-      uploadFile: {},
+      uploadFileName: '请选择EXCEL文件导入',
       queryDate:20,
       excelData:[],
-      buttonLoading:[0,0],
       tableLoding:true,
-      chechBtnLoaing:false
+      chechBtnLoaing:false,
+      classLoding:true
     }
   }
   checkQuestions(){
+    if(this.state.chechBtnLoaing){
+      console.log('this.state.chechBtnLoaing: ', this.state.chechBtnLoaing,'正在提交');
+      return 
+    }
     this.setState({
       chechBtnLoaing:true
     })
@@ -148,90 +152,32 @@ class StuReport extends React.Component {
     }
     if (classList.data) {
       return (
-        <div className={style.leftInfo}>
 
-          <Menu onSelect={(item,) => {
-            this.setState({
-              nowclassid: item.key
-            })
-            this.props.dispatch({
-              type: 'classHome/classId',
-              payload: item.key
-            })
-            // //清空班级邀请码
-            // observer.publish('fuyuan')
-          }}
-            selectedKeys={[`${this.state.nowclassid}`]}
-            style={{ height: '100%' }}
-            className={style.menu}
-            onClick={this.menuClick}  >
-            {
-              rodeType <= 20 ?
-                classList.data.list.map((item, i) => {
-                  return (
+        <Menu onSelect={(item,) => {
+          this.setState({
+            nowclassid: item.key
+          })
+          this.props.dispatch({
+            type: 'classHome/classId',
+            payload: item.key
+          })
+        }}
+          selectedKeys={[`${this.state.nowclassid}`]}
+          style={{ height: '100%' }}
+          className={style.menu}
+          onClick={this.menuClick}  >
+          {
+            classList.data.list.map((item, i) => {
+              return (
                     <Menu.Item key={item.classId}>
-                      <span> {item.className}</span>
-                    </Menu.Item>
-                  )
-                }) : classList.data.map((item, i) => {
-                  return (
-                    <Menu.Item key={item.classId}
-                      onDoubleClick={(e) => {
-                        this.setState({
-                          whetherbz: true
-                        })
-                      }}>
-                      {this.state.whetherbz ?
-                        <Input className={style.classCase}
-                          autoFocus={item.classId == this.state.nowclassid ? true : false}
-                          onBlur={(e) => {
-                            this.loseFocus(e)
-                          }} defaultValue={item.className} /> : <span> {item.className}</span>}（ {item.studentNum}人）
-                    </Menu.Item>
-                  )
-                })
-            }
-          </Menu>
-
-          {store.get('wrongBookNews').rodeType < 20 ?
-            <div className={style.shenjibj} onClick={(e) => {
-              const rodeType = store.get('wrongBookNews').rodeType
-              if (rodeType <= 20) {
-                classList = this.props.state.classList;
-              } else {
-                classList = this.props.state.classList1;
-              }
-
-              if (classList.data.list.length > 0) {
-                let plainOptions = []
-                for (let i = 0; i < classList.data.list.length; i++) {
-                  plainOptions.push({
-                    label: classList.data.list[i].className,
-                    value: classList.data.list[i].classId,
-                  })
-                }
-                this.setState({
-                  plainOptions,
-                  upgradeClass: true
-                })
-              }
-
-            }}>
-              一键升级
-              <Icon type="question-circle" style={{ marginLeft: 10 }}
-                onMouseOver={() => { this.setState({ reminder: true }) }}
-                onMouseOut={() => { this.setState({ reminder: false }) }} />
-
-            </div>
-            : ''
+                    <span> {item.className}</span>
+                  </Menu.Item>
+                
+                )
+              })
           }
+        </Menu>
 
-          {this.state.reminder ?
-            <div className={style.explain}>
-              <img src={require('../images/explain.png')}></img>
-            </div> : ""
-          }
-        </div>
       )
     }
   }
@@ -343,13 +289,18 @@ class StuReport extends React.Component {
 		}
   }
   onImportExcel = file => {
-		const { files } = file.target;
+    const { files } = file.target;
+    console.log('file: ', file);
+    if(!files||files.length===0||!files[0].name) {
+      return
+    }
 		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
 		}
 		const fileReader = new FileReader();
-		this.setState({ file: files, uploadFile: file.target.files[0] })
+    this.setState({ file: files, uploadFileName: files[0].name })
+
 		fileReader.onload = event => {
 			try {
 				this.setState({ file: fileReader })
@@ -386,9 +337,11 @@ class StuReport extends React.Component {
         })
         console.log('excelData: ', this.state.excelData);
         this.initQuestionChecked()
+        
 			} catch (e) {
+        console.error('e: ', e);
 				// 这里可以抛出文件类型错误不正确的相关提示
-				message.warning('文件类型不正确')
+				message.warning('文件类型不正确或者数据不合法')
 				return;
 			}
 		};
@@ -423,6 +376,8 @@ class StuReport extends React.Component {
 		})
     console.log('excel match data', _tes);
     message.success('数据导入成功');
+    var f = document.getElementById('file');
+    f.value = ''; //重置了file的outerHTML
 	}
   onChangeDate(value) {
     this.setState({
@@ -430,6 +385,11 @@ class StuReport extends React.Component {
     })
   }
   render() {
+    const content = (
+      <div>
+        <p>{this.state.uploadFileName||'请选择EXCEL文件导入'}</p>
+      </div>
+    )
     return (
       <>
         <div className={style.whoBox}>  
@@ -457,15 +417,26 @@ class StuReport extends React.Component {
                 {
                   this.props.state.tealist.data&&this.props.state.tealist.data.length?
                   <div className={style.queFetchFooter}>
+                    <a href="http://test.kacha.xin/static/book_h5/demo.xlsx">
+                    <Button type="link">
+                      模板下载
+                      
+                    </Button>
+                    </a>
+                    
+                    <Popover content={content} >
+                    <Button loading={false} className={style.fetchBtn}  >批量匹配
+                      <input
+                        type='file'
+                        id='file'
+                        accept='.xlsx, .xls'
+                        title=''
+                        onChange={this.onImportExcel}             
+                      ></input>
+                    </Button>
+                    </Popover>
+
                   
-                   <Button loading={false} className={style.fetchBtn}  >批量匹配
-                    <input
-                      type='file'
-                      id='file'
-                      accept='.xlsx, .xls'
-                      onChange={this.onImportExcel}             
-                    ></input>
-                   </Button>
                   <Button type="primary" loading={this.state.chechBtnLoaing}  onClick={this.checkQuestions.bind(this)} >提交</Button>
                   </div>
                   :''
@@ -506,20 +477,16 @@ class StuReport extends React.Component {
         type: 'classHome/pageClass',
         payload: data
       }).then(() => {
+        console.log('this.props.state.classList: ', this.props.state.classList);
         if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
           dispatch({
             type: 'homePage/infoClass',
             payload: this.props.state.classList.data.list[0].classId
           });
           this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId
+            nowclassid: this.props.state.classList.data.list[0].classId,
+            classLoding:false
           })
-          // this.props.dispatch({
-          //   type: 'homePage/teacherList',
-          //   payload: {
-          //     type: 1,
-          //   }
-          // });
         }
       })
 
@@ -546,7 +513,8 @@ class StuReport extends React.Component {
             payload: this.props.state.classList.data.list[0].classId
           });
           this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId
+            nowclassid: this.props.state.classList.data.list[0].classId,
+            classLoding:false
           })
           this.props.dispatch({
             type: 'homePage/teacherList',
