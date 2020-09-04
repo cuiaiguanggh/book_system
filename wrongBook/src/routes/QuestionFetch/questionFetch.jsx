@@ -330,7 +330,7 @@ class StuReport extends React.Component {
         let _elist=[]
 				for (let index = 0; index < data.length; index++) {
           const d = data[index]
-          console.log('Object.values(d): ', Object.values(d));
+          console.log('excel row data: ', Object.values(d));
           _elist.push(Object.values(d))
         }
         this.initQuestionChecked(_elist)
@@ -353,7 +353,6 @@ class StuReport extends React.Component {
           if(j<e.length-1){
             let key=`${index}-${j}`
             const a = e[j+1]
-            console.log('a: ', a);
             if(a===1){
               if(!_tes[index].questionHook){
                 _tes[index].questionHook={}
