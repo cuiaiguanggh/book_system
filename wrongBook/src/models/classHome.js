@@ -427,6 +427,7 @@ export default {
 				}
 		},
 		*getClassList({ payload }, { put, select }) {
+			console.log('getClassList: 获取学年', 11111);
 			// 返回教师所在班级列表
 			// yield put({
 			// 	type: 'classListPayload',
@@ -443,10 +444,19 @@ export default {
 				// 		classId:res.data.data[0].classId
 				// 	}
 				// })
+				// yield put({
+				// 	type: 'classList1',
+				// 	payload: res.data
+				// })
 				yield put({
 					type: 'classList1',
 					payload: res.data
 				})
+				yield put({
+					type: 'classList',
+					payload: res.data
+				})
+				console.log('res.data: ', res.data);
 			} else {
 				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))

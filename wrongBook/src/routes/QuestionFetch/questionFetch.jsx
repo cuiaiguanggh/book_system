@@ -80,23 +80,29 @@ class StuReport extends React.Component {
     let prdata=[]
     for (let index = 0; index < _arr.length; index++) {
       const ele = _arr[index]
-      console.log('ele: ', ele);
       let item={
         userId:ele.userId,
         uqIds:[]
       }
       if(this.props.state.saleId&&ele.userId===this.props.state.saleId){
-        console.log('this.props.state.saleId&&ele.userId===this.props.state.saleId: ', this.props.state.saleId&&ele.userId===this.props.state.saleId);
-        console.log('ele.questionlist: ', ele.qustionlist);
+       
         if(ele.qustionlist){
           for (let index = 0; index < ele.qustionlist.length; index++) {
-            item.uqIds.push(ele.qustionlist[index].questionId||0)
+            let picid=ele.qustionlist[index].picId
+            // console.log('picid: ', picid);
+            if(picid){
+              picid=picid.substring(5)
+              // console.log('new picid: ', picid);
+              item.uqIds.push(picid)
+            }
           }
         }
       }else if(ele&&ele.questionHook){
         for (let key in ele.questionHook) {
           let _keys=key.split('-')
-          let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].questionId||0
+//           let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].questionId||0
+          let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].picId
+          _qid=_qid.substring(5)
           item.uqIds.push(_qid)
         }
       }
@@ -104,7 +110,7 @@ class StuReport extends React.Component {
       item.uqIds=item.uqIds.toString()
       prdata.push(item)
     }
-    console.log('prdata: ', prdata);
+    console.log('prdata: ', prdata,JSON.stringify(prdata));
     //return
     let data=[{"userId":5035401752333312,"uqIds":"350986,350988"},{"userId":5035401752333318,"uqIds":""},{"userId":5035401752333317,"uqIds":""},{"userId":5035401752333316,"uqIds":""},{"userId":5035401752333315,"uqIds":""},{"userId":5035401752333314,"uqIds":""},{"userId":5035401752333320,"uqIds":""},{"userId":5035401752333313,"uqIds":""},{"userId":5035401752333319,"uqIds":""}]
     data=prdata
@@ -167,8 +173,8 @@ class StuReport extends React.Component {
 
   menulist() {
     let classList = [];
-
     const rodeType = store.get('wrongBookNews').rodeType
+    // console.log('rodeType: ', rodeType);
     if (rodeType <= 20) {
       classList = this.props.state.classList;
     } else {
@@ -184,6 +190,9 @@ class StuReport extends React.Component {
           this.props.dispatch({
             type: 'classHome/classId',
             payload: item.key
+          })
+          this.setState({
+            currentSudent:{}
           })
         }}
           selectedKeys={[`${this.state.nowclassid}`]}
@@ -368,7 +377,7 @@ class StuReport extends React.Component {
           if(j<e.length-1){
             let key=`${index}-${j}`
             const a = e[j+1]
-            if(a===1){
+            if(a===0){
               if(!_tes[index].questionHook){
                 _tes[index].questionHook={}
               }
@@ -502,7 +511,7 @@ class StuReport extends React.Component {
         type: 'classHome/pageClass',
         payload: data
       }).then(() => {
-        console.log('this.props.state.classList: ', this.props.state.classList);
+        // console.log('this.props.state.classList: ', this.props.state.classList);
         if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
           dispatch({
             type: 'homePage/infoClass',
@@ -643,6 +652,7 @@ export default connect((state) => ({
     ...state.report,
     ...state.classHome,
     ...state.homePage,
+    // ...state.temp,
     years: state.temp.years,
     subList: state.temp.subList
   }

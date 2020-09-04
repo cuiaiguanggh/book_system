@@ -282,6 +282,7 @@ export default {
 		},
 		*remove({ payload }, { put, select }) {
 			//移除用户权限
+			console.log('移除用户权限: ');
 			let res = yield remove(payload);
 			if (res.data && res.data.result === 0) {
 				message.success("修改成功")
@@ -722,9 +723,15 @@ export default {
 
 		},
 		teacherList: [function* ({ payload }, { put, select }) {
+			let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
+			let _type=payload.type
+			
+			if(hashStrings.includes('/questionFetch')){
+				_type=3
+			}
 			let { infoClass, infoSchool } = yield select(state => state.homePage);
 			let data = {
-				type: payload.type,
+				type: _type,
 				schoolId: infoSchool,
 				page: 1,
 				pageSize: 9999

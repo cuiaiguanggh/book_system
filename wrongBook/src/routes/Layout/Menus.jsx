@@ -512,7 +512,7 @@ class HomePageLeft extends Component {
         }
       })
 
-      if (hashStrings.includes('/classUser')) {
+      if (hashStrings.includes('/classUser')||hashStrings.includes('/questionFetch')) {
         console.log('classUser')
         this.props.dispatch({
           type: 'classHome/getClassList',
@@ -536,10 +536,12 @@ class HomePageLeft extends Component {
           type: 'homePage/infoSchool',
           payload: value
         })
+        let _type=1
+        if(hashStrings.includes('/questionFetch'))_type=3
         this.props.dispatch({
           type: 'homePage/teacherList',
           payload: {
-            type: 1
+            type: _type
           }
         })
 
