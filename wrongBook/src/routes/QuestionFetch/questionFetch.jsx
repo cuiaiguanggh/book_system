@@ -104,12 +104,15 @@ class StuReport extends React.Component {
       item.uqIds=item.uqIds.toString()
       prdata.push(item)
     }
-    
+    console.log('prdata: ', prdata);
+    //return
     let data=[{"userId":5035401752333312,"uqIds":"350986,350988"},{"userId":5035401752333318,"uqIds":""},{"userId":5035401752333317,"uqIds":""},{"userId":5035401752333316,"uqIds":""},{"userId":5035401752333315,"uqIds":""},{"userId":5035401752333314,"uqIds":""},{"userId":5035401752333320,"uqIds":""},{"userId":5035401752333313,"uqIds":""},{"userId":5035401752333319,"uqIds":""}]
     data=prdata
     this.props.dispatch({
       type: 'classHome/fetchQuestions',
-      payload:  data
+      payload:  {
+        data:prdata
+      }
     }).then(()=>{
       this.setState({
         chechBtnLoaing:false
@@ -207,9 +210,9 @@ class StuReport extends React.Component {
   getQuestions=(newSubid)=>{
     if(!this.state.currentSudent.userId){
       message.destroy()
-      if(!newSubid){
+      //if(!newSubid){
         message.warn('请选择一个要查询的学生')
-      }
+      //}
       return
     }
     if(!this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id){
@@ -229,8 +232,8 @@ class StuReport extends React.Component {
       info: 0,
       pageSize: 20,
       pageNum: 1,
-      startTime:this.state.sdate||this.state.defaultDate
-      // endTime:this.state.edate||this.state.defaultDate
+      startTime:this.state.sdate||this.state.defaultDate,
+      endTime:this.state.edate||this.state.defaultDate
     }
     this.props.dispatch({
       type: 'report/userQRdetail',
@@ -299,7 +302,7 @@ class StuReport extends React.Component {
           style={{ width: 90, marginLeft: 5 }}
 					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
-          value={this.state.currentSubdata.value}
+          defaultValue={this.state.currentSubdata.value}
           onChange={(value) => {
             this.setState({
               currentSubdata:{

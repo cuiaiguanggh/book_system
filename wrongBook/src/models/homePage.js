@@ -247,6 +247,9 @@ export default {
 			let { tealist } = yield select(state => state.homePage);
 			if(payload.init&&tealist.data.length){
 				let arr=tealist.data.map(item => {
+					if(item.questionHook){
+						delete item.questionHook
+					}
 					return {...item,qustionlist:payload.data}
 				})
 				yield put({

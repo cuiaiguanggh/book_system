@@ -487,7 +487,7 @@ export default {
 		*fetchQuestions({ payload }, { put, select }) {
 			// 班级信息
 			try {
-				let res = yield fetchQuestions(payload);
+				let res = yield fetchQuestions(payload.data);
 				res&&res.data&&res.data.result===0?
 				message.success('题目同步成功'):message.error('题目同步失败')
 			} catch (error) {

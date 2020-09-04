@@ -292,7 +292,7 @@ class HomeworkCenter extends React.Component {
 								this.onChangeCheck(index,i,item,record,e)
 							}}
 						>
-						{i}
+						{i+1}
 					</Checkbox>
 					)
 				}) :''
@@ -410,7 +410,7 @@ class HomeworkCenter extends React.Component {
 											className={style.scoreDetTable}
 											dataSource={dataSource}
 											columns={columns}
-											pagination={true}
+											pagination={false}
 											style={{ userSelect: 'text' }}
 											rowClassName="editable-row" />
 
