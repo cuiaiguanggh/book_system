@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,InputNumber, Select, Popover, Icon, Input, Checkbox
+  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover, Icon, Checkbox
 } from 'antd';
-import { routerRedux, Link } from "dva/router";
+
 import { connect } from 'dva';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './questionFetch.less';
@@ -11,8 +11,7 @@ import moment from 'moment';
 import store from 'store';
 import StudentList from './studentList/StudentList'
 import * as XLSX from 'xlsx';
-import observer from '../../utils/observer'
-import fetchQuestions from '../../services/yukeService'
+const { RangePicker } = DatePicker;
 
 //作业中心界面内容
 const Option = Select.Option;
@@ -43,8 +42,8 @@ class StuReport extends React.Component {
       current: 'student',
       currentSudent:{},
       currentSubdata:{
-        id:10,
-        value:'科学'
+        id:2,
+        value:'数学'
       },
       questions:[],
       quering:false,
@@ -53,8 +52,21 @@ class StuReport extends React.Component {
       queryDate:20,
       tableLoding:true,
       chechBtnLoaing:false,
-      classLoding:true
+      classLoding:true,
+      sdate:'',
+      edate:'',
+      defaultDate:moment().locale('zh-cn').format('YYYY-MM-DD'),
+      tapbarLoding:true
     }
+  }
+  timeHanderChange(dates, dateString) {
+    console.log('dateString: ', dateString);
+    this.setState({
+          sdate: dateString[0],
+          edate: dateString[1]
+      }, () => {
+          // this.callInterface();
+      })
   }
   checkQuestions(){
     if(this.state.chechBtnLoaing){
@@ -206,9 +218,9 @@ class StuReport extends React.Component {
     this.setState({
       tableLoding:true
     })
-    let beginTime = moment()
-    .subtract(this.state.queryDate, "days")
-    .format("YYYY-MM-DD");
+    // let beginTime = moment()
+    // .subtract(this.state.queryDate, "days")
+    // .format("YYYY-MM-DD");
     let data = {
       classId: this.state.nowclassid,
       year: this.props.state.years,
@@ -217,7 +229,8 @@ class StuReport extends React.Component {
       info: 0,
       pageSize: 20,
       pageNum: 1,
-      startTime:beginTime||'2020-08-10'
+      startTime:this.state.sdate||this.state.defaultDate
+      // endTime:this.state.edate||this.state.defaultDate
     }
     this.props.dispatch({
       type: 'report/userQRdetail',
@@ -237,7 +250,7 @@ class StuReport extends React.Component {
         })
       }else{
         message.destroy()
-        message.warn(`当前学生最近${this.state.queryDate}天没有题目`)
+        message.warn(`当前学生在这个时间段没有题目`)
         this.setState({
           questions:[]
         })
@@ -271,23 +284,22 @@ class StuReport extends React.Component {
   }
   getStudentListPageSub() {
 
-    let sublist = this.props.state.sublist;
+    let subList = this.props.state.subList;
 		const children = [];
-		if (sublist.data) {
-			for (let i = 0; i < sublist.data.length; i++) {
-				let data = sublist.data[i]
-				children.push(<Option key={data.k}>{data.v}</Option>);
-			}
+		if (subList&&subList.data) {
+			for (let i = 0; i < subList.data.length; i++) {
+				let data = subList.data[i]
+				children.push(<Option key={data.v}>{data.k}</Option>);
+      }
 		}
-
-		if (sublist&&sublist.data && sublist.data.length > 0) {
+		if (subList&&subList.data && subList.data.length > 0) {
 			return (
         <>
         <Select
           style={{ width: 90, marginLeft: 5 }}
 					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
-          defaultValue={this.state.currentSubdata.value}
+          value={this.state.currentSubdata.value}
           onChange={(value) => {
             this.setState({
               currentSubdata:{
@@ -299,7 +311,7 @@ class StuReport extends React.Component {
           {children}
       </Select>
         </>
-			)
+      )
 		}
   }
   onImportExcel = file => {
@@ -390,19 +402,30 @@ class StuReport extends React.Component {
         <p>{this.state.uploadFileName||'请选择EXCEL文件导入'}</p>
       </div>
     )
+    const   subs = this.props.state.subList;
     return (
       <>
-        <div className={style.whoBox}>  
-          {
-            this.getStudentListPageSub()
-          }
-          <div style={{display:'inline-block',margin:'0 20px'}}>
-            最近
-            <InputNumber  style={{width:60,margin:'0 5px'}} min={0} max={30} defaultValue={this.state.queryDate} onChange={this.onChangeDate.bind(this)} />
-            天
-          </div>
-          <Button type="primary" onClick={()=>{this.getQuestions()}} disabled={this.state.tableLoding}>查询</Button>
-          <span style={{marginLeft:'20px'}}>{this.state.questions.length}题</span>
+        <div className={style.whoBox}> 
+        {
+          <Spin spinning={!this.props.state.getSubjectsFinish} style={{background:"#fff"}}>
+            {
+              this.getStudentListPageSub()
+            }
+            <div style={{display:'inline-block',margin:'0 20px'}}>
+              时间:
+              {/* <InputNumber  style={{width:60,margin:'0 5px'}} min={0} max={30} defaultValue={this.state.queryDate} onChange={this.onChangeDate.bind(this)} />
+              天 */}
+              <RangePicker
+                style={{ width: 240, marginLeft: 10 }}
+                format="YYYY-MM-DD"
+                placeholder={[this.state.defaultDate,this.state.defaultDate]}
+                disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(30, 'day')}
+                onChange={this.timeHanderChange.bind(this)} />
+            </div>
+            <Button type="primary" onClick={()=>{this.getQuestions()}} disabled={this.state.tableLoding}>查询</Button>
+            <span style={{marginLeft:'20px'}}>{this.state.questions.length}题</span>
+          </Spin>
+        } 
         </div>
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
           <div className={style.layout}>
@@ -411,7 +434,7 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-              <Spin spinning={this.state.tableLoding}>
+              <Spin spinning={this.state.tableLoding} style={{background:"#fff"}}>
               <StudentList  current='student' selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
                 </StudentList>
                 {
@@ -420,7 +443,6 @@ class StuReport extends React.Component {
                     <a href="http://test.kacha.xin/static/book_h5/demo.xlsx">
                     <Button type="link">
                       模板下载
-                      
                     </Button>
                     </a>
                     
@@ -618,6 +640,7 @@ export default connect((state) => ({
     ...state.report,
     ...state.classHome,
     ...state.homePage,
-    years: state.temp.years
+    years: state.temp.years,
+    subList: state.temp.subList
   }
 }))(StuReport);

@@ -344,7 +344,6 @@ class HomeworkCenter extends React.Component {
 			}
 		}
 		if (pageHomeworkDetiles.data) {
-			console.log(state.showMen)
 			if (state.showMen !== '' && this.state.selectUser !== '' && this.props.current === 'student') {
 				for (let i = 0; i < pageHomeworkDetiles.data.length; i++) {
 					console.log(pageHomeworkDetiles.data[i].userName.indexOf(state.showMen))

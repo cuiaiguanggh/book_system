@@ -62,6 +62,7 @@ export default {
 		infoSchool: '',
 		memType: 1,
 		sublist: [],
+		getSubjectsFinish:false,
 		yearList: [],
 		showMen: '',
 		schoolTeacherList: [],
@@ -172,6 +173,9 @@ export default {
 		},
 		sublist(state, { payload }) {
 			return { ...state, sublist: payload };
+		},
+		getSubjectsFinish(state, { payload }) {
+			return { ...state, getSubjectsFinish: payload };
 		},
 		yearList(state, { payload }) {
 			return { ...state, yearList: payload };
@@ -790,7 +794,10 @@ export default {
 						message.error(res.data.msg)
 					}
 				}
-
+			yield put({
+				type: 'getSubjectsFinish',
+				payload: true
+			})
 		},
 		*batchExit({ payload }, { put, select }) {
 
