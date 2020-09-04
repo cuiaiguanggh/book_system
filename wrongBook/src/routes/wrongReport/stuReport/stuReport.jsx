@@ -974,12 +974,13 @@ class StuReport extends React.Component {
                 onChange={this.quantumtime.bind(this)} />
 
               <Checkbox style={{ marginLeft: 50 }}
-                checked={this.props.state.qrdetailList1.data && this.props.state.stuDown.length === this.props.state.qrdetailList1.data.questionList.length}
+                checked={this.props.state.qrdetailList1.data && this.props.state.stuDown.length === this.props.state.qrdetailList1.data.questionList.length&&this.props.state.stuDown.length>0}
                 onChange={(e) => {
                   this.props.dispatch({
                     type: 'down/delAllStu',
                   });
                   if (e.target.checked) {
+                    if(!this.props.state.qrdetailList1.data||!this.props.state.qrdetailList1.data.questionList.length)return
                     for (let obj of this.props.state.qrdetailList1.data.questionList) {
                       this.props.dispatch({
                         type: 'down/stuDown',
