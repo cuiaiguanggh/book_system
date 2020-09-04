@@ -245,7 +245,7 @@ class HomeworkCenter extends React.Component {
 
 	
 
-		this.stu = [
+		this.studentColum = [
 			{
 				title: '序号',
 				align: 'center',
@@ -284,7 +284,8 @@ class HomeworkCenter extends React.Component {
 					return (
 						<Checkbox
 							key={i}
-							checked={record.questionHook&&record.questionHook[`${index}-${i}`]}
+							checked={(record.userId&&this.props.state.saleId===record.userId)||(record.questionHook&&record.questionHook[`${index}-${i}`])}
+							disabled={record.userId&&this.props.state.saleId===record.userId}
 							onClick={(e) => {
 								e.preventDefault()
 								e.stopPropagation()
@@ -336,6 +337,10 @@ class HomeworkCenter extends React.Component {
 				// 	selectStudent:selectedRowKeys
 				// })
 				this.props.selectStudentHander(selectedRowKeys,selectedRows)
+				this.props.dispatch({
+					type: 'homePage/setSaleId',
+					payload: selectedRowKeys.userId
+				})
 			}
 		}
 		if (pageHomeworkDetiles.data) {
@@ -359,7 +364,7 @@ class HomeworkCenter extends React.Component {
 			}
 		}
 		
-		let columns = this.stu;
+		let columns = this.studentColum;
 
 		let sublist = this.props.state.sublist;
 		const children = [];

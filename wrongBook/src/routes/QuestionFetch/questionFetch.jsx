@@ -51,7 +51,6 @@ class StuReport extends React.Component {
       file: [],
       uploadFileName: '请选择EXCEL文件导入',
       queryDate:20,
-      excelData:[],
       tableLoding:true,
       chechBtnLoaing:false,
       classLoding:true
@@ -69,17 +68,27 @@ class StuReport extends React.Component {
     let prdata=[]
     for (let index = 0; index < _arr.length; index++) {
       const ele = _arr[index]
+      console.log('ele: ', ele);
       let item={
         userId:ele.userId,
         uqIds:[]
       }
-      if(ele&&ele.questionHook){
+      if(this.props.state.saleId&&ele.userId===this.props.state.saleId){
+        console.log('this.props.state.saleId&&ele.userId===this.props.state.saleId: ', this.props.state.saleId&&ele.userId===this.props.state.saleId);
+        console.log('ele.questionlist: ', ele.qustionlist);
+        if(ele.qustionlist){
+          for (let index = 0; index < ele.qustionlist.length; index++) {
+            item.uqIds.push(ele.qustionlist[index].questionId||0)
+          }
+        }
+      }else if(ele&&ele.questionHook){
         for (let key in ele.questionHook) {
           let _keys=key.split('-')
           let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].questionId||0
           item.uqIds.push(_qid)
         }
       }
+      
       item.uqIds=item.uqIds.toString()
       prdata.push(item)
     }
@@ -254,6 +263,11 @@ class StuReport extends React.Component {
     this.setState({
       currentSudent:student
     })
+    //锁定题目状态
+    // this.props.dispatch({
+    //   type: 'homePage/disabledStudentQuestions',
+    //   payload: student.userId
+    // })
   }
   getStudentListPageSub() {
 
@@ -289,27 +303,23 @@ class StuReport extends React.Component {
 		}
   }
   onImportExcel = file => {
-    const { files } = file.target;
-    console.log('file: ', file);
+		const { files } = file.target;
     if(!files||files.length===0||!files[0].name) {
-      return
+      return message.warning('文件读取错误');
     }
 		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
 			message.warning('文件类型不正确,请上传xls、xlsx类型');
 			return false;
 		}
 		const fileReader = new FileReader();
-    this.setState({ file: files, uploadFileName: files[0].name })
-
+		this.setState({ file: files, uploadFile: file.target.files[0] })
 		fileReader.onload = event => {
 			try {
 				this.setState({ file: fileReader })
 
 				const { result } = event.target;
-				// 以二进制流方式读取得到整份excel表格对象
 				const workbook = XLSX.read(result, { type: 'binary' });
-				let data = []; // 存储获取到的数据
-				// 遍历每张工作表进行读取（这里默认只读取第一张表）
+				let data = [];
 				for (const sheet in workbook.Sheets) {
 					if (workbook.Sheets.hasOwnProperty(sheet)) {
 						// 利用 sheet_to_json 方法将 excel 转成 json 数据
@@ -317,56 +327,47 @@ class StuReport extends React.Component {
 						break; // 如果只取第一张表，就取消注释这行
 					}
 				}
-        // this.setState({ fileArr: data })
-        console.log('原始excel数据', data);
-        let _arr=[]
+        let _elist=[]
 				for (let index = 0; index < data.length; index++) {
-					const d = data[index]
+          const d = data[index]
           console.log('Object.values(d): ', Object.values(d));
-          _arr.push(Object.values(d))
+          _elist.push(Object.values(d))
         }
-        for (let index = 0; index < _arr.length; index++) {
-          const e = _arr[index]
-          for (let j = 0; j < e.length; j++) {
-            const a = e[j]
-            
-          }
-        }
-        this.setState({
-          excelData:_arr
-        })
-        console.log('excelData: ', this.state.excelData);
-        this.initQuestionChecked()
+        this.initQuestionChecked(_elist)
         
 			} catch (e) {
-        console.error('e: ', e);
 				// 这里可以抛出文件类型错误不正确的相关提示
-				message.warning('文件类型不正确或者数据不合法')
+				message.warning('文件读取错误')
 				return;
 			}
 		};
 		// 以二进制方式打开文件
 		fileReader.readAsBinaryString(files[0]);
-  }
-  initQuestionChecked(){
+	}
+  initQuestionChecked(elist){
 		let _tes = this.props.state.tealist.data
-    let data=this.state.excelData||[[1,1],[0,0]]
+    let data=elist
 		for (let index = 0; index < data.length; index++) {
-			const e = data[index]
-			for (let j = 0; j < e.length; j++) {
-				const a = e[j]
-				let key=`${index}-${j}`
-				if(a===1){
-					if(!_tes[index].questionHook){
-						_tes[index].questionHook={}
-					}
-					_tes[index].questionHook[key]=true
-				}else{
-					if(_tes[index].questionHook)
-					delete _tes[index].questionHook[key]
-				}
-			}
-		}
+        const e = data[index]
+        for (let j = 0; j < e.length; j++) {
+          if(j<e.length-1){
+            let key=`${index}-${j}`
+            const a = e[j+1]
+            console.log('a: ', a);
+            if(a===1){
+              if(!_tes[index].questionHook){
+                _tes[index].questionHook={}
+              }
+              _tes[index].questionHook[key]=true
+            }else{
+              if(_tes[index].questionHook)
+              delete _tes[index].questionHook[key]
+            }
+          }
+          
+        }
+    }
+    
 		this.props.dispatch({
 			type: 'homePage/initStudentList1',
 			payload: {

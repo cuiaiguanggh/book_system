@@ -79,9 +79,13 @@ export default {
 		nowschool: '',
 		beginGrade: 0,
 		endGrade: 0,
+		saleId:0
 
 	},
 	reducers: {
+		setSaleId(state, { payload }) {
+			return { ...state, saleId: payload };
+		},
 		grades(state, { payload }) {
 			return { ...state, beginGrade: payload.beginGrade, endGrade: payload.endGrade };
 		},
@@ -248,6 +252,22 @@ export default {
 			}
 		},
 		*initStudentList1({ payload }, { put, select }) {
+			yield put({
+				type: 'tealist',
+				payload: payload.data
+			})
+		},
+		*disabledStudentQuestions({ payload }, { put, select }) {
+			let { tealist } = yield select(state => state.homePage);
+			if(payload.init&&tealist.data.length){
+				let arr=tealist.data.map(item => {
+					return {...item,qustionlist:payload.data}
+				})
+				yield put({
+					type: 'tealist',
+					payload: {...tealist,data:arr}
+				})
+			}
 			yield put({
 				type: 'tealist',
 				payload: payload.data
