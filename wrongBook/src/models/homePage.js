@@ -743,9 +743,12 @@ export default {
 				_type=3
 			}
 			let { infoClass, infoSchool } = yield select(state => state.homePage);
+			let userNews = store.get('wrongBookNews');
+
+			console.log('infoClass, infoSchool: ', infoClass, infoSchool);
 			let data = {
 				type: _type,
-				schoolId: infoSchool,
+				schoolId: userNews.schoolId,
 				page: 1,
 				pageSize: 9999
 			}

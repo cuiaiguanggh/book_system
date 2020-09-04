@@ -109,11 +109,13 @@ class StuReport extends React.Component {
     let classList = [];
 
     const rodeType = store.get('wrongBookNews').rodeType
-    if (rodeType <= 20) {
-      classList = this.props.state.classList;
-    } else {
-      classList = this.props.state.classList1;
-    }
+    classList = this.props.state.classList;
+
+    // if (rodeType <= 20) {
+    //   classList = this.props.state.classList;
+    // } else {
+    //   classList = this.props.state.classList;
+    // }
     if (classList.data) {
       return (
         <div className={style.leftInfo}>
@@ -134,7 +136,8 @@ class StuReport extends React.Component {
             className={style.menu}
             onClick={this.menuClick}  >
             {
-              rodeType <= 20 ?
+               rodeType  <=10000?
+              // rodeType <= 20 ?
                 classList.data.list.map((item, i) => {
                   return (
                     <Menu.Item key={item.classId}
@@ -152,7 +155,7 @@ class StuReport extends React.Component {
 
                     </Menu.Item>
                   )
-                }) : classList.data.map((item, i) => {
+                }) : classList.data.list.map((item, i) => {
                   return (
                     <Menu.Item key={item.classId}
                       onDoubleClick={(e) => {
@@ -172,13 +175,13 @@ class StuReport extends React.Component {
             }
           </Menu>
 
-          {store.get('wrongBookNews').rodeType < 20 ?
+          {store.get('wrongBookNews').rodeType < 2000 ?
             <div className={style.shenjibj} onClick={(e) => {
               const rodeType = store.get('wrongBookNews').rodeType
-              if (rodeType <= 20) {
+              if (rodeType <= 2000) {
                 classList = this.props.state.classList;
               } else {
-                classList = this.props.state.classList1;
+                classList = this.props.state.classList;
               }
 
               if (classList.data.list.length > 0) {
@@ -471,13 +474,13 @@ class StuReport extends React.Component {
           schoolId: store.get('wrongBookNews').schoolId
         }
       }).then(() => {
-        if (this.props.state.classList1 && this.props.state.classList1.data.length > 0 && this.props.state.classList1.data[0].classId) {
+        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
           dispatch({
             type: 'homePage/infoClass',
-            payload: this.props.state.classList1.data[0].classId
+            payload: this.props.state.classList.data.list[0].classId
           });
           this.setState({
-            nowclassid: this.props.state.classList1.data[0].classId
+            nowclassid: this.props.state.classList.data.list[0].classId
           })
           this.props.dispatch({
             type: 'homePage/teacherList',
@@ -524,10 +527,10 @@ class StuReport extends React.Component {
         } else {
           this.props.dispatch({
             type: 'homePage/infoClass',
-            payload: this.props.state.classList1.data[0].classId
+            payload: this.props.state.classList.data.list[0].classId
           });
 
-          this.setState({ nowclassid: this.props.state.classList1.data[0].classId })
+          this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
 
         }
       } catch (e) {

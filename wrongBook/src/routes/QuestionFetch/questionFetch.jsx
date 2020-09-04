@@ -163,14 +163,13 @@ class StuReport extends React.Component {
   }
 
   menulist() {
-    let classList = [];
-    const rodeType = store.get('wrongBookNews').rodeType
+    let classList = classList = this.props.state.classList;
     // console.log('rodeType: ', rodeType);
-    if (rodeType <= 20) {
-      classList = this.props.state.classList;
-    } else {
-      classList = this.props.state.classList1;
-    }
+    // if (rodeType <= 20) {
+    //   classList = this.props.state.classList;
+    // } else {
+    //   classList = this.props.state.classList1
+    // }
     if (classList.data) {
       return (
 
@@ -470,162 +469,75 @@ class StuReport extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-
-    let hash = this.props.location.hash;
-
     let userNews = store.get('wrongBookNews');
-    if (userNews.rodeType < 20) {
-      let ids = hash.substr(hash.indexOf("sId=") + 4);
-      let id = ids.split('&id=');
-      dispatch({
-        type: 'homePage/getEnableYears',
-        payload: {
-          schoolId: id[0]
-        }
-      })
-
-      let data = {
-        schoolId: id[0],
-        pageSize: 9999,
-        pageNum: 1,
-        year: this.props.state.years
-      }
-      dispatch({
-        type: 'classHome/pageClass',
-        payload: data
-      }).then(() => {
-        // console.log('this.props.state.classList: ', this.props.state.classList);
-        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
-          dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
-          });
-          this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId,
-            classLoding:false
-          })
-        }
-      })
-
-
-      dispatch({
-        type: 'homePage/infoSchool',
-        payload: id[0]
-      });
-    } else if (userNews.rodeType == 20) {
-
-      let data = {
-        schoolId: userNews.schoolId,
-        pageSize: 9999,
-        pageNum: 1,
-        year: this.props.state.years
-      }
-      dispatch({
-        type: 'classHome/pageClass',
-        payload: data
-      }).then(() => {
-        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
-          dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
-          });
-          this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId,
-            classLoding:false
-          })
-          this.props.dispatch({
-            type: 'homePage/teacherList',
-            payload: {
-              type: 3,
-            }
-          }).then(()=>{
-            this.setState({
-              tableLoding:false
-            })
-          });//查询班级学生信息
-        }
-      })
-
-
-      dispatch({
-        type: 'homePage/infoSchool',
-        payload: userNews.schoolId
-      });
-    } else {
-      let id = hash.substr(hash.indexOf("&id=") + 4);
-      dispatch({
-        type: 'homePage/infoClass',
-        payload: id
-      });
-      dispatch({
-        type: 'homePage/infoSchool',
-        payload: userNews.schoolId
-      });
-      dispatch({
-        type: 'classHome/getClassList',
-        payload: {
-          year: this.props.state.years,
-          schoolId: store.get('wrongBookNews').schoolId
-        }
-      }).then(() => {
-        if (this.props.state.classList1 && this.props.state.classList1.data.length > 0 && this.props.state.classList1.data[0].classId) {
-          dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList1.data[0].classId
-          });
-          this.setState({
-            nowclassid: this.props.state.classList1.data[0].classId
-          })
-          this.props.dispatch({
-            type: 'homePage/teacherList',
-            payload: {
-              type: 1,
-            }
-          });
-        }
-      })
+    let data = {
+      schoolId: userNews.schoolId,
+      pageSize: 9999,
+      pageNum: 1,
+      year: this.props.state.years
     }
+    dispatch({
+      type: 'classHome/pageClass',
+      payload: data
+    }).then(() => {
+      console.log('this.props.state.classList: ', this.props.state.classList);
+      if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
+        dispatch({
+          type: 'homePage/infoClass',
+          payload: this.props.state.classList.data.list[0].classId
+        });
+        this.setState({
+          nowclassid: this.props.state.classList.data.list[0].classId
+        })
+        this.props.dispatch({
+          type: 'homePage/teacherList',
+          payload: {
+            type: 1,
+          }
+        });
+      }
+    })
 
   }
 
   componentWillUnmount() {
   }
 
-  componentDidUpdate(prevProps) {
+  // componentDidUpdate(prevProps) {
 
-    if (this.props.state.infoClass != this.state.nowclassid) {
+  //   if (this.props.state.infoClass != this.state.nowclassid) {
 
-      try {
+  //     try {
 
-        if (store.get('wrongBookNews').rodeType <= 20) {
+  //       if (store.get('wrongBookNews').rodeType <= 20) {
 
-          this.props.dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
-          });
-          this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
+  //         this.props.dispatch({
+  //           type: 'homePage/infoClass',
+  //           payload: this.props.state.classList.data.list[0].classId
+  //         });
+  //         this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
 
-        } else {
-          this.props.dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList1.data[0].classId
-          });
+  //       } else {
+  //         this.props.dispatch({
+  //           type: 'homePage/infoClass',
+  //           payload: this.props.state.classList.data.list.data[0].classId
+  //         });
 
-          this.setState({ nowclassid: this.props.state.classList1.data[0].classId })
+  //         this.setState({ nowclassid: this.props.state.classList.data.list.data[0].classId })
 
-        }
-      } catch (e) {
-        console.error(e)
-      }
-      this.props.dispatch({
-        type: 'homePage/teacherList',
-        payload: {
-          type: 1,
-        }
-      });
-    }
+  //       }
+  //     } catch (e) {
+  //       console.error(e)
+  //     }
+  //     this.props.dispatch({
+  //       type: 'homePage/teacherList',
+  //       payload: {
+  //         type: 1,
+  //       }
+  //     });
+  //   }
 
-  }
+  // }
 
 
 }

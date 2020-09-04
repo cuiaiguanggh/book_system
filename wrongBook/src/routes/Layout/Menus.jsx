@@ -514,13 +514,13 @@ class HomePageLeft extends Component {
 
       if (hashStrings.includes('/classUser')||hashStrings.includes('/questionFetch')) {
         console.log('classUser')
-        this.props.dispatch({
-          type: 'classHome/getClassList',
-          payload: {
-            year,
-            schoolId: value
-          }
-        });
+        // this.props.dispatch({
+        //   type: 'classHome/pageClass',
+        //   payload: {
+        //     year,
+        //     schoolId: value
+        //   }
+        // });
 
         this.props.dispatch({
           type: 'classHome/pageClass',

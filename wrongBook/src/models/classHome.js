@@ -220,6 +220,7 @@ export default {
 		*teacherList({ payload }, { put, select }) {
 			// 教师列表查询
 			let { classId, schoolId } = yield select(state => state.classHome)
+			console.log('classId, schoolId: ', classId, schoolId);
 			let data = {
 				type: payload.type,
 				classId: classId,
@@ -427,13 +428,13 @@ export default {
 				}
 		},
 		*getClassList({ payload }, { put, select }) {
-			console.log('getClassList: 获取学年', 11111);
+			console.log('getClassList: 获取学年', payload);
 			// 返回教师所在班级列表
 			// yield put({
 			// 	type: 'classListPayload',
 			// 	payload: payload
 			// })
-			let res = yield getClassList(payload);
+			let res = yield pageClass(payload);//换成pageclass做到切换学年、学校不报错
 			if (res.data.result != 0) {
 				// yield put(routerRedux.push('/login'))
 			}
@@ -448,10 +449,10 @@ export default {
 				// 	type: 'classList1',
 				// 	payload: res.data
 				// })
-				yield put({
-					type: 'classList1',
-					payload: res.data
-				})
+				// yield put({
+				// 	type: 'classList1',
+				// 	payload: res.data
+				// })
 				yield put({
 					type: 'classList',
 					payload: res.data
