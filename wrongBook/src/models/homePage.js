@@ -63,6 +63,7 @@ export default {
 		memType: 1,
 		sublist: [],
 		getSubjectsFinish:false,
+		getClassMembersFinish:false,
 		yearList: [],
 		showMen: '',
 		schoolTeacherList: [],
@@ -177,6 +178,10 @@ export default {
 		getSubjectsFinish(state, { payload }) {
 			return { ...state, getSubjectsFinish: payload };
 		},
+		getClassMembersFinish(state, { payload }) {
+			return { ...state, getClassMembersFinish: payload };
+		},
+		
 		yearList(state, { payload }) {
 			return { ...state, yearList: payload };
 		},
@@ -723,6 +728,14 @@ export default {
 
 		},
 		teacherList: [function* ({ payload }, { put, select }) {
+			let { getClassMembersFinish } = yield select(state => state.homePage)
+			if(getClassMembersFinish){
+				yield put({
+					type: 'getClassMembersFinish',
+					payload: false
+				})
+			}
+
 			let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
 			let _type=payload.type
 			
@@ -757,6 +770,10 @@ export default {
 					message.error(res.data.msg)
 				}
 			}
+			yield put({
+				type: 'getClassMembersFinish',
+				payload: true
+			})
 
 		}, { type: 'takeLatest' }],
 		*createSchoolUser({ payload }, { put, select }) {

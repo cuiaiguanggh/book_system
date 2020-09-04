@@ -250,12 +250,14 @@ class HomeworkCenter extends React.Component {
 				title: '序号',
 				align: 'center',
 				width:60,
+				fixed: 'left',
 				render: (text, record, index) => `${index + 1}` // 显示每一行的序号
 			},
 			{
 			title: '姓名',
 			dataIndex: 'userName',
 			align: 'center',
+			fixed: 'left',
 			editable: true,
 			render: (text, record) => {
 				return record.userId === this.state.pitchOn ?
@@ -397,12 +399,13 @@ class HomeworkCenter extends React.Component {
 		return (
 			<>
 				<Layout style={{
-							overflow: 'auto'
+							overflow: 'auto',
+							maxHeight:'calc( 100% - 50px )'
 					}}>
-					<Content style={{ overflow: 'initial',background:"#fff" }}>
+					<Content style={{ background:"#fff" }}>
 						<div className={style.gradeboder} >
 							<div style={{position:'relative'}}>
-								<Spin spinning={false}>
+								<Spin spinning={!this.props.state.getClassMembersFinish} style={{height:'100%'}}> 
 									<div className={style.table}>
 										<Table
 											rowSelection={rowRadioSelection}
@@ -419,131 +422,6 @@ class HomeworkCenter extends React.Component {
 							</div>
 						</div>
 					</Content>
-
-					<Modal
-						title="添加教师"
-						visible={this.state.visible}
-						onOk={() => {
-							Trim();
-							if (this.props.state.teacherName.trim() == '' ||
-								this.props.state.phone.trim() == '' ||
-								this.props.state.subjectId.trim() == '') {
-								message.warning('请填写正确信息')
-							} else {
-								let data = {
-									name: this.props.state.teacherName,
-									phone: this.props.state.phone,
-									classId: this.props.state.infoClass,
-									subjectId: this.props.state.subjectId
-								}
-
-								if (!data.classId) {
-									message.warning('班级未选中');
-									return;
-								}
-								this.props.dispatch({
-									type: 'homePage/createSchoolUser',
-									payload: data
-								}).then((res) => {
-									if (res) {
-										this.props.dispatch({
-											type: 'homePage/teacherName',
-											payload: ''
-										});
-										this.props.dispatch({
-											type: 'homePage/phone',
-											payload: ''
-										});
-
-										this.props.dispatch({
-											type: 'homePage/subjectId',
-											payload: ''
-										});
-
-										this.setState({
-											visible: false,
-										});
-									}
-								})
-							}
-						}}
-						onCancel={() => {
-							this.setState({
-								visible: false,
-							});
-							this.props.dispatch({
-								type: 'homePage/teacherName',
-								payload: ''
-							});
-							this.props.dispatch({
-								type: 'homePage/phone',
-								payload: ''
-							});
-
-							this.props.dispatch({
-								type: 'homePage/subjectId',
-								payload: ''
-							});
-						}}
-						okText='确定'
-						cancelText='取消'>
-						<div style={{ marginBottom: '10px' }}>
-							<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>姓名</span>
-							<Input
-								value={this.props.state.teacherName}
-								onChange={(e) => {
-									this.props.dispatch({
-										type: 'homePage/teacherName',
-										payload: e.target.value.replace(/^ +| +$/g, '')
-									});
-								}}
-								onBlur={() => {
-									const teachers = [];
-									let teacherList = this.props.state.schoolTeacherList;
-									if (teacherList.data) {
-										for (let i = 0; i < teacherList.data.length; i++) {
-											if (teacherList.data[i].userName == this.props.state.teacherName) {
-												this.props.dispatch({
-													type: 'homePage/phone',
-													payload: teacherList.data[i].phone
-												});
-											}
-										}
-									}
-								}}
-								style={{ width: '200px' }} />
-
-						</div>
-						<div style={{ marginBottom: '10px' }}>
-							<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>电话</span>
-							<Input
-								value={this.props.state.phone}
-								onChange={(e) => {
-									this.props.dispatch({
-										type: 'homePage/phone',
-										payload: e.target.value
-									});
-								}} style={{ width: '200px' }} />
-						</div>
-						<div style={{ marginBottom: '10px' }}>
-							<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>学科</span>
-							<Select
-								showSearch
-								style={{ width: 200 }}
-								optionFilterProp="children"
-								value={this.props.state.subjectId}
-								onChange={(value) => {
-									this.props.dispatch({
-										type: 'homePage/subjectId',
-										payload: value
-									});
-								}}
-								filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
-								{children}
-							</Select>
-						</div>
-					</Modal>
-
 				</Layout >
 			</>
 		);

@@ -49,8 +49,6 @@ class StuReport extends React.Component {
       quering:false,
       file: [],
       uploadFileName: '请选择EXCEL文件导入',
-      queryDate:20,
-      tableLoding:true,
       chechBtnLoaing:false,
       classLoding:true,
       sdate:'',
@@ -111,9 +109,6 @@ class StuReport extends React.Component {
       prdata.push(item)
     }
     console.log('prdata: ', prdata,JSON.stringify(prdata));
-    //return
-    let data=[{"userId":5035401752333312,"uqIds":"350986,350988"},{"userId":5035401752333318,"uqIds":""},{"userId":5035401752333317,"uqIds":""},{"userId":5035401752333316,"uqIds":""},{"userId":5035401752333315,"uqIds":""},{"userId":5035401752333314,"uqIds":""},{"userId":5035401752333320,"uqIds":""},{"userId":5035401752333313,"uqIds":""},{"userId":5035401752333319,"uqIds":""}]
-    data=prdata
     this.props.dispatch({
       type: 'classHome/fetchQuestions',
       payload:  {
@@ -141,11 +136,7 @@ class StuReport extends React.Component {
       payload: {
         type: 3,
       }
-    }).then(()=>{
-      this.setState({
-        tableLoding:false
-      })
-    });
+    })
 
   }
 
@@ -217,6 +208,9 @@ class StuReport extends React.Component {
 
   
   getQuestions=(newSubid)=>{
+    if(!this.props.state.getClassMembersFinish){
+      return console.log('正在查询...')
+    }
     if(!this.state.currentSudent.userId){
       message.destroy()
       //if(!newSubid){
@@ -227,12 +221,11 @@ class StuReport extends React.Component {
     if(!this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id){
       return
     }
-    this.setState({
-      tableLoding:true
+    this.props.dispatch({
+      type: 'homePage/getClassMembersFinish',
+      payload: false
     })
-    // let beginTime = moment()
-    // .subtract(this.state.queryDate, "days")
-    // .format("YYYY-MM-DD");
+
     let data = {
       classId: this.state.nowclassid,
       year: this.props.state.years,
@@ -274,15 +267,11 @@ class StuReport extends React.Component {
           }
         })
       }
-      this.setState({
-        tableLoding:false
-      })
-    }).catch(()=>{
-      this.setState({
-        tableLoding:false
+      this.props.dispatch({
+        type: 'homePage/getClassMembersFinish',
+        payload: true
       })
     })
-
   }
   selectStudentFun(student){
     this.setState({
@@ -297,6 +286,7 @@ class StuReport extends React.Component {
   getStudentListPageSub() {
 
     let subList = this.props.state.subList;
+    console.log('subList: ', subList);
 		const children = [];
 		if (subList&&subList.data) {
 			for (let i = 0; i < subList.data.length; i++) {
@@ -403,11 +393,7 @@ class StuReport extends React.Component {
     var f = document.getElementById('file');
     f.value = ''; //重置了file的outerHTML
 	}
-  onChangeDate(value) {
-    this.setState({
-      queryDate:value
-    })
-  }
+
   render() {
     const content = (
       <div>
@@ -425,8 +411,6 @@ class StuReport extends React.Component {
             }
             <div style={{display:'inline-block',margin:'0 20px'}}>
               时间:
-              {/* <InputNumber  style={{width:60,margin:'0 5px'}} min={0} max={30} defaultValue={this.state.queryDate} onChange={this.onChangeDate.bind(this)} />
-              天 */}
               <RangePicker
                 style={{ width: 240, marginLeft: 10 }}
                 format="YYYY-MM-DD"
@@ -434,7 +418,7 @@ class StuReport extends React.Component {
                 disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(30, 'day')}
                 onChange={this.timeHanderChange.bind(this)} />
             </div>
-            <Button type="primary" onClick={()=>{this.getQuestions()}} disabled={this.state.tableLoding}>查询</Button>
+            <Button type="primary" onClick={()=>{this.getQuestions()}} >查询</Button>
             <span style={{marginLeft:'20px'}}>{this.state.questions.length}题</span>
           </Spin>
         } 
@@ -446,8 +430,8 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-              <Spin spinning={this.state.tableLoding} style={{background:"#fff"}}>
-              <StudentList  current='student' selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
+              {/* <Spin spinning={this.state.tableLoding} style={{background:"#fff"}}> */}
+              <StudentList  current='student'  selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
                 </StudentList>
                 {
                   this.props.state.tealist.data&&this.props.state.tealist.data.length?
@@ -475,7 +459,7 @@ class StuReport extends React.Component {
                   </div>
                   :''
                 }
-							</Spin>
+							{/* </Spin> */}
                 
               </Content>
             </Layout>
