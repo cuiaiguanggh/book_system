@@ -242,7 +242,7 @@ class StuReport extends React.Component {
       payload: data
     }).then(res=>{
       console.log('res: ', res);  
-      if(res.data&&res.data.questionList){
+      if(res.data&&res.data.questionList&&res.data.questionList.length){
         this.setState({
           questions:res.data.questionList
         })
@@ -286,7 +286,6 @@ class StuReport extends React.Component {
   getStudentListPageSub() {
 
     let subList = this.props.state.subList;
-    console.log('subList: ', subList);
 		const children = [];
 		if (subList&&subList.data) {
 			for (let i = 0; i < subList.data.length; i++) {

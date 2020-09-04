@@ -249,15 +249,12 @@ class HomeworkCenter extends React.Component {
 			{
 				title: '序号',
 				align: 'center',
-				width:60,
-				fixed: 'left',
 				render: (text, record, index) => `${index + 1}` // 显示每一行的序号
 			},
 			{
 			title: '姓名',
 			dataIndex: 'userName',
 			align: 'center',
-			fixed: 'left',
 			editable: true,
 			render: (text, record) => {
 				return record.userId === this.state.pitchOn ?
