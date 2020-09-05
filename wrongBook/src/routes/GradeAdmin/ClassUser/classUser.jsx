@@ -503,20 +503,21 @@ class StuReport extends React.Component {
       payload: 1
     });
   }
-
+  // componentWillReceiveProps (nextProps) {
+  //   if (nextProps.sth !== this.props.sth) {
+  //     // sth值发生改变下一步工作
+  //   }
+  // }
   componentDidUpdate(prevProps) {
-    if(this.props.state.classList.length==0)return 
-    console.log("StuReport -> componentDidUpdate -> his.props.state.classList", this.props.state.classList)
-    let _classId=this.props.state.classList[0].classId
-    if (_classId != this.state.nowclassid) {
-
+    console.log("StuReport -> componentDidUpdate", this.props.state.checkClassId,this.state.nowclassid)
+    if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
       try {
         if(this.props.state.classList.length){
           this.props.dispatch({
             type: 'homePage/infoClass',
-            payload: _classId
+            payload: this.props.state.checkClassId
           });
-          this.setState({ nowclassid: _classId })
+          this.setState({ nowclassid: this.props.state.checkClassId })
         }
         
       } catch (e) {
@@ -539,6 +540,7 @@ export default connect((state) => ({
   state: {
     ...state.classHome,
     ...state.homePage,
-    years: state.temp.years
+    years: state.temp.years,
+    checkClassId:state.classModel.checkClassId
   }
 }))(StuReport);

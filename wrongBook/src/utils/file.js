@@ -26,6 +26,7 @@ export  function readExcelToJson(file,{complete}){
                 complete(_elist)
         
 			} catch (e) {
+                console.error("readExcelToJson -> e", e)
 				message.warning('文件读取错误')
 				return;
 			}

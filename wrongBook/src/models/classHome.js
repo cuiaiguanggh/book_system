@@ -222,6 +222,12 @@ export default {
 					type: 'classList',
 					payload:classList
 				})
+				if(classList.length){
+					yield put({
+						type: 'classModel/checkClassId',
+						payload:classList[0].classId
+					})
+				}
 			} else {
 				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))

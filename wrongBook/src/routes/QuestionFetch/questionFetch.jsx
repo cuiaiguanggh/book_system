@@ -126,6 +126,10 @@ class StuReport extends React.Component {
       nowclassid: e.key
     })
     dispatch({
+      type: 'classModel/checkClassId',
+      payload: e.key
+    })
+    dispatch({
       type: 'classModel/getClassMembers',
       payload: {
         type: 3,
@@ -140,17 +144,16 @@ class StuReport extends React.Component {
 
   menulist() {
     let classList  = this.props.state.pageClassList;
-    
     if (classList.length) {
+      let checkClassId=this.state.nowclassid||classList[0].classId
       return (
-
         <Menu onSelect={(item,) => {
           this.props.dispatch({
             type: 'classHome/classId',
             payload: item.key
           })
         }}
-          selectedKeys={[`${this.state.nowclassid}`]}
+          selectedKeys={[`${checkClassId}`]}
           style={{ height: '100%' }}
           className={style.menu}
           onClick={(item)=>this.menuClick(item)}  >
@@ -334,9 +337,7 @@ class StuReport extends React.Component {
     
 		this.props.dispatch({
 			type: 'classModel/classStudentList',
-			payload: {
-				data:{...this.props.state.classStudentList,data:_tes}
-			}
+			payload: _tes
 		})
     console.log('excel match data', _tes);
     var f = document.getElementById('file');
@@ -447,13 +448,11 @@ class StuReport extends React.Component {
   componentDidUpdate(prevProps) {
 
     //紧急情况下先这么处理学年更新的问题
-    let _pageClassList=this.props.state.pageClassList
-    if(_pageClassList&&_pageClassList.length&&_pageClassList[0].classId){
-      let _classId=_pageClassList[0].classId
-      if(_classId!==this.state.nowclassid){
-        this.updateClassMembers(_classId)
-      }
+    console.log("StuReport -> componentDidUpdate", this.props.state.checkClassId,this.state.nowclassid)
+    if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
+      this.updateClassMembers(this.props.state.checkClassId)
     }
+    
   }
 
 
@@ -469,6 +468,7 @@ export default connect((state) => ({
     getClassMembersFinish:state.classModel.getClassMembersFinish,
     classStudentList:state.classModel.classStudentList,
     years: state.temp.years,
-    subList: state.temp.subList
+    subList: state.temp.subList,
+    checkClassId:state.classModel.checkClassId
   }
 }))(StuReport);

@@ -16,7 +16,8 @@ export default {
 	state: {
 		pageClassList: [],
 		getClassMembersFinish:false,
-		classStudentList:[]
+		classStudentList:[],
+		checkClassId:''
 	},
 	reducers: {
 		pageClassList(state, { payload }) {
@@ -26,8 +27,10 @@ export default {
 			return { ...state, getClassMembersFinish: payload };
 		},
 		classStudentList(state, { payload }) {
-            console.log("classStudentList -> state, { payload }", state,  payload )
 			return { ...state, classStudentList: payload };
+		},
+		checkClassId(state, { payload }) {
+			return { ...state, checkClassId: payload };
 		},
 		
 	},
@@ -79,6 +82,12 @@ export default {
 				type: 'pageClassList',
 				payload: _classList
 			})
+			if(_classList.length){
+				yield put({
+					type: 'checkClassId',
+					payload:_classList[0].classId
+				})
+			}
 			return _classList
 		},
 		getClassMembers: [function* ({ payload }, { put, select }) {
