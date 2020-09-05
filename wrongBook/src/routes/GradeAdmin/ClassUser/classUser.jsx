@@ -110,13 +110,7 @@ class StuReport extends React.Component {
 
     const rodeType = store.get('wrongBookNews').rodeType
     classList = this.props.state.classList;
-
-    // if (rodeType <= 20) {
-    //   classList = this.props.state.classList;
-    // } else {
-    //   classList = this.props.state.classList;
-    // }
-    if (classList.data) {
+    if (classList.length) {
       return (
         <div className={style.leftInfo}>
 
@@ -129,16 +123,16 @@ class StuReport extends React.Component {
               payload: item.key
             })
             //清空班级邀请码
-            //observer.publish('fuyuan')
+            observer.publish('fuyuan')
           }}
             selectedKeys={[`${this.state.nowclassid}`]}
             style={{ height: 'calc(100% - 115px)' }}
             className={style.menu}
             onClick={this.menuClick}  >
             {
-               rodeType  <=10000?
-              // rodeType <= 20 ?
-                classList.data.list.map((item, i) => {
+               
+              rodeType <= 20 ?
+                classList.map((item, i) => {
                   return (
                     <Menu.Item key={item.classId}
                       onDoubleClick={(e) => {
@@ -155,7 +149,7 @@ class StuReport extends React.Component {
 
                     </Menu.Item>
                   )
-                }) : classList.data.list.map((item, i) => {
+                }) : classList.map((item, i) => {
                   return (
                     <Menu.Item key={item.classId}
                       onDoubleClick={(e) => {
@@ -175,21 +169,21 @@ class StuReport extends React.Component {
             }
           </Menu>
 
-          {store.get('wrongBookNews').rodeType < 2000 ?
+          {store.get('wrongBookNews').rodeType < 20 ?
             <div className={style.shenjibj} onClick={(e) => {
               const rodeType = store.get('wrongBookNews').rodeType
-              if (rodeType <= 2000) {
+              if (rodeType <= 20) {
                 classList = this.props.state.classList;
               } else {
                 classList = this.props.state.classList;
               }
 
-              if (classList.data.list.length > 0) {
+              if (classList.length > 0) {
                 let plainOptions = []
-                for (let i = 0; i < classList.data.list.length; i++) {
+                for (let i = 0; i < classList.length; i++) {
                   plainOptions.push({
-                    label: classList.data.list[i].className,
-                    value: classList.data.list[i].classId,
+                    label: classList[i].className,
+                    value: classList[i].classId,
                   })
                 }
                 this.setState({
@@ -401,13 +395,13 @@ class StuReport extends React.Component {
         type: 'classHome/pageClass',
         payload: data
       }).then(() => {
-        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
+        if (this.props.state.classList.length ) {
           dispatch({
             type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
+            payload: this.props.state.classList[0].classId
           });
           this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId
+            nowclassid: this.props.state.classList[0].classId
           })
           this.props.dispatch({
             type: 'homePage/teacherList',
@@ -435,13 +429,13 @@ class StuReport extends React.Component {
         type: 'classHome/pageClass',
         payload: data
       }).then(() => {
-        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
+        if (this.props.state.classList.length) {
           dispatch({
             type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
+            payload: this.props.state.classList[0].classId
           });
           this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId
+            nowclassid: this.props.state.classList[0].classId
           })
           this.props.dispatch({
             type: 'homePage/teacherList',
@@ -474,13 +468,13 @@ class StuReport extends React.Component {
           schoolId: store.get('wrongBookNews').schoolId
         }
       }).then(() => {
-        if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
+        if (this.props.state.classList.length) {
           dispatch({
             type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
+            payload: this.props.state.classList[0].classId
           });
           this.setState({
-            nowclassid: this.props.state.classList.data.list[0].classId
+            nowclassid: this.props.state.classList[0].classId
           })
           this.props.dispatch({
             type: 'homePage/teacherList',
@@ -511,27 +505,20 @@ class StuReport extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.state.infoClass != this.state.nowclassid) {
+    if(this.props.state.classList.length==0)return 
+    console.log("StuReport -> componentDidUpdate -> his.props.state.classList", this.props.state.classList)
+    let _classId=this.props.state.classList[0].classId
+    if (_classId != this.state.nowclassid) {
 
       try {
-
-        if (store.get('wrongBookNews').rodeType <= 20) {
-
+        if(this.props.state.classList.length){
           this.props.dispatch({
             type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
+            payload: _classId
           });
-          this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
-
-        } else {
-          this.props.dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList.data.list[0].classId
-          });
-
-          this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
-
+          this.setState({ nowclassid: _classId })
         }
+        
       } catch (e) {
         console.error(e)
       }

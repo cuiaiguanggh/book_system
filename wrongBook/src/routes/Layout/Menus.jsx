@@ -298,6 +298,8 @@ class HomePageLeft extends Component {
       <Select value={`${this.props.state.years}-${Number(this.props.state.years) + 1}`}
         suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
         className={'academicBox'} onChange={(value) => {
+
+          console.log("HomePageLeft -> getyear -> value", value)
           this.props.dispatch({
             type: 'temp/years',
             payload: value
@@ -385,15 +387,21 @@ class HomePageLeft extends Component {
             });
           }
           if (window.location.href.split('/#/')[1].includes('classUser')) {
-            console.log('classUser')
+            console.log('classUser page')
+            // this.props.dispatch({
+            //   type: 'classHome/getClassList',
+            //   payload: {
+            //     year,
+            //     schoolId: store.get('wrongBookNews').schoolId
+            //   }
+            // });
             this.props.dispatch({
-              type: 'classHome/getClassList',
+              type: 'classHome/pageClass',
               payload: {
                 year,
                 schoolId: store.get('wrongBookNews').schoolId
               }
             });
-
             this.props.dispatch({
               type: 'homePage/teacherList',
               payload: {
@@ -402,7 +410,7 @@ class HomePageLeft extends Component {
             })
           } else if (window.location.href.split('/#/')[1] == 'classChart') {
             if (classId !== '' && subId != '' && year !== '') {
-              console.log('classChart')
+              console.log('classChart page')
               //重置月份为0
               this.props.dispatch({
                 type: 'report/changeMouth',

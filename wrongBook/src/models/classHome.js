@@ -142,6 +142,51 @@ export default {
 			}
 
 		},
+		// *pageClass({ payload }, { put, select }) {
+		// 	// 班级列表
+		// 	yield put({
+		// 		type: 'classInfoPayload',
+		// 		payload: payload
+		// 	})
+		// 	let res = yield pageClass(payload);
+		// 	if (!res.data.data.hasOwnProperty('list')) {
+		// 		res.data.data.list = []
+		// 	}
+		// 	if (res.data.result != 0) {
+		// 		// yield put(routerRedux.push('/login'))
+		// 	}
+		// 	if (res.data && res.data.result === 0) {
+		// 		yield put({
+		// 			type: 'classList',
+		// 			payload: res.data
+		// 		})
+		// 		let { infoClass } = yield select(state => state.homePage)
+
+		// 		//切换学年时的班级与当前选中的班级相同时，不清空选中班级的id
+		// 		let panduan = true;
+		// 		for (let i = 0; i < res.data.data.list.length; i++) {
+		// 			if (res.data.data.list[i].classId == infoClass) {
+		// 				panduan = false;
+		// 				break;
+		// 			}
+		// 		}
+		// 		if (panduan) {
+		// 			yield put({
+		// 				type: 'homePage/infoClass',
+		// 				payload: ''
+		// 			})
+		// 		}
+
+		// 	} else {
+		// 		if (res.data.result === 2) {
+		// 			yield put(routerRedux.push('/login'))
+		// 		} else if (res.data.msg == '服务器异常') {
+
+		// 		} else {
+		// 			message.error(res.data.msg)
+		// 		}
+		// 	}
+		// },
 		*pageClass({ payload }, { put, select }) {
 			// 班级列表
 			yield put({
@@ -149,23 +194,20 @@ export default {
 				payload: payload
 			})
 			let res = yield pageClass(payload);
-			if (!res.data.data.hasOwnProperty('list')) {
-				res.data.data.list = []
-			}
-			if (res.data.result != 0) {
-				// yield put(routerRedux.push('/login'))
-			}
+			let classList=[]
+			// if (!res.data.data.hasOwnProperty('list')) {
+			// 	res.data.data.list = []
+			// }
 			if (res.data && res.data.result === 0) {
-				yield put({
-					type: 'classList',
-					payload: res.data
-				})
+				if(res.data.data&&res.data.data.list){
+					classList=res.data.data.list
+				}
 				let { infoClass } = yield select(state => state.homePage)
 
 				//切换学年时的班级与当前选中的班级相同时，不清空选中班级的id
 				let panduan = true;
-				for (let i = 0; i < res.data.data.list.length; i++) {
-					if (res.data.data.list[i].classId == infoClass) {
+				for (let i = 0; i < classList.length; i++) {
+					if (classList[i].classId == infoClass) {
 						panduan = false;
 						break;
 					}
@@ -176,13 +218,14 @@ export default {
 						payload: ''
 					})
 				}
-
+				yield put({
+					type: 'classList',
+					payload:classList
+				})
 			} else {
 				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))
-				} else if (res.data.msg == '服务器异常') {
-
-				} else {
+				} else if(res.data.result !=0) {
 					message.error(res.data.msg)
 				}
 			}
@@ -428,7 +471,7 @@ export default {
 				}
 		},
 		*getClassList({ payload }, { put, select }) {
-			console.log('getClassList: 获取学年', payload);
+			console.log('获取学年触发', payload);
 			// 返回教师所在班级列表
 			// yield put({
 			// 	type: 'classListPayload',
