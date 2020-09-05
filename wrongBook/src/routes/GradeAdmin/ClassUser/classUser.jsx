@@ -122,6 +122,10 @@ class StuReport extends React.Component {
               type: 'classHome/classId',
               payload: item.key
             })
+            this.props.dispatch({
+              type: 'classModel/checkClassId',
+              payload: item.key
+            })
             //清空班级邀请码
             observer.publish('fuyuan')
           }}
