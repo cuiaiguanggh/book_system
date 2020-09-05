@@ -365,6 +365,15 @@ class HomePageLeft extends Component {
               schoolId: store.get('wrongBookNews').schoolId
             }
           })
+          this.props.dispatch({
+            type: 'classModel/getPageClass',
+            payload: {
+              schoolId: store.get('wrongBookNews').schoolId,
+              pageSize: 9999,
+              pageNum: 1,
+              year
+            }
+          });
           if (store.get('wrongBookNews').rodeType !== 10) {
             this.props.dispatch({
               type: 'down/showPdfModal',
@@ -531,7 +540,15 @@ class HomePageLeft extends Component {
             year: this.props.state.years
           }
         });
-
+        this.props.dispatch({
+          type: 'classModel/getPageClass',
+          payload: {
+            schoolId: value,
+            pageSize: 9999,
+            pageNum: 1,
+            year: this.props.state.years
+          }
+        });
         this.props.dispatch({
           type: 'homePage/infoSchool',
           payload: value

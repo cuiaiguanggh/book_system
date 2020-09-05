@@ -1,250 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
-	Layout, Table, Input, message, Modal, Select, Radio, Popover, Button, Spin, Checkbox, DatePicker, Icon, Upload
+	Layout, Table, Modal, Select, Spin, Checkbox, Icon
 } from 'antd';
 import { connect } from 'dva';
 import style from './studentList.less';
 import store from 'store';
 import observer from '../../../utils/observer'
-import { dataCenter } from '../../../config/dataCenter';
 import moment from 'moment';
 moment.locale('zh-cn');
 
-const confirm = Modal.confirm;
 const { Content } = Layout;
-const Search = Input.Search;
 const Option = Select.Option;
-const { RangePicker } = DatePicker;
-
-function Trim() {
-	String.prototype.trim = function () {
-		return this.replace(/(^\s*) | (\s*$)/g, '');
-	}
-}
-//学生弹窗
-const StuPopup = connect()(
-	function (props) {
-		const [name, setName] = useState(props.stuName ? props.stuName : '');
-		const [account, setAccount] = useState(props.stuAccounts ? props.stuAccounts : '');
-		const [password, setPassword] = useState('888888');
-		const [visible, setVisible] = useState(false);
-		const [serviceType, setServiceType] = useState(props.serviceType ? props.serviceType : 0);
-		const [date, setDate] = useState(props.serviceBegin && props.serviceType === 2 ? [moment(props.serviceBegin), moment(props.serviceEnd)] : [moment(), moment().add(7, 'd')]);
-		const [serviceSubject, setServiceSubject] = useState(props.serviceSubject ? props.serviceSubject.split(',') : []);
-
-		useEffect(() => {
-			setServiceType(props.serviceType ? props.serviceType : 0)
-		}, [props.serviceType]);
-
-		return (
-			<>
-				{/* {props.title === '添加学生' ?
-					<span className={style.addGrade} onClick={() => { setVisible(true); }}>
-						<img src={require('../../images/sp-xt-n.png')} style={{ width: 12, margin: '0px 8px 4px 0' }} />添加学生</span>
-					:
-					<span style={{ color: '#2296F3', fontSize: 12, cursor: 'pointer' }} onClick={() => { setVisible(true); }}>编辑</span>} */}
-
-
-				<Modal title={props.title}
-					visible={visible}
-					destroyOnClose={true}
-					onOk={() => {
-						if (account.trim() == '' || account.trim() == '' || password.trim() == '') {
-							message.warning('请填写正确信息')
-							return;
-						}
-
-						let data = {
-							classId: props.classId,
-							account,
-							name,
-							serviceType
-						}
-
-						if (props.title === '编辑') {
-							data.userId = props.userId;
-						}
-
-						if (serviceType === 1) {
-							if (date.length === 0) {
-								message.warning('请选择服务期限')
-								return;
-							}
-							data.serviceBegin = moment(date[0]).format('YYYY-MM-DD');
-							data.serviceEnd = moment(date[1]).format('YYYY-MM-DD');
-						} else if (serviceType === 2) {
-							if (date.length === 0) {
-								message.warning('请选择服务期限')
-								return;
-							}
-							data.serviceBegin = moment(date[0]).format('YYYY-MM-DD');
-							data.serviceEnd = moment(date[1]).format('YYYY-MM-DD');
-							data.serviceSubject = serviceSubject;
-						}
-
-						if (props.title === '添加学生') {
-
-							props.dispatch({
-								type: 'homePage/addStudent',
-								payload: data
-							}).then((res) => {
-								//刷新
-								props.refresh()
-								setName('');
-								setAccount('');
-								setPassword('888888');
-								setDate([]);
-								setServiceSubject([]);
-								setServiceType(0)
-
-							})
-						} else if (props.title === '编辑') {
-							props.dispatch({
-								type: 'homePage/changeStudent',
-								payload: data
-							}).then((res) => {
-								//刷新
-								props.refresh()
-							})
-						}
-						setVisible(false);
-
-					}}
-					onCancel={() => {
-						setVisible(false);
-
-						if (props.title === '添加学生') {
-							setName('');
-							setAccount('');
-							setPassword('888888');
-							setDate([]);
-							setServiceSubject([]);
-							setServiceType(0)
-						}
-
-					}}
-					okText='确定'
-					cancelText='取消'>
-
-					<div style={{ marginBottom: 20 }}>
-						<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>用户身份：</span>
-						<Radio.Group onChange={(e) => {
-							setServiceType(e.target.value)
-							if (e.target.value === Number(2) && props.serviceBegin) {
-								setDate([moment(props.serviceBegin), moment(props.serviceEnd)])
-							} else if (e.target.value === Number(1)) {
-								setDate([moment(), moment().add(7, 'd')])
-							}
-						}} value={serviceType}>
-							<Radio value={0}>普通用户</Radio>
-							<Radio value={1}>试用用户</Radio>
-							<Radio value={2}>付费用户</Radio>
-						</Radio.Group>
-					</div>
-
-					<div style={{ marginBottom: 20 }}>
-						<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>用户姓名：</span>
-						<Input value={name} onChange={(e) => { setName(e.target.value.replace(/^ +| +$/g, '')) }} style={{ width: '200px' }} />
-					</div>
-
-					<div style={{ marginBottom: 20 }}>
-						<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>帐号：</span>
-						<Input value={account} onChange={(e) => { setAccount(e.target.value.replace(/[^\w\.\/]/ig, '')) }} style={{ width: '200px' }} />
-					</div>
-					{props.title === '添加学生' &&
-						< div style={{ marginBottom: 20 }}>
-							<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>密码：</span>
-							<Input value={password} onChange={(e) => { setPassword(e.target.value.replace(/[^\w\.\/]/ig, '')) }} style={{ width: '200px' }} />
-						</div>}
-					{serviceType !== 0 && <div style={{ marginBottom: 20 }}>
-						<span style={{ width: "80px", display: 'inline-block' }}><span style={{ color: '#F5232D' }}> *</span>服务期限：</span>
-						<RangePicker placeholder={['开始期限', '结束期限']} format="YYYY-MM-DD" value={date}
-							onChange={(date, dateString) => {
-								setDate(date);
-								if (serviceType === Number(1)) {
-									setDate([date[0], moment(date[0]).add(7, 'd')])
-								}
-							}} />
-					</div>}
-
-					{serviceType === 2 && <div style={{ marginBottom: 20 }}>
-						<span style={{ width: "80px", display: 'inline-block' }}>寄送学科：</span>
-						<Checkbox.Group value={serviceSubject} options={['数学', '物理', '化学', '生物', '科学']}
-							onChange={(value) => { setServiceSubject(value) }} />
-					</div>}
-
-					{props.title === '编辑' &&
-						<div style={{
-							color: '#2C98F0', position: 'absolute',
-							bottom: 15,
-							cursor: 'pointer'
-						}}
-							onClick={() => {
-								props.dispatch({
-									type: 'homePage/resetPassword',
-									payload: { userId: props.userId }
-								})
-							}}>重置密码</div>}
-				</Modal>
-			</>
-		)
-	})
-//作业中心界面内容
 class HomeworkCenter extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			editingKey: '',
-			visible: false,
-			visibleS: false,
-			teacher: '',
-			phone: '',
-			sub: 0,
-			searchType: 0,
-			teacherName: '',
-			content: <div style={{
-				textAlign: "center", width: 300, height: 280, display: 'flex',
-				justifyContent: 'center',
-				flexDirection: 'column'
-			}}> <Spin /> </div>,
-			pitchOn: '',
-			selectedRowKeys: [],
-			isCare: 1,
 			selectUser: '',
-			selectStudent:{}
 		};
-		observer.addSubscribe('fuyuan', () => {
-			this.setState({
-				content: <div style={{
-					textAlign: "center", width: 300, height: 280,
-					display: 'flex',
-					justifyContent: 'center',
-					flexDirection: 'column'
-				}}> <Spin /> </div>,
-			})
-		})
-		//刷新左侧列表和学生列表
-		this.refreshStu = () => {
-			this.props.dispatch({
-				type: 'homePage/teacherList',
-				payload: {
-					type: 3
-				}
-			});
-			this.props.dispatch({
-				type: 'classHome/pageClass',
-				payload: {
-					schoolId: store.get('wrongBookNews').schoolId,
-					pageSize: 9999,
-					pageNum: 1,
-					year: this.props.state.years
-				}
-			})
-		}
-
-	
-
 		this.studentColum = [
 			{
 				title: '序号',
@@ -256,11 +29,7 @@ class HomeworkCenter extends React.Component {
 			dataIndex: 'userName',
 			align: 'center',
 			editable: true,
-			render: (text, record) => {
-				return record.userId === this.state.pitchOn ?
-					<input defaultValue={text} onBlur={(e) => { record.nowname = e.currentTarget.value }} /> :
-					<div> {text} {record.isCare === 1 && <Icon type="heart" theme="filled" style={{ color: '#FFC108' }} />}</div>
-			}
+			render: (text, record) => (text)
 		}, {
 			title: '账号',
 			dataIndex: 'account',
@@ -288,7 +57,7 @@ class HomeworkCenter extends React.Component {
 							onClick={(e) => {
 								e.preventDefault()
 								e.stopPropagation()
-								this.onChangeCheck(index,i,item,record,e)
+								this.onChangeCheck(index,i,record)
 							}}
 						>
 						{i+1}
@@ -300,41 +69,32 @@ class HomeworkCenter extends React.Component {
 		];
 
 	}
-	onChangeCheck(index,i,item,ele,e){
+	onChangeCheck(index,i,ele){
+        console.log("HomeworkCenter -> onChangeCheck -> index,i,ele", index,i,ele)
 		let qh=ele.questionHook||{}
+        console.log("HomeworkCenter -> onChangeCheck -> qh", qh)
 		if(qh[`${index}-${i}`]){
 			delete qh[`${index}-${i}`]
 		}else{
 			qh[`${index}-${i}`]=true
 		}
-		let _pageHomeworkDetiles = this.props.state.tealist;
-		_pageHomeworkDetiles.data[index].questionHook=qh
+		let _pageHomeworkDetiles = this.props.state.classStudentList;
+		_pageHomeworkDetiles[index].questionHook=qh
 		this.props.dispatch({
-			type: 'homePage/initStudentList1',
-			payload: {
-				init:false,
-				data:_pageHomeworkDetiles
-			}
+			type: 'classModel/classStudentList',
+			payload: _pageHomeworkDetiles
 		})
 	}
-
-
-
-
 
 	render() {
 		let state = this.props.state;
 		let rodeType = store.get('wrongBookNews').rodeType;
-		let pageHomeworkDetiles = state.tealist;
-		let dataSource = [];
+		let dataSource = state.classStudentList;
 		let rowRadioSelection={
 			type:'radio',
 			columnTitle:"选择",
 			onSelect: (selectedRowKeys, selectedRows) => {
 				console.log(selectedRowKeys, selectedRows)
-				// this.setState({
-				// 	selectStudent:selectedRowKeys
-				// })
 				this.props.selectStudentHander(selectedRowKeys,selectedRows)
 				this.props.dispatch({
 					type: 'homePage/setSaleId',
@@ -342,26 +102,7 @@ class HomeworkCenter extends React.Component {
 				})
 			}
 		}
-		if (pageHomeworkDetiles.data) {
-			if (state.showMen !== '' && this.state.selectUser !== '' && this.props.current === 'student') {
-				for (let i = 0; i < pageHomeworkDetiles.data.length; i++) {
-					console.log(pageHomeworkDetiles.data[i].userName.indexOf(state.showMen))
 
-					if (pageHomeworkDetiles.data[i].userName && pageHomeworkDetiles.data[i].userName.indexOf(state.showMen) > -1 && pageHomeworkDetiles.data[i].serviceType === Number(this.state.selectUser)) {
-						dataSource.push(pageHomeworkDetiles.data[i]);
-					}
-				}
-			} else if (this.state.selectUser !== '' && this.props.current === 'student') {
-				for (let i = 0; i < pageHomeworkDetiles.data.length; i++) {
-					if (pageHomeworkDetiles.data[i].serviceType === Number(this.state.selectUser)) {
-						dataSource.push(pageHomeworkDetiles.data[i]);
-					}
-				}
-			} else {
-				dataSource = pageHomeworkDetiles.data;
-			}
-		}
-		
 		let columns = this.studentColum;
 
 		let sublist = this.props.state.sublist;
@@ -372,27 +113,6 @@ class HomeworkCenter extends React.Component {
 				children.push(<Option key={data.k}>{data.v}</Option>);
 			}
 		}
-		let that = this;
-		let configuration = {
-			name: 'excelFile',
-			showUploadList: false,
-			action: dataCenter('/school/class/manage/creat/stuExcel'),
-			data: {
-				classId: that.props.state.infoClass
-			},
-			headers: {
-				Authorization: store.get('wrongBookToken')
-			},
-			onChange(info) {
-				if (info.file.status === "done" && info.file.response.result === 0) {
-					//刷新
-					that.refreshStu()
-					message.success(info.file.response.msg);
-				} else if (info.file.status === "error") {
-					message.error(info.file.response.message);
-				}
-			},
-		};
 		return (
 			<>
 				<Layout style={{
@@ -424,12 +144,10 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount() {
-
-
-		this.props.dispatch({
-			type: 'homePage/getGrade',
-			payload: { schoolId: store.get('wrongBookNews').schoolId }
-		})
+		// this.props.dispatch({
+		// 	type: 'homePage/getGrade',
+		// 	payload: { schoolId: store.get('wrongBookNews').schoolId }
+		// })
 
 		this.props.dispatch({
 			type: 'homePage/subjectNodeList',
@@ -437,17 +155,10 @@ class HomeworkCenter extends React.Component {
 		})
 	}
 	UNSAFE_componentWillMount() {
-		this.props.dispatch({
-			type: 'homePage/tealist',
-			payload: []
-		});
-		// 清空models里搜索框内容
-		this.props.dispatch({
-			type: 'homePage/showMen',
-			payload: ''
-		});
-		console.log(this.state.selectUser)
-
+		// this.props.dispatch({
+		// 	type: 'homePage/tealist',
+		// 	payload: []
+		// });
 	}
 
 }
@@ -455,6 +166,8 @@ class HomeworkCenter extends React.Component {
 export default connect((state) => ({
 	state: {
 		...state.homePage,
+		getClassMembersFinish:state.classModel.getClassMembersFinish,
+		classStudentList:state.classModel.classStudentList,
 		years: state.temp.years
 	}
 }))(HomeworkCenter);

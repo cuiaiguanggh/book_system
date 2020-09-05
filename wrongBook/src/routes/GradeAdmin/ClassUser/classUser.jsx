@@ -511,7 +511,6 @@ class StuReport extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-
     if (this.props.state.infoClass != this.state.nowclassid) {
 
       try {
