@@ -312,10 +312,11 @@ class StuReport extends React.Component {
       }
     });
   }
-  initQuestionChecked(elist){
+  initQuestionChecked(data){
 		let _tes = this.props.state.classStudentList
-    let data=elist
-		for (let index = 0; index < data.length; index++) {
+
+    let _length=_tes.length>data.length?data.length:_tes.length
+		for (let index = 0; index < _length; index++) {
         const e = data[index]
         for (let j = 0; j < e.length; j++) {
           if(j<e.length-1){
