@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Input, Checkbox, message, Popover, Modal } from 'antd';
+import { Input, Checkbox, message, Popover, Modal,Button } from 'antd';
 import style from './login.css';
 import cookie from 'react-cookies'
 let loginType = [
@@ -223,7 +223,7 @@ class Login extends Component {
                         }} />
                     </div>
                   </div>
-                  <div className={style.login}
+                  <Button  loading={this.props.state.loading} className={style.login}
                     onClick={() => {
                       cookie.save('catchyName', this.state.name, { path: '/' })
                       if (this.state.checked) {
@@ -236,6 +236,7 @@ class Login extends Component {
                         password: this.state.pass,
                       }
                       if (this.state.name.replace(/(^\s*)|(\s*$)/g, "") == '' || this.state.pass == '') {
+                        message.destroy()
                         message.warning("账号或密码不能为空")
                       } else {
                         this.props.dispatch({
@@ -244,7 +245,7 @@ class Login extends Component {
                         })
                       }
 
-                    }}>登录</div>
+                    }}>登录</Button>
                   <div style={{ margin: '0 30px', overflow: 'hidden' }}>
                     <Checkbox
                       style={{ float: 'left' }}
@@ -445,5 +446,6 @@ class Login extends Component {
 export default connect((state) => ({
   state: {
     ...state.userManage,
+    loading:state.login.loading
   }
 }))(Login);

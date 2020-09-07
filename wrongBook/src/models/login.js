@@ -31,9 +31,13 @@ export default {
 		phone: '',
 		token: '',
 		pc: 0,
+		loading:false
 
 	},
 	reducers: {
+		loading(state, { payload }) {
+			return { ...state, loading: payload };
+		},
 		vc(state, { payload }) {
 			return { ...state, vc: payload };
 		},
@@ -103,7 +107,7 @@ export default {
 							}
 							break;
 						case 'headteacher':
-							//班主任 
+							//班主任
 							if (!rodeType || rodeType === 40) {
 								rodeType = 30;
 								data.data.rodeType = 30;
@@ -238,7 +242,7 @@ export default {
 								}
 								break;
 							case 'headteacher':
-								//班主任 
+								//班主任
 								if (!rodeType || rodeType === 40) {
 									rodeType = 30;
 									data.data.rodeType = 30;
@@ -355,8 +359,14 @@ export default {
 
 		},
 		*login({ payload }, { put, call, select }) {
+			// console.log('payload: ', payload);
 			try {
 				// 登录
+				yield put({
+					type:'loading',
+					payload:true
+				})
+				
 				store.set('wrongBookToken', '')
 				let res = yield loginTiku(payload);
 
@@ -379,13 +389,19 @@ export default {
 					} else if (res.data.msg == '服务器异常') {
 
 					} else {
+						message.destroy()
 						message.error(res.data.msg)
 					}
 				}
 			} catch (e) {
 				console.error('登录发生错误' + e);
+				message.destroy()
 				message.error('登录发生错误')
 			}
+			yield put({
+				type:'loading',
+				payload:false
+			})
 		},
 		*getVC({ payload }, { put, select }) {
 			// 获取验证码
@@ -447,7 +463,7 @@ export default {
 								}
 								break;
 							case 'headteacher':
-								//班主任 
+								//班主任
 								if (!rodeType || rodeType === 40) {
 									rodeType = 30;
 									data.data.rodeType = 30;
