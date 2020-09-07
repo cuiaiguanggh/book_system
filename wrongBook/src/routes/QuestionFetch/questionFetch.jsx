@@ -204,7 +204,7 @@ class StuReport extends React.Component {
       info: 0,
       pageSize: 9999,
       pageNum: 1,
-      startTime:'2020-06-02'||this.state.sdate||this.state.defaultDate,
+      startTime:this.state.sdate||this.state.defaultDate,//'2020-06-02'||
       endTime:this.state.edate||this.state.defaultDate
     }
     this.props.dispatch({

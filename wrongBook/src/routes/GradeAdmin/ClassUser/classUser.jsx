@@ -530,9 +530,12 @@ class StuReport extends React.Component {
       this.props.dispatch({
         type: 'homePage/teacherList',
         payload: {
-          type: 1,
+          type: this.props.state.memType//1,
         }
       });
+      // this.setState({
+      //   current:"teacher"
+      // })
     }
 
   }
