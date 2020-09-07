@@ -256,7 +256,7 @@ class StuReport extends React.Component {
 			return (
         <>
         <Select
-          style={{ width: 90, marginLeft: 5 }}
+          style={{ width: 90, marginLeft: 5,marginRight:20 }}
 					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
           defaultValue={this.state.currentSubdata.value}
@@ -361,7 +361,7 @@ class StuReport extends React.Component {
             {
               this.getStudentListPageSub()
             }
-            <div style={{display:'inline-block',margin:'0 20px'}}>
+            <div style={{display:'inline-block',margin:'0 20px 0 0'}}>
               时间:
               <RangePicker
                 style={{ width: 240, marginLeft: 10 }}
@@ -370,8 +370,8 @@ class StuReport extends React.Component {
                 disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(30, 'day')}
                 onChange={this.timeHanderChange.bind(this)} />
             </div>
-            <Button type="primary" onClick={()=>{this.getQuestions()}} >查询</Button>
-            <span style={{marginLeft:'20px'}}>{this.state.questions.length}题</span>
+            <Button style={{marginRight:'20px'}} type="primary" onClick={()=>{this.getQuestions()}} >查询</Button>
+            <span >{this.state.questions.length}题</span>
           </Spin>
         } 
         </div>
