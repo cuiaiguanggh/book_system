@@ -298,6 +298,8 @@ class HomePageLeft extends Component {
       <Select value={`${this.props.state.years}-${Number(this.props.state.years) + 1}`}
         suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
         className={'academicBox'} onChange={(value) => {
+
+          console.log("HomePageLeft -> getyear -> value", value)
           this.props.dispatch({
             type: 'temp/years',
             payload: value
@@ -308,6 +310,7 @@ class HomePageLeft extends Component {
           let subId = this.props.state.subId;
           let year = value;
 
+          console.log('store.rodeType: ', store.get('wrongBookNews').rodeType);
           if (store.get('wrongBookNews').rodeType === 10) {
             //超管页面下的班级管理的左侧班级
             this.props.dispatch({
@@ -324,6 +327,13 @@ class HomePageLeft extends Component {
               type: 'homePage/teacherList',
               payload: {
                 type: 1
+              }
+            })
+            this.props.dispatch({
+              type: 'temp/getClassList',
+              payload: {
+                year,
+                schoolId: store.get('wrongBookNews').schoolId
               }
             })
             if (window.location.href.split('/#/')[1] == 'classChart') {
@@ -365,6 +375,15 @@ class HomePageLeft extends Component {
               schoolId: store.get('wrongBookNews').schoolId
             }
           })
+          this.props.dispatch({
+            type: 'classModel/getPageClass',
+            payload: {
+              schoolId: store.get('wrongBookNews').schoolId,
+              pageSize: 9999,
+              pageNum: 1,
+              year
+            }
+          });
           if (store.get('wrongBookNews').rodeType !== 10) {
             this.props.dispatch({
               type: 'down/showPdfModal',
@@ -376,15 +395,21 @@ class HomePageLeft extends Component {
             });
           }
           if (window.location.href.split('/#/')[1].includes('classUser')) {
-            console.log('classUser')
+            console.log('classUser page')
+            // this.props.dispatch({
+            //   type: 'classHome/getClassList',
+            //   payload: {
+            //     year,
+            //     schoolId: store.get('wrongBookNews').schoolId
+            //   }
+            // });
             this.props.dispatch({
-              type: 'classHome/getClassList',
+              type: 'classHome/pageClass',
               payload: {
                 year,
                 schoolId: store.get('wrongBookNews').schoolId
               }
             });
-
             this.props.dispatch({
               type: 'homePage/teacherList',
               payload: {
@@ -393,7 +418,7 @@ class HomePageLeft extends Component {
             })
           } else if (window.location.href.split('/#/')[1] == 'classChart') {
             if (classId !== '' && subId != '' && year !== '') {
-              console.log('classChart')
+              console.log('classChart page')
               //重置月份为0
               this.props.dispatch({
                 type: 'report/changeMouth',
@@ -531,7 +556,15 @@ class HomePageLeft extends Component {
             year: this.props.state.years
           }
         });
-
+        this.props.dispatch({
+          type: 'classModel/getPageClass',
+          payload: {
+            schoolId: value,
+            pageSize: 9999,
+            pageNum: 1,
+            year: this.props.state.years
+          }
+        });
         this.props.dispatch({
           type: 'homePage/infoSchool',
           payload: value

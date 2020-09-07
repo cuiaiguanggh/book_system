@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover, Icon, Checkbox
+  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover, Icon, Checkbox,Empty
 } from 'antd';
 
 import { connect } from 'dva';
@@ -11,6 +11,7 @@ import moment from 'moment';
 import store from 'store';
 import StudentList from './studentList/StudentList'
 import * as XLSX from 'xlsx';
+import {readExcelToJson}  from '../../utils/file';
 const { RangePicker } = DatePicker;
 
 //作业中心界面内容
@@ -28,25 +29,15 @@ class StuReport extends React.Component {
     };
     this.state = {
       loading: false,
-      visible: false,
       page: 1,
       next: true,
-      whetherbz: false,
       nowclassid: '',
-      reminder: false,
-      upgradeClass: false,
-      indeterminate: false,
-      checkAll: false,
-      checkedList: [],
-      plainOptions: [],
-      current: 'student',
       currentSudent:{},
       currentSubdata:{
         id:2,
         value:'数学'
       },
       questions:[],
-      quering:false,
       file: [],
       uploadFileName: '请选择EXCEL文件导入',
       chechBtnLoaing:false,
@@ -54,7 +45,7 @@ class StuReport extends React.Component {
       sdate:'',
       edate:'',
       defaultDate:moment().locale('zh-cn').format('YYYY-MM-DD'),
-      tapbarLoding:true
+      excelMatching:false
     }
   }
   timeHanderChange(dates, dateString) {
@@ -74,7 +65,7 @@ class StuReport extends React.Component {
     this.setState({
       chechBtnLoaing:true
     })
-    let _arr=this.props.state.tealist.data
+    let _arr=this.props.state.classStudentList
     let prdata=[]
     for (let index = 0; index < _arr.length; index++) {
       const ele = _arr[index]
@@ -123,74 +114,51 @@ class StuReport extends React.Component {
   
   menuClick = (e) => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'homePage/infoClass',
-      payload: e.key
-    });
-    dispatch({
-      type: 'classHome/classId',
-      payload:  e.key
+    // dispatch({
+    //   type: 'homePage/infoClass',
+    //   payload: e.key
+    // });
+    // dispatch({
+    //   type: 'classHome/classId',
+    //   payload:  e.key
+    // })
+    this.setState({
+      nowclassid: e.key
     })
     dispatch({
-      type: 'homePage/teacherList',
+      type: 'classModel/checkClassId',
+      payload: e.key
+    })
+    dispatch({
+      type: 'classModel/getClassMembers',
       payload: {
         type: 3,
+        classId:e.key
       }
     })
 
   }
 
 
-  loseFocus(e) {
-    if (!e.currentTarget.value) {
-      message.warning('班级名称不能为空')
-    } else {
-      this.props.dispatch({
-        type: 'classHome/className',
-        payload: e.currentTarget.value
-      });
-      this.props.dispatch({
-        type: 'classHome/classId',
-        payload: this.state.nowclassid
-      })
-      this.props.dispatch({
-        type: 'classHome/updateClass',
-      })
-    }
-    this.setState({
-      whetherbz: false
-    })
-  }
+  
 
   menulist() {
-    let classList = classList = this.props.state.classList;
-    // console.log('rodeType: ', rodeType);
-    // if (rodeType <= 20) {
-    //   classList = this.props.state.classList;
-    // } else {
-    //   classList = this.props.state.classList1
-    // }
-    if (classList.data) {
+    let classList  = this.props.state.pageClassList;
+    if (classList.length) {
+      let checkClassId=this.state.nowclassid||classList[0].classId
       return (
-
         <Menu onSelect={(item,) => {
-          this.setState({
-            nowclassid: item.key
-          })
           this.props.dispatch({
             type: 'classHome/classId',
             payload: item.key
           })
-          this.setState({
-            currentSudent:{}
-          })
         }}
-          selectedKeys={[`${this.state.nowclassid}`]}
+          selectedKeys={[`${checkClassId}`]}
           style={{ height: '100%' }}
           className={style.menu}
-          onClick={this.menuClick}  >
+          onClick={(item)=>this.menuClick(item)}  >
           {
-            classList.data.list.map((item, i) => {
+            classList.map((item, i) => {
               return (
                     <Menu.Item key={item.classId}>
                     <span> {item.className}</span>
@@ -199,10 +167,14 @@ class StuReport extends React.Component {
                 )
               })
           }
+          
         </Menu>
 
       )
     }
+    return(
+      <Empty className={style.noclass} description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />
+    )
   }
 
   
@@ -212,16 +184,15 @@ class StuReport extends React.Component {
     }
     if(!this.state.currentSudent.userId){
       message.destroy()
-      //if(!newSubid){
-        message.warn('请选择一个要查询的学生')
-      //}
+      message.warn('请选择一个要查询的学生')
       return
     }
+    console.log("StuReport -> getQuestions -> this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id", !this.state.nowclassid,!this.props.state.years,!this.state.currentSubdata.id)
     if(!this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id){
       return
     }
     this.props.dispatch({
-      type: 'homePage/getClassMembersFinish',
+      type: 'classModel/getClassMembersFinish',
       payload: false
     })
 
@@ -231,26 +202,23 @@ class StuReport extends React.Component {
       subjectId: newSubid||this.state.currentSubdata.id,
       userId: this.state.currentSudent.userId||5035401752333312,
       info: 0,
-      pageSize: 20,
+      pageSize: 9999,
       pageNum: 1,
-      startTime:this.state.sdate||this.state.defaultDate,
+      startTime:'2020-06-02'||this.state.sdate||this.state.defaultDate,
       endTime:this.state.edate||this.state.defaultDate
     }
     this.props.dispatch({
       type: 'report/userQRdetail',
       payload: data
     }).then(res=>{
-      console.log('res: ', res);  
+      console.error('res: ', res);  
       if(res.data&&res.data.questionList&&res.data.questionList.length){
         this.setState({
           questions:res.data.questionList
         })
         this.props.dispatch({
-          type: 'homePage/initStudentList',
-          payload: {
-            init:true,
-            data:res.data.questionList
-          }
+          type: 'classModel/initStudentList',
+          payload: res.data.questionList
         })
       }else{
         message.destroy()
@@ -259,15 +227,12 @@ class StuReport extends React.Component {
           questions:[]
         })
         this.props.dispatch({
-          type: 'homePage/initStudentList',
-          payload: {
-            init:true,
-            data:[]
-          }
+          type: 'classModel/initStudentList',
+          payload: []
         })
       }
       this.props.dispatch({
-        type: 'homePage/getClassMembersFinish',
+        type: 'classModel/getClassMembersFinish',
         payload: true
       })
     })
@@ -276,11 +241,6 @@ class StuReport extends React.Component {
     this.setState({
       currentSudent:student
     })
-    //锁定题目状态
-    // this.props.dispatch({
-    //   type: 'homePage/disabledStudentQuestions',
-    //   payload: student.userId
-    // })
   }
   getStudentListPageSub() {
 
@@ -315,51 +275,48 @@ class StuReport extends React.Component {
 		}
   }
   onImportExcel = file => {
-		const { files } = file.target;
-    if(!files||files.length===0||!files[0].name) {
-      return message.warning('文件读取错误');
-    }
-		if (files[0].name.indexOf('xls') < 0 && files[0].name.indexOf('xlsx') < 0 && files[0].name.indexOf('XLS') < 0 && files[0].name.indexOf('XLSX') < 0) {
-			message.warning('文件类型不正确,请上传xls、xlsx类型');
-			return false;
-		}
-		const fileReader = new FileReader();
-		this.setState({ file: files, uploadFile: file.target.files[0] })
-		fileReader.onload = event => {
-			try {
-				this.setState({ file: fileReader })
 
-				const { result } = event.target;
-				const workbook = XLSX.read(result, { type: 'binary' });
-				let data = [];
-				for (const sheet in workbook.Sheets) {
-					if (workbook.Sheets.hasOwnProperty(sheet)) {
-						// 利用 sheet_to_json 方法将 excel 转成 json 数据
-						data = data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
-						break; // 如果只取第一张表，就取消注释这行
-					}
-				}
-        let _elist=[]
-				for (let index = 0; index < data.length; index++) {
-          const d = data[index]
-          console.log('excel row data: ', Object.values(d));
-          _elist.push(Object.values(d))
-        }
-        this.initQuestionChecked(_elist)
-        
-			} catch (e) {
-				// 这里可以抛出文件类型错误不正确的相关提示
-				message.warning('文件读取错误')
-				return;
-			}
-		};
-		// 以二进制方式打开文件
-		fileReader.readAsBinaryString(files[0]);
-	}
-  initQuestionChecked(elist){
-		let _tes = this.props.state.tealist.data
-    let data=elist
-		for (let index = 0; index < data.length; index++) {
+    const { files } = file.target
+    if(!files||files.length===0||!files[0].name) {
+        return message.warning('文件读取错误');
+    }
+
+		this.setState({
+      uploadFileName:files[0].name,
+      excelMatching:true
+    })
+    readExcelToJson(files[0],{
+      complete:(res)=>{
+        console.log("StuReport -> res", res)
+        this.initQuestionChecked(res)
+        this.setState({
+          excelMatching:false
+        })
+      }
+    })
+    
+  }
+  updateClassMembers(_classId){
+    this.props.dispatch({
+      type: 'homePage/infoClass',
+      payload: _classId
+    });
+    this.setState({
+      nowclassid: _classId
+    })
+    this.props.dispatch({
+      type: 'classModel/getClassMembers',
+      payload: {
+        type: 3,
+        classId:_classId
+      }
+    });
+  }
+  initQuestionChecked(data){
+		let _tes = this.props.state.classStudentList
+
+    let _length=_tes.length>data.length?data.length:_tes.length
+		for (let index = 0; index < _length; index++) {
         const e = data[index]
         for (let j = 0; j < e.length; j++) {
           if(j<e.length-1){
@@ -380,16 +337,13 @@ class StuReport extends React.Component {
     }
     
 		this.props.dispatch({
-			type: 'homePage/initStudentList1',
-			payload: {
-				init:false,
-				data:{...this.props.state.tealist,data:_tes}
-			}
+			type: 'classModel/classStudentList',
+			payload: _tes
 		})
     console.log('excel match data', _tes);
-    message.success('数据导入成功');
     var f = document.getElementById('file');
     f.value = ''; //重置了file的outerHTML
+    message.success('数据导入成功');
 	}
 
   render() {
@@ -398,8 +352,8 @@ class StuReport extends React.Component {
         <p>{this.state.uploadFileName||'请选择EXCEL文件导入'}</p>
       </div>
     )
-    const   subs = this.props.state.subList;
-    return (
+    const  subs = this.props.state.subList;
+      return (
       <>
         <div className={style.whoBox}> 
         {
@@ -428,11 +382,11 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-              {/* <Spin spinning={this.state.tableLoding} style={{background:"#fff"}}> */}
               <StudentList  current='student'  selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
                 </StudentList>
                 {
-                  this.props.state.tealist.data&&this.props.state.tealist.data.length?
+                  
+                  this.props.state.classStudentList&&this.props.state.classStudentList.length?
                   <div className={style.queFetchFooter}>
                     <a href="http://test.kacha.xin/static/book_h5/demo.xlsx">
                     <Button type="link">
@@ -441,7 +395,7 @@ class StuReport extends React.Component {
                     </a>
                     
                     <Popover content={content} >
-                    <Button loading={false} className={style.fetchBtn}  >批量匹配
+                    <Button loading={this.state.excelMatching} className={style.fetchBtn}  >批量匹配
                       <input
                         type='file'
                         id='file'
@@ -468,76 +422,39 @@ class StuReport extends React.Component {
   }
 
   componentDidMount() {
+     
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
     let data = {
       schoolId: userNews.schoolId,
-      pageSize: 9999,
-      pageNum: 1,
       year: this.props.state.years
     }
     dispatch({
-      type: 'classHome/pageClass',
+      type: 'classModel/getPageClass',
       payload: data
-    }).then(() => {
-      console.log('this.props.state.classList: ', this.props.state.classList);
-      if (this.props.state.classList && this.props.state.classList.data.list.length > 0 && this.props.state.classList.data.list[0].classId) {
-        dispatch({
-          type: 'homePage/infoClass',
-          payload: this.props.state.classList.data.list[0].classId
-        });
-        this.setState({
-          nowclassid: this.props.state.classList.data.list[0].classId
-        })
-        this.props.dispatch({
-          type: 'homePage/teacherList',
-          payload: {
-            type: 1,
-          }
-        });
+    }).then((classlist) => {
+      
+      if (classlist && classlist.length > 0) {
+        let classId=classlist[0].classId||0
+        this.updateClassMembers(classId)
       }
     })
 
   }
 
   componentWillUnmount() {
+    
   }
 
-  // componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) {
 
-  //   if (this.props.state.infoClass != this.state.nowclassid) {
-
-  //     try {
-
-  //       if (store.get('wrongBookNews').rodeType <= 20) {
-
-  //         this.props.dispatch({
-  //           type: 'homePage/infoClass',
-  //           payload: this.props.state.classList.data.list[0].classId
-  //         });
-  //         this.setState({ nowclassid: this.props.state.classList.data.list[0].classId })
-
-  //       } else {
-  //         this.props.dispatch({
-  //           type: 'homePage/infoClass',
-  //           payload: this.props.state.classList.data.list.data[0].classId
-  //         });
-
-  //         this.setState({ nowclassid: this.props.state.classList.data.list.data[0].classId })
-
-  //       }
-  //     } catch (e) {
-  //       console.error(e)
-  //     }
-  //     this.props.dispatch({
-  //       type: 'homePage/teacherList',
-  //       payload: {
-  //         type: 1,
-  //       }
-  //     });
-  //   }
-
-  // }
+    //紧急情况下先这么处理学年更新的问题
+    console.log("StuReport -> componentDidUpdate", this.props.state.checkClassId,this.state.nowclassid)
+    if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
+      this.updateClassMembers(this.props.state.checkClassId)
+    }
+    
+  }
 
 
 }
@@ -548,7 +465,11 @@ export default connect((state) => ({
     ...state.classHome,
     ...state.homePage,
     // ...state.temp,
+    pageClassList:state.classModel.pageClassList,
+    getClassMembersFinish:state.classModel.getClassMembersFinish,
+    classStudentList:state.classModel.classStudentList,
     years: state.temp.years,
-    subList: state.temp.subList
+    subList: state.temp.subList,
+    checkClassId:state.classModel.checkClassId
   }
 }))(StuReport);

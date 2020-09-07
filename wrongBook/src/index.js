@@ -20,7 +20,7 @@ app.model(require('./models/example').default);
 app.model(require('./models/reportChart').default);
 app.model(require('./models/correction').default);
 app.model(require('./models/market').default);
-
+app.model(require('./models/classModel').default);
 // 4. Router
 app.router(require('./router').default);
 

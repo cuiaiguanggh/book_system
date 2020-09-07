@@ -891,6 +891,8 @@ class workCorrection extends React.Component {
 
     }
     componentDidMount() {
+        console.log("componentDidMount -> this.props.state.classId", this.props.state.classId)
+
         //根据显示器不同分辨率显示不同情况
         if (window.screen.availWidth === 1920) {
             this.setState({
