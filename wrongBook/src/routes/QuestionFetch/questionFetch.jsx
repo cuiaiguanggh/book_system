@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover, Icon, Checkbox,Empty
+  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover, Icon, Checkbox,Empty,Modal
 } from 'antd';
 
 import { connect } from 'dva';
@@ -12,6 +12,7 @@ import store from 'store';
 import StudentList from './studentList/StudentList'
 import * as XLSX from 'xlsx';
 import {readExcelToJson}  from '../../utils/file';
+import LoadingModal from '../../component/LoadingModal/LoadingModal'
 const { RangePicker } = DatePicker;
 
 //作业中心界面内容
@@ -355,6 +356,7 @@ class StuReport extends React.Component {
     const  subs = this.props.state.subList;
       return (
       <>
+        <LoadingModal>123</LoadingModal>
         <div className={style.whoBox}> 
         {
           <Spin spinning={!this.props.state.getSubjectsFinish} style={{background:"#fff"}}>
