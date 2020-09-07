@@ -166,7 +166,7 @@ class StuReport extends React.Component {
                           autoFocus={item.classId == this.state.nowclassid ? true : false}
                           onBlur={(e) => {
                             this.loseFocus(e)
-                          }} defaultValue={item.className} /> : <span> {item.className}</span>}（ {item.studentNum}人）
+                          }} defaultValue={item.className} /> : <span> {item.className}</span>}{item.studentNum>0?'('+item.studentNum+'人)':''}
                     </Menu.Item>
                   )
                 })
