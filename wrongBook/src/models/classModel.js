@@ -87,6 +87,12 @@ export default {
 					type: 'checkClassId',
 					payload:_classList[0].classId
 				})
+			}else{
+				yield put({
+					type: 'classStudentList',
+					payload:[]
+				})
+				
 			}
 			return _classList
 		},
