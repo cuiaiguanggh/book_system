@@ -272,7 +272,7 @@ class HomePageLeft extends Component {
             </Menu.Item>),
             (<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
               <Icon type="align-left" /><span>班级管理</span>
-            </Menu.Item>)
+            </Menu.Item>),
             (<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
             <Icon type="retweet" /><span>题目同步</span>
           </Menu.Item>)]
