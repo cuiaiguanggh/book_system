@@ -220,11 +220,11 @@ class intelligentDollors extends React.Component {
     //一键组卷
     oneDonw() {
 
+        if(!this.state.topicList.length)return
         this.props.dispatch({
             type: 'report/maidian',
             payload: { functionId: 9, actId: 1 }
         });
-
         this.setState({
             loading: 1
         })
@@ -385,7 +385,7 @@ class intelligentDollors extends React.Component {
                         <div className={style.leftBottom} style={{ height: 'calc(100% - 140px)' }}>
                             <div className={style.title}> 本周班级薄弱知识点 </div>
                             <div className={style.knowledgeBox} style={{ height: 'calc(100% - 20px)' }}>
-                                {this.state.dollorsKnowledge.map((item, i) => (
+                                {this.state.dollorsKnowledge.length>0?this.state.dollorsKnowledge.map((item, i) => (
                                     <p key={i} style={{ margin: 0, fontSize: 12 }}
                                         onMouseOver={e => {
                                             this.setState({
@@ -408,7 +408,7 @@ class intelligentDollors extends React.Component {
                                             </span>
                                         </span>
                                     </p>
-                                ))}
+                                )):<Empty description='暂无知识点' style={{ position: 'relative', top: '30%'}} />}
                             </div>
                         </div>
                     </Sider>
@@ -504,7 +504,7 @@ class intelligentDollors extends React.Component {
                 </Layout >
                 <div className={style.dingwei}>
                     <Spin spinning={this.state.loading === 1}>
-                        <div className={style.zujuan} onClick={this.oneDonw.bind(this)}>
+                        <div className={style.zujuan} disabled={this.state.topicList.length==0} onClick={this.oneDonw.bind(this)}>
                             <img src={require('../images/zujuanDown.png')} style={{ marginBottom: 5 }} />
                          一<br />键<br />组<br />卷<br />
                             <span className={style.yuan}>{length}</span>

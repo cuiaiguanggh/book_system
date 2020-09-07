@@ -120,7 +120,8 @@ export default {
 			if (res.data.result === 0) {
 				return res.data.data
 			} else {
-				message.error(res.data.msg)
+				message.destroy()
+				res.data.msg.indexOf('本周未收集足够的题目')>-1?message.warn(res.data.msg):message.error(res.data.msg)
 				return []
 			}
 		},
