@@ -82,7 +82,7 @@ class StuReport extends React.Component {
             if(picid){
               picid=picid.substring(5)
               // console.log('new picid: ', picid);
-              item.uqIds.push(picid)
+              item.uqIds.push('')
             }
           }
         }
