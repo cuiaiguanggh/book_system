@@ -149,10 +149,10 @@ class HomeworkCenter extends React.Component {
 		// 	payload: { schoolId: store.get('wrongBookNews').schoolId }
 		// })
 
-		this.props.dispatch({
-			type: 'homePage/subjectNodeList',
-			payload: {}
-		})
+		// this.props.dispatch({
+		// 	type: 'homePage/subjectNodeList',
+		// 	payload: {}
+		// })
 	}
 	UNSAFE_componentWillMount() {
 		// this.props.dispatch({

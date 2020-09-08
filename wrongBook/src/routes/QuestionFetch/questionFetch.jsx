@@ -34,10 +34,6 @@ class StuReport extends React.Component {
       next: true,
       nowclassid: '',
       currentSudent:{},
-      currentSubdata:{
-        id:2,
-        value:'数学'
-      },
       questions:[],
       file: [],
       uploadFileName: '请选择EXCEL文件导入',
@@ -131,6 +127,10 @@ class StuReport extends React.Component {
       payload: e.key
     })
     dispatch({
+      type: 'temp/getUserSubjectList',
+      payload: e.key,
+    });
+    dispatch({
       type: 'classModel/getClassMembers',
       payload: {
         type: 3,
@@ -188,8 +188,7 @@ class StuReport extends React.Component {
       message.warn('请选择一个要查询的学生')
       return
     }
-    console.log("StuReport -> getQuestions -> this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id", !this.state.nowclassid,!this.props.state.years,!this.state.currentSubdata.id)
-    if(!this.state.nowclassid||!this.props.state.years||!this.state.currentSubdata.id){
+    if(!this.state.nowclassid||!this.props.state.years||!this.props.state.subId){
       return
     }
     this.props.dispatch({
@@ -200,7 +199,7 @@ class StuReport extends React.Component {
     let data = {
       classId: this.state.nowclassid,
       year: this.props.state.years,
-      subjectId: newSubid||this.state.currentSubdata.id,
+      subjectId: newSubid||this.props.state.subId,
       userId: this.state.currentSudent.userId||5035401752333312,
       info: 0,
       pageSize: 9999,
@@ -249,24 +248,24 @@ class StuReport extends React.Component {
 		const children = [];
 		if (subList&&subList.data) {
 			for (let i = 0; i < subList.data.length; i++) {
-				let data = subList.data[i]
-				children.push(<Option key={data.v}>{data.k}</Option>);
+				let item = subList.data[i]
+				children.push(	<Option key={i} value={item.v}>{item.k}</Option>);
       }
 		}
 		if (subList&&subList.data && subList.data.length > 0) {
 			return (
         <>
         <Select
-          style={{ width: 90, marginLeft: 5,marginRight:20 }}
+          style={{ width: 90,marginRight:20 }}
 					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
-					optionFilterProp="children"
-          defaultValue={this.state.currentSubdata.value}
+          optionFilterProp="children"
+          placeholder="学科"
+          value={this.props.state.subId}
           onChange={(value) => {
-            this.setState({
-              currentSubdata:{
-                id:value
-              }
-            })
+            this.props.dispatch({
+							type: 'temp/subId',
+							payload: value
+						});
             this.getQuestions(value)
         }}>
           {children}
@@ -298,6 +297,7 @@ class StuReport extends React.Component {
     
   }
   updateClassMembers(_classId){
+    console.log('updateClassMembers: ', _classId);
     this.props.dispatch({
       type: 'homePage/infoClass',
       payload: _classId
@@ -305,6 +305,10 @@ class StuReport extends React.Component {
     this.setState({
       nowclassid: _classId
     })
+    this.props.dispatch({
+      type: 'temp/getUserSubjectList',
+      payload: _classId,
+    });
     this.props.dispatch({
       type: 'classModel/getClassMembers',
       payload: {
@@ -356,7 +360,6 @@ class StuReport extends React.Component {
     const  subs = this.props.state.subList;
       return (
       <>
-        <LoadingModal>123</LoadingModal>
         <div className={style.whoBox}> 
         {
           <Spin spinning={!this.props.state.getSubjectsFinish} style={{background:"#fff"}}>
@@ -470,8 +473,10 @@ export default connect((state) => ({
     pageClassList:state.classModel.pageClassList,
     getClassMembersFinish:state.classModel.getClassMembersFinish,
     classStudentList:state.classModel.classStudentList,
+    getSubjectsFinish:state.temp.getSubjectsFinish,
     years: state.temp.years,
     subList: state.temp.subList,
+    subId:state.temp.subId,
     checkClassId:state.classModel.checkClassId
   }
 }))(StuReport);
