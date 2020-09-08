@@ -833,6 +833,7 @@ class classReport extends React.Component {
                   type: 'down/delAllClass',
                 });
                 if (e.target.checked) {
+                  if(!this.props.state.qrdetailList.data||!this.props.state.qrdetailList.data.questionList.length)return
                   for (let obj of this.props.state.qrdetailList.data.questionList) {
                     this.props.dispatch({
                       type: 'down/classDown',
