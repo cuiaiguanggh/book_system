@@ -366,16 +366,13 @@ export default {
 			};
 			let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
 			let res = yield getUserSubjectList(data);
+			let subjectId ='';
 			if (res.data && res.data.result === 0) {
 				if (res.data.data.length > 0) {
-					let subjectId = res.data.data[0].v;
 					//自动记忆功能
 					if (!store.get('wrongBookNews').memorySubId) {
 						console.log('默认学科')
-						yield put({
-							type: 'subId',
-							payload: subjectId
-						});
+						subjectId= res.data.data[0].v
 					} else {
 						//加载完后，删除学科记忆
 						let cun = store.get('wrongBookNews');
@@ -521,6 +518,10 @@ export default {
 					message.error(res.data.msg)
 				}
 			}
+			yield put({
+				type: 'subId',
+				payload: subjectId
+			});
 
 		},
 		*updateMonthList({ payload }, { put, select }) {

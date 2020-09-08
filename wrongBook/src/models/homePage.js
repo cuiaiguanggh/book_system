@@ -829,23 +829,24 @@ export default {
 					payload: res.data
 				})
 				//如果不存在上次记忆的学年，则默认选择第一个
+				let _year=res.data.data[0]
 				if (!store.get('wrongBookNews').memoryYears) {
 					console.log('默认学年')
-					yield put({
-						type: 'temp/years',
-						payload: res.data.data[0]
-					})
+					//默认学年要更新一下years
+				
 				} else {
 					//加载完后，删除学年记忆
 					let cun = store.get('wrongBookNews');
-					yield put({
-						type: 'temp/years',
-						payload: cun.memoryYears
-					})
+					console.log('store year cun: ', cun);
+					_year=cun.memoryYears
 					delete (cun.memoryYears);
 					store.set('wrongBookNews', cun)
 				}
-
+				yield put({
+					type: 'temp/years',
+					payload: _year
+				})
+				return _year
 			}
 			else if (res.hasOwnProperty("err")) {
 				// yield put(routerRedux.push('/login'))

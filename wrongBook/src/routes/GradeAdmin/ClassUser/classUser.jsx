@@ -387,40 +387,42 @@ class StuReport extends React.Component {
         payload: {
           schoolId: id[0]
         }
-      })
-
-      let data = {
-        schoolId: id[0],
-        pageSize: 9999,
-        pageNum: 1,
-        year: this.props.state.years
-      }
-      dispatch({
-        type: 'classHome/pageClass',
-        payload: data
-      }).then(() => {
-        if (this.props.state.classList.length ) {
-          dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.classList[0].classId
-          });
-          this.setState({
-            nowclassid: this.props.state.classList[0].classId
-          })
-          this.props.dispatch({
-            type: 'homePage/teacherList',
-            payload: {
-              type: 1,
-            }
-          });
+      }).then(year=>{
+        let data = {
+          schoolId: id[0],
+          pageSize: 9999,
+          pageNum: 1,
+          year: year
         }
+        dispatch({
+          type: 'classHome/pageClass',
+          payload: data
+        }).then(() => {
+          if (this.props.state.classList.length ) {
+            dispatch({
+              type: 'homePage/infoClass',
+              payload: this.props.state.classList[0].classId
+            });
+            this.setState({
+              nowclassid: this.props.state.classList[0].classId
+            })
+            this.props.dispatch({
+              type: 'homePage/teacherList',
+              payload: {
+                type: 1,
+              }
+            });
+          }
+        })
+  
+  
+        dispatch({
+          type: 'homePage/infoSchool',
+          payload: id[0]
+        });
       })
 
-
-      dispatch({
-        type: 'homePage/infoSchool',
-        payload: id[0]
-      });
+      
     } else if (userNews.rodeType == 20) {
 
       let data = {
@@ -513,7 +515,6 @@ class StuReport extends React.Component {
   //   }
   // }
   componentDidUpdate(prevProps) {
-    console.log("StuReport -> componentDidUpdate", this.props.state.checkClassId,this.state.nowclassid)
     if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
       try {
         if(this.props.state.classList.length){

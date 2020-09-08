@@ -47,26 +47,8 @@ export default {
 				...payload
 			});
 			let _classList=[]
-			console.log("*getPageClass -> res.data", res.data)
 			if (res.data && res.data.result === 0&&res.data.data&&res.data.data.list) {
 				_classList=res.data.data.list
-				// let { infoClass } = yield select(state => state.homePage)
-
-				// //切换学年时的班级与当前选中的班级相同时，不清空选中班级的id
-				// let panduan = true;
-				// for (let i = 0; i < res.data.data.list.length; i++) {
-				// 	if (res.data.data.list[i].classId == infoClass) {
-				// 		panduan = false;
-				// 		break;
-				// 	}
-				// }
-				// if (panduan) {
-				// 	yield put({
-				// 		type: 'homePage/infoClass',
-				// 		payload: ''
-				// 	})
-				// }
-
 			} else {
 				if (res.data.result === 2) {
 					yield put(routerRedux.push('/login'))

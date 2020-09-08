@@ -17,10 +17,8 @@ const { RangePicker } = DatePicker;
 
 //作业中心界面内容
 const Option = Select.Option;
-const {
-  Header, Footer, Sider, Content,
+const { Sider, Content,
 } = Layout;
-const CheckboxGroup = Checkbox.Group;
 
 class StuReport extends React.Component {
   constructor(props) {
@@ -29,9 +27,6 @@ class StuReport extends React.Component {
       this.refDom = ref
     };
     this.state = {
-      loading: false,
-      page: 1,
-      next: true,
       nowclassid: '',
       currentSudent:{},
       questions:[],
@@ -130,6 +125,7 @@ class StuReport extends React.Component {
       type: 'temp/getUserSubjectList',
       payload: e.key,
     });
+    
     dispatch({
       type: 'classModel/getClassMembers',
       payload: {
@@ -243,7 +239,6 @@ class StuReport extends React.Component {
     })
   }
   getStudentListPageSub() {
-
     let subList = this.props.state.subList;
 		const children = [];
 		if (subList&&subList.data) {
@@ -449,7 +444,6 @@ class StuReport extends React.Component {
   componentDidUpdate(prevProps) {
 
     //紧急情况下先这么处理学年更新的问题
-    console.log("StuReport -> componentDidUpdate", this.props.state.checkClassId,this.state.nowclassid)
     if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
       this.updateClassMembers(this.props.state.checkClassId)
     }
