@@ -298,8 +298,6 @@ class HomePageLeft extends Component {
       <Select value={`${this.props.state.years}-${Number(this.props.state.years) + 1}`}
         suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
         className={'academicBox'} onChange={(value) => {
-
-          console.log("HomePageLeft -> getyear -> value", value)
           this.props.dispatch({
             type: 'temp/years',
             payload: value
@@ -310,7 +308,7 @@ class HomePageLeft extends Component {
           let subId = this.props.state.subId;
           let year = value;
 
-          console.log('store.rodeType: ', store.get('wrongBookNews').rodeType);
+          console.log('switch year rodeType: ', store.get('wrongBookNews').rodeType);
           if (store.get('wrongBookNews').rodeType === 10) {
             //超管页面下的班级管理的左侧班级
             this.props.dispatch({
@@ -473,6 +471,7 @@ class HomePageLeft extends Component {
 
   //切换学校
   switchSchool(value, option) {
+    console.log('switchSchool: ', value, option);
     //替换学校name和id和学校类型
     let wrongBookNews = store.get('wrongBookNews');
     let oldSchoolName = wrongBookNews.schoolName;
@@ -569,14 +568,14 @@ class HomePageLeft extends Component {
           type: 'homePage/infoSchool',
           payload: value
         })
-        let _type=1
-        if(hashStrings.includes('/questionFetch'))_type=3
-        this.props.dispatch({
-          type: 'homePage/teacherList',
-          payload: {
-            type: _type
-          }
-        })
+        // let _type=1
+        // if(hashStrings.includes('/questionFetch'))_type=3
+        // this.props.dispatch({
+        //   type: 'homePage/teacherList',
+        //   payload: {
+        //     type: _type
+        //   }
+        // })
 
       } else if (hashStrings === '/schoolChart') {
         console.log(classId, year)

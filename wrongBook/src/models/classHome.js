@@ -188,11 +188,13 @@ export default {
 		// 	}
 		// },
 		*pageClass({ payload }, { put, select }) {
+			console.log('classhome pageClass: ', payload);
 			// 班级列表
 			yield put({
 				type: 'classInfoPayload',
 				payload: payload
 			})
+
 			let res = yield pageClass(payload);
 			let classList=[]
 			// if (!res.data.data.hasOwnProperty('list')) {
@@ -227,6 +229,16 @@ export default {
 						type: 'classModel/checkClassId',
 						payload:classList[0].classId
 					})
+				}else{
+					console.log('classList: ', classList);
+					yield put({
+						type: 'classModel/checkClassId',
+						payload:''
+					})
+					yield put({
+						type: 'homePage/tealist',
+						payload: []
+					})	
 				}
 			} else {
 				if (res.data.result === 2) {

@@ -114,7 +114,6 @@ class StuReport extends React.Component {
     if (classList) {
       return (
         <div className={style.leftInfo}>
-
           <Menu onSelect={(item,) => {
             this.setState({
               nowclassid: item.key
@@ -516,7 +515,9 @@ class StuReport extends React.Component {
   //   }
   // }
   componentDidUpdate(prevProps) {
-    if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
+    console.log('classUser page componentDidUpdate:', this.props.state.checkClassId,this.props.state.checkClassId,this.state.nowclassid,this.props.state.checkClassId!==''&&this.props.state.checkClassId!==this.state.nowclassid);
+    if(this.props.state.checkClassId!==''&&this.props.state.checkClassId!==this.state.nowclassid){
+      //return
       try {
         if(this.props.state.classList.length){
           this.props.dispatch({
@@ -524,17 +525,23 @@ class StuReport extends React.Component {
             payload: this.props.state.checkClassId
           });
           this.setState({ nowclassid: this.props.state.checkClassId })
+          this.props.dispatch({
+            type: 'homePage/teacherList',
+            payload: {
+              type: this.props.state.memType//1,
+            }
+          });
         }
         
       } catch (e) {
         console.error(e)
       }
-      this.props.dispatch({
-        type: 'homePage/teacherList',
-        payload: {
-          type: this.props.state.memType//1,
-        }
-      });
+      // this.props.dispatch({
+      //   type: 'homePage/teacherList',
+      //   payload: {
+      //     type: this.props.state.memType//1,
+      //   }
+      // });
       // this.setState({
       //   current:"teacher"
       // })

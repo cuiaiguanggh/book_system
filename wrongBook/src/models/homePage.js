@@ -159,6 +159,7 @@ export default {
 			return { ...state, schoolTeacherList: payload }
 		},
 		tealist(state, { payload }) {
+			console.log('payload..........: ', payload);
 			return { ...state, tealist: payload }
 		},
 		infoSchool(state, { payload }) {
@@ -737,6 +738,12 @@ export default {
 			}
 			if (infoClass) {
 				data.classId = infoClass
+			}else{
+				yield put({
+					type: 'tealist',
+					payload: []
+				})
+				return console.log('当前查询没有classId...')
 			}
 			let res = yield teacherList(data);
 			if (res.data && res.data.result === 0) {

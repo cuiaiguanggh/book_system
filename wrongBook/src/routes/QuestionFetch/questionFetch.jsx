@@ -444,6 +444,7 @@ class StuReport extends React.Component {
   componentDidUpdate(prevProps) {
 
     //紧急情况下先这么处理学年更新的问题
+    return
     if(this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
       this.updateClassMembers(this.props.state.checkClassId)
     }
