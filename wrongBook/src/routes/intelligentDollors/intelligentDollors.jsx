@@ -382,7 +382,7 @@ class intelligentDollors extends React.Component {
                             </div>
                         </div>
 
-                        <div className={style.leftBottom} style={{ height: 'calc(100% - 140px)' }}>
+                        <div className={style.leftBottom} style={{ height: 'calc(100% - 130px)',position:'relative' }}>
                             <div className={style.title}> 本周班级薄弱知识点 </div>
                             <div className={style.knowledgeBox} style={{ height: 'calc(100% - 20px)' }}>
                                 {this.state.dollorsKnowledge.length>0?this.state.dollorsKnowledge.map((item, i) => (
@@ -408,7 +408,14 @@ class intelligentDollors extends React.Component {
                                             </span>
                                         </span>
                                     </p>
-                                )):<Empty description='暂无知识点' style={{ position: 'relative', top: '30%'}} />}
+                                )):<Empty description='暂无知识点' style={{ position: "absolute",
+                                top: 0,
+                                margin: "auto",
+                                top: 0,
+                                bottom: 0,
+                                height: "140px",
+                                left: 0,
+                                right: 0 }} />}
                             </div>
                         </div>
                     </Sider>
