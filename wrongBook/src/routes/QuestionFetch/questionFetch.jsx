@@ -211,7 +211,7 @@ class StuReport extends React.Component {
       type: 'report/userQRdetail',
       payload: data
     }).then(res=>{
-      console.error('res: ', res);  
+      console.log('res: ', res);  
       if(res.data&&res.data.questionList&&res.data.questionList.length){
         this.setState({
           questions:res.data.questionList
@@ -297,7 +297,6 @@ class StuReport extends React.Component {
     
   }
   updateClassMembers(_classId){
-    console.log('updateClassMembers: ', _classId);
     this.props.dispatch({
       type: 'homePage/infoClass',
       payload: _classId
@@ -361,8 +360,6 @@ class StuReport extends React.Component {
       return (
       <>
         <div className={style.whoBox}> 
-        {
-          <Spin spinning={!this.props.state.getSubjectsFinish} style={{background:"#fff"}}>
             {
               this.getStudentListPageSub()
             }
@@ -377,8 +374,6 @@ class StuReport extends React.Component {
             </div>
             <Button style={{marginRight:'20px'}} type="primary" onClick={()=>{this.getQuestions()}} >查询</Button>
             <span >{this.state.questions.length}题</span>
-          </Spin>
-        } 
         </div>
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
           <div className={style.layout}>
@@ -473,7 +468,6 @@ export default connect((state) => ({
     pageClassList:state.classModel.pageClassList,
     getClassMembersFinish:state.classModel.getClassMembersFinish,
     classStudentList:state.classModel.classStudentList,
-    getSubjectsFinish:state.temp.getSubjectsFinish,
     years: state.temp.years,
     subList: state.temp.subList,
     subId:state.temp.subId,

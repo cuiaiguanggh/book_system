@@ -48,13 +48,9 @@ export default {
 		workDetail: [],
 		subjectId: '',
 		knowledgeList: [],
-		topBarHide: 1,
-		getSubjectsFinish:false,
+		topBarHide: 1
 	},
 	reducers: {
-		getSubjectsFinish(state, { payload }) {
-			return { ...state, getSubjectsFinish: payload };
-		},
 		topBarHide(state, { payload }) {
 			return { ...state, topBarHide: payload };
 		},
@@ -369,15 +365,7 @@ export default {
 				year: years
 			};
 			let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
-			yield put({
-				type: 'getSubjectsFinish',
-				payload: false
-			})
 			let res = yield getUserSubjectList(data);
-			yield put({
-				type: 'getSubjectsFinish',
-				payload: true
-			})
 			if (res.data && res.data.result === 0) {
 				if (res.data.data.length > 0) {
 					let subjectId = res.data.data[0].v;
