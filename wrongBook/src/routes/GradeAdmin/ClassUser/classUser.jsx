@@ -109,8 +109,9 @@ class StuReport extends React.Component {
     let classList = [];
 
     const rodeType = store.get('wrongBookNews').rodeType
+    console.log('rodeType: ', rodeType);
     classList = this.props.state.classList;
-    if (classList.length) {
+    if (classList) {
       return (
         <div className={style.leftInfo}>
 
