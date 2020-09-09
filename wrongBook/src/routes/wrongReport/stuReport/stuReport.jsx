@@ -1215,8 +1215,16 @@ class StuReport extends React.Component {
 
   componentDidMount() {
     let classId = this.props.state.classId;
+    console.log('classId: ', classId);
     let subId = this.props.state.subId;
     let year = this.props.state.years;
+    if(classId){
+      //存在班级的情况下
+      this.props.dispatch({
+        type: 'temp/getUserSubjectList',
+        payload: classId
+      });
+    }
     this.props.dispatch({
       type: 'down/showPdfModal',
       payload: false
