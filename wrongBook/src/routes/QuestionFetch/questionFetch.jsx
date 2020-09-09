@@ -170,7 +170,7 @@ class StuReport extends React.Component {
       )
     }
     return(
-      <Empty className={style.noclass} description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />
+      <Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />
     )
   }
 

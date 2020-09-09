@@ -750,7 +750,8 @@ class StuReport extends React.Component {
     }
 
     if (!data.subjectId) {
-      message.error('请选择学科');
+      message.destroy()
+      message.warn('请选择学科');
       return;
     }
     this.props.dispatch({

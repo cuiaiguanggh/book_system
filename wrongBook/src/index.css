@@ -78,3 +78,6 @@ body,
 	src        : url('../pages/pingfang sc medium.otf');
 	font-display: swap
 } */
+:global(.noclass .ant-empty-image svg){
+	width: 100%;
+}

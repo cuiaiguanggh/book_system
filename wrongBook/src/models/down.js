@@ -218,7 +218,8 @@ export default {
 		*makeIntelligentTestPdf({ payload }, { put, select }) {
 			//智能组卷页面pdf
 			if (!payload.subjectId) {
-				message.error('请选择学科')
+				message.destroy()
+				message.warn('请选择学科');
 				return false
 			}
 			let res = yield makeIntelligentTestPdf(payload);

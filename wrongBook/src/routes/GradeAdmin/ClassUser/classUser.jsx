@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Input, Checkbox
+  Layout, Menu, Button,Empty, message, Select, Modal, Icon, Input, Checkbox
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -114,64 +114,66 @@ class StuReport extends React.Component {
     if (classList) {
       return (
         <div className={style.leftInfo}>
-          <Menu onSelect={(item,) => {
-            this.setState({
-              nowclassid: item.key
-            })
-            this.props.dispatch({
-              type: 'classHome/classId',
-              payload: item.key
-            })
-            this.props.dispatch({
-              type: 'classModel/checkClassId',
-              payload: item.key
-            })
-            //清空班级邀请码
-            observer.publish('fuyuan')
-          }}
-            selectedKeys={[`${this.state.nowclassid}`]}
-            style={{ height: 'calc(100% - 115px)' }}
-            className={style.menu}
-            onClick={this.menuClick}  >
-            {
-               
-              rodeType <= 20 ?
-                classList.map((item, i) => {
-                  return (
-                    <Menu.Item key={item.classId}
-                      onDoubleClick={(e) => {
-                        this.setState({
-                          whetherbz: true
-                        })
-                      }}>
-                      {this.state.whetherbz ?
-                        <Input className={style.classCase}
-                          autoFocus={item.classId == this.state.nowclassid ? true : false}
-                          onBlur={(e) => {
-                            this.loseFocus(e)
-                          }} defaultValue={item.className} /> : <span> {item.className}</span>}
-
-                    </Menu.Item>
-                  )
-                }) : classList.map((item, i) => {
-                  return (
-                    <Menu.Item key={item.classId}
-                      onDoubleClick={(e) => {
-                        this.setState({
-                          whetherbz: true
-                        })
-                      }}>
-                      {this.state.whetherbz ?
-                        <Input className={style.classCase}
-                          autoFocus={item.classId == this.state.nowclassid ? true : false}
-                          onBlur={(e) => {
-                            this.loseFocus(e)
-                          }} defaultValue={item.className} /> : <span> {item.className}</span>}{item.studentNum>0?'('+item.studentNum+'人)':''}
-                    </Menu.Item>
-                  )
-                })
-            }
-          </Menu>
+          {
+            classList.length? <Menu onSelect={(item,) => {
+              this.setState({
+                nowclassid: item.key
+              })
+              this.props.dispatch({
+                type: 'classHome/classId',
+                payload: item.key
+              })
+              this.props.dispatch({
+                type: 'classModel/checkClassId',
+                payload: item.key
+              })
+              //清空班级邀请码
+              observer.publish('fuyuan')
+            }}
+              selectedKeys={[`${this.state.nowclassid}`]}
+              style={{ height: 'calc(100% - 115px)' }}
+              className={style.menu}
+              onClick={this.menuClick}  >
+              {
+                 
+                rodeType <= 20 ?
+                  classList.map((item, i) => {
+                    return (
+                      <Menu.Item key={item.classId}
+                        onDoubleClick={(e) => {
+                          this.setState({
+                            whetherbz: true
+                          })
+                        }}>
+                        {this.state.whetherbz ?
+                          <Input className={style.classCase}
+                            autoFocus={item.classId == this.state.nowclassid ? true : false}
+                            onBlur={(e) => {
+                              this.loseFocus(e)
+                            }} defaultValue={item.className} /> : <span> {item.className}</span>}
+  
+                      </Menu.Item>
+                    )
+                  }) : classList.map((item, i) => {
+                    return (
+                      <Menu.Item key={item.classId}
+                        onDoubleClick={(e) => {
+                          this.setState({
+                            whetherbz: true
+                          })
+                        }}>
+                        {this.state.whetherbz ?
+                          <Input className={style.classCase}
+                            autoFocus={item.classId == this.state.nowclassid ? true : false}
+                            onBlur={(e) => {
+                              this.loseFocus(e)
+                            }} defaultValue={item.className} /> : <span> {item.className}</span>}{item.studentNum>0?'('+item.studentNum+'人)':''}
+                      </Menu.Item>
+                    )
+                  })
+              }
+            </Menu> :<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />
+          }
 
           {store.get('wrongBookNews').rodeType < 20 ?
             <div className={style.shenjibj} onClick={(e) => {

@@ -406,7 +406,8 @@ export default {
 					payload.endTime = stbegtoendTime[1];
 				}
 				if (!payload.subjectId) {
-					message.error('请选择学科');
+					message.destroy()
+					message.warn('请选择学科');
 					return;
 				}
 
