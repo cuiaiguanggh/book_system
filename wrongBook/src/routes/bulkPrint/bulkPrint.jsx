@@ -381,7 +381,8 @@ class bulkPrint extends React.Component {
     }
     //剔除
     getRid(data, item) {
-        if (data.classQue.length > 0) {
+        // console.log('data.classQue: ', data.classQue);
+        if (false&&data.classQue.length > 0) {
 
             let qu = data.classQue.shift();
 
@@ -400,7 +401,7 @@ class bulkPrint extends React.Component {
             item.goodTitle = qu.goodTitle;
 
         } else {
-            console.log(this.state.selectShowTitle, item.uqId)
+            console.log('剔除-getRid:',this.state.selectShowTitle, item.uqId)
             if (this.state.selectShowTitle.includes(item.uqId)) {
                 this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(item.uqId), 1);
             }
@@ -419,7 +420,7 @@ class bulkPrint extends React.Component {
     }
     //换一题
     changeTopic(data, item) {
-        console.log(data)
+        let _oqid=item.uqId
         if (!data.replaceTopic) {
             data.replaceTopic = [...data.classQue];
             if (data.replaceTopic.length > 0) {
@@ -433,10 +434,12 @@ class bulkPrint extends React.Component {
 
                 data.replaceTopic = data.replaceTopic.slice(1, data.replaceTopic.length);
 
-                if (this.state.selectShowTitle.includes(item.uqId)) {
-                    this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(item.uqId), 1, item.uqId)
+                // if (this.state.selectShowTitle.includes(item.uqId)) {
+                //     this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(item.uqId), 1, item.uqId)
+                // }
+                if (this.state.selectShowTitle.includes(_oqid)) {
+                    this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(_oqid), 1, item.uqId)
                 }
-
                 this.setState({
                     printList: this.state.printList
                 })
@@ -459,10 +462,12 @@ class bulkPrint extends React.Component {
             item.goodTitle = topic[0].goodTitle;
 
 
-            if (this.state.selectShowTitle.includes(item.uqId)) {
-                this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(item.uqId), 1, item.uqId)
+            // if (this.state.selectShowTitle.includes(item.uqId)) {
+            //     this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(item.uqId), 1, item.uqId)
+            // }
+            if (this.state.selectShowTitle.includes(_oqid)) {
+                this.state.selectShowTitle.splice(this.state.selectShowTitle.indexOf(_oqid), 1, item.uqId)
             }
-
             this.setState({
                 printList: this.state.printList
             })
@@ -553,7 +558,6 @@ class bulkPrint extends React.Component {
                             </div>
 
                             <div style={{ height: 'calc(100% - 50px)' }} className={style.topicsBox} >
-
                                 {this.state.printList.map((data) => {
 
                                     if (this.state.selectStu.includes(data.userId)) {
