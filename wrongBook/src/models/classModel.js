@@ -3,11 +3,8 @@ import {
 	teacherList
 } from '../services/classHomeService';
 import {
-	fetchQuestions
-} from '../services/yukeService';
-import {
-	pageRelevantSchool
-} from '../services/homePageService';
+	getUserSubjectList,
+} from '../services/tempService';
 import { routerRedux } from 'dva/router';
 import store from 'store';
 import { message } from 'antd';
@@ -17,7 +14,11 @@ export default {
 		pageClassList: [],
 		getClassMembersFinish:false,
 		classStudentList:[],
-		checkClassId:''
+		checkClassId:'',
+		classSubjectData:{
+			list:[],
+			value:''
+		}
 	},
 	reducers: {
 		pageClassList(state, { payload }) {
@@ -31,6 +32,9 @@ export default {
 		},
 		checkClassId(state, { payload }) {
 			return { ...state, checkClassId: payload };
+		},
+		classSubjectData(state, { payload }) {
+			return { ...state, classSubjectData: payload };
 		},
 		
 	},
@@ -78,14 +82,45 @@ export default {
 			}
 			return _classList
 		},
+		//temp.js这个接口耦合度太高了,所以拆开来
+		*getClassSubjectList({ payload }, { put, select }) {
+			// 返回教师所在班级科目
+			let res = yield getUserSubjectList(payload);
+			let _subjectList =[];
+			if (res.data && res.data.result === 0&&res.data.data) {
+				if (res.data.data.length > 0) {
+					//自动记忆功能?先不考虑
+					// if (!store.get('wrongBookNews').memorySubId) {
+					// 	console.log('默认学科')
+					// 	subjectId= res.data.data[0].v
+					// } else {
+					// 	//加载完后，删除学科记忆
+					// 	let cun = store.get('wrongBookNews');
+					// 	subjectId = cun.memorySubId;
+					// 	delete (cun.memorySubId);
+					// 	store.set('wrongBookNews', cun)
+					// }
+					_subjectList=res.data.data
+				}
+			} else {
+				if (res.data.result === 2) {
+					yield put(routerRedux.push('/login'))
+				} else if (res.data.msg == '服务器异常') {
+
+				} else {
+					message.error(res.data.msg)
+				}
+			}
+			yield put({
+				type: 'classSubjectData',
+				payload: {
+					list:_subjectList,
+					value:_subjectList.length?_subjectList[0].v:''
+				}
+			});
+
+		},
 		getClassMembers: [function* ({ payload }, { put, select }) {
-			// let { getClassMembersFinish } = yield select(state => state.classModel)
-			// if(getClassMembersFinish){
-			// 	yield put({
-			// 		type: 'getClassMembersFinish',
-			// 		payload: false
-			// 	})
-			// }
 			yield put({
 				type: 'getClassMembersFinish',
 				payload: false
@@ -134,36 +169,7 @@ export default {
 				})
 			}
 		},
-		*classInfo({ payload }, { put, select }) {
-			// 班级信息
-			// let res = yield classInfo(payload);
-			// if (res.hasOwnProperty("err")) {
-			// 	// yield put(routerRedux.push('/login'))
-			// } else
-			// 	if (res.data && res.data.result === 0) {
-			// 		yield put({
-			// 			type: 'classNews',
-			// 			payload: res.data
-			// 		})
-			// 		yield put({
-			// 			type: 'className',
-			// 			payload: res.data.data.className
-			// 		})
-			// 		yield put({
-			// 			type: 'classAdmin',
-			// 			payload: res.data.data.classAdmin
-			// 		})
-			// 	}
-			// 	else {
-			// 		if (res.data.result === 2) {
-			// 			yield put(routerRedux.push('/login'))
-			// 		} else if (res.data.msg == '服务器异常') {
-
-			// 		} else {
-			// 			message.error(res.data.msg)
-			// 		}
-			// 	}
-		},
+		
 		
 
 	},

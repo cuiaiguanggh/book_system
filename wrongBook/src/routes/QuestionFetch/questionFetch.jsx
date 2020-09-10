@@ -122,8 +122,11 @@ class StuReport extends React.Component {
       payload: e.key
     })
     dispatch({
-      type: 'temp/getUserSubjectList',
-      payload: e.key,
+      type: 'classModel/getClassSubjectList',
+      payload: {
+        classId:e.key,
+        year:this.props.state.years
+      }
     });
     
     dispatch({
@@ -139,7 +142,7 @@ class StuReport extends React.Component {
 
   
 
-  menulist() {
+  classMenuList() {
     let classList  = this.props.state.pageClassList;
     if (classList.length) {
       let checkClassId=this.state.nowclassid||classList[0].classId
@@ -170,7 +173,8 @@ class StuReport extends React.Component {
       )
     }
     return(
-      <Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />
+      
+      this.props.state.getClassMembersFinish?<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />:''
     )
   }
 
@@ -238,36 +242,36 @@ class StuReport extends React.Component {
       currentSudent:student
     })
   }
-  getStudentListPageSub() {
-    let subList = this.props.state.subList;
+
+  renderSubjectList() {
+    let subList = this.props.state.classSubjectData.list;
 		const children = [];
-		if (subList&&subList.data) {
-			for (let i = 0; i < subList.data.length; i++) {
-				let item = subList.data[i]
-				children.push(	<Option key={i} value={item.v}>{item.k}</Option>);
-      }
-		}
-		if (subList&&subList.data && subList.data.length > 0) {
-			return (
-        <>
+    for (let i = 0; i < subList.length; i++) {
+      let item = subList[i]
+      children.push(	<Option key={i} value={item.v}>{item.k}</Option>);
+    }
+		return (
+      <>
         <Select
           style={{ width: 90,marginRight:20 }}
-					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
+          suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="学科"
-          value={this.props.state.subId}
+          value={this.props.state.classSubjectData.value}
           onChange={(value) => {
-            this.props.dispatch({
-							type: 'temp/subId',
-							payload: value
-						});
-            this.getQuestions(value)
-        }}>
+              this.props.dispatch({
+                type:"classModel/classSubjectData",
+                payload:{
+                  list:subList,
+                  value
+                }
+              })
+              this.getQuestions(value)
+            }}>
           {children}
-      </Select>
-        </>
-      )
-		}
+        </Select>
+      </>
+    )
   }
   onImportExcel = file => {
 
@@ -299,9 +303,13 @@ class StuReport extends React.Component {
     this.setState({
       nowclassid: _classId
     })
+    //学科查询是题目查询的先决条件
     this.props.dispatch({
-      type: 'temp/getUserSubjectList',
-      payload: _classId,
+      type: 'classModel/getClassSubjectList',
+      payload: {
+        classId:_classId,
+        year:this.props.state.years
+      },
     });
     this.props.dispatch({
       type: 'classModel/getClassMembers',
@@ -351,12 +359,11 @@ class StuReport extends React.Component {
         <p>{this.state.uploadFileName||'请选择EXCEL文件导入'}</p>
       </div>
     )
-    const  subs = this.props.state.subList;
       return (
       <>
-        <div className={style.whoBox}> 
+      {this.props.state.classSubjectData.list.length?<div className={style.whoBox}> 
             {
-              this.getStudentListPageSub()
+              this.renderSubjectList()
             }
             <div style={{display:'inline-block',margin:'0 20px 0 0'}}>
               时间:
@@ -369,12 +376,13 @@ class StuReport extends React.Component {
             </div>
             <Button style={{marginRight:'20px'}} type="primary" onClick={()=>{this.getQuestions()}} >查询</Button>
             <span >{this.state.questions.length}题</span>
-        </div>
+        </div>:""}
+
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
           <div className={style.layout}>
             <Layout className={style.innerOut}>
               <Sider className={style.sider}>
-                {this.menulist()}
+                {this.classMenuList()}
               </Sider>
               <Content className={style.content} ref='warpper'>
               <StudentList  current='student'  selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
@@ -417,7 +425,6 @@ class StuReport extends React.Component {
   }
 
   componentDidMount() {
-     
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
     let data = {
@@ -438,7 +445,13 @@ class StuReport extends React.Component {
   }
 
   componentWillUnmount() {
-    
+    this.props.dispatch({
+      type: 'classModel/classSubjectData',
+      payload: {
+        list:[],
+        value:''
+      }
+    })
   }
 
   componentDidUpdate(prevProps) {
@@ -466,6 +479,7 @@ export default connect((state) => ({
     years: state.temp.years,
     subList: state.temp.subList,
     subId:state.temp.subId,
-    checkClassId:state.classModel.checkClassId
+    checkClassId:state.classModel.checkClassId,
+    classSubjectData:state.classModel.classSubjectData
   }
 }))(StuReport);
