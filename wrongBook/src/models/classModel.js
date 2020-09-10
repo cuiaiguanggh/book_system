@@ -11,14 +11,14 @@ import { message } from 'antd';
 export default {
 	namespace: 'classModel',
 	state: {
-		pageClassList: [],
 		getClassMembersFinish:false,
 		classStudentList:[],
 		checkClassId:'',
 		classSubjectData:{
 			list:[],
 			value:''
-		}
+		},
+		pageClassList:[]
 	},
 	reducers: {
 		pageClassList(state, { payload }) {
@@ -45,12 +45,20 @@ export default {
 	effects: {
 		*getPageClass({ payload }, { put, select }) {
 			// 带分页的班级列表查询
+			yield put({
+				type: 'classHome/getPageClassFinish',
+				payload: false
+			})
 			let res = yield pageClass({
 				pageSize: 9999,
 				pageNum: 1,
 				...payload
 			});
 			let _classList=[]
+			yield put({
+				type: 'classHome/getPageClassFinish',
+				payload: true
+			})
 			if (res.data && res.data.result === 0&&res.data.data&&res.data.data.list) {
 				_classList=res.data.data.list
 			} else {

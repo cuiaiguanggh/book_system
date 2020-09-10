@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button,Empty, message, Select, Modal, Icon, Input, Checkbox
+  Layout, Menu, Spin,Empty, message, Select, Modal, Icon, Input, Checkbox
 } from 'antd';
 import { routerRedux, Link } from "dva/router";
 import { connect } from 'dva';
@@ -111,9 +111,9 @@ class StuReport extends React.Component {
     const rodeType = store.get('wrongBookNews').rodeType
     console.log('rodeType: ', rodeType);
     classList = this.props.state.classList;
-    if (classList) {
-      return (
-        <div className={style.leftInfo}>
+    return (
+      <div className={style.leftInfo}>
+        <Spin spinning={!this.props.state.getPageClassFinish} >
           {
             classList.length? <Menu onSelect={(item,) => {
               this.setState({
@@ -131,11 +131,11 @@ class StuReport extends React.Component {
               observer.publish('fuyuan')
             }}
               selectedKeys={[`${this.state.nowclassid}`]}
-              style={{ height: 'calc(100% - 115px)' }}
               className={style.menu}
+              style={{ height: store.get('wrongBookNews').rodeType < 20?'calc(100% - 105px)':'calc(100% - 65px)' }}
               onClick={this.menuClick}  >
               {
-                 
+                
                 rodeType <= 20 ?
                   classList.map((item, i) => {
                     return (
@@ -151,7 +151,7 @@ class StuReport extends React.Component {
                             onBlur={(e) => {
                               this.loseFocus(e)
                             }} defaultValue={item.className} /> : <span> {item.className}</span>}
-  
+
                       </Menu.Item>
                     )
                   }) : classList.map((item, i) => {
@@ -172,7 +172,7 @@ class StuReport extends React.Component {
                     )
                   })
               }
-            </Menu> :<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />
+            </Menu> :this.props.state.getPageClassFinish?<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />:''
           }
 
           {store.get('wrongBookNews').rodeType < 20 ?
@@ -223,9 +223,9 @@ class StuReport extends React.Component {
               <img src={require('../../images/explain.png')}></img>
             </div> : ""
           }
-        </div>
-      )
-    }
+        </Spin>
+      </div>
+    )
   }
 
   onWho(who) {

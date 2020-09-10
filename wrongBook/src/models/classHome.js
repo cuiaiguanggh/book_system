@@ -39,8 +39,12 @@ export default {
 		yearList: [],
 		nowYear: '',
 		sublist: [],
+		getPageClassFinish:false
 	},
 	reducers: {
+		getPageClassFinish(state, { payload }) {
+			return { ...state, getPageClassFinish: payload };
+		},
 		classList(state, { payload }) {
 			return { ...state, classList: payload };
 		},
@@ -188,6 +192,10 @@ export default {
 		// 	}
 		// },
 		*pageClass({ payload }, { put, select }) {
+			yield put({
+				type: 'getPageClassFinish',
+				payload: false
+			})
 			console.log('classhome pageClass: ', payload);
 			// 班级列表
 			yield put({
@@ -196,6 +204,10 @@ export default {
 			})
 
 			let res = yield pageClass(payload);
+			yield put({
+				type: 'getPageClassFinish',
+				payload: true
+			})
 			let classList=[]
 			// if (!res.data.data.hasOwnProperty('list')) {
 			// 	res.data.data.list = []

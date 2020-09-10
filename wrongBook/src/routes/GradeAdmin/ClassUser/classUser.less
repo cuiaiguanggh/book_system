@@ -28,12 +28,17 @@
             top     : 0;
             bottom  : 0;
             width   : 100%;
+            height: 100%;
+            box-sizing: border-box;
+
+            :global(.ant-spin-nested-loading),:global(.ant-spin-spinning),:global(.ant-spin-container){
+                // background: #fff;
+                height: 100%;
+                max-height: 100%;
+            }
         }
 
         .menu {
-            position  : absolute;
-            top       : 0px;
-            bottom    : 0;
             overflow  : auto;
             overflow-x: hidden;
             width     : 100%;
@@ -91,28 +96,31 @@
     text-align : center;
     color      : #fff;
     cursor     : pointer;
-    position   : absolute;
-    bottom     : 17px;
-    left       : 17px;
     width      : 106px;
     height     : 32px;
     line-height: 32px;
     background : #409EFF;
+    margin: auto;
+    margin-top: 10px;
+    position: absolute;
+    margin: auto;
+    left:0;right: 0;
+    bottom:17px;
 }
 
 .shenjibj {
     text-align : center;
     color      : #595959;
     cursor     : pointer;
-    position   : absolute;
-    bottom     : 63px;
-    left       : 17px;
     width      : 106px;
     height     : 30px;
     line-height: 30px;
     border     : 1px solid #D9D9D9;
     background : transparent;
-
+    margin: auto;
+    left:0;right: 0;
+    position: absolute;
+    bottom:64px;
 }
 
 .explain {

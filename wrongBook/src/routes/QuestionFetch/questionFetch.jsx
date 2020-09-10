@@ -144,38 +144,41 @@ class StuReport extends React.Component {
 
   classMenuList() {
     let classList  = this.props.state.pageClassList;
-    if (classList.length) {
-      let checkClassId=this.state.nowclassid||classList[0].classId
-      return (
-        <Menu onSelect={(item,) => {
-          this.props.dispatch({
-            type: 'classHome/classId',
-            payload: item.key
-          })
-        }}
-          selectedKeys={[`${checkClassId}`]}
-          style={{ height: '100%' }}
-          className={style.menu}
-          onClick={(item)=>this.menuClick(item)}  >
-          {
-            classList.map((item, i) => {
-              return (
-                    <Menu.Item key={item.classId}>
-                    <span> {item.className}</span>
-                  </Menu.Item>
-                
-                )
-              })
-          }
-          
-        </Menu>
-
-      )
-    }
-    return(
+    return (
+      <div className={style.leftInfo}>
+      <Spin spinning={!this.props.state.getPageClassFinish} >
+        {
+          classList.length?<Menu onSelect={(item,) => {
+            this.props.dispatch({
+              type: 'classHome/classId',
+              payload: item.key
+            })
+          }}
+            selectedKeys={[`${this.state.nowclassid}`]}
+            style={{ height: '100%' }}
+            className={style.menu}
+            onClick={(item)=>this.menuClick(item)}  >
+            {
+              classList.map((item, i) => {
+                return (
+                      <Menu.Item key={item.classId}>
+                      <span> {item.className}</span>
+                    </Menu.Item>
+                  
+                  )
+                })
+            }
+            
+          </Menu>:this.props.state.getClassMembersFinish?<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />:''
+        }
+       <div>
+        </div> 
+       </Spin>
+     </div>
       
-      this.props.state.getClassMembersFinish?<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />:''
+
     )
+    
   }
 
   
