@@ -79,10 +79,14 @@ export default {
 		nowschool: '',
 		beginGrade: 0,
 		endGrade: 0,
-		saleId:0
+		saleId:0,
+		getSchoolListFinish:false
 
 	},
 	reducers: {
+		getSchoolListFinish(state, { payload }) {
+			return { ...state, getSchoolListFinish: payload };
+		},
 		setSaleId(state, { payload }) {
 			return { ...state, saleId: payload };
 		},
@@ -502,7 +506,16 @@ export default {
 				type: 'schoolPay',
 				payload: payload
 			})
+			yield put({
+				type: 'getSchoolListFinish',
+				payload: false
+			})
+			
 			let res = yield pageRelevantSchool(payload);
+			yield put({
+				type: 'getSchoolListFinish',
+				payload: true
+			})
 			if (!res.data.data.hasOwnProperty('list')) {
 				res.data.data.list = []
 			}

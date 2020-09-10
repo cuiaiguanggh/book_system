@@ -56,6 +56,8 @@ class HomeworkCenter extends React.Component {
       managerNames.push(morexg[i].name);
       managerPhones.push(morexg[i].phone);
     }
+    console.log('managerNames: ', managerNames);
+    console.log('managerPhones: ', managerPhones);
     this.props.dispatch({
       type: 'homePage/changeSchool',
       payload: {
@@ -66,6 +68,7 @@ class HomeworkCenter extends React.Component {
         effEnd: this.state.dateString[1],
       }
     });
+    return
     this.setState({
       visible1: false,
       visible: false,
@@ -589,6 +592,7 @@ class HomeworkCenter extends React.Component {
               columns={columns}
               pagination={{ pageSize: 10, defaultPageSize: 10 }}
               bordered={true}
+              loading={!this.props.state.getSchoolListFinish}
               rowKey={(record, index) => index} />
 
             {/* {
@@ -628,7 +632,7 @@ class HomeworkCenter extends React.Component {
             } */}
           </div>
           <Modal
-            title="编辑"
+            title="编辑学校"
             visible={this.state.visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
