@@ -43,28 +43,50 @@ class HomeworkCenter extends React.Component {
       cuncityId: '',
       cunprovincesId: '',
       dateString: [],
-      morexg: [{ name: '', phone: '' }],
+      morexg: [{ name: '', phone: '' ,position:''}],
       adminName: '',
       adminPhone: '',
+      authList:[
+        {rodeType:20,name:'校管'},
+        {rodeType:30,name:'班主任'},
+        {rodeType:40,name:'任课老师'},
+        {rodeType:0,name:'校长'},//身份未知
+        {rodeType:50,name:'年级组长'},
+        {rodeType:'adminSale',name:'销售管理'},
+      ]
     };
   }
-
+  authChange=(item,e,i)=>{
+    let morexg = this.state.morexg;
+    morexg[i]={...item,position:e}
+    this.setState({
+      morexg
+    })
+  }
   handleOk = (e) => {
     let morexg = this.state.morexg;
-    let managerNames = [], managerPhones = [];
+    let managerNames = [], managerPhones = [],positions=[];
     for (let i = 0; morexg.length > i; i++) {
       managerNames.push(morexg[i].name);
       managerPhones.push(morexg[i].phone);
+      positions.push(morexg[i].position);
     }
+    console.log('managerNames: ', managerNames);
+    console.log('positions: ', positions);
+    console.log('managerPhones: ', managerPhones);
+    let _prdata={
+      managerNames,
+      managerPhones,
+      positions,
+      schoolId: this.state.schoolId,
+      effStart: this.state.dateString[0],
+      effEnd: this.state.dateString[1],
+    }
+    console.log('_prdata: ', _prdata);
+    return
     this.props.dispatch({
       type: 'homePage/changeSchool',
-      payload: {
-        managerNames,
-        managerPhones,
-        schoolId: this.state.schoolId,
-        effStart: this.state.dateString[0],
-        effEnd: this.state.dateString[1],
-      }
+      payload: _prdata
     });
     this.setState({
       visible1: false,
@@ -589,6 +611,7 @@ class HomeworkCenter extends React.Component {
               columns={columns}
               pagination={{ pageSize: 10, defaultPageSize: 10 }}
               bordered={true}
+              loading={!this.props.state.getSchoolListFinish}
               rowKey={(record, index) => index} />
 
             {/* {
@@ -628,7 +651,7 @@ class HomeworkCenter extends React.Component {
             } */}
           </div>
           <Modal
-            title="编辑"
+            title="编辑学校"
             visible={this.state.visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
@@ -775,7 +798,7 @@ class HomeworkCenter extends React.Component {
                     allowClear={false}
                     format={'YYYY/MM/DD'} />
                 </div>
-                {this.state.morexg.map((duix, index) => {
+                {/* {this.state.morexg.map((duix, index) => {
 
                   return <div style={{ marginBottom: '30px' }} key={index}>
                     <span style={{ width: "80px", display: 'inline-block' }}>校管理员</span>
@@ -810,7 +833,7 @@ class HomeworkCenter extends React.Component {
                         let morexg = this.state.morexg;
                         let nownume = morexg.length;
                         //校管最多可加三个
-                        if (nownume < 3) {
+                        if (nownume < 8) {
                           nownume++;
                           morexg.push({ name: '', phone: '' })
                           this.setState({
@@ -822,8 +845,62 @@ class HomeworkCenter extends React.Component {
                     }
                   </div>
 
-                })}
+                })} */}
+                {this.state.morexg.map((duix, index) => {
+                  return <div style={{ marginBottom: '30px' }} key={index}>
+                    <Select defaultValue="请选择用户身份" style={{ width: 140 }} onChange={(e)=>{this.authChange(duix,e,index)}}>
+                      {
+                         this.state.authList.map((auth, j) => {
+                          return <Option value={auth.rodeType} key={j}>{auth.name}</Option>
+                        })
+                      }
+                    </Select>
+                    <Input placeholder="请输入用户名字"
+                      value={this.state.morexg[index].name}
+                      onChange={(e) => {
+                        let morexg = this.state.morexg;
+                        morexg[index].name = e.currentTarget.value;
+                        this.setState({
+                          morexg
+                        })
+                      }} style={{ width: '200px',marginLeft: 20 }} />
 
+
+                    <span style={{ marginLeft: 20, display: 'inline-block' }}>手机号</span>
+                    <Input placeholder="请输入用户手机号"
+                      value={this.state.morexg[index].phone}
+                      onChange={(e) => {
+                        let morexg = this.state.morexg;
+                        morexg[index].phone = e.currentTarget.value;
+                        this.setState({
+                          morexg
+                        })
+                      }} style={{ width: '200px',marginLeft:20 }} />
+                    {index === 0 ?
+                      <span style={{
+                        fontSize: 14,
+                        fontFamily: 'PingFang SC',
+                        fontWeight: 500,
+                        color: 'rgba(189,193,203,1)',
+                        cursor: 'pointer',
+                        marginLeft: 10
+                      }} onClick={() => {
+                        let morexg = this.state.morexg;
+                        let nownume = morexg.length;
+                        //校管最多可加三个
+                        if (nownume < 8) {
+                          nownume++;
+                          morexg.push({ name: '', phone: '' })
+                          this.setState({
+                            morexg
+                          })
+                        }
+                      }}>➕ 添加</span>
+                      : ""
+                    }
+                  </div>
+
+                  })}
                 <div style={{ marginBottom: '30px' }}>
                   <span style={{ width: "80px", display: 'inline-block' }}>位置</span>
                   <Input defaultValue={schoolInfo.data.address}

@@ -169,17 +169,17 @@ class HomePageLeft extends Component {
           if (rodeType === 10) {
             menus.push(<Menu.Item key="school" >
               <Link to='school#page=1' replace>
-                <Icon type="bar-chart" /><span>学校管理</span>
+              <Icon type="appstore-o" /><span>学校管理</span>
               </Link>
             </Menu.Item>)
             menus.push(<Menu.Item key="userImport" >
               <Link to='userImport'>
-                <Icon type="import" /><span>用户导入</span>
+                <Icon type="user" /><span>用户导入</span>
               </Link>
             </Menu.Item>)
             menus.push(<Menu.Item key="fineQuestion" >
               <Link to='fineQuestion'>
-                <Icon type="import" /><span>精品题库</span>
+                <Icon type="book" /><span>精品题库</span>
               </Link>
             </Menu.Item>)
             menus.push(<Menu.Item key="dataBackground" >
@@ -190,7 +190,7 @@ class HomePageLeft extends Component {
 
             menus.push(<Menu.Item key="specialDownload" >
               <Link to='specialDownload'>
-                <Icon type="select" /><span>专题下载</span>
+                <Icon type="download" /><span>专题下载</span>
               </Link>
             </Menu.Item>)
 
