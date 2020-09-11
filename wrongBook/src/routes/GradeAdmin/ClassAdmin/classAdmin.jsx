@@ -481,7 +481,6 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: false,
 			render: (text) => {
-				console.log(text)
 				return (text)
 			}
 		},];

@@ -545,6 +545,7 @@ class workCorrection extends React.Component {
     }
 
     subjectScroll(e) {
+        console.log('e: ', e);
         let nowPage = this.state.nowPage, scrollTop = e.currentTarget.scrollTop, childNodes = document.getElementById('markedArea').childNodes;
         if (scrollTop === 0) {
             this.props.dispatch({
