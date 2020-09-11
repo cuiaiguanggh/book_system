@@ -231,15 +231,16 @@ class HomeworkCenter extends React.Component {
 					type: 3
 				}
 			});
-			this.props.dispatch({
-				type: 'classHome/pageClass',
-				payload: {
-					schoolId: store.get('wrongBookNews').schoolId,
-					pageSize: 9999,
-					pageNum: 1,
-					year: this.props.state.years
-				}
-			})
+			//不刷新班级列表
+			// this.props.dispatch({
+			// 	type: 'classHome/pageClass',
+			// 	payload: {
+			// 		schoolId: store.get('wrongBookNews').schoolId,
+			// 		pageSize: 9999,
+			// 		pageNum: 1,
+			// 		year: this.props.state.years
+			// 	}
+			// })
 		}
 
 		this.tea = [{

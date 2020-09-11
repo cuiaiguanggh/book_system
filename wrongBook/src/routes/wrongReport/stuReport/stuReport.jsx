@@ -998,7 +998,7 @@ class StuReport extends React.Component {
             </div>
           </div>
           <DownloadGroup data={this.props.state.stuDown}
-            right={26}
+            right={10}
             loading={this.props.state.downQue}
             previewClick={(practise) => { this.downloadPitch(practise) }}
             qkongClick={() => {
