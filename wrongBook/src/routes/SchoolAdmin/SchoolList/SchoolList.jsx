@@ -65,25 +65,22 @@ class HomeworkCenter extends React.Component {
   }
   handleOk = (e) => {
     let morexg = this.state.morexg;
-    let managerNames = [], managerPhones = [],positions=[];
+    let managerNames = [], managerPhones = [];
+    let positions=[];
     for (let i = 0; morexg.length > i; i++) {
       managerNames.push(morexg[i].name);
       managerPhones.push(morexg[i].phone);
-      positions.push(morexg[i].position);
+      // positions.push(morexg[i].position);
     }
-    console.log('managerNames: ', managerNames);
-    console.log('positions: ', positions);
-    console.log('managerPhones: ', managerPhones);
     let _prdata={
       managerNames,
       managerPhones,
-      positions,
       schoolId: this.state.schoolId,
       effStart: this.state.dateString[0],
       effEnd: this.state.dateString[1],
     }
-    console.log('_prdata: ', _prdata);
-    return
+    // console.log('_prdata: ', _prdata);
+    // return
     this.props.dispatch({
       type: 'homePage/changeSchool',
       payload: _prdata
@@ -798,7 +795,7 @@ class HomeworkCenter extends React.Component {
                     allowClear={false}
                     format={'YYYY/MM/DD'} />
                 </div>
-                {/* {this.state.morexg.map((duix, index) => {
+                 {this.state.morexg.map((duix, index) => {
 
                   return <div style={{ marginBottom: '30px' }} key={index}>
                     <span style={{ width: "80px", display: 'inline-block' }}>校管理员</span>
@@ -845,8 +842,8 @@ class HomeworkCenter extends React.Component {
                     }
                   </div>
 
-                })} */}
-                {this.state.morexg.map((duix, index) => {
+                })}
+                {/* {this.state.morexg.map((duix, index) => {
                   return <div style={{ marginBottom: '30px' }} key={index}>
                     <Select defaultValue="请选择用户身份" style={{ width: 140 }} onChange={(e)=>{this.authChange(duix,e,index)}}>
                       {
@@ -900,7 +897,7 @@ class HomeworkCenter extends React.Component {
                     }
                   </div>
 
-                  })}
+                  })} */}
                 <div style={{ marginBottom: '30px' }}>
                   <span style={{ width: "80px", display: 'inline-block' }}>位置</span>
                   <Input defaultValue={schoolInfo.data.address}

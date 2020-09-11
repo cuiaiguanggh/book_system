@@ -774,7 +774,7 @@ class HomePageLeft extends Component {
         <Layout style={{ position: "relative" }}>
           <Header style={this.props.state.topBarHide === 0 ? { display: 'none' } : { background: '#fff', padding: 0 }}>
             <Icon
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer',float:'left' }}
               className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
@@ -782,7 +782,7 @@ class HomePageLeft extends Component {
             <div className="navClass">
 
               {userNews == undefined ? '' :
-                <div>
+                <div style={{float:'right',paddingRight:20}}>
                   {this.props.type == 'findPsd' ? '' :
                     <div className={style.usinfo}>
                       <img alt='' src={userNews.avatarUrl != null || userNews.avatarUrl != 'null' ? 'http://images.mizholdings.com/face/default/02.gif' : userNews.avatarUrl} />
