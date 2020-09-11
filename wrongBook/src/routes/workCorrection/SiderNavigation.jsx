@@ -32,6 +32,7 @@ function SiderNavigation(props) {
             setTimeout(() => {
                 setDianji(false)
             }, 180000);
+            message.destroy()
             message.info('请勿重复点击，请三分钟后再试')
             return;
         }
