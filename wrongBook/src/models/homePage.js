@@ -287,9 +287,9 @@ export default {
 			let res = yield remove(payload);
 			if (res.data && res.data.result === 0) {
 				message.success("修改成功")
-				yield put({
-					type: 'classHome/getClassList',
-				})
+				// yield put({
+				// 	type: 'classHome/getClassList', //取消任命不更新作业列表
+				// })
 				yield put({
 					type: 'teacherList',
 					payload: {
@@ -312,9 +312,9 @@ export default {
 			let res = yield assign(payload);
 			if (res.data && res.data.result === 0) {
 				message.success("修改成功")
-				yield put({
-					type: 'classHome/getClassList',
-				})
+				// yield put({ //任命不更新班级列表
+				// 	type: 'classHome/getClassList',
+				// })
 				yield put({
 					type: 'teacherList',
 					payload: {

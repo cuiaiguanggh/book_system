@@ -100,6 +100,7 @@ export default {
 			return { ...state, qrdetailList: payload };
 		},
 		qrdetailList1(state, { payload }) {
+			//学生错题的数据
 			let list = state.qrdetailList;
 			if (payload.data && payload.data.questionList.length > 0) {
 				for (let i = 0; i < payload.data.questionList.length; i++) {
@@ -146,7 +147,7 @@ export default {
 		},
 		qrStudentDetailList1(state, { payload }) {
 			let list = state.qrdetailList1;
-			if (payload.data.questionList.length > 0) {
+			if (payload.data&&payload.data.questionList&&payload.data.questionList.length > 0) {
 				for (let i = 0; i < payload.data.questionList.length; i++) {
 					list.data.questionList.push(payload.data.questionList[i])
 				}
@@ -479,7 +480,7 @@ export default {
 							subjectId: payload.subjectId,
 							info: 0,
 							pageNum: 1,
-							pageSize: 20,
+							pageSize: 20,//20
 							userId: userId
 						}
 						yield put({
@@ -531,6 +532,7 @@ export default {
 		},
 		* userQRdetail({ payload }, { put, select }) {
 			//查询学生作业列表
+			console.log('查询学生作业列表: ');
 			let res = yield queryQrDetail(payload);
 			if (res.data && res.data.result === 0) {
 				yield put({
@@ -558,6 +560,7 @@ export default {
 					type: 'qrStudentDetailList1',
 					payload: res.data
 				})
+				return res.data
 			}
 			else {
 				if (res.data.result === 2) {
@@ -572,6 +575,7 @@ export default {
 		* queryQrDetail1({ payload }, { put, select }) {
 			//账号科目列表
 			let res = yield queryQrDetail(payload);
+			console.log('queryQrDetail: ', res);
 			if (res.data && res.data.result === 0) {
 				yield put({
 					type: 'qrdetailList1',

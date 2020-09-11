@@ -34,6 +34,7 @@ class StuReport extends React.Component {
       wordUrl: '',
       visible: false,
       next: true,
+      showMoreQuestion:false,
       toupload: false,
       begtoendTime: [],
       stbegtoendTime: [],
@@ -303,6 +304,7 @@ class StuReport extends React.Component {
 
   //点击学生
   selectStu(e) {
+    console.log('selectStu: ');
     //滚动条回滚到顶部
     if (document.getElementById('stugdt')) {
       document.getElementById('stugdt').scrollTop = 0;
@@ -362,6 +364,9 @@ class StuReport extends React.Component {
       type: 'report/userQRdetail',
       payload: data
     });
+    this.setState({
+      showMoreQuestion:true
+    })
     // let dom = document.getElementsByClassName('down');
     // for (let i = 0; i < dom.length; i++) {
     //   dom[i].innerHTML = "加入错题篮";
@@ -535,6 +540,8 @@ class StuReport extends React.Component {
               )
             })
           }
+          {!this.state.next&&this.state.showMoreQuestion?<div style={{clear:'both',color:'#1890ff',textAlign: 'center',
+            paddingTop: 10}}><Spin></Spin><span style={{marginLeft:8}}>正在加载...</span></div>:''}
         </div>
       )
     } else {
@@ -718,6 +725,7 @@ class StuReport extends React.Component {
 
   //点击知识点全部事件
   allknowledgenow() {
+    console.log('allknowledgenow: ');
     //滚动条回滚到顶部
     if (document.getElementById('stugdt')) {
       document.getElementById('stugdt').scrollTop = 0;
@@ -754,6 +762,9 @@ class StuReport extends React.Component {
       message.warn('请选择学科');
       return;
     }
+    this.setState({
+      showMoreQuestion:true
+    })
     this.props.dispatch({
       type: 'report/userQRdetail',
       payload: data
@@ -763,6 +774,7 @@ class StuReport extends React.Component {
   //点击选中知识点
   knowledgenowPitch(name) {
     //滚动条回滚到顶部
+    console.log('滚动条回滚到顶部: ');
     if (document.getElementById('stugdt')) {
       document.getElementById('stugdt').scrollTop = 0;
     }
@@ -805,6 +817,9 @@ class StuReport extends React.Component {
       data.startTime = this.props.state.stbegtoendTime[0];
       data.endTime = this.props.state.stbegtoendTime[1];
     }
+    this.setState({
+      showMoreQuestion:true
+    })
     this.props.dispatch({
       type: 'report/userQRdetail',
       payload: data
@@ -871,12 +886,12 @@ class StuReport extends React.Component {
     }
     if (hei - 200 < e.target.scrollTop + e.target.clientHeight && this.sfgun) {
       if (this.state.next) {
+        this.setState({ next: false,showMoreQuestion:true });
         let page = this.props.state.propsPageNum;
         let classId = this.props.state.classId;
         let subId = this.props.state.subId;
         let year = this.props.state.years;
         page++;
-        this.setState({ next: false });
         this.props.dispatch({
           type: 'report/propsPageNum',
           payload: page
@@ -903,15 +918,27 @@ class StuReport extends React.Component {
           data.startTime = this.props.state.stbegtoendTime[0];
           data.endTime = this.props.state.stbegtoendTime[1];
         }
-
-        this.props.dispatch({
-          type: 'report/userQRdetail1',
-          payload: data
-        });
-        let This = this;
-        setTimeout(function () {
-          This.setState({ next: true })
-        }, 1000)
+        setTimeout( ()=> {
+          this.props.dispatch({
+            type: 'report/userQRdetail1',
+            payload: data
+          }).then((list)=>{
+            console.log('list: ', list);
+            this.setState({ next: true })
+            if(list.data&&list.data.questionList){
+              this.setState({
+                showMoreQuestion:true
+              })
+            }else{
+              this.setState({
+                showMoreQuestion:false
+              })
+            }
+          }).catch(()=>{
+            this.setState({ next: false,showMoreQuestion:false })
+          })
+          
+        }, 500)
       }
     }
   }
@@ -1013,7 +1040,7 @@ class StuReport extends React.Component {
 
 
             <Content className={style.content}
-              style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+              style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden',position:'relative' }}
               ref='warpper'
             >
               <div style={{ height: 'auto' }}>
@@ -1074,9 +1101,10 @@ class StuReport extends React.Component {
                 detail.data && detail.data.questionList.length != 0 ? this.questions() :
                   <div style={{
                     textAlign: 'center',
-                    position: 'relative',
-                    marginTop: '20%',
-                    transform: 'translate(0%, -50%)',
+                    position: 'absolute',
+                    left: '50%',
+                    top:'50%',
+                    transform: 'translate(-50%, -50%)',
                     width: '100%'
                   }}>
                     <img src={require('../../images/wsj-n.png')}></img>

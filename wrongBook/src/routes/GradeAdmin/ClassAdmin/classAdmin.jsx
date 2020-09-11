@@ -688,9 +688,9 @@ class HomeworkCenter extends React.Component {
 						<div className={style.gradeboder} >
 
 							<div>
-								<div style={{ overflow: 'hidden', textAlign: 'left',display:'flex' }}>
+								<div className={style.borderRadius0} style={{ overflow: 'hidden', textAlign: 'left',display:'flex' }}>
 									{this.props.state.infoClass && this.props.current === 'student' &&
-										<Select value={this.state.selectUser} style={{ width: 120, float: 'right', marginRight: 15 }}
+										<Select value={this.state.selectUser} style={{ width: 120, float: 'right', marginRight: 15,borderRadius:0 }}
 											onChange={(value) => { this.setState({ selectUser: value }) }}>
 											<Option value="">全部用户</Option>
 											<Option value="0">普通用户</Option>

@@ -200,7 +200,7 @@ class HomePageLeft extends Component {
         // 作业中心
         if (item === 300 && rodeType !== 10) {
           menus.push(<Menu.Item key="correction" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workCorrection')}>
-            <Icon type="edit" /><span style={{ cursor: 'pointer' }}>作业批改</span>
+            <Icon type="exception" /><span style={{ cursor: 'pointer' }}>作业批改</span>
           </Menu.Item>)
           menus.push(<Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
             <Icon type="diff" /><span>智能组卷</span>
@@ -209,7 +209,7 @@ class HomePageLeft extends Component {
             <Icon type="file-text" theme="filled" /><span style={{ cursor: 'pointer' }}>班级错题</span>
           </Menu.Item>)
           menus.push(<Menu.Item key="workDetail2" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/stuReport')}>
-            <Icon type="appstore" /><span style={{ cursor: 'pointer' }}>学生错题</span>
+            <Icon type="team" /><span style={{ cursor: 'pointer' }}>学生错题</span>
           </Menu.Item>)
           // menus.push(<Menu.Item key="workDetail3" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workReport')}>
           //   <Icon type="share-alt" /><span style={{ cursor: 'pointer' }}>作业报告</span>
@@ -219,7 +219,7 @@ class HomePageLeft extends Component {
         if (item === 200) {
           if (rodeType > 20) {
             menus.push(<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
-              <Icon type="align-left" /><span>班级管理</span>
+              <Icon type="appstore-o" /><span>班级管理</span>
             </Menu.Item>)
             menus.push(<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
             <Icon type="retweet" /><span>题目同步</span>
@@ -228,7 +228,8 @@ class HomePageLeft extends Component {
             if (rodeType !== 10) {
               menus.push(
                 <Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
-                  <Icon type="team" /><span>班级管理</span>
+
+                  <Icon type="appstore-o" /><span>班级管理</span>
                 </Menu.Item>
               )
               menus.push(<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
@@ -273,7 +274,7 @@ class HomePageLeft extends Component {
               </Link>
             </Menu.Item>),
             (<Menu.Item key="grade" onClick={this.ycgaihash.bind(this, '/classUser')}>
-              <Icon type="align-left" /><span>班级管理</span>
+              <Icon type="appstore-o" /><span>班级管理</span>
             </Menu.Item>),
             (<Menu.Item key="questionFetch" onClick={this.ycgaihash.bind(this, '/questionFetch')}>
             <Icon type="retweet" /><span>题目同步</span>

@@ -362,11 +362,6 @@ export default {
 			// console.log('payload: ', payload);
 			try {
 				// 登录
-				yield put({
-					type:'loading',
-					payload:true
-				})
-				
 				store.set('wrongBookToken', '')
 				let res = yield loginTiku(payload);
 

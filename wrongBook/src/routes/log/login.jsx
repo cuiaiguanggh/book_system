@@ -240,9 +240,15 @@ class Login extends Component {
                         message.warning("账号或密码不能为空")
                       } else {
                         this.props.dispatch({
-                          type: 'login/login',
-                          payload: data
+                          type: 'login/loading',
+                          payload: true
                         })
+                        setTimeout(() => {
+                          this.props.dispatch({
+                            type: 'login/login',
+                            payload: data
+                          })
+                        }, 500);
                       }
 
                     }}>登录</Button>
