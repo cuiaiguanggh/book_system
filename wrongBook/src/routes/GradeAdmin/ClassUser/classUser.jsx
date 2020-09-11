@@ -43,6 +43,7 @@ class StuReport extends React.Component {
       current: 'teacher',
 
     }
+
   }
 
   menuClick = (e) => {
@@ -376,6 +377,23 @@ class StuReport extends React.Component {
   }
 
   componentDidMount() {
+    observer.addSubscribe('updateClass', () => {
+      console.log('updateClass..');
+      if(this.props.state.classList.length){
+        this.props.dispatch({
+          type: 'homePage/infoClass',
+          payload: this.props.state.checkClassId
+        });
+        this.setState({ nowclassid: this.props.state.checkClassId })
+        this.props.dispatch({
+          type: 'homePage/teacherList',
+          payload: {
+            type: this.props.state.memType,//1,
+            classId:this.props.state.checkClassId
+          }
+        });
+      }
+    })
     const { dispatch } = this.props;
 
     let hash = this.props.location.hash;
@@ -511,47 +529,8 @@ class StuReport extends React.Component {
       payload: 1
     });
   }
-  // componentWillReceiveProps (nextProps) {
-  //   if (nextProps.sth !== this.props.sth) {
-  //     // sth值发生改变下一步工作
-  //   }
-  // }
-  componentDidUpdate(prevProps) {
-    console.log('classUser page componentDidUpdate:', this.props.state.checkClassId,this.props.state.checkClassId,this.state.nowclassid,this.props.state.checkClassId!==''&&this.props.state.checkClassId!==this.state.nowclassid);
-    if(this.props.state.checkClassId!==''&&this.props.state.checkClassId!==this.state.nowclassid){
-      //return
-      try {
-        if(this.props.state.classList.length){
-          this.props.dispatch({
-            type: 'homePage/infoClass',
-            payload: this.props.state.checkClassId
-          });
-          this.setState({ nowclassid: this.props.state.checkClassId })
-          this.props.dispatch({
-            type: 'homePage/teacherList',
-            payload: {
-              type: this.props.state.memType//1,
-            }
-          });
-        }
-        
-      } catch (e) {
-        console.error(e)
-      }
-      // this.props.dispatch({
-      //   type: 'homePage/teacherList',
-      //   payload: {
-      //     type: this.props.state.memType//1,
-      //   }
-      // });
-      // this.setState({
-      //   current:"teacher"
-      // })
-    }
 
-  }
-
-
+  
 }
 
 export default connect((state) => ({

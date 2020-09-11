@@ -9,6 +9,8 @@ import { Link } from "dva/router";
 import store from 'store';
 import WrongTop from '../wrongReport/wrongTop/wrongTop';
 import { serverType } from '../../config/dataCenter';
+import observer from '../../utils/observer'
+
 import moment from 'moment';
 // import ydt from '../images/guideFigure.png';
 
@@ -373,15 +375,17 @@ class HomePageLeft extends Component {
               schoolId: store.get('wrongBookNews').schoolId
             }
           })
-          this.props.dispatch({
-            type: 'classModel/getPageClass',
-            payload: {
-              schoolId: store.get('wrongBookNews').schoolId,
-              pageSize: 9999,
-              pageNum: 1,
-              year
-            }
-          });
+          if (window.location.href.split('/#/')[1].includes('questionFetch')) {
+            this.props.dispatch({
+              type: 'classModel/getPageClass',
+              payload: {
+                schoolId: store.get('wrongBookNews').schoolId,
+                pageSize: 9999,
+                pageNum: 1,
+                year
+              }
+            });
+          }
           if (store.get('wrongBookNews').rodeType !== 10) {
             this.props.dispatch({
               type: 'down/showPdfModal',
@@ -407,13 +411,16 @@ class HomePageLeft extends Component {
                 year,
                 schoolId: store.get('wrongBookNews').schoolId
               }
-            });
-            this.props.dispatch({
-              type: 'homePage/teacherList',
-              payload: {
-                type: 1
-              }
+            }).then(()=>{
+              observer.publish('updateClass')
+              this.props.dispatch({
+                type: 'homePage/teacherList',
+                payload: {
+                  type: 1
+                }
+              })
             })
+
           } else if (window.location.href.split('/#/')[1] == 'classChart') {
             if (classId !== '' && subId != '' && year !== '') {
               console.log('classChart page')
@@ -554,6 +561,8 @@ class HomePageLeft extends Component {
             pageNum: 1,
             year: this.props.state.years
           }
+        }).then(()=>{
+          observer.publish('updateClass')
         });
         this.props.dispatch({
           type: 'classModel/getPageClass',
@@ -563,6 +572,8 @@ class HomePageLeft extends Component {
             pageNum: 1,
             year: this.props.state.years
           }
+        }).then(()=>{
+          observer.publish('updateClass')
         });
         this.props.dispatch({
           type: 'homePage/infoSchool',
@@ -881,7 +892,10 @@ class HomePageLeft extends Component {
 
   }
 
-
+  componentWillUnmount(){
+    console.log('top menu Unmount...')
+    observer.remove('updateClass')
+  }
   componentDidMount() {
 
     const { dispatch } = this.props;

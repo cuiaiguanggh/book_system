@@ -1,4 +1,5 @@
 
+
 class observ {
   constructor() {
     this.subscribe = {};
@@ -13,6 +14,12 @@ class observ {
   publish(eventName, ...parameter) {
     if (this.subscribe.hasOwnProperty([eventName])){
       this.subscribe[eventName](...parameter)
+    }
+  };
+
+  remove(eventName) {
+    if (this.subscribe.hasOwnProperty([eventName])){
+      delete this.subscribe[eventName]
     }
   };
 }

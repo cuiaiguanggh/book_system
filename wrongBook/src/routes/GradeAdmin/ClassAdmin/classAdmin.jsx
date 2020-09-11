@@ -688,34 +688,15 @@ class HomeworkCenter extends React.Component {
 						<div className={style.gradeboder} >
 
 							<div>
-								<div style={{ overflow: 'hidden', textAlign: 'left' }}>
+								<div style={{ overflow: 'hidden', textAlign: 'left',display:'flex' }}>
 									{this.props.state.infoClass && this.props.current === 'student' &&
-										<Select value={this.state.selectUser} style={{ width: 120, float: 'right', marginLeft: 15 }}
+										<Select value={this.state.selectUser} style={{ width: 120, float: 'right', marginRight: 15 }}
 											onChange={(value) => { this.setState({ selectUser: value }) }}>
 											<Option value="">全部用户</Option>
 											<Option value="0">普通用户</Option>
 											<Option value="1">试用用户</Option>
 											<Option value="2">付费用户</Option>
 										</Select>}
-
-									<Search
-										placeholder="请输入姓名搜索"
-										style={{ width: '160px', float: 'right' }}
-										value={this.props.state.showMen}
-										onSearch={value => {
-											this.props.dispatch({
-												type: 'homePage/showMen',
-												payload: value
-											});
-										}}
-										onChange={e => {
-											this.props.dispatch({
-												type: 'homePage/showMen',
-												payload: e.target.value
-											});
-										}} />
-
-
 									{rodeType <= 20 && this.props.current === 'teacher' ?
 										<span className={style.addGrade} onClick={() => {
 											this.setState({ visible: true })
@@ -749,6 +730,23 @@ class HomeworkCenter extends React.Component {
 											onClick={() => { window.open("http://homework.mizholdings.com/kacha/kcct/94d905052534956b/学生导入模板.XLSX", '_blank'); }}>下载模版</Button >
 											<Upload {...configuration}> <Button style={{ borderRadius: 0 }}>批量导入学生</Button></Upload>
 										</> : ''}
+
+									<Search
+										placeholder="请输入姓名搜索"
+										style={{ width: '160px', marginLeft:'auto' }}
+										value={this.props.state.showMen}
+										onSearch={value => {
+											this.props.dispatch({
+												type: 'homePage/showMen',
+												payload: value
+											});
+										}}
+										onChange={e => {
+											this.props.dispatch({
+												type: 'homePage/showMen',
+												payload: e.target.value
+											});
+										}} />
 
 								</div>
 								<div className={style.table}>

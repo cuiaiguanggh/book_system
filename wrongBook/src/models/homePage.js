@@ -722,7 +722,6 @@ export default {
 		teacherList: [function* ({ payload }, { put, select }) {
 			let hashStrings = (window.location.hash.length > 0 ? window.location.hash.substring(1) : "");
 			let _type=payload.type
-			
 			if(hashStrings.includes('/questionFetch')){
 				_type=3
 			}
@@ -736,8 +735,9 @@ export default {
 				page: 1,
 				pageSize: 9999
 			}
-			if (infoClass) {
-				data.classId = infoClass
+			let _classId=payload.classId||infoClass
+			if (_classId) {
+				data.classId = _classId
 			}else{
 				yield put({
 					type: 'tealist',

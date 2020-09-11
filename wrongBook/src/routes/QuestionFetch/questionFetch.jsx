@@ -12,7 +12,7 @@ import store from 'store';
 import StudentList from './studentList/StudentList'
 import * as XLSX from 'xlsx';
 import {readExcelToJson}  from '../../utils/file';
-import LoadingModal from '../../component/LoadingModal/LoadingModal'
+import observer from '../../utils/observer'
 const { RangePicker } = DatePicker;
 
 //作业中心界面内容
@@ -428,6 +428,13 @@ class StuReport extends React.Component {
   }
 
   componentDidMount() {
+    observer.addSubscribe('updateClass', () => {
+      console.log('questionFetch page updateClass..');
+      if(this.props.state.pageClassList.length){
+
+        this.updateClassMembers(this.props.state.checkClassId)
+      }
+    })
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
     let data = {
@@ -457,15 +464,6 @@ class StuReport extends React.Component {
     })
   }
 
-  componentDidUpdate(prevProps) {
-
-    //紧急情况下先这么处理学年更新的问题
-    //return
-    if(this.props.state.checkClassId!=''&&this.state.nowclassid&&this.props.state.checkClassId!==this.state.nowclassid){
-      this.updateClassMembers(this.props.state.checkClassId)
-    }
-    
-  }
 
 
 }
