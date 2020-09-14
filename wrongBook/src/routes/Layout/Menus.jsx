@@ -385,6 +385,8 @@ class HomePageLeft extends Component {
                 pageNum: 1,
                 year
               }
+            }).then(()=>{
+              observer.publish('updateClass')
             });
           }
           if (store.get('wrongBookNews').rodeType !== 10) {
@@ -548,23 +550,25 @@ class HomePageLeft extends Component {
         console.log('classUser')
         // this.props.dispatch({
         //   type: 'classHome/pageClass',
-        //   payload: {
+        //      payload: {
         //     year,
         //     schoolId: value
         //   }
         // });
+        if(hashStrings.includes('/classUser')){
+          this.props.dispatch({
+            type: 'classHome/pageClass',
+            payload: {
+              schoolId: value,
+              pageSize: 9999,
+              pageNum: 1,
+              year: this.props.state.years
+            }
+          }).then(()=>{
+            observer.publish('updateClass')
+          });
+        }
 
-        this.props.dispatch({
-          type: 'classHome/pageClass',
-          payload: {
-            schoolId: value,
-            pageSize: 9999,
-            pageNum: 1,
-            year: this.props.state.years
-          }
-        }).then(()=>{
-          observer.publish('updateClass')
-        });
         this.props.dispatch({
           type: 'classModel/getPageClass',
           payload: {

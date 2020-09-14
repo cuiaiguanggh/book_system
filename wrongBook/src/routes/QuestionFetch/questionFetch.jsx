@@ -429,7 +429,7 @@ class StuReport extends React.Component {
 
   componentDidMount() {
     observer.addSubscribe('updateClass', () => {
-      console.log('questionFetch page updateClass..');
+      console.log('questionFetch page updateClass..',this.props.state.pageClassList.length,this.props.state.pageClassList);
       if(this.props.state.pageClassList.length){
 
         this.updateClassMembers(this.props.state.checkClassId)
