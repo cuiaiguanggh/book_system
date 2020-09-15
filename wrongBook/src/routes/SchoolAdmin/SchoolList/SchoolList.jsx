@@ -830,7 +830,7 @@ class HomeworkCenter extends React.Component {
                         let morexg = this.state.morexg;
                         let nownume = morexg.length;
                         //校管最多可加三个
-                        if (nownume < 8) {
+                        if (nownume < 3) {
                           nownume++;
                           morexg.push({ name: '', phone: '' })
                           this.setState({
