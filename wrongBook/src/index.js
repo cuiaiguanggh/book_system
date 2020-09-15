@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-09-07 09:39:59
+ * @LastEditTime: 2020-09-15 16:49:29
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \wrongBook\src\index.js
+ */
 
 import dva from 'dva';
 import './index.css';
@@ -10,6 +18,7 @@ const app = dva();
 
 // 3. Model
 app.model(require('./models/login').default);
+app.model(require('./models/workManage').default);
 app.model(require('./models/homePage').default);
 app.model(require('./models/classHome').default);
 app.model(require('./models/userInfo').default);

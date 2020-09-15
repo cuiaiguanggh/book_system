@@ -200,7 +200,7 @@ class HomePageLeft extends Component {
         // 作业中心
         if (item === 300 && rodeType !== 10) {
           menus.push(<Menu.Item key="correction" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workCorrection')}>
-            <Icon type="exception" /><span style={{ cursor: 'pointer' }}>作业批改</span>
+            <Icon type="edit" /><span style={{ cursor: 'pointer' }}>作业批改</span>
           </Menu.Item>)
           menus.push(<Menu.Item key="Dollors" onClick={this.ycgaihash.bind(this, '/intelligentDollors')}>
             <Icon type="diff" /><span>智能组卷</span>
@@ -280,6 +280,10 @@ class HomePageLeft extends Component {
             <Icon type="retweet" /><span>题目同步</span>
           </Menu.Item>)]
           }
+
+          menus.push(<Menu.Item key="workManage" style={{ cursor: 'pointer' }} onClick={this.ycgaihash.bind(this, '/workManage')}>
+          <Icon type="exception" /><span style={{ cursor: 'pointer' }}>作业管理</span>
+        </Menu.Item>)
         }
 
       })

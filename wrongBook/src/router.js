@@ -105,6 +105,14 @@ const workCorrection = Loadable({
   loader: () => import('./routes/workCorrection/workCorrection'),
   loading: () => <List />,
 });
+const workManage = Loadable({
+  loader: () => import('./routes/workManage/workManage'),
+  loading: () => <List />,
+});
+const AddWork = Loadable({
+  loader: () => import('./routes/workManage/AddWork/AddWork'),
+  loading: () => <List />,
+});
 const fineQuestion = Loadable({
   loader: () => import('./routes/fineQuestion/fineQuestion'),
   loading: () => <List />,
@@ -148,6 +156,8 @@ function RouterConfig({ history }) {
           <Route path="/stuReport" component={StuReport} />
           {/* <Route path="/workReport" component={WorkReport} />*/}
           <Route path="/workCorrection" component={workCorrection} />
+          <Route path="/workManage" component={workManage} />
+          <Route path="/addWork" component={AddWork} />
           <Route path="/userInfo" component={UserInfo} />
           <Route path="/schoolChart" component={SchoolChart} />
           <Route path="/classChart" component={ClassChart} />

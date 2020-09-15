@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-09-07 09:39:59
+ * @LastEditTime: 2020-09-15 18:53:09
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \wrongBook\src\services\tempService.js
+ */
 import request from '../utils/request';
 import { dataCenter } from '../config/dataCenter';
 
@@ -42,6 +50,15 @@ function changeQue(payload) {
         method: 'get'
     });
 }
+function testPage(payload) {
+    return request(dataCenter('/wrongbook/page'), {
+        data: {
+            url: "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
+            childId: 4645964827397120,
+            workType: 1
+        }
+    });
+}
 export {
     changeQue,
     combinedPaper,
@@ -49,5 +66,6 @@ export {
     getUserSubjectList,
     getQrMonthList,
     systemTime,
-    getKnowledgeList
+    getKnowledgeList,
+    testPage
 };
