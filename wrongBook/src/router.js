@@ -130,6 +130,11 @@ const bulkPrint = Loadable({
   loader: () => import('./routes/bulkPrint/bulkPrint'),
   loading: () => <List />,
 });
+const LogQuestion = Loadable({
+  loader: () => import('./routes/workManage/LogQuestion/LogQuestion'),
+  loading: () => <List />,
+});
+
 function RouterConfig({ history }) {
 
   return (
@@ -157,6 +162,7 @@ function RouterConfig({ history }) {
           {/* <Route path="/workReport" component={WorkReport} />*/}
           <Route path="/workCorrection" component={workCorrection} />
           <Route path="/workManage" component={workManage} />
+          <Route path="/LogQuestion" component={LogQuestion} />
           <Route path="/addWork" component={AddWork} />
           <Route path="/userInfo" component={UserInfo} />
           <Route path="/schoolChart" component={SchoolChart} />

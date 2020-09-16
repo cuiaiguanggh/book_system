@@ -20,9 +20,13 @@ export default {
 			value:''
 		},
 		pageClassList:[],
-		schoolSubjectList:[]
+		schoolSubjectList:[],
+		logType:true
 	},
 	reducers: {
+		logType(state, { payload }) {
+			return { ...state, logType: payload };
+		},
 		pageClassList(state, { payload }) {
 			return { ...state, pageClassList: payload };
 		},
