@@ -81,3 +81,6 @@ body,
 :global(.noclass .ant-empty-image svg){
 	width: 100%;
 }
+:global(.cup){
+	cursor: pointer;
+}

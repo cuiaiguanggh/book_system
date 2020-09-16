@@ -176,6 +176,12 @@ class WorkManage extends React.Component {
 					},
 					"selected": true
 				}],
+				"sections":[
+					{
+						"name":'',
+						"areas":[]
+					}
+				],
 				"url": "http://tmp/wx9dd6bc8b32ac2723.o6zAJsytZ1_Wx-i4ldA6Hut1PwjM.ufgRn85AjFnI8f549d68a9e9abb2ff85744b03a659b9.jpg",
 				"serUrl": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
 				"photoScore": 77,
@@ -206,7 +212,13 @@ class WorkManage extends React.Component {
 			showGifTip:false,
 			cropIndex:-1,
 			cpindex:-1,
-			commitWorking:false
+			commitWorking:false,
+			work:{
+				name:'新教育',
+				classes:'',
+				subjectId:1,
+				pages:[]
+			}
     }
 	}
 	cropItemClick (index,e) {
@@ -632,45 +644,6 @@ class WorkManage extends React.Component {
 
   
 
-  classMenuList() {
-    let classList  = this.props.state.pageClassList;
-    return (
-      <div className={style.leftInfo}>
-      <Spin spinning={!this.props.state.getPageClassFinish} >
-        {
-          classList.length?<Menu onSelect={(item,) => {
-            this.props.dispatch({
-              type: 'classHome/classId',
-              payload: item.key
-            })
-          }}
-            selectedKeys={[`${this.state.nowclassid}`]}
-            style={{ height: '100%' }}
-            className={style.menu}
-            onClick={(item)=>this.menuClick(item)}  >
-            {
-              classList.map((item, i) => {
-                return (
-                      <Menu.Item key={item.classId}>
-                      <span> {item.className}</span>
-                    </Menu.Item>
-                  
-                  )
-                })
-            }
-            
-          </Menu>:this.props.state.getClassMembersFinish?<Empty className='noclass' description='暂无班级' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />:''
-        }
-       <div>
-        </div> 
-       </Spin>
-     </div>
-      
-
-    )
-    
-  }
-
   
   onEditFinish=()=>{
 		this.setState({
@@ -703,7 +676,7 @@ class WorkManage extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="学科"
-          value={this.props.state.classSubjectData.value}
+          value={this.props.state.schoolSubId}
           onChange={(value) => {
               this.props.dispatch({
                 type:"classModel/classSubjectData",
@@ -719,7 +692,8 @@ class WorkManage extends React.Component {
     )
   }
   renderClassList() {
-    let classes = this.props.state.pageClassList;
+		let classes = this.props.state.workPageClass.list;
+		console.log('classes: ', classes);
 		const children = [];
     for (let i = 0; i < classes.length; i++) {
       let item = classes[i]
@@ -731,35 +705,25 @@ class WorkManage extends React.Component {
 					mode="multiple"
           style={{ width: 200,marginRight:20 }}
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
-          optionFilterProp="children"
+					optionFilterProp="children"
+					value={this.props.state.workPageClass.value}
           placeholder="班级"
           onChange={(value) => {
-            //   this.props.dispatch({
-            //     type:"classModel/classSubjectData",
-            //     payload:{
-            //       list:classes,
-            //       value
-            //     }
-            //   })
+						console.log('value: ', value);
+              this.props.dispatch({
+                type:"workManage/workPageClass",
+                payload:{
+                  list:classes,
+                  value
+                }
+              })
             }}>
           {children}
         </Select>
       </>
     )
   }
-  onImportExcel = file => {
 
-    const { files } = file.target
-    if(!files||files.length===0||!files[0].name) {
-        return message.warning('文件读取错误');
-    }
-
-		this.setState({
-      uploadFileName:files[0].name,
-      excelMatching:true
-    })
-
-  }
   updateClassMembers(_classId){
     this.props.dispatch({
       type: 'homePage/infoClass',
@@ -845,6 +809,139 @@ class WorkManage extends React.Component {
 			showModal:false
 		})
 	}
+	upSection(index){
+		let _sections=this.state.workPages[index].sections
+		console.log('index: ', index,this.state.workPages);
+		let section={
+			name:`第${_sections.length}章节`,
+			areas:[]
+		}
+		_sections.push(section)
+		let _workPages=this.state.workPages
+		_workPages[index]['sections']=_sections
+		console.log('_workPages: ', _workPages);
+		this.setState({
+			workPages:_workPages
+		})
+	}
+	renderQueArea(){
+		return(
+			<>
+				<div style={{marginTop:32}}>
+					{
+						this.state.workPages.map((item, i) => {
+							return (
+								<div key={i} style={{marginTop:14}} className={style.queitem}>
+									<span style={{width:60}} className={style.quelabel}>第{i+1}页</span> {item.areas?item.areas.map((area, j) => {
+									return (
+									<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
+													)
+										}):''}
+								</div>
+								)
+							})
+					}
+				</div>
+
+				<div style={{marginTop:20}}>
+					{
+						this.state.workPages.map((item, i) => {
+							return (
+								<div key={i} style={{marginTop:14}} className={style.queitem}>
+									<div className={style.quelabel} style={{marginTop:10}}>
+										第{i+1}部分
+										<img  src={require('../../images/edit.png')} alt=""/>
+										<img style={{marginLeft:20}} onClick={()=>{this.upSection(i)}} src={require('../../images/up.png')} alt=""/>
+										<img style={{marginLeft:8}}  src={require('../../images/down.png')} alt=""/>
+									</div> 
+									<div className={style._section}>
+										{
+											console.log('3',item.sections,item.sections.length)
+										}
+										{
+											item.sections.length?item.sections.map((section, k) => {
+												return (
+													<div>
+														<div>{section.name}</div>
+														{
+															section.areas?section.areas.map((area, j1) => {
+																return (
+																				<div key={j1} className={style.que_box}>
+																					<div className={style.title}>
+																						<Checkbox >
+																							{` 第${j1+1}题`}
+																						</Checkbox>
+																						<div className={style._edit_box}>
+																							{
+																								area.area.question?<>
+																								<Button type='primary'>删除</Button>
+																								<Button type='primary'>移动到单元中</Button></>:
+																								<><Button type='primary'>重新匹配</Button>
+																								<Button type='primary'>录入</Button></>
+																							}
+																							
+																						</div>
+																					</div>
+																					<div className={style._content}>
+																						{area.area.question?<>
+																							<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.area.question.title }}>
+																							</div>
+																							<div>解析</div>
+																							<div className={style.qparse} dangerouslySetInnerHTML={{ __html: area.area.question.parse }}>
+																							</div>
+														
+																						</>:<img  src={area.area.imgUrl} alt=""/>}
+																					</div>
+																				</div>
+																				)
+																}):''
+														}
+													</div>
+												)
+											}):''
+										}
+									</div>
+									{item.areas?item.areas.map((area, j) => {
+										return (
+														<div key={j} className={style.que_box}>
+															<div className={style.title}>
+																<Checkbox >
+																	{` 第${j+1}题`}
+																</Checkbox>
+																<div className={style._edit_box}>
+																	{
+																		area.area.question?<>
+																		<Button type='primary'>删除</Button>
+																		<Button type='primary'>移动到单元中</Button></>:
+																		<><Button type='primary'>重新匹配</Button>
+																		<Button type='primary'>录入</Button></>
+																	}
+																	
+																</div>
+															</div>
+															<div className={style._content}>
+																{area.area.question?<>
+																	<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.area.question.title }}>
+																	</div>
+																	<div>解析</div>
+																	<div className={style.qparse} dangerouslySetInnerHTML={{ __html: area.area.question.parse }}>
+																	</div>
+								
+																</>:<img  src={area.area.imgUrl} alt=""/>}
+															</div>
+														</div>
+														)
+										}):''
+									}
+								</div>
+								)
+							})
+					}
+				</div>
+              
+			</>
+		)
+	}
   render() {
     const content = (
       <div>
@@ -857,8 +954,8 @@ class WorkManage extends React.Component {
 				<div className={style.content} >
                 <div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
 									<h4 style={{fontSize:20}}>
-										新人教育
-										<img  src={require('../../images/edit.png')} alt=""/>
+										{this.state.work.name}
+										<img className='cup' src={require('../../images/edit.png')} alt=""/>
 									</h4>
 									<div style={{marginTop:14}}>
 										班级：{this.renderClassList()}
@@ -867,166 +964,106 @@ class WorkManage extends React.Component {
 										}
 										</div>
 								</div>
-                <div className='clearfix'>
-									{
-										this.state.workPages.map((item, i) => {
-											return (
-												<div key={i}  className={style.uploadbox}>
-													<Upload getFun={this.showCropModel} picture={item} index={i}></Upload>
-												</div>
-												)
-											})
-									}
-									
-									<div className={style.uploadbox}>
-										<div className={style.uploadBtn} onClick={()=>this.addImgBtnClick()}>添加图片</div>
+								<div>
+									<div className='clearfix'>
+										{
+											this.state.workPages.map((item, i) => {
+												return (
+													<div key={i}  className={style.uploadbox}>
+														<Upload getFun={this.showCropModel} picture={item} index={i+1}></Upload>
+													</div>
+													)
+												})
+										}
+										
+										<div className={style.uploadbox}>
+											<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
+										</div>
 									</div>
-								</div>
+									{this.state.workPages.length>0?this.renderQueArea()
+									:<div className={style._empty}>请点击左上角添加作业图片</div>}
 								
-								<div style={{marginTop:32}}>
-									{
-										this.state.workPages.map((item, i) => {
-											return (
-												<div key={i} style={{marginTop:14}} className={style.queitem}>
-													<span style={{width:60}} className={style.quelabel}>第{i+1}页</span> {item.areas?item.areas.map((area, j) => {
-													return (
-													<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
-																	)
-														}):''}
+								</div>
+						</div>
+						<div className={style._footer}>
+							<Button>查看原图</Button>
+							<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>完成作业编辑</Button>
+						</div>
+						<Modal
+							closable={false} keyboard={false} maskClosable={true}
+							onCancel={()=>{this.cancelModel()}}
+							className="unsetModal"
+							visible={this.state.showModal}
+							footer={[<div key='1' style={{display:'inline-block',float:'left'}}>备注：<Input key='2' style={{width:'250px'}} type='text'></Input></div>,<Button key='3' onClick={()=>{this.newCropItem}}>手动框题</Button>,<Button key='4'>重新识别</Button>,<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >确定</Button>]}
+						>
+							<div className={style.img_box}>
+
+							<img style={{width:720}}  src={this.state.cpicture.serUrl} alt=""/>
+							<div className={style.crop_box}>
+						
+								{/* <div className={style.crop_content} onClick={(e)=>this._cropMaskClick(e)} v-if='showCropBox'>
+									<div className={style.content_top,style.bg_gray} style={{height:this.state.cutTop+'px'}}></div>
+									<div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
+										<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
+										<div id="rect_item9527" onTouchStart={(e)=>this._rectTouchStart(e)}  onTouchMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
+
+											<div className={style.rect_hander,style.rect_hander1} 
+												onTouchStart='_cutTouchStart($event,1)' 
+												onTouchMove='_cutTouchMove($event)'>
+												<div className={style.rect_hander_border}></div>
+											</div>
+											<div className={style.rect_hander,style.rect_hander2} 
+											onTouchStart='_cutTouchStart($event,2)' 
+												onTouchMove='_cutTouchMove($event)'>
+												<div className={style.rect_hander_border}></div>
+											</div>
+											<div className={style.rect_hander,style.rect_hander3} 
+											onTouchStart='_cutTouchStart($event,3)' 
+												onTouchMove='_cutTouchMove($event)'>
+												<div className={style.rect_hander_border}></div>
 												</div>
-												)
-											})
-									}
-								</div>
+											<div className={style.rect_hander,style.rect_hander4} 
+											onTouchStart='_cutTouchStart($event,4)' 
+												onTouchMove='_cutTouchMove($event)'>
+												<div className={style.rect_hander_border}></div>
+											</div>
+											<div className={style.rect_hander_delete} id='delete_9527' onClick='_deleteCropItem()'>
+												<div className='iconfont icon-cuohao'></div>
+											</div>
+										</div>
+										<div className={style.content_middle_right,style.bg_gray}></div>
+									</div>
+									<div className={style.content_bottom,style.bg_gray} ></div>
+							</div> */}
+							<div className={style.rect_mask}>
+								{
+									this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
+										return (
+											<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
+												key={i}  
+												style={{
+														width:item.area.width/720*this.state.scwidth+'px',
+														height:item.area.height/720*this.state.scwidth+'px',
+														left:item.area.x/720*this.state.scwidth+'px',
+														top:item.area.y/720*this.state.scwidth+'px',
+														zIndex:50-i,
+												}} 
+												onClick={(e)=>{this.cropItemClick(i,e)}} 
+											
+												>
+												<Input  key={i} onClick={(e)=>{e.stopPropagation()}}  className={style.inputnum} defaultValue={i+1}/>
+										</div>
+											
+											)
+										}):''
+								}
+								
+							</div>
+						</div>
+						</div>
 
-								<div style={{marginTop:20}}>
-									{
-										this.state.workPages.map((item, i) => {
-											return (
-												<div key={i} style={{marginTop:14}} className={style.queitem}>
-													<div className={style.quelabel} style={{marginTop:10}}>
-														第{i+1}部分
-														<img  src={require('../../images/edit.png')} alt=""/>
-														<img style={{marginLeft:20}}  src={require('../../images/up.png')} alt=""/>
-														<img style={{marginLeft:8}}  src={require('../../images/down.png')} alt=""/>
-													</div> 
-													{item.areas?item.areas.map((area, j) => {
-														return (
-																		<div key={j} className={style.que_box}>
-																			<div className={style.title}>
-																				<Checkbox >
-																					{` 第${j+1}题`}
-																				</Checkbox>
-																				<div className={style._edit_box}>
-																					{
-																						area.area.question?<>
-																						<Button type='primary'>删除</Button>
-																						<Button type='primary'>移动到单元中</Button></>:
-																						<><Button type='primary'>重新匹配</Button>
-																						<Button type='primary'>录入</Button></>
-																					}
-																					
-																				</div>
-																			</div>
-																			<div className={style._content}>
-																				{area.area.question?<>
-																					<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.area.question.title }}>
-																					</div>
-																					<div>解析</div>
-																					<div className={style.qparse} dangerouslySetInnerHTML={{ __html: area.area.question.parse }}>
-																					</div>
-												
-																				</>:<img  src={area.area.imgUrl} alt=""/>}
-																			</div>
-																		</div>
-																	 )
-														}):''
-													}
-												</div>
-												)
-											})
-									}
-								</div>
-              </div>
-							<div className={style._footer}>
-									<Button>查看原图</Button>
-									<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>完成作业编辑</Button>
-								</div>
-				<Modal
-					closable={false} keyboard={false} maskClosable={true}
-					onCancel={()=>{this.cancelModel()}}
-          className="unsetModal"
-          visible={this.state.showModal}
-          footer={[<div key='1' style={{display:'inline-block',float:'left'}}>备注：<Input key='2' style={{width:'250px'}} type='text'></Input></div>,<Button key='3' onClick={()=>{this.newCropItem}}>手动框题</Button>,<Button key='4'>重新识别</Button>,<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >确定</Button>]}
-        >
-          <div className={style.img_box}>
-
-          <img style={{width:720}}  src={this.state.cpicture.serUrl} alt=""/>
-          <div className={style.crop_box}>
-         
-            {/* <div className={style.crop_content} onClick={(e)=>this._cropMaskClick(e)} v-if='showCropBox'>
-              <div className={style.content_top,style.bg_gray} style={{height:this.state.cutTop+'px'}}></div>
-              <div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
-                <div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
-                <div id="rect_item9527" onTouchStart={(e)=>this._rectTouchStart(e)}  onTouchMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
-
-                  <div className={style.rect_hander,style.rect_hander1} 
-                    onTouchStart='_cutTouchStart($event,1)' 
-                    onTouchMove='_cutTouchMove($event)'>
-                    <div className={style.rect_hander_border}></div>
-                  </div>
-                  <div className={style.rect_hander,style.rect_hander2} 
-                   onTouchStart='_cutTouchStart($event,2)' 
-                    onTouchMove='_cutTouchMove($event)'>
-                    <div className={style.rect_hander_border}></div>
-                  </div>
-                  <div className={style.rect_hander,style.rect_hander3} 
-                   onTouchStart='_cutTouchStart($event,3)' 
-                    onTouchMove='_cutTouchMove($event)'>
-                    <div className={style.rect_hander_border}></div>
-                    </div>
-                  <div className={style.rect_hander,style.rect_hander4} 
-                   onTouchStart='_cutTouchStart($event,4)' 
-                    onTouchMove='_cutTouchMove($event)'>
-                    <div className={style.rect_hander_border}></div>
-                  </div>
-                  <div className={style.rect_hander_delete} id='delete_9527' onClick='_deleteCropItem()'>
-                    <div className='iconfont icon-cuohao'></div>
-                  </div>
-                </div>
-                <div className={style.content_middle_right,style.bg_gray}></div>
-              </div>
-              <div className={style.content_bottom,style.bg_gray} ></div>
-          </div> */}
-          <div className={style.rect_mask}>
-            {
-              this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
-                return (
-                  <div className={item.selected?'rect_item_active rect_item':'rect_item'}        
-                    key={i}  
-                    style={{
-                        width:item.area.width/720*this.state.scwidth+'px',
-                        height:item.area.height/720*this.state.scwidth+'px',
-                        left:item.area.x/720*this.state.scwidth+'px',
-                        top:item.area.y/720*this.state.scwidth+'px',
-                        zIndex:50-i,
-                    }} 
-                    onClick={(e)=>{this.cropItemClick(i,e)}} 
-                  
-                    >
-                    <Input  key={i} onClick={(e)=>{e.stopPropagation()}}  className={style.inputnum} defaultValue={i+1}/>
-                </div>
-                  
-                  )
-                }):''
-            }
-            
-          </div>
-        </div>
-        </div>
-
-        </Modal>
-        </Content>
+						</Modal>
+				</Content>
       </>
     )
   }
@@ -1034,10 +1071,10 @@ class WorkManage extends React.Component {
   componentDidMount() {
 		setTimeout(() => {
 			this.addImgBtnClick()
-		}, 1000);
+		}, 800);
     observer.addSubscribe('updateClass', () => {
-      console.log('questionFetch page updateClass..',this.props.state.pageClassList.length,this.props.state.pageClassList);
-      if(this.props.state.pageClassList.length){
+      console.log('questionFetch page updateClass..',this.props.state.workPageClass.list.length,this.props.state.workPageClass.list);
+      if(this.props.state.workPageClass.list.length){
 
         this.updateClassMembers(this.props.state.checkClassId)
       }
@@ -1049,7 +1086,7 @@ class WorkManage extends React.Component {
       year: this.props.state.years
     }
     dispatch({
-      type: 'classModel/getPageClass',
+      type: 'workManage/getWorkPageClass',
       payload: data
     }).then((classlist) => {
       
@@ -1087,12 +1124,12 @@ export default connect((state) => ({
     ...state.classHome,
     ...state.homePage,
     // ...state.temp,
-    pageClassList:state.classModel.pageClassList,
+    workPageClass:state.workManage.workPageClass,
     getClassMembersFinish:state.classModel.getClassMembersFinish,
     classStudentList:state.classModel.classStudentList,
     years: state.temp.years,
     subList: state.temp.subList,
-    subId:state.temp.subId,
+    schoolSubId:state.workManage.schoolSubId,
     checkClassId:state.classModel.checkClassId,
     classSubjectData:state.classModel.classSubjectData,
     schoolSubjectList:state.workManage.schoolSubjectList

@@ -19,16 +19,23 @@ export default {
 			list:[],
 			value:''
 		},
-		pageClassList:[],
+		workPageClass:{
+			list:[],
+			value:[]
+		},
 		schoolSubjectList:[],
+		schoolSubId:0,
 		logType:true
 	},
 	reducers: {
+		schoolSubId(state, { payload }) {
+			return { ...state, schoolSubId: payload };
+		},
 		logType(state, { payload }) {
 			return { ...state, logType: payload };
 		},
-		pageClassList(state, { payload }) {
-			return { ...state, pageClassList: payload };
+		workPageClass(state, { payload }) {
+			return { ...state, workPageClass: payload };
 		},
 		schoolSubjectList(state, { payload }) {
 			return { ...state, schoolSubjectList: payload };
@@ -67,9 +74,15 @@ export default {
 				type: 'schoolSubjectList',
 				payload: _subs
 			})
+			if(_subs.length){
+				yield put({
+					type: 'schoolSubId',
+					payload: _subs[0].k
+				})
+			}
 			return _subs
 		},
-		*getPageClass({ payload }, { put, select }) {
+		*getWorkPageClass({ payload }, { put, select }) {
 			// 带分页的班级列表查询
 			yield put({
 				type: 'classHome/getPageClassFinish',
@@ -98,22 +111,18 @@ export default {
 					payload: true
 				})
 			}
-			yield put({
-				type: 'pageClassList',
-				payload: _classList
-			})
+			let _v=''
 			if(_classList.length){
-				yield put({
-					type: 'checkClassId',
-					payload:_classList[0].classId
-				})
-			}else{
-				yield put({
-					type: 'classStudentList',
-					payload:[]
-				})
-				
+				_v=_classList[0].classId
 			}
+			yield put({
+				type: 'workPageClass',
+				payload: {
+					list:_classList,
+					value:[_v]
+				}
+			})
+
 			return _classList
 		},
 		//temp.js这个接口耦合度太高了,所以拆开来
