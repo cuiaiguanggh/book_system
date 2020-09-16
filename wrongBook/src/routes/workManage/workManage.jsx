@@ -4,6 +4,7 @@ import {
 } from 'antd';
 
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 // import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './workManage.less';
 import moment from 'moment';
@@ -384,7 +385,9 @@ class WorkManage extends React.Component {
     f.value = ''; //重置了file的outerHTML
     message.success('数据导入成功');
 	}
-
+    addWork(){
+        this.props.dispatch(routerRedux.push('/addWork'))
+    }
   render() {
     const content = (
       <div>
@@ -398,7 +401,7 @@ class WorkManage extends React.Component {
             { 
               this.renderSubjectList()
             }
-            <Button type="primary">添加作业</Button>
+            <Button onClick={()=>this.addWork()} type="primary">添加作业</Button>
             {/* <div style={{display:'inline-block',margin:'0 20px 0 0'}}>
               时间:
               <RangePicker
