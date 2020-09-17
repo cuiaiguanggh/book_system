@@ -6,7 +6,10 @@ const { TextArea } = Input;
 export default function Section(props) {
     const [load, setLoad] = useState(0);
     const [newsrc, setNewsrc] = useState(props.src);
-
+		const [editSectionName, setEditSectionName] = useState(false);
+		const [editNameIndex, setEditNameIndex] = useState(-1);
+		const [editPartName, setEditPartName] = useState(false);
+		const [editPartIndex, setEditPartIndex] = useState(-1);
     useEffect(() => {
         if (newsrc !== props.src) {
             setNewsrc(props.src)
@@ -54,11 +57,30 @@ export default function Section(props) {
 			<div>
 				<div key={props.index} style={{marginTop:14}} className={style.queitem}>
 					<div className={style.quelabel} style={{marginTop:10}}>
-						第{props.index+1}部分
-						<img  src={require('../../images/edit.png')} onClick={(e)=>{
-							
-						}}
-						alt=""/>
+						{editNameIndex===props.index&&editSectionName?
+							<Input autoFocus={editNameIndex===props.index&&editSectionName} style={{width:100}} onBlur={()=>{
+								setEditNameIndex(-1)
+								setEditSectionName(false)
+								props.upSectionHander()
+							}} 
+							onChange={(e)=>{
+								props.section.name=e.target.value
+							}}
+							defaultValue={props.section.name?props.section.name:`第${props.index+1}部分`}></Input>
+							:
+							<>
+								{props.section.name?props.section.name:`第${props.index+1}部分`}
+								<img style={{marginLeft:8}} src={require('../../images/edit.png')} alt=""
+									onClick={(e)=>{
+										console.log('e: ', e);
+										setEditNameIndex(props.index)
+										setEditSectionName(true)
+										console.log(editNameIndex,editSectionName)
+										e.stopPropagation()
+									}}
+								/>
+							</>
+						}
 						<img style={{marginLeft:20}} onClick={(e)=>{
 							updatePart(e,props.section)
 						}} src={require('../../images/up.png')} alt=""/>
@@ -72,8 +94,32 @@ export default function Section(props) {
 											return (
 												<div className={style.part_box} key={section.name}>
 													<div style={{display:'flex',alignItems:'center'}}>
-														{section.name}
-														<img  src={require('../../images/edit.png')} alt=""/>
+														{
+															editPartName&&editPartIndex==`${props.index}${k}`?
+															<Input autoFocus={editPartName&&editPartIndex==`${props.index}${k}`} style={{width:100}} 
+															onBlur={(e)=>{
+																setEditPartIndex(-1)
+																setEditPartName(false)
+																props.upSectionHander()
+															}} 
+															onChange={(e)=>{
+																console.log('e: ', e);
+																props.section.sections[k].name=e.target.value
+															}}
+															defaultValue={section.name}></Input>:
+															<>
+																{section.name}
+																<img 
+																	onClick={()=>{
+																		setEditPartIndex(`${props.index}${k}`)
+																		setEditPartName(true)
+																	}} 
+																	style={{marginLeft:8}} 
+																	src={require('../../images/edit.png')} alt=""
+																/>
+															</>
+														}
+														
 														<img style={{marginLeft:20}} 
 															onClick={(e)=>{
 																updatePart(e,props.section)}} src={require('../../images/up.png')} alt=""

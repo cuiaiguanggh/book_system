@@ -32,7 +32,6 @@ class WorkManage extends React.Component {
       currentSudent:{},
       questions:[],
       file: [],
-      uploadFileName: '请选择EXCEL文件导入',
       chechBtnLoaing:false,
       classLoding:true,
       sdate:'',
@@ -184,9 +183,11 @@ class WorkManage extends React.Component {
 				"pageId": 344215,
 				"count": 5,
 				"width": 2500,
-				"height": 3333
+				"height": 3333,
+				"name":''
 			},
 			test1:{
+				"name":'',
 				"areas": [{
 					"num": 0,
 					"areas": [{
@@ -250,14 +251,18 @@ class WorkManage extends React.Component {
 			cutLeft:0,cutTop:0,cutWidth:100,cutHeight:100,
 			showGifTip:false,
 			cropIndex:-1,
-			cpindex:-1,
+			cpindex:0,
 			commitWorking:false,
 			work:{
-				name:'新教育',
-				classes:'',
+				name:'未命名作业',
+				classes:[],
 				subjectId:1,
 				pages:[]
-			}
+			},
+			editWorkName:false,
+			pageMarks:'',
+			editWorkName:false,
+			workNameFail:false
     }
 	}
 	cropItemClick (index,e) {
@@ -581,110 +586,12 @@ class WorkManage extends React.Component {
 
 		console.log('new crop', this.cutTop, this.imageData)
 	}
-  timeHanderChange(dates, dateString) {
-    console.log('dateString: ', dateString);
-    this.setState({
-          sdate: dateString[0],
-          edate: dateString[1]
-      }, () => {
-          // this.callInterface();
-      })
-  }
-  checkQuestions(){
-    if(this.state.chechBtnLoaing){
-      console.log('this.state.chechBtnLoaing: ', this.state.chechBtnLoaing,'正在提交');
-      return 
-    }
-    this.setState({
-      chechBtnLoaing:true
-    })
-    let _arr=this.props.state.classStudentList
-    let prdata=[]
-    for (let index = 0; index < _arr.length; index++) {
-      const ele = _arr[index]
-      let item={
-        userId:ele.userId,
-        uqIds:[]
-      }
-      if(this.props.state.saleId&&ele.userId===this.props.state.saleId){
-       
-        if(ele.qustionlist){
-          for (let index = 0; index < ele.qustionlist.length; index++) {
-            let picid=ele.qustionlist[index].picId
-            // console.log('picid: ', picid);
-            if(picid){
-              picid=picid.substring(5)
-              // console.log('new picid: ', picid);
-              item.uqIds.push('')
-            }
-          }
-        }
-      }else if(ele&&ele.questionHook){
-        for (let key in ele.questionHook) {
-          let _keys=key.split('-')
-//           let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].questionId||0
-          let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].picId
-          _qid=_qid.substring(5)
-          item.uqIds.push(_qid)
-        }
-      }
-      
-      item.uqIds=item.uqIds.toString()
-      prdata.push(item)
-    }
-    console.log('prdata: ', prdata,JSON.stringify(prdata));
-    this.props.dispatch({
-      type: 'classHome/fetchQuestions',
-      payload:  {
-        data:prdata
-      }
-    }).then(()=>{
-      this.setState({
-        chechBtnLoaing:false
-      })
-    })
-  }
-  
-  menuClick = (e) => {
-    const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'homePage/infoClass',
-    //   payload: e.key
-    // });
-    // dispatch({
-    //   type: 'classHome/classId',
-    //   payload:  e.key
-    // })
-    this.setState({
-      nowclassid: e.key
-    })
-    dispatch({
-      type: 'classModel/checkClassId',
-      payload: e.key
-    })
-    dispatch({
-      type: 'classModel/getClassSubjectList',
-      payload: {
-        classId:e.key,
-        year:this.props.state.years
-      }
-    });
-    
-    dispatch({
-      type: 'classModel/getClassMembers',
-      payload: {
-        type: 3,
-        classId:e.key
-      }
-    })
-
-  }
-
-
-  
-
   
   onEditFinish=()=>{
+		if(!this.state.work.classes||!this.state.work.classes.length) {
+			message.destroy()
+			message.warn('请选择一个班级！')
+		}
 		this.setState({
 			commitWorking:true
 		})
@@ -732,7 +639,6 @@ class WorkManage extends React.Component {
   }
   renderClassList() {
 		let classes = this.props.state.workPageClass.list;
-		// console.log('classes: ', classes);
 		const children = [];
     for (let i = 0; i < classes.length; i++) {
       let item = classes[i]
@@ -746,7 +652,7 @@ class WorkManage extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
 					value={this.props.state.workPageClass.value}
-          placeholder="班级"
+          placeholder="请选择班级"
           onChange={(value) => {
 						console.log('value: ', value);
               this.props.dispatch({
@@ -755,7 +661,12 @@ class WorkManage extends React.Component {
                   list:classes,
                   value
                 }
-              })
+							})
+							this.state.work.classes=value
+							this.setState({
+								work:this.state.work
+							})
+							console.log(this.state.work)
             }}>
           {children}
         </Select>
@@ -833,20 +744,29 @@ class WorkManage extends React.Component {
 		this.setState({
 			showModal:true,
 			cpicture:p,
-			cpindex:i
+			cpindex:i,
+			pageMarks:''
 		})
 	}
 	checkCpicture(){
+		let _pic=this.state.workPages[this.state.cpindex]
 		this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
-		console.log('this.state.workPages: ', this.state.workPages);
 		this.setState({
-			showModal:false
+			showModal:false,
+			workPages:this.state.workPages
 		})
+		console.log('this.state.cpindex,1,this.state.cpicture: ', this.state.cpindex,1,this.state.cpicture);
+		console.log('this.state.workPages: ', this.state.workPages,this.state.cpicture);
 	}
 	cancelModel(e){
+		this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
+		this.state.cpicture.marks=''
 		this.setState({
+			cpicture:this.state.cpicture,
+			workPages:this.state.workPages,
 			showModal:false
 		})
+		console.log('e: ', e,this.state.cpicture,this.state.workPages);
 	}
 	upSection(){
 		this.setState({
@@ -855,78 +775,84 @@ class WorkManage extends React.Component {
 		console.log('workPages: ', this.state.workPages);
 	}
 
-	renderQueArea(){
-		return(
-			<>
-				<div style={{marginTop:32}}>
-					{
-						// this.state.workPages.map((item, i) => {
-						// 	return (
-						// 		<div key={i} style={{marginTop:14}} className={style.queitem}>
-						// 			<span style={{width:60}} className={style.quelabel}>第{i+1}页</span> {item.areas?item.areas.map((area, j) => {
-						// 			return (
-						// 			<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
-						// 							)
-						// 				}):''}
-						// 		</div>
-						// 		)
-						// 	})
-					}
-				</div>
-
-				<div style={{marginTop:20}}>
-					{
-						this.state.workPages.map((item, i) => {
-							return (
-								<Section key={i} index={i} section={item} upSectionHander={()=>{
-									this.upSection()
-								}}></Section>
-								)
-							})
-					}
-				</div>
-              
-			</>
+	initWorkName(subname){
+		var date = new Date();
+		var year = (date.getFullYear())
+		var moun = (date.getMonth()+1)
+		let day = date.getDate()
+		if(moun<10) moun='0'+moun
+		if(day<10) day='0'+day
+		this.setState({
+				work:{
+					...this.state.work,
+					name:`${year}年${moun}月${day}日${subname}作业`
+				}
+			}
 		)
+    console.log('name',this.state.work.name)
 	}
   render() {
-    const content = (
-      <div>
-        <p>{this.state.uploadFileName||'请选择EXCEL文件导入'}</p>
-      </div>
-    )
       return (
       <>
-        <Content className={style._box} style={{ height: '100%',minHeight:500, overflow: 'hidden', position: 'relative',padding:20,background:'#F0F2F5' }} ref='warpper' >
-				<div className={style.content} >
+        <Content className={style._box} style={{ height: '100%',minHeight:500, overflow: 'hidden', position: 'relative',padding:20,background:'#F0F2F5' }}  >
+					<div className={style.content} >
                 <div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
-									<h4 style={{fontSize:20}}>
-										{this.state.work.name}
-										<img className='cup' src={require('../../images/edit.png')} alt=""/>
+									<h4 style={{fontSize:20,height:40}} >
+										{
+											!this.state.editWorkName?
+											<>
+												{this.state.work.name}
+												<img style={{marginLeft:10}} className='cup' onClick={()=>{this.setState({editWorkName:true})}} src={require('../../images/edit.png')} alt=""/>
+											</>
+											:
+											<>
+												<Input autoFocus={true} type='text' 
+														onBlur={(e)=>{
+
+															if(!e.target.value.toString().length){
+																this.setState({workNameFail:true})
+															}else{
+																this.setState({
+																	work:{
+																		...this.state.work,
+																		name:e.target.value
+																	},
+																	editWorkName:false,workNameFail:false
+																})
+																console.log('this.state.work: ', this.state.work);
+															}
+														}} 
+														defaultValue={this.state.work.name} 
+														onKeyUp={(e)=>{
+															this.setState({workNameFail:e.target.value.toString().length?false:true})
+														}}
+													/>
+													{this.state.workNameFail?<div style={{color:'red',fontSize:12}}>作业名称不能为空.</div>:''}
+											</>
+
+										}
 									</h4>
 									<div style={{marginTop:14}}>
 										班级：{this.renderClassList()}
-										学科：{ 
-											this.renderSubjectList()
-										}
-										</div>
+										学科：{this.renderSubjectList()}
+									</div>
 								</div>
 								<div>
 									<div className='clearfix'>
 										{
 											this.state.workPages.map((item, i) => {
 												return (
-													<div key={i}  className={style.uploadbox}>
-														<Upload getFun={this.showCropModel} picture={item} index={i+1}></Upload>
+													<div key={item.pageId}  className={style.uploadbox}>
+														<Upload getFun={this.showCropModel} picture={item} index={i}></Upload>
 													</div>
 													)
 												})
 										}
-										
-										<div className={style.uploadbox}>
-											<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
-										</div>
+									
+									<div className={style.uploadbox}>
+										<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
 									</div>
+								</div>
 									{this.state.workPages.length>0?<>{
 										this.state.workPages.map((item, i) => {
 											return (
@@ -960,16 +886,45 @@ class WorkManage extends React.Component {
 								
 								</div>
 						</div>
+
 						<div className={style._footer}>
 							<Button>查看原图</Button>
-							<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>完成作业编辑</Button>
+							<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>
+								完成作业编辑
+							</Button>
 						</div>
+
 						<Modal
+							key={this.state.cpicture.pageId}
 							closable={false} keyboard={false} maskClosable={true}
 							onCancel={()=>{this.cancelModel()}}
 							className="unsetModal"
 							visible={this.state.showModal}
-							footer={[<div key='1' style={{display:'inline-block',float:'left'}}>备注：<Input key='2' style={{width:'250px'}} type='text'></Input></div>,<Button key='3' onClick={()=>{this.newCropItem}}>手动框题</Button>,<Button key='4'>重新识别</Button>,<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >确定</Button>]}
+							footer={[
+								<div key='1' style={{display:'inline-block',float:'left'}}>
+									备注：
+									<Input key='2' style={{width:'250px'}} type='text' 
+										value={this.state.cpicture.marks} 			
+										onChange={(e)=>{
+													this.setState({
+														cpicture:{
+															...this.state.cpicture,
+															marks:e.target.value
+														}
+													})
+											}}
+										>
+									</Input>
+								</div>
+									,
+								<Button key='3' onClick={()=>{this.newCropItem}}>手动框题</Button>
+								,
+								<Button key='4'>重新识别</Button>
+								,
+								<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >
+									确定
+								</Button>
+							]}
 						>
 							<div className={style.img_box}>
 
@@ -1052,11 +1007,7 @@ class WorkManage extends React.Component {
 			console.log('works',this.state.workPages)
 		}, 800);
     observer.addSubscribe('updateClass', () => {
-      console.log('questionFetch page updateClass..',this.props.state.workPageClass.list.length,this.props.state.workPageClass.list);
-      if(this.props.state.workPageClass.list.length){
 
-        this.updateClassMembers(this.props.state.checkClassId)
-      }
     })
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
@@ -1069,17 +1020,15 @@ class WorkManage extends React.Component {
       payload: data
     }).then((classlist) => {
       
-      if (classlist && classlist.length > 0) {
-        let classId=classlist[0].classId||0
-        this.updateClassMembers(classId)
-      }
     })
     dispatch({
-        type: 'workManage/getSchoolSubjectList'
-      }).then((res) => {
-          console.log('res: ', res);
-       
-      })
+			type: 'workManage/getSchoolSubjectList'
+		}).then((subs) => {
+			console.log('subs: ', subs);
+			if(subs.length){
+				this.initWorkName(subs[0].v)
+			}
+		})
 
   }
 

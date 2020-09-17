@@ -40,7 +40,7 @@ class Upload extends React.Component {
       <>
         <Spin spinning={false&&!this.state.uploadFinish}>
           <div className={style.uploadin}>
-            <div className={style.num}>{this.props.index}</div>
+            <div className={style.num}>{this.props.index+1}</div>
             <img onClick={()=>this.lookPicture(this.props.picture,this.props.index)} src={this.props.picture.serUrl} alt=""/>
           </div>
         </Spin>
