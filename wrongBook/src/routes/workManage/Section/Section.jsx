@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import style from './Section.less';
-import { Input, Button, Checkbox, message ,Popover} from 'antd';
+import { Input, Button, Checkbox, message ,Popover,Popconfirm} from 'antd';
 const { TextArea } = Input;
 
 export default function Section(props) {
@@ -35,11 +35,15 @@ export default function Section(props) {
 			e.stopPropagation()
 		}
 
-		function addPart(index,section){
-			console.log('section: ', section);
+		function removePart(index,section,i,ispart){
 			const {area,question}=section
+			props.section.sections[index].areas.splice(i,1)
+			// if(ispart){
+			// 	props.section.sections[index].areas.splice(i,1)
+			// }else{
+			// 	props.section.areas.splice(index,1)
+			// }
 			props.section.sections[index].areas.push({question,area})
-			console.log('props.section.sections: ', props.section.sections);
 			props.addPartHander(props.index,props.section.sections)
 		}
 
@@ -84,9 +88,17 @@ export default function Section(props) {
 						<img style={{marginLeft:20}} onClick={(e)=>{
 							updatePart(e,props.section)
 						}} src={require('../../images/up.png')} alt=""/>
-						<img style={{marginLeft:8}} onClick={(e)=>{
-							deleteSection(e,props.index)
-						}}  src={require('../../images/down.png')} alt=""/>
+
+
+						<Popconfirm placement="top" 
+							title={'确定要删除该部分吗？'} 
+							onConfirm={(e)=>{
+								deleteSection(e,props.index)
+							}} okText="确定" 		cancelText="取消"
+							>
+							<img style={{marginLeft:8}}   src={require('../../images/down.png')} alt=""/>
+						</Popconfirm>
+						
 					</div> 
 								<div className={style._section}>
 									{
@@ -124,10 +136,15 @@ export default function Section(props) {
 															onClick={(e)=>{
 																updatePart(e,props.section)}} src={require('../../images/up.png')} alt=""
 														/>
-														<img  style={{marginLeft:8}}  src={require('../../images/down.png')} alt=""
-															onClick={(e)=>{
-																updatePart(e,props.section,k)}}
-														/>
+														
+														<Popconfirm placement="top" 
+															title={'确定要删除该部分吗？'} 
+															onConfirm={(e)=>{
+																updatePart(e,props.section,k)
+															}} okText="确定" 		cancelText="取消"
+															>
+															<img  style={{marginLeft:8}}  src={require('../../images/down.png')} alt=""/>
+														</Popconfirm>
 													</div>
 													{
 														section.areas?section.areas.map((area, j1) => {
@@ -143,7 +160,7 @@ export default function Section(props) {
 																								props.section.sections.map((_section,k)=>{
 																									return (
 																											<Button disabled={_section.id==section.id} className={style.partp} key={k} onClick={()=>{
-																												addPart(k,area)
+																												removePart(k,area,j1,true)
 																											}}>{_section.name}</Button>
 																										)
 																									})
@@ -165,7 +182,7 @@ export default function Section(props) {
 																					</div>
 																				</div>
 																				<div className={style._content}>
-																					{area.question?<>
+																					{!props.showPicture&&area.question?<>
 																						<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.question.title }}>
 																						</div>
 																						<div>解析</div>
@@ -196,7 +213,7 @@ export default function Section(props) {
 																		props.section.sections.map((_section,k)=>{
 																			return (
 																					<Button  className={style.partp} key={k} onClick={()=>{
-																						addPart(k,area)
+																						removePart(k,area,j)
 																					}}>{_section.name}</Button>
 																				)
 																			})
@@ -214,7 +231,7 @@ export default function Section(props) {
 															</div>
 														</div>
 														<div className={style._content}>
-															{area.question?<>
+															{!props.showPicture&&area.question?<>
 																<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.question.title }}>
 																</div>
 																<div>解析</div>

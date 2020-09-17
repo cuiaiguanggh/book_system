@@ -262,7 +262,8 @@ class WorkManage extends React.Component {
 			editWorkName:false,
 			pageMarks:'',
 			editWorkName:false,
-			workNameFail:false
+			workNameFail:false,
+			lookQuestionImg:false
     }
 	}
 	cropItemClick (index,e) {
@@ -856,7 +857,7 @@ class WorkManage extends React.Component {
 									{this.state.workPages.length>0?<>{
 										this.state.workPages.map((item, i) => {
 											return (
-												<Section key={item.pageId} index={i} section={item} deleteSectionHander={(index)=>{
+												<Section showPicture={this.state.lookQuestionImg} key={item.pageId} index={i} section={item} deleteSectionHander={(index)=>{
 														this.state.workPages.splice(index,1)
 														this.setState({
 															workPages: this.state.workPages,
@@ -888,7 +889,13 @@ class WorkManage extends React.Component {
 						</div>
 
 						<div className={style._footer}>
-							<Button>查看原图</Button>
+							<Button 
+								onClick={()=>{
+									this.setState({
+										lookQuestionImg:!this.state.lookQuestionImg
+									})
+								}}
+							>{!this.state.lookQuestionImg?'查看原图':'查看匹配'}</Button>
 							<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>
 								完成作业编辑
 							</Button>
