@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover,Input, Icon, Checkbox,Empty,Modal
+  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover,Input, Icon, Popconfirm,Empty,Modal
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
@@ -244,6 +244,7 @@ class WorkManage extends React.Component {
 			workPages:[
 				 
 			],
+			workQuestions:[],
 			showModal:false,
 			cpicture:{},
 			visible:false,
@@ -839,7 +840,7 @@ class WorkManage extends React.Component {
 									</div>
 								</div>
 								<div>
-									<div className='clearfix'>
+								<div className='clearfix'>
 										{
 											this.state.workPages.map((item, i) => {
 												return (
@@ -854,32 +855,124 @@ class WorkManage extends React.Component {
 										<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
 									</div>
 								</div>
-									{this.state.workPages.length>0?<>{
+
+								<div style={{marginTop:32}}>
+									{
 										this.state.workPages.map((item, i) => {
 											return (
-												<Section showPicture={this.state.lookQuestionImg} key={item.pageId} index={i} section={item} deleteSectionHander={(index)=>{
-														this.state.workPages.splice(index,1)
-														this.setState({
-															workPages: this.state.workPages,
-														})
+												<div key={i} style={{marginTop:14}} className={style.queitem}>
+													<span style={{width:60}} className={style.quelabel}>第{i+1}页</span> {item.areas?item.areas.map((area, j) => {
+													return (
+													<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
+																	)
+														}):''}
+												</div>
+												)
+											})
+									}
+								</div>
+
+								<div className={style.section_box}> 
+									<Button >添加部分</Button>
+									<div className={style.quelabel} style={{marginTop:10}}>
+										<>
+												{`第1部分`}
+												<img style={{marginLeft:8}} src={require('../../images/edit.png')} alt=""
+													onClick={(e)=>{
+														
 													}}
-													upSectionHander={()=>{
-														this.setState({
-															workPages: this.state.workPages,
-														})
-													}}
-													addPartHander={(index,data)=>{
-														let work=this.state.workPages[index]
-														work.sections=data
-														this.state.workPages.splice(index,1,work)
-														console.log('this.state.workPages: ', this.state.workPages);
-														this.setState({
-															workPages: this.state.workPages,
-														})
-													}}
-													>
+												/>
+											</>
+										<img style={{marginLeft:20}} 
+											onClick={(e)=>{
+												let item={part:{name:'---',questions:[]}}
+												this.state.workQuestions.push(item)
+												this.setState({
+													workQuestions:this.state.workQuestions
+												})
+											}} 
+											src={require('../../images/up.png')} alt=""
+										/>
+
+
+										<Popconfirm placement="top" 
+											title={'确定要删除该部分吗？'} 
+											onConfirm={(e)=>{
+												
+											}} okText="确定" 		cancelText="取消"
+											>
+											<img style={{marginLeft:8}}   src={require('../../images/down.png')} alt=""/>
+										</Popconfirm>
+										
+									</div> 
+								</div>
+
+								{this.state.workQuestions.length>0?<>{
+									this.state.workQuestions.map((item, i) => {
+											return (
+												item.part?
+														<>
+															{item.part.name}{i}
+															<div style={{background:'rgb(240, 242, 245)',padding:20}}>
+																{
+																	item.part.questions&&item.part.questions.length?
+																		item.part.questions.map((question, k) => {
+																			<Section showPicture={this.state.lookQuestionImg} key={k} index={k} 
+																					question={question} 		  
+																					deleteSectionHander={(index)=>{
+																						this.state.workPages.splice(index,1)
+																						this.setState({
+																							workPages: this.state.workPages,
+																						})
+																					}}
+																					upSectionHander={()=>{
+																						this.setState({
+																							workPages: this.state.workPages,
+																						})
+																					}}
+																					addPartHander={(index,data)=>{
+																						let work=this.state.workPages[index]
+																						work.sections=data
+																						this.state.workPages.splice(index,1,work)
+																						console.log('this.state.workPages: ', this.state.workPages);
+																						this.setState({
+																							workPages: this.state.workPages,
+																						})
+																					}}
+																					>
+								
+																		</Section>
+																		})
+																	:''
+																}
+															</div>
+														</>
+												:
+												<Section showPicture={this.state.lookQuestionImg} key={item.pageId} index={i} question={item} 
+														deleteSectionHander={(index)=>{
+															this.state.workPages.splice(index,1)
+															this.setState({
+																workPages: this.state.workPages,
+															})
+														}}
+														upSectionHander={()=>{
+															this.setState({
+																workPages: this.state.workPages,
+															})
+														}}
+														addPartHander={(index,data)=>{
+															let work=this.state.workPages[index]
+															work.sections=data
+															this.state.workPages.splice(index,1,work)
+															console.log('this.state.workPages: ', this.state.workPages);
+															this.setState({
+																workPages: this.state.workPages,
+															})
+														}}
+														>
 
 												</Section>
+												
 												)
 											})
 									}</>
@@ -1008,10 +1101,29 @@ class WorkManage extends React.Component {
   componentDidMount() {
 		setTimeout(() => {
 			// this.addImgBtnClick()
+			let array=[this.state.test,this.state.test1]
 			this.setState({
 				workPages:[this.state.test,this.state.test1]
 			})
 			console.log('works',this.state.workPages)
+			let _arr=[
+				{part:{name:'---',questions:[]}}
+			]
+			for (let index = 0; index < array.length; index++) {
+				const element = array[index]
+				if(element.areas.length){
+				
+					for (let j = 0; j < element.areas.length; j++) {
+						_arr.push(element.areas[j])
+						
+					}
+				}
+			}
+
+			this.setState({
+				workQuestions:_arr
+			})
+			console.log('_arr: ', _arr);
 		}, 800);
     observer.addSubscribe('updateClass', () => {
 

@@ -36,219 +36,62 @@ export default function Section(props) {
 		}
 
 		function removePart(index,section,i,ispart){
-			const {area,question}=section
-			props.section.sections[index].areas.splice(i,1)
-			// if(ispart){
-			// 	props.section.sections[index].areas.splice(i,1)
-			// }else{
-			// 	props.section.areas.splice(index,1)
-			// }
-			props.section.sections[index].areas.push({question,area})
-			props.addPartHander(props.index,props.section.sections)
+			// const {question}=section
+			// props.question.sections[index].areas.splice(i,1)
+			// // if(ispart){
+			// // 	props.question.sections[index].areas.splice(i,1)
+			// // }else{
+			// // 	props.question.areas.splice(index,1)
+			// // }
+			// props.question.sections[index].areas.push({question,question})
+			// props.addPartHander(props.index,props.question.sections)
 		}
 
 		function deleteSectionQuestion(index){
-			props.section.areas.splice(index,1)
+			props.question.areas.splice(index,1)
 			props.upSectionHander()
 		}
 		function deleteParkQuestion(index,i){
-			props.section.sections[index].areas.splice(i,1)
+			props.question.sections[index].areas.splice(i,1)
 			props.upSectionHander()
 		}
 
 		
 		return (
-			<div>
-				<div key={props.index} style={{marginTop:14}} className={style.queitem}>
-					<div className={style.quelabel} style={{marginTop:10}}>
-						{editNameIndex===props.index&&editSectionName?
-							<Input autoFocus={editNameIndex===props.index&&editSectionName} style={{width:100}} onBlur={()=>{
-								setEditNameIndex(-1)
-								setEditSectionName(false)
-								props.upSectionHander()
-							}} 
-							onChange={(e)=>{
-								props.section.name=e.target.value
-							}}
-							defaultValue={props.section.name?props.section.name:`第${props.index+1}部分`}></Input>
-							:
-							<>
-								{props.section.name?props.section.name:`第${props.index+1}部分`}
-								<img style={{marginLeft:8}} src={require('../../images/edit.png')} alt=""
-									onClick={(e)=>{
-										console.log('e: ', e);
-										setEditNameIndex(props.index)
-										setEditSectionName(true)
-										console.log(editNameIndex,editSectionName)
-										e.stopPropagation()
-									}}
-								/>
-							</>
-						}
-						<img style={{marginLeft:20}} onClick={(e)=>{
-							updatePart(e,props.section)
-						}} src={require('../../images/up.png')} alt=""/>
-
-
-						<Popconfirm placement="top" 
-							title={'确定要删除该部分吗？'} 
-							onConfirm={(e)=>{
-								deleteSection(e,props.index)
-							}} okText="确定" 		cancelText="取消"
-							>
-							<img style={{marginLeft:8}}   src={require('../../images/down.png')} alt=""/>
-						</Popconfirm>
-						
-					</div> 
-								<div className={style._section}>
-									{
-										props.section.sections.length?props.section.sections.map((section, k) => {
-											return (
-												<div className={style.part_box} key={section.name}>
-													<div style={{display:'flex',alignItems:'center'}}>
-														{
-															editPartName&&editPartIndex==`${props.index}${k}`?
-															<Input autoFocus={editPartName&&editPartIndex==`${props.index}${k}`} style={{width:100}} 
-															onBlur={(e)=>{
-																setEditPartIndex(-1)
-																setEditPartName(false)
-																props.upSectionHander()
-															}} 
-															onChange={(e)=>{
-																console.log('e: ', e);
-																props.section.sections[k].name=e.target.value
-															}}
-															defaultValue={section.name}></Input>:
-															<>
-																{section.name}
-																<img 
-																	onClick={()=>{
-																		setEditPartIndex(`${props.index}${k}`)
-																		setEditPartName(true)
-																	}} 
-																	style={{marginLeft:8}} 
-																	src={require('../../images/edit.png')} alt=""
-																/>
-															</>
-														}
-														
-														<img style={{marginLeft:20}} 
-															onClick={(e)=>{
-																updatePart(e,props.section)}} src={require('../../images/up.png')} alt=""
-														/>
-														
-														<Popconfirm placement="top" 
-															title={'确定要删除该部分吗？'} 
-															onConfirm={(e)=>{
-																updatePart(e,props.section,k)
-															}} okText="确定" 		cancelText="取消"
-															>
-															<img  style={{marginLeft:8}}  src={require('../../images/down.png')} alt=""/>
-														</Popconfirm>
-													</div>
-													{
-														section.areas?section.areas.map((area, j1) => {
-															return (
-																			<div key={j1} className={style.que_box}>
-																				<div className={style.title}>
-																					<Checkbox >
-																						{` 第${j1+1}题`}
-																					</Checkbox>
-																					<div className={style._edit_box}>
-																							<Button type='primary' onClick={()=>deleteParkQuestion(k,j1)}>删除</Button>
-																							<Popover placement="left"  trigger="click" content={
-																								props.section.sections.map((_section,k)=>{
-																									return (
-																											<Button disabled={_section.id==section.id} className={style.partp} key={k} onClick={()=>{
-																												removePart(k,area,j1,true)
-																											}}>{_section.name}</Button>
-																										)
-																									})
-																								}>
-																							<Button type='primary'>移动到单元中</Button>
-																						</Popover>
-																							{
-																								area.question?<>
-																								{/* <Popover placement="left" title='123' content='123'>
-																									<Button type='primary'>移动到单元中</Button>
-																								</Popover> */}
-																								</>:
-																								<>
-																									<Button type='primary'>重新匹配</Button>
-																									{/* <Button type='primary'>录入</Button> */}
-																								</>
-																							}
-																						
-																					</div>
-																				</div>
-																				<div className={style._content}>
-																					{!props.showPicture&&area.question?<>
-																						<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.question.title }}>
-																						</div>
-																						<div>解析</div>
-																						<div className={style.qparse} dangerouslySetInnerHTML={{ __html: area.question.parse }}>
-																						</div>
-													
-																					</>:<img  src={area.area.imgUrl} alt=""/>}
-																				</div>
-																			</div>
-																			)
-															}):''
-													}
-												</div>
-											)
-										}):''
-									}
-								</div>
-								{props.section.areas?props.section.areas.map((area, j) => {
-									return (
-													<div key={j} className={style.que_box}>
-														<div className={style.title}>
-															<Checkbox >
-																{` 第${j+1}题`}
-															</Checkbox>
-															<div className={style._edit_box}>
-																<Button type='primary' onClick={()=>deleteSectionQuestion(j)}>删除</Button>
-																<Popover placement="left"  trigger="click" content={
-																		props.section.sections.map((_section,k)=>{
-																			return (
-																					<Button  className={style.partp} key={k} onClick={()=>{
-																						removePart(k,area,j)
-																					}}>{_section.name}</Button>
-																				)
-																			})
-																		}>
-																	<Button type='primary'>移动到单元中</Button>
-																</Popover>
-																{
-																	area.question?<></>:
-																	<>
-																	<Button type='primary'>重新匹配</Button>
-																	{/* <Button type='primary'>录入</Button> */}
-																	</>
-																}
-																
-															</div>
-														</div>
-														<div className={style._content}>
-															{!props.showPicture&&area.question?<>
-																<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: area.question.title }}>
-																</div>
-																<div>解析</div>
-																<div className={style.qparse} dangerouslySetInnerHTML={{ __html: area.question.parse }}>
-																</div>
-							
-															</>:<img  src={area.area.imgUrl} alt=""/>}
-														</div>
-													</div>
-													)
-									}):''
+			<div key={props.index} style={{marginTop:14}} className={style.queitem}>
+				<div  className={style.que_box}>
+						<div className={style.title}>
+							<Checkbox >
+								{` 第${props.index+1}题`}
+							</Checkbox>
+							<div className={style._edit_box}>
+								<Button type='primary' onClick={()=>deleteSectionQuestion(props.index)}>删除</Button>
+								<Popover placement="left"  trigger="click" content='11'>
+									<Button type='primary'>移动到单元中</Button>
+								</Popover>
+								{
+									props.question.question?<></>:
+									<>
+									<Button type='primary'>重新匹配</Button>
+									{/* <Button type='primary'>录入</Button> */}
+									</>
 								}
+								
 							</div>
-							
-						
-					
-				</div>
+						</div>
+						<div className={style._content}>
+							{!props.showPicture&&props.question.question?<>
+								<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: props.question.question.title }}>
+								</div>
+								<div>解析</div>
+								<div className={style.qparse} dangerouslySetInnerHTML={{ __html: props.question.question.parse }}>
+								</div>
+
+							</>:<img  src={props.question.area?props.question.area.imgUrl:''} alt=""/>}
+						</div>
+					</div>
+								
+			</div>
     )
 
 }
