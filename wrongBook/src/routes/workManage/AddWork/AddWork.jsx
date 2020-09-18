@@ -4,16 +4,12 @@ import {
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './AddWork.less';
 import moment from 'moment';
-// import { dataCenter } from '../../../config/dataCenter'
 import store from 'store';
 import Upload from '../Upload/Upload'
 import Section from '../Section/Section'
-import * as XLSX from 'xlsx';
-import observer from '../../../utils/observer'
-const { RangePicker } = DatePicker;
+import EditPageModal from '../EditPageModal/EditPageModal'
 
 //作业中心界面内容
 const Option = Select.Option;
@@ -752,8 +748,8 @@ class WorkManage extends React.Component {
 	showCropModel(p,i){
 		console.log('p: ', p);
 		this.setState({
-			showModal:true,
 			cpicture:p,
+			showModal:true,
 			cpindex:i,
 			pageMarks:''
 		})
@@ -1144,116 +1140,9 @@ class WorkManage extends React.Component {
 					</Content>
 				</Layout>
 				</div>
-
-				<Modal
-							closable={false} 
-							onCancel={()=>{this.cancelModel()}}
-							className="unsetModal"
-							visible={this.state.showModal}
-							footer={[
-								<div key='1' style={{display:'inline-block',float:'left'}}>
-									备注：
-									<Input key='2' style={{width:'250px'}} type='text' 
-										value={this.state.cpicture.marks} 			
-										onChange={(e)=>{
-													this.setState({
-														cpicture:{
-															...this.state.cpicture,
-															marks:e.target.value
-														}
-													})
-											}}
-										>
-									</Input>
-								</div>
-									,
-								<Button key='3' onClick={()=>{this.newCropItem}}>手动框题</Button>
-								,
-								<Button key='4'>重新识别</Button>
-								,
-								<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >
-									确定
-								</Button>
-							]}
-						>
-							<div className={style.img_box}>
-
-							<img style={{width:720}}  src={this.state.cpicture.serUrl} alt=""/>
-							<div className={style.crop_box}>
-								{
-									this.state.showCropBox?
-									<div className={style.crop_content} >
-										<div className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
-										<div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
-											<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
-											<div id="rect_item9527" 
-											onMouseDown={(e)=>this._rectTouchStart(e)}  
-											onMouseUp={()=>{this.setState({mouseIsDown:false})}}
-											onMouseMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
-
-											<div className={[style.rect_hander,style.rect_hander1].join(' ')} 
-												onTouchStart={(e)=>this._cutTouchStart(e,1)} 
-												
-												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
-												<div className={style.rect_hander_border}></div>
-											</div>
-											<div className={[style.rect_hander,style.rect_hander2].join(' ')} 
-												onTouchStart={(e)=>this._cutTouchStart(e,2)}  
-												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
-												<div className={style.rect_hander_border}></div>
-											</div>
-											<div className={[style.rect_hander,style.rect_hander3].join(' ')} 
-												onTouchStart={(e)=>this._cutTouchStart(e,3)} 
-												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
-												<div className={style.rect_hander_border}></div>
-												</div>
-											<div className={[style.rect_hander,style.rect_hander4].join(' ')} 
-												onTouchStart={(e)=>this._cutTouchStart(e,4)} 
-												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
-												<div className={style.rect_hander_border}></div>
-											</div>
-											<div className={style.rect_hander_delete} id='delete_9527' 
-												onClick={()=>{this._deleteCropItem()}}>
-												<div className={[style.iconfont,style.icon_cuohao].join(' ')}></div>
-											</div>
-											</div>
-											<div className={[style.content_middle_right,style.bg_gray].join(' ')}></div>
-										</div>
-										<div className={[style.content_bottom,style.bg_gray].join(' ')} ></div>
-									</div>
-									:
-									<div className={style.rect_mask}>
-										{
-											this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
-												return (
-													<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
-														key={item.num}  
-														style={{
-																width:item.area.width/720*this.state.scwidth+'px',
-																height:item.area.height/720*this.state.scwidth+'px',
-																left:item.area.x/720*this.state.scwidth+'px',
-																top:item.area.y/720*this.state.scwidth+'px',
-																zIndex:50-i,
-														}} 
-														onClick={(e)=>{this.cropItemClick(i,e)}} 
-													
-														>
-														<Input  key={i}   className={style.inputnum} defaultValue={i+1}/>
-												</div>
-													
-													)
-												}):''
-										}
-										
-									</div>
-								}
-								
-							
-						</div>
-						</div>
-
-						</Modal>
-			</div>
+				
+				<EditPageModal cpicture={this.state.cpicture} visible={this.state.showModal}></EditPageModal>
+				</div>
     )
   }
 
