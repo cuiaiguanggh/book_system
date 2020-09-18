@@ -14,23 +14,7 @@ export default function Section(props) {
         }
     });
 
-		function deleteSection(e,index){
-			props.deleteSectionHander(index)
-			e.stopPropagation()
-		}
-		function updatePart(e,item,index){
-			if(index==undefined){
-				item.sections.push({
-					name:`第${item.sections.length+1}章节`,
-					id:item.sections.length,
-					areas:[]
-				})
-			}else{
-				item.sections.splice(index,1)
-			}
-			props.upSectionHander()
-			e.stopPropagation()
-		}
+		
 
 
 
@@ -38,20 +22,16 @@ export default function Section(props) {
 			props.question.areas.splice(index,1)
 			props.upSectionHander()
 		}
-		function drag(e,key){
-			console.log('darg e: ',key,props.index);
-			props.drapQuetion(key,props.index)
 
-		}
 
 
 		return (
 			<>
-			<div key={props.indexkey}  className={style.queitem} 
+			<div   className={style.queitem} 
 				>
 				<div  className={style.que_box}>
 						<div className={style.title}>
-							<Checkbox 
+							{/* <Checkbox 
 									defaultChecked={props.ischecked}
 									onChange={(e)=>{
 										let _v=e.target.checked
@@ -60,10 +40,11 @@ export default function Section(props) {
 									}}
 								>
 								{` 第${props.index+1}题`}
-							</Checkbox>
-							<span>知识点：</span>
+							</Checkbox> */}
+							{` 第${props.index+1}题`}
+							<span style={{marginLeft:20}}>知识点：</span>
 							<div className={style._edit_box}>
-								<Button type='primary' onClick={()=>deleteSectionQuestion(props.index)}>删除</Button>
+								{/* <Button type='primary' onClick={()=>deleteSectionQuestion(props.index)}>删除</Button> */}
 								{
 									props.question.question?<></>:
 									<>

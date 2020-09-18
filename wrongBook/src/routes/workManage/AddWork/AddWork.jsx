@@ -278,7 +278,8 @@ class WorkManage extends React.Component {
 			editPartNameIndex:-1,
 			editPartName:false,
 			ischecked:false,
-			drapQuetionIndex:[]
+			drapQuetionIndex:[],
+			partActiveIndex:-1
     }
 	}
 
@@ -691,63 +692,7 @@ class WorkManage extends React.Component {
     )
   }
 
-  updateClassMembers(_classId){
-    this.props.dispatch({
-      type: 'homePage/infoClass',
-      payload: _classId
-    });
-    this.setState({
-      nowclassid: _classId
-    })
-    //学科查询是题目查询的先决条件
-    this.props.dispatch({
-      type: 'classModel/getClassSubjectList',
-      payload: {
-        classId:_classId,
-        year:this.props.state.years
-      },
-    });
-    this.props.dispatch({
-      type: 'classModel/getClassMembers',
-      payload: {
-        type: 3,
-        classId:_classId
-      }
-    });
-  }
-  initQuestionChecked(data){
-		let _tes = this.props.state.classStudentList
 
-    let _length=_tes.length>data.length?data.length:_tes.length
-		for (let index = 0; index < _length; index++) {
-        const e = data[index]
-        for (let j = 0; j < e.length; j++) {
-          if(j<e.length-1){
-            let key=`${index}-${j}`
-            const a = e[j+1]
-            if(a===0){
-              if(!_tes[index].questionHook){
-                _tes[index].questionHook={}
-              }
-              _tes[index].questionHook[key]=true
-            }else{
-              if(_tes[index].questionHook)
-              delete _tes[index].questionHook[key]
-            }
-          }
-          
-        }
-    }
-    
-		this.props.dispatch({
-			type: 'classModel/classStudentList',
-			payload: _tes
-		})
-    console.log('excel match data', _tes);
-    var f = document.getElementById('file');
-    f.value = ''; //重置了file的outerHTML
-    message.success('数据导入成功');
-	}
 	addImgBtnClick(){
 		let _arr=this.state.workPages
 		_arr.push(this.state.test)
@@ -806,102 +751,30 @@ class WorkManage extends React.Component {
 				}
 			}
 		)
-    console.log('name',this.state.work.name)
 	}
 	addPart(){
-		let partQuestions={
-			part:[
-				// { name:[],
-				// 	questions:[]
-				// } //每一个章节
-			],
-			questions:[
-				{}//每一道题目
-			]
-		}
 		this.state.partQuestions.part.push(
 				{name:`题组${this.state.partQuestions.part.length+1}`,
 				questions:[]
 			}
 		)
-		console.log('this.state.partQuestions: ', this.state.partQuestions);
 		this.setState({
 			partQuestions:this.state.partQuestions
 		})
 	}
-	getNewParts(){
-		console.log('先清空parts')
-		let parts=this.state.partQuestions.part
-		this.state.selectQuestions.map((item,a)=>{
-			for (let j = 0; j < parts.length; j++) {
-				const que = parts[j]
-				if(`${que.pageid}${que.num}`===item.qid){
-					parts[j].questions.splice(j,1)
-				}
-			}
-		})
 
-		return parts
-	}
-	removeQuestions(partIndex){
-		let _arr=[]
-		let pquestions=this.state.partQuestions.questions
-		
-		let newparts=this.getNewParts()
-		console.log('newparts: ', newparts);
-		// console.log('pquestions: ', pquestions,this.state.selectQuestions);
-		//题组之间的移动要做删除
-		this.state.selectQuestions.map((item,a)=>{
-			_arr.push(item.area)
-			for (let j = 0; j < pquestions.length; j++) {
-				const que = pquestions[j]
-				if(`${que.pageid}${que.num}`===item.qid){
-					pquestions.splice(j,1)
-				}
-			}
-		})
-		// let newQuestions = pquestions.filter(que => {
-		// 	if (!this.state.selectQuestions.includes(`${que.pageid}${que.num}`)) return que //
-		// })
-		console.log('newQuestions: ',pquestions);
 
-		
-		// this.state.partQuestions.part[partIndex].questions=_arr
-		// this.state.partQuestions.questions=pquestions
-		// this.setState({
-		// 	partQuestions:this.state.partQuestions,
-		// 	ischecked:false
-		// })
-
-	
-	}
-	deletePicture(p,index){
-		this.deletePictureBonfirm()
-		//同时要删除掉题目
-	}
 	deletePictureBonfirm(p,index) {
 		this.state.workPages.splice(index,1)
 		this.setState({
 			workPages:this.state.workPages
 		})
 		
-		// Modal.confirm({
-		// 	title: '提示',
-		// 	content: '确定要删除该图片吗',
-		// 	okText: '确认',
-		// 	cancelText: '取消',
-		// 	onOk(e){
-		// 		console.log('e: ', e);
-		// 		_this.state.workPages.splice(index,1)
-		// 		_this.setState({
-		// 			workPages:_this.state.workPages
-		// 		})
-		// 		Modal.destroy()
-		// 	}
-		// })
 	}
-	allowDrop(e,_partIndex){
-		// console.log('drapQuetionIndex',this.state.drapQuetionIndex)
+	dragOver(e,_partIndex){
+		this.setState({
+			partActiveIndex:_partIndex
+		})
 		e.preventDefault();
 	}
 	questionGroupDrop(e,to){
@@ -911,32 +784,27 @@ class WorkManage extends React.Component {
 			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.part[_from[0]].questions[_from[1]])
 			this.state.partQuestions.part[_from[0]].questions.splice(_from[1],1)
 			
-			this.setState({
-				partQuestions:this.state.partQuestions
-			})
 		}else{
 			//从组外拖拽
 			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.questions[_from[0]])
 			this.state.partQuestions.questions.splice(_from[0],1)//
-			this.setState({
-				partQuestions:this.state.partQuestions
-			})
 		}
+		this.setState({
+			partQuestions:this.state.partQuestions,
+			partActiveIndex:-1
+		})
 		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
 	}
-	drapLeave(){
-        console.log("drapLeave -> drapLeave", )
-		
-	}
+
 
   	render() {
 
-			let pquestions=this.state.partQuestions.questions
-			let pparts=this.state.partQuestions.part
-			console.log('pparts: ', pparts,this.state.partQuestions);
-      return (
-      <div className={[style.page_box,"_position"].join(" ")}>
-				<div className={style.top_box}>
+		let pquestions=this.state.partQuestions.questions
+		let pparts=this.state.partQuestions.part
+		console.log('pparts: ', pparts,this.state.partQuestions);
+		return (
+		<div className={[style.page_box,"_position"].join(" ")}>
+					<div className={style.top_box}>
 						<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
 											<h4 style={{fontSize:20,height:40}} >
 												{
@@ -987,7 +855,7 @@ class WorkManage extends React.Component {
 												<Upload getFun={this.showCropModel}  picture={item} index={i}
 													deletePictureHander={(p,index)=>{
 														console.log('p,index: ', p,index);
-														this.deletePicture(p,index)
+														this.deletePictureBonfirm(p,index)
 													}}
 												></Upload>
 											</div>
@@ -1040,37 +908,41 @@ class WorkManage extends React.Component {
 									pparts&&pparts.length?pparts.map((_part,p)=>{
 										return(
 											<div style={{marginTop:10}}  className={style.group_box} key={p} 
-											onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
-											onDragLeave={(e)=>{this.drapLeave(e,p)}}
-											onDragOver={(e)=>{this.allowDrop(e,p)}}>
-											{this.state.editPartNameIndex===p&&this.state.editPartName?
-												<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
-													style={{width:100}} 
-													onBlur={(e)=>{
-														this.state.partQuestions.part[p].name=e.target.value
-														this.setState({
-															editPartNameIndex:-1,
-															editPartName:false,
-															partQuestions:this.state.partQuestions
-														})
-														
-														}} 
-
-														defaultValue={_part.name}
-												/>
-												:
-												<div key={p} style={{display:'flex',alignItems:'center',position:'relative'}}>
-													{_part.name}
-													<img style={{marginLeft:8}} src={require('../../images/edit.png')} alt=""
-														onClick={(e)=>{
+												onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
+												onDragLeave={(e)=>{
+													this.setState({
+														partActiveIndex:-1
+													})
+												}}
+												onDragOver={(e)=>{this.dragOver(e,p)}}>
+												{this.state.editPartNameIndex===p&&this.state.editPartName?
+													<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
+														style={{width:100}} 
+														onBlur={(e)=>{
+															this.state.partQuestions.part[p].name=e.target.value
 															this.setState({
-																editPartNameIndex:p,
-																editPartName:true
+																editPartNameIndex:-1,
+																editPartName:false,
+																partQuestions:this.state.partQuestions
 															})
-														}}
+															
+															}} 
+
+															defaultValue={_part.name}
+													/>
+													:
+													<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
+														{_part.name}
+														<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
+															onClick={(e)=>{
+																this.setState({
+																	editPartNameIndex:p,
+																	editPartName:true
+																})
+															}}
 													/>
 													<Popconfirm placement="top" 
-															title={'确定要删除该部分吗？'} 
+															title={'确定要删除该题组吗？'} 
 															onConfirm={(e)=>{
 																this.state.partQuestions.part.splice(p,1)
 																this.setState({
@@ -1080,23 +952,26 @@ class WorkManage extends React.Component {
 															okText="确定" 		
 															cancelText="取消"
 														>
-														<div style={{position:'absolute',right:0,
+														<div style={{position:'absolute',right:5,
 															color:" #84888E",fontSize:12}}>删除</div>
 													</Popconfirm>
 													
 												</div>
 											}
-											<div style={{width:"100%",marginTop:15}}>
-												{
-													_part.questions&&_part.questions.length?
-														_part.questions.map((area, k) => {
-															return(
-															<span key={k} className={style.que_span}>{k+1}</span>
-															)
-														})
-													:''
-												}
-											</div>
+											{
+												_part.questions&&_part.questions.length?
+												
+													<div style={{width:"100%",marginTop:15}}>
+													{_part.questions.map((area, k) => {
+														return(
+														<span key={k} className={style.que_span}>{k+1}</span>
+														)
+													})}
+												</div>
+												
+
+												:''
+											}
 										</div>
 										)
 									}):''
@@ -1113,7 +988,7 @@ class WorkManage extends React.Component {
 					<Content className={style._box} style={{ position: 'relative',padding:'20px',background:'#fff' }}  >
 							<div className={style.content} >
 								<div>
-								<div className={style.section_box}> 
+								{/* <div> 
 									<Popover placement="right"  trigger="hover" content={
 											pparts&&pparts.length?pparts.map((pt,n)=>{
 												return (
@@ -1126,88 +1001,57 @@ class WorkManage extends React.Component {
 										<Button type='primary'>移动到题组</Button>
 									</Popover>
 		
-								</div>
+								</div> */}
 							  {
 									pparts&&pparts.length?pparts.map((_part,p)=>{
 										return(
-											<div style={{marginTop:10}}  className={style.group_box} key={p}>
-											{_part.name}
-											
-											<div style={{width:"100%",marginBottom:15,background:'#efefef',padding:'20px 20px'}}>
-												{
-													_part.questions&&_part.questions.length?
-														_part.questions.map((item, k) => {
-															return(
-																<div
-																	className={style.section_box}
-																	draggable="true" 
-																	onDragEnd={()=>{
-																		console.log('drapEnd: ', 1);
-																	}} 
-																	onDragStart={(e)=>{
-																		this.setState({
-																			drapQuetionIndex:[p,k]
-																		})
-																		console.log('_key,_index: ', 'start');
-																	}}
-																	drapEnd={()=>{
-																		console.log('drapEnd: ', 1);
-																	}}
-																>
-																	<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
-																	index={k} question={item} 
-																	key={`${item.pageid}${k}`} indexkey={`${item.pageid}${item.num}`}
-																	drapQuetion={(_key,_index)=>{
-																		console.log('_key,_index: ', _key,_index);
-																		this.setState({
-																			drapQuetionIndex:_index
-																		})
-																	}}
-																	deleteSectionHander={(index)=>{
-																		this.state.workPages.splice(index,1)
-																		this.setState({
-																			workPages: this.state.workPages,
-																		})
-																	}}
-																	upSectionHander={()=>{
-																		this.setState({
-																			workPages: this.state.workPages,
-																		})
-																	}}
-																	addPartHander={(index,data)=>{
-																		let work=this.state.workPages[index]
-																		work.sections=data
-																		this.state.workPages.splice(index,1,work)
-																		console.log('this.state.workPages: ', this.state.workPages);
-																		this.setState({
-																			workPages: this.state.workPages,
-																		})
-																	}}
-																	questionChangeSelect={(bool,qid,que)=>{
-																		
-																		let arr=this.state.selectQuestions
-																		if(bool){
-																			if(arr.findIndex(value=>value.qid===qid)<0) arr.push({qid,area:que})
-																		}else{
-																			arr.splice(arr.findIndex(item => item.qid === qid), 1)
-																		}
-																		this.setState({
-																			selectQuestions:arr
-																		})
-																		//setSelectedQuestionIds(arr)
-																		console.log('e: ', bool,qid,arr)
-																	}}
-																	>
-
-															</Section>
+											<div  className={style.group_box} key={p}>
+												<div style={{marginBottom:10}} > {_part.name}</div>
 												
-																</div>
+												{
+												_part.questions&&_part.questions.length?
+												<div style={{width:"100%",marginBottom:15,background:'#efefef',padding:'20px 20px'}}>
+												{
+													_part.questions.map((item, k) => {
+														return(
+															<div
+																key={k}
+																className={[style.section_box,this.state.drapQuetionIndex.length?'drap_cursor':''].join(' ')}
+																draggable="true" 
 																
-															)
-														})
-													:''
+																onDragStart={(e)=>{
+																	this.setState({
+																		drapQuetionIndex:[p,k]
+																	})
+																	console.log('_key,_index: ', 'start');
+																}}
+										
+																>
+																<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+																index={k} question={item} 
+																key={`${item.pageid}${k}`} 
+
+																deleteSectionHander={(index)=>{
+																	this.state.workPages.splice(index,1)
+																	this.setState({
+																		workPages: this.state.workPages,
+																	})
+																}}
+	
+																>
+
+														</Section>
+											
+															</div>
+															
+														)
+													})
 												}
 											</div>
+												:
+												''
+											}
+
 										</div>
 										)
 									}):''
@@ -1216,57 +1060,27 @@ class WorkManage extends React.Component {
 									pquestions.map((item, i) => {
 											return (
 												<div 
-												className={style.section_box}
-												draggable="true" 
-												onDragEnd={()=>{
-													console.log('drapEnd: ', 1);
-												}} 
-												onDragStart={(e)=>{
-													this.setState({
-														drapQuetionIndex:[i]
-													})
-													console.log('_key,_index: ', 'start');
-												}}
-												drapEnd={()=>{
-													console.log('drapEnd: ', 1);
-												}}>
-													<Section _from={[i]} ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+													key={i}
+													className={style.section_box}
+													draggable="true" 
+													
+													onDragStart={(e)=>{
+														this.setState({
+															drapQuetionIndex:[i]
+														})
+													}}
+													>
+													<Section  ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
 														index={i} question={item} 
-														key={`${item.pageid}${i}`} indexkey={`${item.pageid}${item.num}`}
+														key={`${item.pageid}${i}`} 
 														deleteSectionHander={(index)=>{
 															this.state.workPages.splice(index,1)
 															this.setState({
 																workPages: this.state.workPages,
 															})
 														}}
-														upSectionHander={()=>{
-															this.setState({
-																workPages: this.state.workPages,
-															})
-														}}
-														addPartHander={(index,data)=>{
-															let work=this.state.workPages[index]
-															work.sections=data
-															this.state.workPages.splice(index,1,work)
-															console.log('this.state.workPages: ', this.state.workPages);
-															this.setState({
-																workPages: this.state.workPages,
-															})
-														}}
-														questionChangeSelect={(bool,qid,que)=>{
-															
-															let arr=this.state.selectQuestions
-															if(bool){
-																arr.push({qid,area:que})
-															}else{
-																arr.splice(arr.findIndex(item => item.qid === qid), 1)
-															}
-															this.setState({
-																selectQuestions:arr
-															})
-															// setSelectedQuestionIds(arr)
-															console.log('e: ', bool,qid,arr)
-														}}
+
+	
 														>
 
 												</Section>
