@@ -5,12 +5,8 @@ const { TextArea } = Input;
 
 export default function Section(props) {
     const [load, setLoad] = useState(0);
-    const [newsrc, setNewsrc] = useState(props.src);
-		const [editSectionName, setEditSectionName] = useState(false);
-		const [editNameIndex, setEditNameIndex] = useState(-1);
-		const [editPartName, setEditPartName] = useState(false);
-		const [editPartIndex, setEditPartIndex] = useState(-1);
-		const [selectedQuestionIds, setSelectedQuestionIds] = useState([]);
+		const [newsrc, setNewsrc] = useState(props.src);
+		const [showParse, setShowParse] = useState(true);
     useEffect(() => {
         if (newsrc !== props.src) {
             setNewsrc(props.src)
@@ -36,17 +32,7 @@ export default function Section(props) {
 			e.stopPropagation()
 		}
 
-		function removePart(index,section,i,ispart){
-			// const {question}=section
-			// props.question.sections[index].areas.splice(i,1)
-			// // if(ispart){
-			// // 	props.question.sections[index].areas.splice(i,1)
-			// // }else{
-			// // 	props.question.areas.splice(index,1)
-			// // }
-			// props.question.sections[index].areas.push({question,question})
-			// props.addPartHander(props.index,props.question.sections)
-		}
+
 
 		function deleteSectionQuestion(index){
 			props.question.areas.splice(index,1)
@@ -67,19 +53,12 @@ export default function Section(props) {
 									onChange={(e)=>{
 										let _v=e.target.checked
 										let _myQid=`${props.question.pageid}${props.question.num}`
-										// let arr=selectedQuestionIds
-										// if(e.target.checked){
-										// 	arr.push(_myQid)
-										// }else{
-										// 	arr.splice(arr.findIndex(item => item === _myQid), 1)
-										// }
-										// setSelectedQuestionIds(arr)
-										// console.log('e: ', _myQid,arr)
 										props.questionChangeSelect(_v,_myQid,props.question)
 									}}
 								>
 								{` 第${props.index+1}题`}
 							</Checkbox>
+							<span>知识点：</span>
 							<div className={style._edit_box}>
 								<Button type='primary' onClick={()=>deleteSectionQuestion(props.index)}>删除</Button>
 								{
@@ -92,14 +71,31 @@ export default function Section(props) {
 							</div>
 						</div>
 						<div className={style._content}>
-							{!props.showPicture&&props.question.question?<>
+							<div>
+								<img style={{marginBottom:14}} src={props.question.area?props.question.area.imgUrl:''} alt=""/>
+							</div>
+							{props.showQuestion&&props.question.question?<>
+							<div>
 								<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: props.question.question.title }}>
 								</div>
-								<div>解析</div>
-								<div className={style.qparse} dangerouslySetInnerHTML={{ __html: props.question.question.parse }}>
-								</div>
+							</div>
 
-							</>:<img  src={props.question.area?props.question.area.imgUrl:''} alt=""/>}
+								<div style={{height:50,display:'flex',alignItems:'center',justifyContent:'flex-start'}}>
+									<Button 
+										onClick={()=>{
+										let bool=showParse
+										setShowParse(!bool)
+										console.log('showParse: ', showParse);
+									}}>{showParse?'展开解析':'收起解析'}</Button>
+
+								</div>
+								<div className={[showParse?'hide qparse':'qparse'].join(' ')} >
+									【解析】
+									<div  dangerouslySetInnerHTML={{ __html: props.question.question.parse }}>
+									</div>
+								</div >
+
+							</>:""}
 						</div>
 					</div>
 								

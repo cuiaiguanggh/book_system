@@ -1,80 +1,45 @@
-import React from 'react';
-import {
-  Layout, Modal,Spin , Button, message,DatePicker, Select, Popover, Icon, Checkbox,Empty,Input
-} from 'antd';
-
-import { connect } from 'dva';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './Upload.less';
-import moment from 'moment';
-// import { dataCenter } from '../../../config/dataCenter'
-import store from 'store';
+import React, { useState, useEffect } from 'react';
+import { Input, Modal, Checkbox, message ,Popover,Spin} from 'antd';
 
-import * as XLSX from 'xlsx';
-import observer from '../../../utils/observer'
-const { RangePicker } = DatePicker;
+export default function Upload(props) {
+    const [uploadFinish, setUploadFinish] = useState(false);
+    const [discernFail, setDiscernFail] = useState(false);
+    useEffect(() => {
+        console.log('load')
+        setTimeout(() => {
+          setUploadFinish(true)
+          if(props.index==1){
+            setDiscernFail(true)
+          }
+        }, 2000);
+    },[]);
 
-//作业中心界面内容
-const Option = Select.Option;
-const { Sider, Content,
-} = Layout;
-
-class Upload extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state={
-        uploadFinish:false
-      }
+		function deletePictureHander(p,index){
+      Modal.confirm({
+        title: '提示',
+        content: '确定要删除该图片吗',
+        okText: '确认',
+        cancelText: '取消',
+        onOk(e){
+          Modal.destroyAll()
+          props.deletePictureHander(p,index)
+        }
+      })
     }
 
-  
-    lookPicture(p,index){
-      this.props.getFun(p,index)
-    }
-
-
-
-    
-    render() {
-      return (
+		return (
       <>
-        <Spin spinning={false&&!this.state.uploadFinish}>
-          <div className={style.uploadin}>
-            <div className={style.num}>{this.props.index+1}</div>
-            <img onClick={()=>this.lookPicture(this.props.picture,this.props.index)} src={this.props.picture.serUrl} alt=""/>
-          </div>
-        </Spin>
-        
-      </>
+      <Spin spinning={!uploadFinish} tip="正在识别...">
+        <div className={style.uploadin}>
+          <div className={style.num}>{props.index+1}</div>
+          <img onClick={()=>props.getFun(props.picture,props.index)} src={props.picture.serUrl} alt=""/>
+          <img className={style.delpng} onClick={()=>deletePictureHander(props.picture,props.index)} src={require('../../images/pdelete.png')} alt=""/>
+          {discernFail?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
+        </div>
+      </Spin>
+      
+    </>
     )
-  }
-
-  componentDidMount() {
-    console.log('this.props',this.props)
-    this.setState({
-      cpicture:this.props.picture
-    })
-    // this.lookPicture(this.props.picture)
-    // this.props.dispatch({
-    //   type:'workManage/testPage'
-    // }).then((res)=>{
-    //   console.log('res: ', res);
-    //   this.setState({
-    //     uploadFinish:true
-    //   })
-    // })
-  }
-
-  componentWillUnmount() {
-    
-  }
-
-
 
 }
-
-export default connect((state) => ({
-  state: {
-    ...state.workManage
-  }
-}))(Upload);
