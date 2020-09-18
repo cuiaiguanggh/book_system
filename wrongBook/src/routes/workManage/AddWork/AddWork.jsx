@@ -278,7 +278,7 @@ class WorkManage extends React.Component {
 			editPartNameIndex:-1,
 			editPartName:false,
 			ischecked:false,
-			drapQuetionIndex:-1
+			drapQuetionIndex:[]
     }
 	}
 
@@ -901,27 +901,35 @@ class WorkManage extends React.Component {
 		// })
 	}
 	allowDrop(e,_partIndex){
-		 console.log('drop over: ', _partIndex);
 		// console.log('drapQuetionIndex',this.state.drapQuetionIndex)
-		this.remoeQuestionToPart(0,_partIndex)
+		e.preventDefault();
 	}
-	drop(e){
-		console.log('partbox drop: ', e);
+	questionGroupDrop(e,to){
+		let _from=this.state.drapQuetionIndex
+		if(_from.length>1){
+			//从组拖拽
+			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.part[_from[0]].questions[_from[1]])
+			this.state.partQuestions.part[_from[0]].questions.splice(_from[1],1)
+			
+			this.setState({
+				partQuestions:this.state.partQuestions
+			})
+		}else{
+			//从组外拖拽
+			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.questions[_from[0]])
+			this.state.partQuestions.questions.splice(_from[0],1)//
+			this.setState({
+				partQuestions:this.state.partQuestions
+			})
+		}
+		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
 	}
-	remoeQuestionToPart(qIndex,pIndex){
-		// let pquestions=this.state.partQuestions.questions
-		// let pparts=this.state.partQuestions.part
-		// pquestions.splice(qIndex,1)
-		// pparts[pIndex].questions.push(pquestions[qIndex])
+	drapLeave(){
+        console.log("drapLeave -> drapLeave", )
+		
+	}
 
-		// this.state.partQuestions.questions=pquestions
-		// this.state.partQuestions.part=pparts
-
-		// this.setState({
-		// 	partQuestions:this.state.partQuestions
-		// })
-	}
-  render() {
+  	render() {
 
 			let pquestions=this.state.partQuestions.questions
 			let pparts=this.state.partQuestions.part
@@ -1031,7 +1039,9 @@ class WorkManage extends React.Component {
 								{
 									pparts&&pparts.length?pparts.map((_part,p)=>{
 										return(
-											<div style={{marginTop:10}}  className={style.group_box} key={p} onDrop={(e)=>{this.drop(e)}} 
+											<div style={{marginTop:10}}  className={style.group_box} key={p} 
+											onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
+											onDragLeave={(e)=>{this.drapLeave(e,p)}}
 											onDragOver={(e)=>{this.allowDrop(e,p)}}>
 											{this.state.editPartNameIndex===p&&this.state.editPartName?
 												<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
@@ -1128,7 +1138,23 @@ class WorkManage extends React.Component {
 													_part.questions&&_part.questions.length?
 														_part.questions.map((item, k) => {
 															return(
-																<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+																<div
+																	className={style.section_box}
+																	draggable="true" 
+																	onDragEnd={()=>{
+																		console.log('drapEnd: ', 1);
+																	}} 
+																	onDragStart={(e)=>{
+																		this.setState({
+																			drapQuetionIndex:[p,k]
+																		})
+																		console.log('_key,_index: ', 'start');
+																	}}
+																	drapEnd={()=>{
+																		console.log('drapEnd: ', 1);
+																	}}
+																>
+																	<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
 																	index={k} question={item} 
 																	key={`${item.pageid}${k}`} indexkey={`${item.pageid}${item.num}`}
 																	drapQuetion={(_key,_index)=>{
@@ -1175,6 +1201,8 @@ class WorkManage extends React.Component {
 
 															</Section>
 												
+																</div>
+																
 															)
 														})
 													:''
@@ -1187,18 +1215,24 @@ class WorkManage extends React.Component {
 								{pquestions&&pquestions.length>0?<>{
 									pquestions.map((item, i) => {
 											return (
-												<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+												<div 
+												className={style.section_box}
+												draggable="true" 
+												onDragEnd={()=>{
+													console.log('drapEnd: ', 1);
+												}} 
+												onDragStart={(e)=>{
+													this.setState({
+														drapQuetionIndex:[i]
+													})
+													console.log('_key,_index: ', 'start');
+												}}
+												drapEnd={()=>{
+													console.log('drapEnd: ', 1);
+												}}>
+													<Section _from={[i]} ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
 														index={i} question={item} 
 														key={`${item.pageid}${i}`} indexkey={`${item.pageid}${item.num}`}
-														drapEnd={()=>{
-															console.log('drapEnd: ', 1);
-														}}
-														drapQuetion={(_key,_index)=>{
-															console.log('_key,_index: ', _key,_index);
-															this.setState({
-																drapQuetionIndex:_index
-															})
-														}}
 														deleteSectionHander={(index)=>{
 															this.state.workPages.splice(index,1)
 															this.setState({
@@ -1236,6 +1270,8 @@ class WorkManage extends React.Component {
 														>
 
 												</Section>
+												
+												</div>
 												)
 											})
 									}</>

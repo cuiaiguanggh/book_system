@@ -47,13 +47,7 @@ export default function Section(props) {
 
 		return (
 			<>
-			<div key={props.indexkey}  className={style.queitem} draggable="true" 
-					onDragEnd={()=>{
-						props.drapEnd()
-					}} 
-					onDragStart={(e)=>{
-						drag(e,props.indexkey)
-					}}
+			<div key={props.indexkey}  className={style.queitem} 
 				>
 				<div  className={style.que_box}>
 						<div className={style.title}>
