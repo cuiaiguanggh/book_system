@@ -872,7 +872,7 @@ class WorkManage extends React.Component {
 									this.state.workPages.map((item, i) => {
 										return (
 											<div key={i} style={{marginTop:14}} className={style.queitem}>
-												<span style={{width:60}} className={style.quelabel}>第{i+1}页</span> {item.areas?item.areas.map((area, j) => {
+												<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.areas?item.areas.map((area, j) => {
 												return (
 												<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
 																)
