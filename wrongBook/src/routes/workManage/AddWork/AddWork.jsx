@@ -277,7 +277,8 @@ class WorkManage extends React.Component {
 			selectQuestions:[],
 			editPartNameIndex:-1,
 			editPartName:false,
-			ischecked:false
+			ischecked:false,
+			drapQuetionIndex:-1
     }
 	}
 
@@ -828,11 +829,28 @@ class WorkManage extends React.Component {
 			partQuestions:this.state.partQuestions
 		})
 	}
+	getNewParts(){
+		console.log('先清空parts')
+		let parts=this.state.partQuestions.part
+		this.state.selectQuestions.map((item,a)=>{
+			for (let j = 0; j < parts.length; j++) {
+				const que = parts[j]
+				if(`${que.pageid}${que.num}`===item.qid){
+					parts[j].questions.splice(j,1)
+				}
+			}
+		})
+
+		return parts
+	}
 	removeQuestions(partIndex){
 		let _arr=[]
 		let pquestions=this.state.partQuestions.questions
+		
+		let newparts=this.getNewParts()
+		console.log('newparts: ', newparts);
 		// console.log('pquestions: ', pquestions,this.state.selectQuestions);
-
+		//题组之间的移动要做删除
 		this.state.selectQuestions.map((item,a)=>{
 			_arr.push(item.area)
 			for (let j = 0; j < pquestions.length; j++) {
@@ -848,22 +866,14 @@ class WorkManage extends React.Component {
 		console.log('newQuestions: ',pquestions);
 
 		
-		this.state.partQuestions.part[partIndex].questions=_arr
-		this.state.partQuestions.questions=pquestions
-		this.setState({
-			partQuestions:this.state.partQuestions,
-			ischecked:false
-		})
-		console.log('this.state.partQuestions: ', this.state.partQuestions);
-		// const {question}=section
-		// props.question.sections[index].areas.splice(i,1)
-		// // if(ispart){
-		// // 	props.question.sections[index].areas.splice(i,1)
-		// // }else{
-		// // 	props.question.areas.splice(index,1)
-		// // }
-		// props.question.sections[index].areas.push({question,question})
-		// props.addPartHander(p,props.question.sections)
+		// this.state.partQuestions.part[partIndex].questions=_arr
+		// this.state.partQuestions.questions=pquestions
+		// this.setState({
+		// 	partQuestions:this.state.partQuestions,
+		// 	ischecked:false
+		// })
+
+	
 	}
 	deletePicture(p,index){
 		this.deletePictureBonfirm()
@@ -890,20 +900,32 @@ class WorkManage extends React.Component {
 		// 	}
 		// })
 	}
+	allowDrop(e,_partIndex){
+		 console.log('drop over: ', _partIndex);
+		// console.log('drapQuetionIndex',this.state.drapQuetionIndex)
+		this.remoeQuestionToPart(0,_partIndex)
+	}
+	drop(e){
+		console.log('partbox drop: ', e);
+	}
+	remoeQuestionToPart(qIndex,pIndex){
+		// let pquestions=this.state.partQuestions.questions
+		// let pparts=this.state.partQuestions.part
+		// pquestions.splice(qIndex,1)
+		// pparts[pIndex].questions.push(pquestions[qIndex])
+
+		// this.state.partQuestions.questions=pquestions
+		// this.state.partQuestions.part=pparts
+
+		// this.setState({
+		// 	partQuestions:this.state.partQuestions
+		// })
+	}
   render() {
-			{/* let partQuestions={
-				part:[
-					{ name:{},
-						questions:[]
-					} //每一个章节
-				],
-				questions:[
-					{}//每一道题目
-				]
-			} */}
 
 			let pquestions=this.state.partQuestions.questions
 			let pparts=this.state.partQuestions.part
+			console.log('pparts: ', pparts,this.state.partQuestions);
       return (
       <div className={[style.page_box,"_position"].join(" ")}>
 				<div className={style.top_box}>
@@ -1009,7 +1031,8 @@ class WorkManage extends React.Component {
 								{
 									pparts&&pparts.length?pparts.map((_part,p)=>{
 										return(
-											<div style={{marginTop:10}}  className={style.group_box} key={p}>
+											<div style={{marginTop:10}}  className={style.group_box} key={p} onDrop={(e)=>{this.drop(e)}} 
+											onDragOver={(e)=>{this.allowDrop(e,p)}}>
 											{this.state.editPartNameIndex===p&&this.state.editPartName?
 												<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
 													style={{width:100}} 
@@ -1041,7 +1064,7 @@ class WorkManage extends React.Component {
 															onConfirm={(e)=>{
 																this.state.partQuestions.part.splice(p,1)
 																this.setState({
-																	partQuestions:this.state.workPages
+																	partQuestions:this.state.partQuestions
 																})
 															}} 
 															okText="确定" 		
@@ -1058,7 +1081,7 @@ class WorkManage extends React.Component {
 													_part.questions&&_part.questions.length?
 														_part.questions.map((area, k) => {
 															return(
-															<span className={style.que_span}>{k}</span>
+															<span key={k} className={style.que_span}>{k+1}</span>
 															)
 														})
 													:''
@@ -1078,11 +1101,11 @@ class WorkManage extends React.Component {
 						</Button>
 					</Sider>
 					<Content className={style._box} style={{ position: 'relative',padding:'20px',background:'#fff' }}  >
-					<div className={style.content} >
+							<div className={style.content} >
 								<div>
 								<div className={style.section_box}> 
 									<Popover placement="right"  trigger="hover" content={
-											pparts.length?pparts.map((pt,n)=>{
+											pparts&&pparts.length?pparts.map((pt,n)=>{
 												return (
 														<Button className={style.partp} key={n} onClick={()=>{
 															this.removeQuestions(n)
@@ -1108,6 +1131,12 @@ class WorkManage extends React.Component {
 																<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
 																	index={k} question={item} 
 																	key={`${item.pageid}${k}`} indexkey={`${item.pageid}${item.num}`}
+																	drapQuetion={(_key,_index)=>{
+																		console.log('_key,_index: ', _key,_index);
+																		this.setState({
+																			drapQuetionIndex:_index
+																		})
+																	}}
 																	deleteSectionHander={(index)=>{
 																		this.state.workPages.splice(index,1)
 																		this.setState({
@@ -1132,14 +1161,14 @@ class WorkManage extends React.Component {
 																		
 																		let arr=this.state.selectQuestions
 																		if(bool){
-																			arr.push({qid,area:que})
+																			if(arr.findIndex(value=>value.qid===qid)<0) arr.push({qid,area:que})
 																		}else{
 																			arr.splice(arr.findIndex(item => item.qid === qid), 1)
 																		}
 																		this.setState({
 																			selectQuestions:arr
 																		})
-																		// setSelectedQuestionIds(arr)
+																		//setSelectedQuestionIds(arr)
 																		console.log('e: ', bool,qid,arr)
 																	}}
 																	>
@@ -1161,6 +1190,15 @@ class WorkManage extends React.Component {
 												<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
 														index={i} question={item} 
 														key={`${item.pageid}${i}`} indexkey={`${item.pageid}${item.num}`}
+														drapEnd={()=>{
+															console.log('drapEnd: ', 1);
+														}}
+														drapQuetion={(_key,_index)=>{
+															console.log('_key,_index: ', _key,_index);
+															this.setState({
+																drapQuetionIndex:_index
+															})
+														}}
 														deleteSectionHander={(index)=>{
 															this.state.workPages.splice(index,1)
 															this.setState({
@@ -1205,11 +1243,11 @@ class WorkManage extends React.Component {
 								
 								</div>
 						</div>
+					</Content>
+				</Layout>
+				</div>
 
-
-
-
-						<Modal
+				<Modal
 							key={this.state.cpicture.pageId}
 							closable={false} keyboard={false} maskClosable={true}
 							onCancel={()=>{this.cancelModel()}}
@@ -1308,10 +1346,6 @@ class WorkManage extends React.Component {
 						</div>
 
 						</Modal>
-				</Content>
-				</Layout>
-
-				</div>
 			</div>
     )
   }

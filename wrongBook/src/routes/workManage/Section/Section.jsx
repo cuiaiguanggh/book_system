@@ -38,14 +38,23 @@ export default function Section(props) {
 			props.question.areas.splice(index,1)
 			props.upSectionHander()
 		}
-		function deleteParkQuestion(index,i){
-			props.question.sections[index].areas.splice(i,1)
-			props.upSectionHander()
+		function drag(e,key){
+			console.log('darg e: ',key,props.index);
+			props.drapQuetion(key,props.index)
+
 		}
+
 
 		return (
 			<>
-			<div key={props.indexkey}  className={style.queitem}>
+			<div key={props.indexkey}  className={style.queitem} draggable="true" 
+					onDragEnd={()=>{
+						props.drapEnd()
+					}} 
+					onDragStart={(e)=>{
+						drag(e,props.indexkey)
+					}}
+				>
 				<div  className={style.que_box}>
 						<div className={style.title}>
 							<Checkbox 
