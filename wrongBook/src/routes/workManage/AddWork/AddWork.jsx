@@ -250,6 +250,11 @@ class WorkManage extends React.Component {
 			scwidth:720,
 			cutLeft:0,cutTop:0,cutWidth:100,cutHeight:100,
 			showGifTip:false,
+			originalPos:{
+				mouseX:0,
+				mouseY:0
+			},
+			rectMinSize:10,
 			cropIndex:-1,
 			cpindex:0,
 			commitWorking:false,
@@ -279,7 +284,21 @@ class WorkManage extends React.Component {
 			editPartName:false,
 			ischecked:false,
 			drapQuetionIndex:[],
-			partActiveIndex:-1
+			partActiveIndex:-1,
+			
+			imageData:{
+				displayImage:{
+					"width": 720,
+					"height": 959.5,
+					"left": 0,
+					"top": 0
+				}
+			},
+			originalItemArea: {
+				left: 0,
+				top: 0
+			  },
+			  mouseIsDown:false
     }
 	}
 
@@ -291,14 +310,12 @@ class WorkManage extends React.Component {
 		let area = this.state.cpicture.areas[index].area
 		this.toShowCropBox(area.x / 720 * this.state.scwidth, area.y / 720 * this.state.scwidth, area.width / 720 * this.state.scwidth, area.height / 720 * this.state.scwidth)
 
-		this.state.cpicture.areas[index]['selected']=!this.state.cpicture.areas[index]['selected']
+		// this.state.cpicture.areas[index]['selected']=!this.state.cpicture.areas[index]['selected']
 		console.log('this.state.cpicture: ', this.state.cpicture);
-		this.setState({
-			showCropBox:true
-		})
-		e.stopPropagation()
+		// e.stopPropagation()
 	}
 	_cutTouchStart (e, id) {
+        console.log("WorkManage -> _cutTouchStart -> e, id", e, id)
 		if (!id) return
 		let currentX = e.touches[0].clientX
 		let currentY = e.touches[0].clientY
@@ -306,8 +323,8 @@ class WorkManage extends React.Component {
 			this._flag_cut_touch = true
 			this._flag_img_endtouch = true
 			this.CUT_START = {
-				width: this.cutWidth,
-				height: this.cutHeight,
+				width: this.state.cutWidth,
+				height: this.state.cutHeight,
 				x: currentX,
 				y: currentY,
 				corner: 4
@@ -316,22 +333,22 @@ class WorkManage extends React.Component {
 			this._flag_cut_touch = true
 			this._flag_img_endtouch = true
 			this.CUT_START = {
-				width: this.cutWidth,
-				height: this.cutHeight,
+				width: this.state.cutWidth,
+				height: this.state.cutHeight,
 				x: currentX,
 				y: currentY,
-				cutTop: this.cutTop,
-				cutLeft: this.cutLeft,
+				cutTop: this.state.cutTop,
+				cutLeft: this.state.cutLeft,
 				corner: 3
 			}
 		} else if (id === 2) {
 			this._flag_cut_touch = true
 			this._flag_img_endtouch = true
 			this.CUT_START = {
-				width: this.cutWidth,
-				height: this.cutHeight,
-				cutTop: this.cutTop,
-				cutLeft: this.cutLeft,
+				width: this.state.cutWidth,
+				height: this.state.cutHeight,
+				cutTop: this.state.cutTop,
+				cutLeft: this.state.cutLeft,
 				x: currentX,
 				y: currentY,
 				corner: 2
@@ -340,34 +357,47 @@ class WorkManage extends React.Component {
 			this._flag_cut_touch = true
 			this._flag_img_endtouch = true
 			this.CUT_START = {
-				width: this.cutWidth,
-				height: this.cutHeight,
-				cutTop: this.cutTop,
-				cutLeft: this.cutLeft,
+				width: this.state.cutWidth,
+				height: this.state.cutHeight,
+				cutTop: this.state.cutTop,
+				cutLeft: this.state.cutLeft,
 				x: currentX,
 				y: currentY,
 				corner: 1
 			}
 		}
+		e.stopPropagation()
 	}
 	_rectTouchStart (e) {
-		if (e.mp.target.id == 'delete_9527') return
-		this.originalPos.mouseX = e.touches[0].clientX
-		this.originalPos.mouseY = e.touches[0].clientY
-		let _this = this
+		if (e.target.id == 'delete_9527') return
+		this.setState({mouseIsDown:true})
+        var elm = document.querySelector('#rect_item9527');
+		console.log(elm.offsetLeft, elm.offsetTop);
+		this.setState({
+			originalPos:{
+				mouseX : e.clientX,
+				mouseY : e.clientY
+			},
+			originalItemArea:{
+				left:elm.offsetLeft,
+				top:elm.offsetTop
+			}
+		})
+		//let _this = this
 		// var query = wx.createSelectorQuery()
 		// query.select('#rect_item9527').boundingClientRect()
 		// query.exec(function (res) {
 		//   console.log(e)
-		//   _this.originalItemArea.left = res[0].left
-		//   _this.originalItemArea.top = res[0].top
+		//   _this.state.originalItemArea.left = res[0].left
+		//   _this.state.originalItemArea.top = res[0].top
 		// })
 	}
 	_cutTouchMove (e, n) {
-		let width = this.cutWidth
-		let height = this.cutHeight
-		let cutTop = this.cutTop
-		let cutLeft = this.cutLeft
+        console.log("WorkManage -> _cutTouchMove -> e, n", e, n)
+		let width = this.state.cutWidth
+		let height = this.state.cutHeight
+		let cutTop = this.state.cutTop
+		let cutLeft = this.state.cutLeft
 		height = this.CUT_START.height + ((this.CUT_START.corner > 1 && this.CUT_START.corner < 4 ? 1 : -1) * (this.CUT_START.y - e.touches[0].clientY))
 		switch (this.CUT_START.corner) {
 			case 1:
@@ -387,43 +417,49 @@ class WorkManage extends React.Component {
 				width = this.CUT_START.width - this.CUT_START.x + e.touches[0].clientX
 				break
 		}
-		if (width < this.rectMinSize) {
-			width = this.rectMinSize
+		if (width < this.state.rectMinSize) {
+			width = this.state.rectMinSize
 		}
-		if (height < this.rectMinSize) {
-			height = this.rectMinSize
+		if (height < this.state.rectMinSize) {
+			height = this.state.rectMinSize
 		}
 	
-		let _height = this.imageData.displayImage.height - this.cutTop
+		let _height = this.state.imageData.displayImage.height - this.state.cutTop
 		console.log(height , _height,this.CUT_START.corner)
 		if (height >= _height) {
 			height = _height
 		}
-		if (height >= this.imageData.displayImage.height) {
-			height = this.imageData.displayImage.height
+		if (height >= this.state.imageData.displayImage.height) {
+			height = this.state.imageData.displayImage.height
 		}
-		let _width = this.imageData.displayImage.width - this.cutLeft
+		let _width = this.state.imageData.displayImage.width - this.state.cutLeft
 		if (width >= _width) {
 			width = _width
 		}
 
-		this.cutWidth = width
-		this.cutLeft = cutLeft
-		this.cutHeight = height
-		this.cutTop = cutTop
+	
+		this.setState({
+			cutWidth : width,
+			cutLeft : cutLeft,
+			cutHeight : height,
+			cutTop : cutTop
+		})
 		
 	}
 	_rectMove (e, index) {
 		// 移动题目框
-		let nl =e.touches[0].clientX - (this.originalPos.mouseX - this.originalItemArea.left) - this.imageData.displayImage.left
-		let nt =e.touches[0].clientY - (this.originalPos.mouseY - this.originalItemArea.top) - parseInt(this.imageData.displayImage.top)
-		let iw = this.imageData.displayImage.width
-		let ih = this.imageData.displayImage.height
-		const rw = this.cutWidth
+        console.log("this.state.mouseIsDown", this.state.mouseIsDown)
+		if(!this.state.mouseIsDown)return
+		let nl =e.clientX - (this.state.originalPos.mouseX - this.state.originalItemArea.left) - 0//this.state.imageData.displayImage.left
+		let nt =e.clientY - (this.state.originalPos.mouseY - this.state.originalItemArea.top) - 0//parseInt(this.state.imageData.displayImage.top)
+		let iw = this.state.imageData.displayImage.width
+		let ih = this.state.imageData.displayImage.height
+		const rw = this.state.cutWidth
 		if (rw >= iw) {
-			this.cutWidth = iw
+			this.state.cutWidth = iw
+			
 		}
-		const rh = this.cutHeight
+		const rh = this.state.cutHeight
 		if (nl <= 0) {
 			nl = 0
 		}
@@ -438,14 +474,18 @@ class WorkManage extends React.Component {
 			nt = ih - rh
 		}
 
-		this.cutLeft = nl
-		this.cutTop = nt
+		// this.state.cutLeft = nl
+		// this.state.cutTop = nt
+		this.setState({
+			cutLeft:nl,
+			cutTop:nt
+		})
 	}
 	getQnCropUrl () {
-		let _width = this.cutWidth / this.imageData.displayImage.width * this.state.cpicture.width
-		let _height = this.cutHeight / this.imageData.displayImage.height * this.state.cpicture.height
-		let _x = this.cutLeft / this.imageData.displayImage.width * this.state.cpicture.width
-		let _y = this.cutTop / this.imageData.displayImage.height * this.state.cpicture.height
+		let _width = this.state.cutWidth / this.state.imageData.displayImage.width * this.state.cpicture.width
+		let _height = this.state.cutHeight / this.state.imageData.displayImage.height * this.state.cpicture.height
+		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.state.cpicture.width
+		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.state.cpicture.height
 		let purl = this.state.cpicture.serUrl || 'noqniu_img'
 		let _str = ''
 		if (purl.indexOf('?imageMogr2') === -1) {
@@ -456,23 +496,24 @@ class WorkManage extends React.Component {
 		return `${purl}${_str}/crop/!${_width.toFixed(2)}x${_height.toFixed(2)}a${_x.toFixed(2)}a${_y.toFixed(2)}`
 	}
 	_deleteCropItem () {
-		if (this.state.cpicture.areas[this.cropIndex].addRect) {
-			this.state.cpicture.areas.splice(this.cropIndex, 1)
+		if (this.state.cpicture.areas[this.state.cropIndex].addRect) {
+			this.state.cpicture.areas.splice(this.state.cropIndex, 1)
 			// 新增题目支持删除
 		} else {
-			this.state.cpicture.areas[this.cropIndex].selected = false
+			this.state.cpicture.areas[this.state.cropIndex].selected = false
 		}
 
-		this.showCropBox = false
-		this.cropIndex = -1
+		this.state.showCropBox = false
+		this.state.cropIndex = -1
 	}
 	saveCropItem (callback) {
-		if (this.cropIndex < 0) return
-		this.showCropBox = false
-		let _x = this.cutLeft / this.state.scwidth * 720
-		let _y = this.cutTop / this.state.scwidth * 720
-		let _width = this.cutWidth / this.state.scwidth * 720
-		let _height = this.cutHeight / this.state.scwidth * 720
+		if (this.state.cropIndex < 0) return
+        console.log("WorkManage -> saveCropItem -> this.state.cropIndex", this.state.cropIndex)
+		this.state.showCropBox = false
+		let _x = this.state.cutLeft / this.state.scwidth * 720
+		let _y = this.state.cutTop / this.state.scwidth * 720
+		let _width = this.state.cutWidth / this.state.scwidth * 720
+		let _height = this.state.cutHeight / this.state.scwidth * 720
 		let _imgUrl = this.getQnCropUrl()
 
 		let _area = {
@@ -485,24 +526,28 @@ class WorkManage extends React.Component {
 			index: 999
 		}
 
-		let _index = this.cropIndex
+		let _index = this.state.cropIndex
 		this.state.cpicture.areas[_index].area = _area
-		this.$set(this.state.cpicture.areas, _index, this.state.cpicture.areas[_index])
-		this.cropIndex = -1
-		console.log('img crop saved', this.cropIndex, _imgUrl)
+        console.log("WorkManage -> saveCropItem -> this.state.cpicture", this.state.cpicture,_index)
+		
+		this.setState({
+			cpicture:this.state.cpicture,
+			cropIndex:-1
+		})
+		console.log('img crop saved', this.state.cropIndex, _imgUrl)
 		if (callback) callback()
 	}
 	needSave () {
-		return this.cropIndex > -1
+		return this.state.cropIndex > -1
 	}
 	reset () {
-		this.cropIndex = -1
+		this.state.cropIndex = -1
 		this.showCropBox = false
 		this.state.showGifTip = true
 	}
 	isCropItem (x, y) {
 		let index = -1
-		let _dism = this.imageData.displayImage
+		let _dism = this.state.imageData.displayImage
 		let _x = x - _dism.left
 		let _y = y - _dism.top
 		for (let i = 0; i < this.state.cpicture.areas.length; i++) {
@@ -520,27 +565,30 @@ class WorkManage extends React.Component {
 		return index
 	}
 	_cropMaskClick (e) {
-		this.saveCropItem()
-		if (this.state.cpicture.areas.length > 0) {
-			let _index = this.isCropItem(e.touches[0].clientX, e.touches[0].clientY)
-			if (_index > -1) {
-				this.showCropBox = false
-				this.cropItemClick(_index)
-			}
-		}
+		console.log("WorkManage -> _cropMaskClick -> e", e.clientY)
+		//return
+		//this.saveCropItem()
+		// if (this.state.cpicture.areas.length > 0) {
+		// 	let _index = this.isCropItem(e.clientX, e.clientY)
+		// 	if (_index > -1) {
+		// 		this.showCropBox = false
+		// 		this.cropItemClick(_index)
+		// 	}
+		// }
+		// e.stopPropagation()
 	}
 	AddCropData () {
 		let cropSize={
 			height: 150,
 			width: 150
 		}
-		let iw=this.imageData.displayImage.width
-		let ih=this.imageData.displayImage.height
+		let iw=this.state.imageData.displayImage.width
+		let ih=this.state.imageData.displayImage.height
 		if(cropSize.width>iw) cropSize.width=iw
 		if(cropSize.height>ih) cropSize.height=ih
 		return {
-			cx: this.imageData.displayImage.width / 2 - cropSize.width / 2,
-			cy: this.imageData.displayImage.height / 2 - cropSize.height / 2,
+			cx: this.state.imageData.displayImage.width / 2 - cropSize.width / 2,
+			cy: this.state.imageData.displayImage.height / 2 - cropSize.height / 2,
 			cwidth: cropSize.width,
 			cheight: cropSize.height
 		}
@@ -566,7 +614,7 @@ class WorkManage extends React.Component {
 	}
 	newCropItem () {
 		// 还有优化空间...
-		if (this.cropIndex > -1) {
+		if (this.state.cropIndex > -1) {
 			// 先保存上一个框
 			this.saveCropItem()
 		}
@@ -578,12 +626,12 @@ class WorkManage extends React.Component {
 		let _height = cheight / this.state.scwidth * 720
 		if (!this.checkCanAddCrop(_x, _y, _width, _height)) {
 			this.toShowCropBox(cx, cy, cwidth, cheight)
-			this.cropIndex = this.state.cpicture.areas.length - 1
+			this.state.cropIndex = this.state.cpicture.areas.length - 1
 			return
 		}
 		// 新增一个框
 		this.toShowCropBox(cx, cy, cwidth, cheight)
-		this.cropIndex = this.state.cpicture.areas.length
+		this.state.cropIndex = this.state.cpicture.areas.length
 
 		let _area = {
 			x: _x,
@@ -602,7 +650,7 @@ class WorkManage extends React.Component {
 			addRect: true
 		})
 
-		console.log('new crop', this.cutTop, this.imageData)
+		console.log('new crop', this.state.cutTop, this.state.imageData)
 	}
   
   onEditFinish=()=>{
@@ -801,7 +849,7 @@ class WorkManage extends React.Component {
 
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
-		console.log('pparts: ', pparts,this.state.partQuestions);
+		// console.log('pparts: ', pparts,this.state.partQuestions);
 		return (
 		<div className={[style.page_box,"_position"].join(" ")}>
 					<div className={style.top_box}>
@@ -1098,8 +1146,7 @@ class WorkManage extends React.Component {
 				</div>
 
 				<Modal
-							key={this.state.cpicture.pageId}
-							closable={false} keyboard={false} maskClosable={true}
+							closable={false} 
 							onCancel={()=>{this.cancelModel()}}
 							className="unsetModal"
 							visible={this.state.showModal}
@@ -1135,30 +1182,34 @@ class WorkManage extends React.Component {
 							<div className={style.crop_box}>
 								{
 									this.state.showCropBox?
-									<div className={style.crop_content} onClick={(e)=>this._cropMaskClick(e)}>
+									<div className={style.crop_content} >
 										<div className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
 										<div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
 											<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
-											<div id="rect_item9527" onTouchStart={(e)=>this._rectTouchStart(e)}  onTouchMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
+											<div id="rect_item9527" 
+											onMouseDown={(e)=>this._rectTouchStart(e)}  
+											onMouseUp={()=>{this.setState({mouseIsDown:false})}}
+											onMouseMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
 
 											<div className={[style.rect_hander,style.rect_hander1].join(' ')} 
 												onTouchStart={(e)=>this._cutTouchStart(e,1)} 
-												onTouchMove={(e)=>this._cutTouchMove(e)}>
+												
+												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 											</div>
 											<div className={[style.rect_hander,style.rect_hander2].join(' ')} 
 												onTouchStart={(e)=>this._cutTouchStart(e,2)}  
-												onTouchMove={(e)=>this._cutTouchMove(e)}>
+												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 											</div>
 											<div className={[style.rect_hander,style.rect_hander3].join(' ')} 
 												onTouchStart={(e)=>this._cutTouchStart(e,3)} 
-												onTouchMove={(e)=>this._cutTouchMove(e)}>
+												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 												</div>
 											<div className={[style.rect_hander,style.rect_hander4].join(' ')} 
 												onTouchStart={(e)=>this._cutTouchStart(e,4)} 
-												onTouchMove={(e)=>this._cutTouchMove(e)}>
+												onTouchMoveCapture={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 											</div>
 											<div className={style.rect_hander_delete} id='delete_9527' 
@@ -1176,7 +1227,7 @@ class WorkManage extends React.Component {
 											this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
 												return (
 													<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
-														key={i}  
+														key={item.num}  
 														style={{
 																width:item.area.width/720*this.state.scwidth+'px',
 																height:item.area.height/720*this.state.scwidth+'px',
@@ -1187,7 +1238,7 @@ class WorkManage extends React.Component {
 														onClick={(e)=>{this.cropItemClick(i,e)}} 
 													
 														>
-														<Input  key={i} onClick={(e)=>{e.stopPropagation()}}  className={style.inputnum} defaultValue={i+1}/>
+														<Input  key={i}   className={style.inputnum} defaultValue={i+1}/>
 												</div>
 													
 													)
