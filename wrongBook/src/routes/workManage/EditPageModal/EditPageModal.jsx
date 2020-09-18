@@ -112,6 +112,9 @@ class EditPageModal extends React.Component {
 	}
 	_rectTouchStart (e) {
 		if (e.target.id == 'delete_9527') return
+		this.CUT_START = {
+			corner: 0
+		}
 		this.setState({mouseIsDown:true})
         var elm = document.querySelector('#rect_item9527');
 		console.log(elm.offsetLeft, elm.offsetTop);
@@ -138,8 +141,11 @@ class EditPageModal extends React.Component {
 		this.setState({
 			disabledMove:true
 		})
-        console.log("EditPageModal -> _handerMove -> this.state.mouseIsDown", this.state.mouseIsDown)
+		
 		if(!this.state.mouseIsDown)return 
+		if(this.CUT_START.corner===0){
+			return this._rectMove(e)
+		}
         console.log("EditPageModal -> _handerMove -> e, n", e, n)
 		let width = this.state.cutWidth
 		let height = this.state.cutHeight
@@ -195,7 +201,7 @@ class EditPageModal extends React.Component {
 	}
 	_rectMove (e, index) {
 		// 移动题目框
-		if(!this.state.mouseIsDown||this.state.disabledMove)return
+		if(!this.state.mouseIsDown)return
 		let nl =e.clientX - (this.state.originalPos.mouseX - this.state.originalItemArea.left) - 0//this.state.imageData.displayImage.left
 		let nt =e.clientY - (this.state.originalPos.mouseY - this.state.originalItemArea.top) - 0//parseInt(this.state.imageData.displayImage.top)
 		let iw = this.state.imageData.displayImage.width
@@ -242,6 +248,7 @@ class EditPageModal extends React.Component {
 		return `${purl}${_str}/crop/!${_width.toFixed(2)}x${_height.toFixed(2)}a${_x.toFixed(2)}a${_y.toFixed(2)}`
 	}
 	_deleteCropItem () {
+		console.log("EditPageModal -> _deleteCropItem -> this.state.cropIndex", this.state.cropIndex,this.state.cpicture.areas)
 		if (this.state.cpicture.areas[this.state.cropIndex].addRect) {
 			this.state.cpicture.areas.splice(this.state.cropIndex, 1)
 			// 新增题目支持删除
@@ -259,7 +266,7 @@ class EditPageModal extends React.Component {
 	}
 	saveCropItem (callback) {
 		if (this.state.cropIndex < 0) return
-        console.log("EditPageModal -> saveCropItem -> this.state.cropIndex", this.state.cropIndex)
+
 		this.state.showCropBox = false
 		let _x = this.state.cutLeft / this.state.scwidth * 720
 		let _y = this.state.cutTop / this.state.scwidth * 720
@@ -277,9 +284,9 @@ class EditPageModal extends React.Component {
 			index: 999
 		}
 
+        console.log("EditPageModal -> saveCropItem -> this.state.cpicture", this.state.cpicture,this.state.cropIndex)
 		let _index = this.state.cropIndex
 		this.state.cpicture.areas[_index].area = _area
-        console.log("EditPageModal -> saveCropItem -> this.state.cpicture", this.state.cpicture,_index)
 		
 		this.setState({
 			cpicture:this.state.cpicture,
@@ -403,7 +410,7 @@ class EditPageModal extends React.Component {
 			addRect: true
 		})
 		this.setState({
-			cropIndex : this.state.cpicture.areas.length,
+			cropIndex : this.state.cpicture.areas.length-1,
 			cpicture:this.state.cpicture
 		})
 		console.log('new crop', this.state.cutTop, this.state.imageData)
@@ -488,34 +495,35 @@ class EditPageModal extends React.Component {
 					}}>
 					{
 						this.state.showCropBox?
-						<div className={style.crop_content} >
+						<div className={style.crop_content}   
+							onMouseMove={(e)=>this._handerMove(e)}>
 							<div  className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
-							<div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
+							<div   className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
 								<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
 								<div id="rect_item9527" 
 									onMouseDown={(e)=>this._rectTouchStart(e)}  
-									onMouseUp={()=>{this.setState({mouseIsDown:false})}}
-									onMouseMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
+									
+									className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
 
 								<div className={[style.rect_hander,style.rect_hander1].join(' ')} 
 									onMouseDown={(e)=>this._handerStart(e,1)} 
 									
-									onMouseMove={(e)=>this._handerMove(e)}>
+									>
 									<div className={style.rect_hander_border}></div>
 								</div>
 								<div className={[style.rect_hander,style.rect_hander2].join(' ')} 
 									onMouseDown={(e)=>this._handerStart(e,2)}  
-									onMouseMove={(e)=>this._handerMove(e)}>
+									>
 									<div className={style.rect_hander_border}></div>
 								</div>
 								<div className={[style.rect_hander,style.rect_hander3].join(' ')} 
 									onMouseDown={(e)=>this._handerStart(e,3)} 
-									onMouseMove={(e)=>this._handerMove(e)}>
+									>
 									<div className={style.rect_hander_border}></div>
 									</div>
 								<div className={[style.rect_hander,style.rect_hander4].join(' ')} 
 									onMouseDown={(e)=>this._handerStart(e,4)} 
-									onMouseMove={(e)=>this._handerMove(e)}>
+									>
 									<div className={style.rect_hander_border}></div>
 								</div>
 								<div className={style.rect_hander_delete} id='delete_9527' 
