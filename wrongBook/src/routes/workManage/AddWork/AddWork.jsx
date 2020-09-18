@@ -244,7 +244,6 @@ class WorkManage extends React.Component {
 			workPages:[
 				 
 			],
-			workQuestions:[],
 			showModal:false,
 			cpicture:{},
 			visible:false,
@@ -264,9 +263,24 @@ class WorkManage extends React.Component {
 			pageMarks:'',
 			editWorkName:false,
 			workNameFail:false,
-			lookQuestionImg:false
+			lookQuestionImg:false,
+			partQuestions:{
+				part:[
+					// { name:'',
+					// 	questions:[]
+					// } //每一个章节
+				],
+				questions:[
+					
+				]
+			},
+			selectQuestions:[],
+			editPartNameIndex:-1,
+			editPartName:false,
+			ischecked:false
     }
 	}
+
 	cropItemClick (index,e) {
 		this.setState({
 			cropIndex:index
@@ -793,7 +807,78 @@ class WorkManage extends React.Component {
 		)
     console.log('name',this.state.work.name)
 	}
+	addPart(){
+		let partQuestions={
+			part:[
+				// { name:[],
+				// 	questions:[]
+				// } //每一个章节
+			],
+			questions:[
+				{}//每一道题目
+			]
+		}
+		this.state.partQuestions.part.push(
+				{name:`-第${this.state.partQuestions.part.length+1}部分`,
+				questions:[]
+			}
+		)
+		console.log('this.state.partQuestions: ', this.state.partQuestions);
+		this.setState({
+			partQuestions:this.state.partQuestions
+		})
+	}
+	removeQuestions(partIndex){
+		let _arr=[]
+		let pquestions=this.state.partQuestions.questions
+		// console.log('pquestions: ', pquestions,this.state.selectQuestions);
+
+		this.state.selectQuestions.map((item,a)=>{
+			_arr.push(item.area)
+			for (let j = 0; j < pquestions.length; j++) {
+				const que = pquestions[j]
+				if(`${que.pageid}${que.num}`===item.qid){
+					pquestions.splice(j,1)
+				}
+			}
+		})
+		// let newQuestions = pquestions.filter(que => {
+		// 	if (!this.state.selectQuestions.includes(`${que.pageid}${que.num}`)) return que //
+		// })
+		console.log('newQuestions: ',pquestions);
+
+		
+		this.state.partQuestions.part[partIndex].questions=_arr
+		this.state.partQuestions.questions=pquestions
+		this.setState({
+			partQuestions:this.state.partQuestions,
+			ischecked:false
+		})
+		console.log('this.state.partQuestions: ', this.state.partQuestions);
+		// const {question}=section
+		// props.question.sections[index].areas.splice(i,1)
+		// // if(ispart){
+		// // 	props.question.sections[index].areas.splice(i,1)
+		// // }else{
+		// // 	props.question.areas.splice(index,1)
+		// // }
+		// props.question.sections[index].areas.push({question,question})
+		// props.addPartHander(p,props.question.sections)
+	}
   render() {
+			{/* let partQuestions={
+				part:[
+					{ name:{},
+						questions:[]
+					} //每一个章节
+				],
+				questions:[
+					{}//每一道题目
+				]
+			} */}
+
+			let pquestions=this.state.partQuestions.questions
+			let pparts=this.state.partQuestions.part
       return (
       <>
         <Content className={style._box} style={{ height: '100%',minHeight:500, overflow: 'hidden', position: 'relative',padding:20,background:'#F0F2F5' }}  >
@@ -873,22 +958,36 @@ class WorkManage extends React.Component {
 								</div>
 
 								<div className={style.section_box}> 
-									<Button >添加部分</Button>
+									<Button onClick={(e)=>{
+										this.addPart()
+										e.stopPropagation()
+									}}>添加部分</Button>
+									<Popover placement="right"  trigger="hover" content={
+											pparts.length?pparts.map((pt,n)=>{
+												return (
+														<Button className={style.partp} key={n} onClick={()=>{
+															this.removeQuestions(n)
+														}}>{pt.name}</Button>
+													)
+												}):'没有可选单元'
+											}>
+										<Button type='primary'>移动到单元中</Button>
+									</Popover>
 									<div className={style.quelabel} style={{marginTop:10}}>
-										<>
+										{/* <>
 												{`第1部分`}
 												<img style={{marginLeft:8}} src={require('../../images/edit.png')} alt=""
 													onClick={(e)=>{
 														
 													}}
 												/>
-											</>
-										<img style={{marginLeft:20}} 
+											</> */}
+										{/* <img style={{marginLeft:20}} 
 											onClick={(e)=>{
 												let item={part:{name:'---',questions:[]}}
-												this.state.workQuestions.push(item)
+												this.state.partQuestions.push(item)
 												this.setState({
-													workQuestions:this.state.workQuestions
+													partQuestions:this.state.partQuestions
 												})
 											}} 
 											src={require('../../images/up.png')} alt=""
@@ -902,53 +1001,84 @@ class WorkManage extends React.Component {
 											}} okText="确定" 		cancelText="取消"
 											>
 											<img style={{marginLeft:8}}   src={require('../../images/down.png')} alt=""/>
-										</Popconfirm>
+										</Popconfirm> */}
 										
 									</div> 
 								</div>
+							  {
+									pparts&&pparts.length?pparts.map((_part,p)=>{
+										return(
+											<div key={p}>
+											{this.state.editPartNameIndex===p&&this.state.editPartName?
+												<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
+													style={{width:100}} 
+													onBlur={(e)=>{
+														this.state.partQuestions.part[p].name=e.target.value
+														this.setState({
+															editPartNameIndex:-1,
+															editPartName:false,
+															partQuestions:this.state.partQuestions
+														})
+														
+														}} 
 
-								{this.state.workQuestions.length>0?<>{
-									this.state.workQuestions.map((item, i) => {
-											return (
-												item.part?
-														<>
-															{item.part.name}{i}
-															<div style={{background:'rgb(240, 242, 245)',padding:20}}>
-																{
-																	item.part.questions&&item.part.questions.length?
-																		item.part.questions.map((question, k) => {
-																			<Section showPicture={this.state.lookQuestionImg} key={k} index={k} 
-																					question={question} 		  
-																					deleteSectionHander={(index)=>{
-																						this.state.workPages.splice(index,1)
-																						this.setState({
-																							workPages: this.state.workPages,
-																						})
-																					}}
-																					upSectionHander={()=>{
-																						this.setState({
-																							workPages: this.state.workPages,
-																						})
-																					}}
-																					addPartHander={(index,data)=>{
-																						let work=this.state.workPages[index]
-																						work.sections=data
-																						this.state.workPages.splice(index,1,work)
-																						console.log('this.state.workPages: ', this.state.workPages);
-																						this.setState({
-																							workPages: this.state.workPages,
-																						})
-																					}}
-																					>
-								
-																		</Section>
-																		})
-																	:''
-																}
-															</div>
-														</>
+														defaultValue={_part.name?_part.name:`第${p+1}部分`}
+												/>
 												:
-												<Section showPicture={this.state.lookQuestionImg} key={item.pageId} index={i} question={item} 
+												<div key={p} style={{display:'flex',alignItems:'center'}}>
+													{_part.name}
+													<img style={{marginLeft:8}} src={require('../../images/edit.png')} alt=""
+														onClick={(e)=>{
+															this.setState({
+																editPartNameIndex:p,
+																editPartName:true
+															})
+														}}
+													/>
+												</div>
+											}
+											<div style={{background:'rgb(240, 242, 245)',padding:20}}>
+												{
+													_part.questions&&_part.questions.length?
+														_part.questions.map((area, k) => {
+															return(
+																<Section 
+																    ischecked={this.state.ischecked}
+																		showPicture={this.state.lookQuestionImg} 
+																		key={`${area.pageid}${k}`} indexkey={`${area.pageid}${area.num}`} index={k} 
+																		question={area} 		  
+																		questionChangeSelect={(bool,qid,que)=>{
+																	
+																				let arr=this.state.selectQuestions
+																				if(bool){
+																					arr.push({qid,area:que})
+																				}else{
+																					arr.splice(arr.findIndex(item => item.qid === qid), 1)
+																				}
+																				this.setState({
+																					selectQuestions:arr
+																				})
+																				// setSelectedQuestionIds(arr)
+																				console.log('e: ', bool,qid,arr)
+																		}}
+																	>
+						
+																</Section>
+															)
+														})
+													:'没数据'
+												}
+											</div>
+										</div>
+										)
+									}):''
+								} 
+								{pquestions&&pquestions.length>0?<>{
+									pquestions.map((item, i) => {
+											return (
+												<Section ischecked={this.state.ischecked} showPicture={this.state.lookQuestionImg} 
+														index={i} question={item} 
+														key={`${item.pageid}${i}`} indexkey={`${item.pageid}${item.num}`}
 														deleteSectionHander={(index)=>{
 															this.state.workPages.splice(index,1)
 															this.setState({
@@ -969,10 +1099,23 @@ class WorkManage extends React.Component {
 																workPages: this.state.workPages,
 															})
 														}}
+														questionChangeSelect={(bool,qid,que)=>{
+															
+															let arr=this.state.selectQuestions
+															if(bool){
+																arr.push({qid,area:que})
+															}else{
+																arr.splice(arr.findIndex(item => item.qid === qid), 1)
+															}
+															this.setState({
+																selectQuestions:arr
+															})
+															// setSelectedQuestionIds(arr)
+															console.log('e: ', bool,qid,arr)
+														}}
 														>
 
 												</Section>
-												
 												)
 											})
 									}</>
@@ -1100,14 +1243,14 @@ class WorkManage extends React.Component {
 
   componentDidMount() {
 		setTimeout(() => {
-			// this.addImgBtnClick()
+			let partQuestions=this.state.partQuestions
 			let array=[this.state.test,this.state.test1]
 			this.setState({
 				workPages:[this.state.test,this.state.test1]
 			})
 			console.log('works',this.state.workPages)
 			let _arr=[
-				{part:{name:'---',questions:[]}}
+				
 			]
 			for (let index = 0; index < array.length; index++) {
 				const element = array[index]
@@ -1119,11 +1262,12 @@ class WorkManage extends React.Component {
 					}
 				}
 			}
+			partQuestions.questions=_arr
 
 			this.setState({
-				workQuestions:_arr
+				partQuestions:partQuestions
 			})
-			console.log('_arr: ', _arr);
+			console.log('partQuestions: ', this.state.partQuestions);
 		}, 800);
     observer.addSubscribe('updateClass', () => {
 

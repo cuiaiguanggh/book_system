@@ -55,14 +55,14 @@ class Upload extends React.Component {
       cpicture:this.props.picture
     })
     // this.lookPicture(this.props.picture)
-    this.props.dispatch({
-      type:'workManage/testPage'
-    }).then((res)=>{
-      console.log('res: ', res);
-      this.setState({
-        uploadFinish:true
-      })
-    })
+    // this.props.dispatch({
+    //   type:'workManage/testPage'
+    // }).then((res)=>{
+    //   console.log('res: ', res);
+    //   this.setState({
+    //     uploadFinish:true
+    //   })
+    // })
   }
 
   componentWillUnmount() {

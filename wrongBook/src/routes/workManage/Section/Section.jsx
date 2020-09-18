@@ -10,6 +10,7 @@ export default function Section(props) {
 		const [editNameIndex, setEditNameIndex] = useState(-1);
 		const [editPartName, setEditPartName] = useState(false);
 		const [editPartIndex, setEditPartIndex] = useState(-1);
+		const [selectedQuestionIds, setSelectedQuestionIds] = useState([]);
     useEffect(() => {
         if (newsrc !== props.src) {
             setNewsrc(props.src)
@@ -56,24 +57,35 @@ export default function Section(props) {
 			props.upSectionHander()
 		}
 
-		
 		return (
-			<div key={props.index} style={{marginTop:14}} className={style.queitem}>
+			<>
+			<div key={props.indexkey} style={{marginTop:14}} className={style.queitem}>
 				<div  className={style.que_box}>
 						<div className={style.title}>
-							<Checkbox >
+							<Checkbox 
+									defaultChecked={props.ischecked}
+									onChange={(e)=>{
+										let _v=e.target.checked
+										let _myQid=`${props.question.pageid}${props.question.num}`
+										// let arr=selectedQuestionIds
+										// if(e.target.checked){
+										// 	arr.push(_myQid)
+										// }else{
+										// 	arr.splice(arr.findIndex(item => item === _myQid), 1)
+										// }
+										// setSelectedQuestionIds(arr)
+										// console.log('e: ', _myQid,arr)
+										props.questionChangeSelect(_v,_myQid,props.question)
+									}}
+								>
 								{` 第${props.index+1}题`}
 							</Checkbox>
 							<div className={style._edit_box}>
 								<Button type='primary' onClick={()=>deleteSectionQuestion(props.index)}>删除</Button>
-								<Popover placement="left"  trigger="click" content='11'>
-									<Button type='primary'>移动到单元中</Button>
-								</Popover>
 								{
 									props.question.question?<></>:
 									<>
 									<Button type='primary'>重新匹配</Button>
-									{/* <Button type='primary'>录入</Button> */}
 									</>
 								}
 								
@@ -92,6 +104,7 @@ export default function Section(props) {
 					</div>
 								
 			</div>
+			</>
     )
 
 }

@@ -400,3 +400,19 @@
     text-align: center;
     margin-top: 120px;
   }
+  .partp{
+    padding: 0;
+    border:0;
+    background-color: #fff !important;
+    color:#000;
+    display: block;
+    &[disabled]{
+      color:#ccc;
+    }
+    &:focus,&:active{
+      border: 0;
+    }
+    &:nth-of-type(1){
+      margin-bottom: 0;
+    }
+  }
