@@ -65,21 +65,7 @@
       @rectHanderSize:25px;
       // @rectHanderPostion:-(@rectHanderSize/2+2);
       @rectHanderPostion:-9px;
-      .rect_hander_delete{
-        height: 19px;
-        width: 19px;
-        background-color: @cropColor;
-        border-radius: 100%;
-        view{
-          font-size: 10px;
-        } 
-        position: absolute;color: #fff;
-        margin:auto;
-        top:-6px ;
-        left:0 ;right: 0;
-        display: flex;align-items: center;justify-content: center;
-        z-index: 10;
-      }
+
       .rect_hander{
         position:absolute;
         width: @rectHanderSize;
@@ -271,4 +257,23 @@
   }
   //
 
-  
+  ._confirm_box{
+    position: absolute;
+    width: 113px;
+    height: 34px;
+    background: #3F454D;
+    bottom: -34px;
+    right: 13px;
+    z-index: 9;
+    Button{
+      width: 50%;
+      padding:0;
+      width:50%;
+      height: 100%;
+      border: 0;
+      color: #fff;
+      border-radius: 0;
+      background: transparent !important;
+      z-index: 9;
+    }
+  }

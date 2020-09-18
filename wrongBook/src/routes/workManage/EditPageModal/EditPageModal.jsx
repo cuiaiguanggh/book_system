@@ -37,7 +37,7 @@ class EditPageModal extends React.Component {
 				top: 0
 			  },
 			mouseIsDown:false,
-			disabledMove:false
+			hideBar:false
     }
 	}
 
@@ -138,11 +138,11 @@ class EditPageModal extends React.Component {
 		// })
 	}
 	_handerMove (e, n) {
-		this.setState({
-			disabledMove:true
-		})
 		
 		if(!this.state.mouseIsDown)return 
+		this.setState({
+			hideBar:true
+		})
 		if(this.CUT_START.corner===0){
 			return this._rectMove(e)
 		}
@@ -248,7 +248,7 @@ class EditPageModal extends React.Component {
 		return `${purl}${_str}/crop/!${_width.toFixed(2)}x${_height.toFixed(2)}a${_x.toFixed(2)}a${_y.toFixed(2)}`
 	}
 	_deleteCropItem () {
-		console.log("EditPageModal -> _deleteCropItem -> this.state.cropIndex", this.state.cropIndex,this.state.cpicture.areas)
+		console.log("_deleteCropItem", this.state.cropIndex,this.state.cpicture.areas)
 		if (this.state.cpicture.areas[this.state.cropIndex].addRect) {
 			this.state.cpicture.areas.splice(this.state.cropIndex, 1)
 			// 新增题目支持删除
@@ -256,8 +256,6 @@ class EditPageModal extends React.Component {
 			this.state.cpicture.areas[this.state.cropIndex].selected = false
 		}
 
-
-		this.state.cropIndex = -1
 		this.setState({
 			showCropBox:false,
 			cropIndex:-1,
@@ -488,10 +486,11 @@ class EditPageModal extends React.Component {
 				<div className={style.img_box}>
 
 				<img style={{width:720}}  src={this.state.cpicture.serUrl} alt=""/>
-				<div className={style.crop_box} onMouseUp={(e)=>{
-					this.setState({mouseIsDown:false,disabledMove:false}),
-					console.log('mouseup...')
-					this._cropMaskClick(e)
+				<div className={style.crop_box} 
+					onMouseUp={(e)=>{
+						this.setState({mouseIsDown:false,hideBar:false}),
+						console.log('mouseup...')
+						// this._cropMaskClick(e)
 					}}>
 					{
 						this.state.showCropBox?
@@ -526,10 +525,25 @@ class EditPageModal extends React.Component {
 									>
 									<div className={style.rect_hander_border}></div>
 								</div>
-								<div className={style.rect_hander_delete} id='delete_9527' 
-									onClick={()=>{this._deleteCropItem()}}>
-									<div className={[style.iconfont,style.icon_cuohao].join(' ')}></div>
-								</div>
+								{
+									!this.state.hideBar?
+									<div className={style._confirm_box} 
+									onMouseDown={(e)=>this._handerStart(e,4)} 
+									>
+									<Button 
+										id='delete_9527' 
+										onMouseUp={(e)=>{
+											this._deleteCropItem()
+											e.stopPropagation()
+										}}
+									>
+									取消
+									</Button>
+									<Button >确认</Button>
+								</div>:''
+								}
+	
+		
 								</div>
 								<div className={[style.content_middle_right,style.bg_gray].join(' ')}></div>
 							</div>
