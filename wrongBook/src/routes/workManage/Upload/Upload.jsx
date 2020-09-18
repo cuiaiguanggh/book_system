@@ -12,7 +12,8 @@ export default function Upload(props) {
           if(props.index==1){
             setDiscernFail(true)
           }
-        }, 2000);
+        }, 100);
+        props.getFun(props.picture,props.index)
     },[]);
 
 		function deletePictureHander(p,index){
@@ -29,7 +30,6 @@ export default function Upload(props) {
     }
 
 		return (
-      <>
       <Spin spinning={!uploadFinish} tip="正在识别...">
         <div className={style.uploadin}>
           <div className={style.num}>{props.index+1}</div>
@@ -38,8 +38,6 @@ export default function Upload(props) {
           {discernFail?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
         </div>
       </Spin>
-      
-    </>
     )
 
 }

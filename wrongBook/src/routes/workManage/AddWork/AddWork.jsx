@@ -293,11 +293,9 @@ class WorkManage extends React.Component {
 
 		this.state.cpicture.areas[index]['selected']=!this.state.cpicture.areas[index]['selected']
 		console.log('this.state.cpicture: ', this.state.cpicture);
-		if (this.state.showGifTip) {
-			this.setState({
-				showGifTip:false
-			})
-		}
+		this.setState({
+			showCropBox:true
+		})
 		e.stopPropagation()
 	}
 	_cutTouchStart (e, id) {
@@ -558,11 +556,13 @@ class WorkManage extends React.Component {
 		}
 	}
 	toShowCropBox (cx, cy, cw, ch) {
-		this.cutLeft = cx
-		this.cutTop = cy
-		this.cutWidth = cw
-		this.cutHeight = ch
-		this.showCropBox = true
+		this.setState({
+			cutLeft : cx,
+			cutTop : cy,
+			cutWidth : cw,
+			cutHeight : ch,
+			showCropBox : true
+		})
 	}
 	newCropItem () {
 		// 还有优化空间...
@@ -1133,65 +1133,71 @@ class WorkManage extends React.Component {
 
 							<img style={{width:720}}  src={this.state.cpicture.serUrl} alt=""/>
 							<div className={style.crop_box}>
-						
-								{/* <div className={style.crop_content} onClick={(e)=>this._cropMaskClick(e)} v-if='showCropBox'>
-									<div className={style.content_top,style.bg_gray} style={{height:this.state.cutTop+'px'}}></div>
-									<div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
-										<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
-										<div id="rect_item9527" onTouchStart={(e)=>this._rectTouchStart(e)}  onTouchMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
+								{
+									this.state.showCropBox?
+									<div className={style.crop_content} onClick={(e)=>this._cropMaskClick(e)}>
+										<div className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
+										<div className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
+											<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
+											<div id="rect_item9527" onTouchStart={(e)=>this._rectTouchStart(e)}  onTouchMove={(e)=>{this._rectMove(e)}} className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
 
-											<div className={style.rect_hander,style.rect_hander1} 
-												onTouchStart='_cutTouchStart($event,1)' 
-												onTouchMove='_cutTouchMove($event)'>
+											<div className={[style.rect_hander,style.rect_hander1].join(' ')} 
+												onTouchStart={(e)=>this._cutTouchStart(e,1)} 
+												onTouchMove={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 											</div>
-											<div className={style.rect_hander,style.rect_hander2} 
-											onTouchStart='_cutTouchStart($event,2)' 
-												onTouchMove='_cutTouchMove($event)'>
+											<div className={[style.rect_hander,style.rect_hander2].join(' ')} 
+												onTouchStart={(e)=>this._cutTouchStart(e,2)}  
+												onTouchMove={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 											</div>
-											<div className={style.rect_hander,style.rect_hander3} 
-											onTouchStart='_cutTouchStart($event,3)' 
-												onTouchMove='_cutTouchMove($event)'>
+											<div className={[style.rect_hander,style.rect_hander3].join(' ')} 
+												onTouchStart={(e)=>this._cutTouchStart(e,3)} 
+												onTouchMove={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 												</div>
-											<div className={style.rect_hander,style.rect_hander4} 
-											onTouchStart='_cutTouchStart($event,4)' 
-												onTouchMove='_cutTouchMove($event)'>
+											<div className={[style.rect_hander,style.rect_hander4].join(' ')} 
+												onTouchStart={(e)=>this._cutTouchStart(e,4)} 
+												onTouchMove={(e)=>this._cutTouchMove(e)}>
 												<div className={style.rect_hander_border}></div>
 											</div>
-											<div className={style.rect_hander_delete} id='delete_9527' onClick='_deleteCropItem()'>
-												<div className='iconfont icon-cuohao'></div>
+											<div className={style.rect_hander_delete} id='delete_9527' 
+												onClick={()=>{this._deleteCropItem()}}>
+												<div className={[style.iconfont,style.icon_cuohao].join(' ')}></div>
 											</div>
+											</div>
+											<div className={[style.content_middle_right,style.bg_gray].join(' ')}></div>
 										</div>
-										<div className={style.content_middle_right,style.bg_gray}></div>
+										<div className={[style.content_bottom,style.bg_gray].join(' ')} ></div>
 									</div>
-									<div className={style.content_bottom,style.bg_gray} ></div>
-							</div> */}
-							<div className={style.rect_mask}>
-								{
-									this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
-										return (
-											<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
-												key={i}  
-												style={{
-														width:item.area.width/720*this.state.scwidth+'px',
-														height:item.area.height/720*this.state.scwidth+'px',
-														left:item.area.x/720*this.state.scwidth+'px',
-														top:item.area.y/720*this.state.scwidth+'px',
-														zIndex:50-i,
-												}} 
-												onClick={(e)=>{this.cropItemClick(i,e)}} 
-											
-												>
-												<Input  key={i} onClick={(e)=>{e.stopPropagation()}}  className={style.inputnum} defaultValue={i+1}/>
-										</div>
-											
-											)
-										}):''
+									:
+									<div className={style.rect_mask}>
+										{
+											this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
+												return (
+													<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
+														key={i}  
+														style={{
+																width:item.area.width/720*this.state.scwidth+'px',
+																height:item.area.height/720*this.state.scwidth+'px',
+																left:item.area.x/720*this.state.scwidth+'px',
+																top:item.area.y/720*this.state.scwidth+'px',
+																zIndex:50-i,
+														}} 
+														onClick={(e)=>{this.cropItemClick(i,e)}} 
+													
+														>
+														<Input  key={i} onClick={(e)=>{e.stopPropagation()}}  className={style.inputnum} defaultValue={i+1}/>
+												</div>
+													
+													)
+												}):''
+										}
+										
+									</div>
 								}
 								
-							</div>
+							
 						</div>
 						</div>
 
@@ -1204,9 +1210,12 @@ class WorkManage extends React.Component {
 		setTimeout(() => {
 			let partQuestions=this.state.partQuestions
 			let array=[this.state.test,this.state.test1]
+			// this.setState({
+			// 	workPages:[this.state.test,this.state.test1]
+			// })
 			this.setState({
-				workPages:[this.state.test,this.state.test1]
-			})
+					workPages:[this.state.test]
+				})
 			console.log('works',this.state.workPages)
 			let _arr=[
 				
@@ -1227,10 +1236,8 @@ class WorkManage extends React.Component {
 				partQuestions:partQuestions
 			})
 			console.log('partQuestions: ', this.state.partQuestions);
-		}, 800);
-    observer.addSubscribe('updateClass', () => {
-
-    })
+		}, 100);
+    
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
     let data = {
