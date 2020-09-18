@@ -819,7 +819,7 @@ class WorkManage extends React.Component {
 			]
 		}
 		this.state.partQuestions.part.push(
-				{name:`-第${this.state.partQuestions.part.length+1}部分`,
+				{name:`题组${this.state.partQuestions.part.length+1}`,
 				questions:[]
 			}
 		)
@@ -905,7 +905,7 @@ class WorkManage extends React.Component {
 			let pquestions=this.state.partQuestions.questions
 			let pparts=this.state.partQuestions.part
       return (
-      <div className={style.page_box}>
+      <div className={[style.page_box,"_position"].join(" ")}>
 				<div className={style.top_box}>
 						<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
 											<h4 style={{fontSize:20,height:40}} >
@@ -986,30 +986,22 @@ class WorkManage extends React.Component {
 							</div>
 					</div>
 				</div>
-				<div className={style._action_bar}>
-					{/* <Button 
-						onClick={()=>{
-							this.setState({
-								lookQuestion:!this.state.lookQuestion
-							})
-						}}
-					>{!this.state.lookQuestion?'显示原图':'查看匹配'}</Button> */}
+				<div className={style.question_content}>
+					<div className={style._action_bar}>
+							<Checkbox checked={this.state.lookQuestion}
+								onClick={()=>{
+									this.setState({
+										lookQuestion:!this.state.lookQuestion
+									})
+								}}
+						>显示试题</Checkbox>
+						<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>
+							发布作业
+						</Button>
 
-					
-					<Checkbox checked={this.state.lookQuestion}
-							onClick={()=>{
-								this.setState({
-									lookQuestion:!this.state.lookQuestion
-								})
-							}}
-					>显示试题</Checkbox>
-					<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>
-						发布作业
-					</Button>
-
-				</div>
-				<Layout style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
-					<Sider className={style.sider} style={{width: 'calc( 100% - 20px )'}}>
+					</div>
+					<Layout style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
+					<Sider className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
 						<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
 							拖动题目调整顺序
 						</div>
@@ -1078,7 +1070,7 @@ class WorkManage extends React.Component {
 								} 
 						</div>
 						<Button type='primary'
-							style={{marginTop:15}}
+							style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
 							onClick={()=>{
 								this.addPart()
 							}}
@@ -1096,13 +1088,73 @@ class WorkManage extends React.Component {
 															this.removeQuestions(n)
 														}}>{pt.name}</Button>
 													)
-												}):'没有可选单元'
+												}):'没有可选题组'
 											}>
-										<Button type='primary'>移动到单元中</Button>
+										<Button type='primary'>移动到题组</Button>
 									</Popover>
 		
 								</div>
-							  
+							  {
+									pparts&&pparts.length?pparts.map((_part,p)=>{
+										return(
+											<div style={{marginTop:10}}  className={style.group_box} key={p}>
+											{_part.name}
+											
+											<div style={{width:"100%",marginBottom:15,background:'#efefef',padding:'20px 20px'}}>
+												{
+													_part.questions&&_part.questions.length?
+														_part.questions.map((item, k) => {
+															return(
+																<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+																	index={k} question={item} 
+																	key={`${item.pageid}${k}`} indexkey={`${item.pageid}${item.num}`}
+																	deleteSectionHander={(index)=>{
+																		this.state.workPages.splice(index,1)
+																		this.setState({
+																			workPages: this.state.workPages,
+																		})
+																	}}
+																	upSectionHander={()=>{
+																		this.setState({
+																			workPages: this.state.workPages,
+																		})
+																	}}
+																	addPartHander={(index,data)=>{
+																		let work=this.state.workPages[index]
+																		work.sections=data
+																		this.state.workPages.splice(index,1,work)
+																		console.log('this.state.workPages: ', this.state.workPages);
+																		this.setState({
+																			workPages: this.state.workPages,
+																		})
+																	}}
+																	questionChangeSelect={(bool,qid,que)=>{
+																		
+																		let arr=this.state.selectQuestions
+																		if(bool){
+																			arr.push({qid,area:que})
+																		}else{
+																			arr.splice(arr.findIndex(item => item.qid === qid), 1)
+																		}
+																		this.setState({
+																			selectQuestions:arr
+																		})
+																		// setSelectedQuestionIds(arr)
+																		console.log('e: ', bool,qid,arr)
+																	}}
+																	>
+
+															</Section>
+												
+															)
+														})
+													:''
+												}
+											</div>
+										</div>
+										)
+									}):''
+								} 
 								{pquestions&&pquestions.length>0?<>{
 									pquestions.map((item, i) => {
 											return (
@@ -1258,6 +1310,8 @@ class WorkManage extends React.Component {
 						</Modal>
 				</Content>
 				</Layout>
+
+				</div>
 			</div>
     )
   }

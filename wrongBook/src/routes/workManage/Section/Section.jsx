@@ -45,7 +45,7 @@ export default function Section(props) {
 
 		return (
 			<>
-			<div key={props.indexkey} style={{marginTop:14}} className={style.queitem}>
+			<div key={props.indexkey}  className={style.queitem}>
 				<div  className={style.que_box}>
 						<div className={style.title}>
 							<Checkbox 
