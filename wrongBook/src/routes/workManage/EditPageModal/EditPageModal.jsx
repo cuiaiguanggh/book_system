@@ -262,7 +262,7 @@ class EditPageModal extends React.Component {
 			showCropBox:false
 		})
 	}
-	saveCropItem (callback) {
+	_saveCropItem (callback) {
 		if (this.state.cropIndex < 0) return
 
 		this.state.showCropBox = false
@@ -281,8 +281,6 @@ class EditPageModal extends React.Component {
 			imgUrl: _imgUrl,
 			index: 999
 		}
-
-        console.log("EditPageModal -> saveCropItem -> this.state.cpicture", this.state.cpicture,this.state.cropIndex)
 		let _index = this.state.cropIndex
 		this.state.cpicture.areas[_index].area = _area
 		
@@ -313,6 +311,7 @@ class EditPageModal extends React.Component {
 
 			let miny = (ele.y) / 720 * this.state.scwidth
 			let maxy = (ele.y + ele.height) / 720 * this.state.scwidth
+			console.log('x >= minx && _x <= maxx && _y >= miny && _y <= maxy',x , minx , _x ,maxx ,_y , miny , _y , maxy)
 			if (_x >= minx && _x <= maxx && _y >= miny && _y <= maxy) {
 				console.log('this click index', i)
 				index = i
@@ -321,11 +320,18 @@ class EditPageModal extends React.Component {
 		return index
 	}
 	_cropMaskClick (e) {
-		console.log("EditPageModal -> _cropMaskClick -> e", e.clientY)
 		//return
-		this.saveCropItem()
+		
+		var elm = document.querySelector('.modal9527')
+		let _cx=e.clientX-elm.offsetLeft-30
+		let _cy=e.clientY-elm.offsetTop-30
+		// let _clickY
+		console.log('click',_cx,_cy)
+		// return
+		this._saveCropItem()
 		if (this.state.cpicture.areas.length > 0) {
-			let _index = this.isCropItem(e.clientX, e.clientY)
+			let _index = this.isCropItem(_cx,_cy)
+			console.log('index',_index)
 			if (_index > -1) {
 				this.showCropBox = false
 				this.cropItemClick(_index)
@@ -372,7 +378,7 @@ class EditPageModal extends React.Component {
 		// 还有优化空间...
 		if (this.state.cropIndex > -1) {
 			// 先保存上一个框
-			this.saveCropItem()
+			this._saveCropItem()
 		}
 		const {cx, cy, cwidth, cheight} = this.AddCropData()
 		let _x = cx / this.state.scwidth * 720
@@ -428,12 +434,15 @@ class EditPageModal extends React.Component {
 		})
 	}
 	checkCpicture(){
-		let _pic=this.state.workPages[this.state.cpindex]
-		this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
+		// if(this.state.cpindex>=0){
+
+		// 	this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
+		// }
 		this.setState({
 			showModal:false,
 			workPages:this.state.workPages
 		})
+		this.props.confirmPicture(this.state.cpicture)
 		console.log('this.state.cpindex,1,this.state.cpicture: ', this.state.cpindex,1,this.state.cpicture);
 		console.log('this.state.workPages: ', this.state.workPages,this.state.cpicture);
 	}
@@ -446,6 +455,7 @@ class EditPageModal extends React.Component {
 		// 	showModal:false
 		// })
 		// console.log('e: ', e,this.state.cpicture,this.state.workPages);
+		this.props.hideModalHander()
 	}
 	
 
@@ -453,9 +463,10 @@ class EditPageModal extends React.Component {
   	render() {
 		return (
 			<Modal
+				id="mask9527"
 				closable={false} 
 				onCancel={()=>{this.cancelModel()}}
-				className="unsetModal"
+				className="modal9527"
 				visible={this.props.visible}
 				footer={[
 					<div key='1' style={{display:'inline-block',float:'left'}}>
@@ -490,11 +501,20 @@ class EditPageModal extends React.Component {
 					onMouseUp={(e)=>{
 						this.setState({mouseIsDown:false,hideBar:false}),
 						console.log('mouseup...')
-						// this._cropMaskClick(e)
-					}}>
+					}}
+					
+					>
 					{
 						this.state.showCropBox?
-						<div className={style.crop_content}   
+						<div className={style.crop_content} 
+							
+							onClick={(e)=>{
+								console.log('click mask...')
+								// this._cropMaskClick(e)
+								// this.setState({
+								// 	showCropBox:false
+								// })
+							}}  
 							onMouseMove={(e)=>this._handerMove(e)}>
 							<div  className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
 							<div   className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
@@ -528,7 +548,7 @@ class EditPageModal extends React.Component {
 								{
 									!this.state.hideBar?
 									<div className={style._confirm_box} 
-									onMouseDown={(e)=>this._handerStart(e,4)} 
+									
 									>
 									<Button 
 										id='delete_9527' 
@@ -537,9 +557,14 @@ class EditPageModal extends React.Component {
 											e.stopPropagation()
 										}}
 									>
-									取消
+									删除
 									</Button>
-									<Button >确认</Button>
+									<Button 
+										onMouseUp={(e)=>{
+											this._saveCropItem()
+											e.stopPropagation()
+										}}
+									>确认</Button>
 								</div>:''
 								}
 	

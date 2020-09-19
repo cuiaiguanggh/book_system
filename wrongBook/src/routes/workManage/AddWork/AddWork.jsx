@@ -1141,7 +1141,18 @@ class WorkManage extends React.Component {
 				</Layout>
 				</div>
 				
-				<EditPageModal cpicture={this.state.cpicture} visible={this.state.showModal}></EditPageModal>
+				<EditPageModal 
+					hideModalHander={()=>{this.setState({showModal:false})}} 
+					cpicture={this.state.cpicture} visible={this.state.showModal}
+					confirmPicture={(p)=>{
+						this.state.workPages.splice(this.state.cpindex,1)
+						this.setState({
+							workPages:this.state.workPages,
+							showModal:false
+						})
+						console.log('this.state.workPages',this.state.workPages)
+					}}
+				></EditPageModal>
 				</div>
     )
   }
