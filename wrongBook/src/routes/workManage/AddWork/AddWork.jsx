@@ -463,43 +463,15 @@ class WorkManage extends React.Component {
 	  
 	}
 	containetScroll(e) {
-		// if( e.currentTarget.scrollTop<=0){
-		// 	this.setState({
-		// 		scrollFlag:true
-		// 	})
-		// }
-
 		let _w=document.querySelector('#kacha_side').offsetWidth
 		let  scrollTop = e.currentTarget.scrollTop, 
 		elm =  document.querySelector('#_action_bar');
 		let _bool=(scrollTop>=elm.offsetTop)
-		console.error('...',scrollTop>=elm.offsetTop)
-		if(scrollTop>=elm.offsetTop){
-			this.setState({
-				hideTopContainer:true,
-				fixedWidth:`calc( 100% - ${_w}px )`,
-				_boxWidth:`calc( 100% - 200px )`,
-				orposition:elm.offsetTop
-			})
-		}else{
-			this.setState({
-				hideTopContainer:false,
-				fixedWidth:`100%`,
-				_boxWidth:''
-			})
-		}
-		
-	}
-	questionContainerScroll(e) {
-		// console.log("questionContainerScroll -> e.currentTarget.scrollTop<=0", e.currentTarget.scrollTop<=0)
-		// if( e.currentTarget.scrollTop<=0){
-		// 	this.setState({
-		// 		hideTopContainer:false,
-		// 		fixedWidth:`100%`,
-		// 		scrollFlag:false
-		// 	})
-		// }
-		
+		this.setState({
+			hideTopContainer:_bool,
+			fixedWidth:_bool?`calc( 100% - ${_w}px )`:`100%`,
+			_boxWidth:_bool?`calc( 100% - 200px )`:''
+		})
 		
 	}
 
@@ -698,7 +670,7 @@ class WorkManage extends React.Component {
 						</div>
 					</div>
 					<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}
-						onScroll={this.questionContainerScroll.bind(this)}
+					
 					>
 							<div className={style.content} 
 								
