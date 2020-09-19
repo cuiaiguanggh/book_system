@@ -5,6 +5,11 @@ import {
 import {
 	testPage
 } from '../services/tempService';
+
+import {
+	getWorkList
+} from '../services/yukeService';
+
 import { routerRedux } from 'dva/router';
 import store from 'store';
 import { message } from 'antd';
@@ -16,9 +21,17 @@ export default {
 			value:[]
 		},
 		schoolSubjectList:[],
-		schoolSubId:0
+		schoolSubId:0,
+		getWorkListFinish:false,
+		workList:[]
 	},
 	reducers: {
+		workList(state, { payload }) {
+			return { ...state, workList: payload };
+		},
+		getWorkListFinish(state, { payload }) {
+			return { ...state, getWorkListFinish: payload };
+		},
 		schoolSubId(state, { payload }) {
 			return { ...state, schoolSubId: payload };
 		},
@@ -103,6 +116,33 @@ export default {
 				list:_classList,
 				value:[_v]
 			}
+		},
+		*getWorkList({ payload }, { put, select }){
+			// let res = yield getWorkList(payload);
+			// console.log('res: ', res);
+			yield put({
+				type: 'getWorkListFinish',
+				payload: false
+			})
+			let data=[]
+			for (let i = 0; i < 100; i++) {
+				data.push({
+					_index: i,
+					_name: `work ${i}`,
+					_id: i,
+					_classes: [`一年 ${i}班`,`一年 ${i+1}班`],
+					_subject:'学科',
+					_time:"0907",
+				});
+			}
+			yield put({
+				type: 'getWorkListFinish',
+				payload: true
+			})
+			yield put({
+				type: 'workList',
+				payload: data
+			})
 		},
 		
 	},

@@ -16,14 +16,13 @@ class HomeworkCenter extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selectUser: '',
 		};
-		this.studentColum = [
+		this.workColum = [
 			{
 				title: '序号',
 				align: 'center',
 				dataIndex: '_index',
-				render: (text, record, index) => `${text}` // 显示每一行的序号
+				render: (text, record, index) => `${text+1}` // 显示每一行的序号
 			},
 			{
 			title: '作业名称',
@@ -56,22 +55,6 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: false,
 			render: (text, record,index) => {
-				// return record.qustionlist?record.qustionlist.map((item, i) => {
-				// 	return (
-				// 		<Checkbox
-				// 			key={i}
-				// 			checked={(record.userId&&this.props.state.saleId===record.userId)||(record.questionHook&&record.questionHook[`${index}-${i}`])}
-				// 			disabled={record.userId&&this.props.state.saleId===record.userId}
-				// 			onClick={(e) => {
-				// 				e.preventDefault()
-				// 				e.stopPropagation()
-				// 				this.onChangeCheck(index,i,record)
-				// 			}}
-				// 		>
-				// 		{i+1}
-				// 	</Checkbox>
-				// 	)
-				// }) :''
 				return(
 					<>
 						<span className={style.caozuospan}>错题录入</span>
@@ -85,60 +68,13 @@ class HomeworkCenter extends React.Component {
 		];
 
 	}
-	onChangeCheck(index,i,ele){
-        console.log("HomeworkCenter -> onChangeCheck -> index,i,ele", index,i,ele)
-		let qh=ele.questionHook||{}
-        console.log("HomeworkCenter -> onChangeCheck -> qh", qh)
-		if(qh[`${index}-${i}`]){
-			delete qh[`${index}-${i}`]
-		}else{
-			qh[`${index}-${i}`]=true
-		}
-		let _pageHomeworkDetiles = this.props.state.classStudentList;
-		_pageHomeworkDetiles[index].questionHook=qh
-		this.props.dispatch({
-			type: 'classModel/classStudentList',
-			payload: _pageHomeworkDetiles
-		})
-	}
+
 
 	render() {
-		let state = this.props.state;
-		let rodeType = store.get('wrongBookNews').rodeType;
-		let dataSource = state.classStudentList;
-		// let rowRadioSelection={
-		// 	type:'radio',
-		// 	columnTitle:"选择",
-		// 	onSelect: (selectedRowKeys, selectedRows) => {
-		// 		console.log(selectedRowKeys, selectedRows)
-		// 		this.props.selectStudentHander(selectedRowKeys,selectedRows)
-		// 		this.props.dispatch({
-		// 			type: 'homePage/setSaleId',
-		// 			payload: selectedRowKeys.userId
-		// 		})
-		// 	}
-		// }
-		const data = [];
-		for (let i = 0; i < 100; i++) {
-			data.push({
-				_index: i,
-				_name: `work ${i}`,
-				_id: i,
-				_classes: [`一年 ${i}班`,`一年 ${i+1}班`],
-				_subject:'学科',
-				_time:"0907",
-			});
-		}
-		let columns = this.studentColum;
 
-		let sublist = this.props.state.sublist;
-		const children = [];
-		if (sublist.data) {
-			for (let i = 0; i < sublist.data.length; i++) {
-				let data = sublist.data[i]
-				children.push(<Option key={data.k}>{data.v}</Option>);
-			}
-		}
+		const data = this.props.state.workList;
+
+		let columns = this.workColum;
 		return (
 			<>
 				<Layout style={{
@@ -148,7 +84,7 @@ class HomeworkCenter extends React.Component {
 					<Content style={{ background:"#fff" }}>
 						<div className={style.gradeboder} >
 							<div style={{position:'relative'}}>
-								<Spin spinning={!this.props.state.getClassMembersFinish} style={{height:'100%'}}> 
+								<Spin spinning={!this.props.state.getWorkListFinish} style={{height:'100%'}}> 
 									<div className={style.table}>
 										<Table
 											rowKey={record => record.userId}
@@ -169,30 +105,23 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount() {
-		// this.props.dispatch({
-		// 	type: 'homePage/getGrade',
-		// 	payload: { schoolId: store.get('wrongBookNews').schoolId }
-		// })
+		let data={}
+		this.props.dispatch({
+			type: 'workManage/getWorkList',
+			payload: data
+		  }).then((classlist) => {
+			
+		  })
+	}
 
-		// this.props.dispatch({
-		// 	type: 'homePage/subjectNodeList',
-		// 	payload: {}
-		// })
-	}
-	UNSAFE_componentWillMount() {
-		// this.props.dispatch({
-		// 	type: 'homePage/tealist',
-		// 	payload: []
-		// });
-	}
 
 }
 
 export default connect((state) => ({
 	state: {
 		...state.homePage,
-		getClassMembersFinish:state.classModel.getClassMembersFinish,
-		classStudentList:state.classModel.classStudentList,
+		getWorkListFinish:state.workManage.getWorkListFinish,
+		workList:state.workManage.workList,
 		years: state.temp.years
 	}
 }))(HomeworkCenter);
