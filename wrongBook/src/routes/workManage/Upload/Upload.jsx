@@ -1,6 +1,6 @@
 import style from './Upload.less';
 import React, { useState, useEffect } from 'react';
-import { Input, Modal, Checkbox, message ,Popover,Spin} from 'antd';
+import { Modal, Spin} from 'antd';
 
 export default function Upload(props) {
     const [uploadFinish, setUploadFinish] = useState(false);
@@ -13,7 +13,7 @@ export default function Upload(props) {
             setDiscernFail(true)
           }
         }, 100);
-        props.getFun(props.picture,props.index)
+        // props.lookPicture(props.picture,props.index)
     },[]);
 
 		function deletePictureHander(p,index){
@@ -33,7 +33,7 @@ export default function Upload(props) {
       <Spin spinning={!uploadFinish} tip="正在识别...">
         <div className={style.uploadin}>
           <div className={style.num}>{props.index+1}</div>
-          <img onClick={()=>props.getFun(props.picture,props.index)} src={props.picture.serUrl} alt=""/>
+          <img onClick={()=>props.lookPicture(props.picture,props.index)} src={props.picture.serUrl} alt=""/>
           <img className={style.delpng} onClick={()=>deletePictureHander(props.picture,props.index)} src={require('../../images/pdelete.png')} alt=""/>
           {discernFail?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
         </div>

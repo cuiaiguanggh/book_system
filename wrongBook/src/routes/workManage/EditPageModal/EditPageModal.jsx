@@ -8,12 +8,8 @@ import style from './EditPageModal.less';
 class EditPageModal extends React.Component {
   constructor(props) {
 		super(props);
-		this.showCropModel=this.showCropModel.bind(this);
     	this.state = {
-
-			showModal:false,
-			cpicture:{},
-			visible:false,
+			// cpicture:props.cpicture,
 			scwidth:720,
 			cutLeft:0,cutTop:0,cutWidth:100,cutHeight:100,
 			originalPos:{
@@ -22,7 +18,6 @@ class EditPageModal extends React.Component {
 			},
 			rectMinSize:10,
 			cropIndex:-1,
-			cpindex:0,
 			
 			imageData:{
 				displayImage:{
@@ -45,19 +40,15 @@ class EditPageModal extends React.Component {
 		this.setState({
 			cropIndex:index
 		})
-		console.log('click item', this.state.cpicture.areas[index])
-		let area = this.state.cpicture.areas[index].area
+		console.log('click item', this.props.cpicture.areas[index])
+		let area = this.props.cpicture.areas[index].area
 		this.toShowCropBox(area.x / 720 * this.state.scwidth, area.y / 720 * this.state.scwidth, area.width / 720 * this.state.scwidth, area.height / 720 * this.state.scwidth)
-
-		// this.state.cpicture.areas[index]['selected']=!this.state.cpicture.areas[index]['selected']
-		console.log('this.state.cpicture: ', this.state.cpicture);
-		// e.stopPropagation()
+		// this.props.cpicture.areas[index]['selected']=!this.props.cpicture.areas[index]['selected']
 	}
 	_handerStart (e, id) {
 		this.setState({
 			mouseIsDown:true
 		})
-        console.log("EditPageModal -> _handerStart -> e, id", e, id)
 		if (!id) return
 		let currentX = e.clientX
 		let currentY = e.clientY
@@ -128,14 +119,6 @@ class EditPageModal extends React.Component {
 				top:elm.offsetTop
 			}
 		})
-		//let _this = this
-		// var query = wx.createSelectorQuery()
-		// query.select('#rect_item9527').boundingClientRect()
-		// query.exec(function (res) {
-		//   console.log(e)
-		//   _this.state.originalItemArea.left = res[0].left
-		//   _this.state.originalItemArea.top = res[0].top
-		// })
 	}
 	_handerMove (e, n) {
 		
@@ -234,11 +217,11 @@ class EditPageModal extends React.Component {
 		})
 	}
 	getQnCropUrl () {
-		let _width = this.state.cutWidth / this.state.imageData.displayImage.width * this.state.cpicture.width
-		let _height = this.state.cutHeight / this.state.imageData.displayImage.height * this.state.cpicture.height
-		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.state.cpicture.width
-		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.state.cpicture.height
-		let purl = this.state.cpicture.serUrl || 'noqniu_img'
+		let _width = this.state.cutWidth / this.state.imageData.displayImage.width * this.props.cpicture.width
+		let _height = this.state.cutHeight / this.state.imageData.displayImage.height * this.props.cpicture.height
+		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.props.cpicture.width
+		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.props.cpicture.height
+		let purl = this.props.cpicture.serUrl || 'noqniu_img'
 		let _str = ''
 		if (purl.indexOf('?imageMogr2') === -1) {
 			_str = '?imageMogr2'
@@ -248,12 +231,12 @@ class EditPageModal extends React.Component {
 		return `${purl}${_str}/crop/!${_width.toFixed(2)}x${_height.toFixed(2)}a${_x.toFixed(2)}a${_y.toFixed(2)}`
 	}
 	_deleteCropItem () {
-		console.log("_deleteCropItem", this.state.cropIndex,this.state.cpicture.areas)
-		if (this.state.cpicture.areas[this.state.cropIndex].addRect) {
-			this.state.cpicture.areas.splice(this.state.cropIndex, 1)
+		console.log("_deleteCropItem", this.state.cropIndex,this.props.cpicture.areas)
+		if (this.props.cpicture.areas[this.state.cropIndex].addRect) {
+			this.props.cpicture.areas.splice(this.state.cropIndex, 1)
 			// 新增题目支持删除
 		} else {
-			this.state.cpicture.areas[this.state.cropIndex].selected = false
+			this.props.cpicture.areas[this.state.cropIndex].selected = false
 		}
 
 		this.setState({
@@ -282,10 +265,10 @@ class EditPageModal extends React.Component {
 			index: 999
 		}
 		let _index = this.state.cropIndex
-		this.state.cpicture.areas[_index].area = _area
+		this.props.cpicture.areas[_index].area = _area
 		
 		this.setState({
-			cpicture:this.state.cpicture,
+			cpicture:this.props.cpicture,
 			cropIndex:-1
 		})
 		console.log('img crop saved', this.state.cropIndex, _imgUrl)
@@ -304,8 +287,8 @@ class EditPageModal extends React.Component {
 		let _dism = this.state.imageData.displayImage
 		let _x = x - _dism.left
 		let _y = y - _dism.top
-		for (let i = 0; i < this.state.cpicture.areas.length; i++) {
-			const ele = this.state.cpicture.areas[i].area
+		for (let i = 0; i < this.props.cpicture.areas.length; i++) {
+			const ele = this.props.cpicture.areas[i].area
 			let minx = (ele.x) / 720 * this.state.scwidth
 			let maxx = (ele.x + ele.width) / 720 * this.state.scwidth
 
@@ -329,7 +312,7 @@ class EditPageModal extends React.Component {
 		console.log('click',_cx,_cy)
 		// return
 		this._saveCropItem()
-		if (this.state.cpicture.areas.length > 0) {
+		if (this.props.cpicture.areas.length > 0) {
 			let _index = this.isCropItem(_cx,_cy)
 			console.log('index',_index)
 			if (_index > -1) {
@@ -356,8 +339,8 @@ class EditPageModal extends React.Component {
 		}
 	}
 	checkCanAddCrop (_x, _y, _width, _height) {
-		if (this.state.cpicture.areas.length === 0) return true
-		let lastCrop = this.state.cpicture.areas[this.state.cpicture.areas.length - 1].area
+		if (this.props.cpicture.areas.length === 0) return true
+		let lastCrop = this.props.cpicture.areas[this.props.cpicture.areas.length - 1].area
 		if (lastCrop.x === _x && lastCrop.y === _y && lastCrop.width === _width && lastCrop.height === _height) {
 			// 应该做循环判定？
 			return false
@@ -389,7 +372,7 @@ class EditPageModal extends React.Component {
 			this.toShowCropBox(cx, cy, cwidth, cheight)
 			
 			this.setState({
-				cropIndex : this.state.cpicture.areas.length - 1
+				cropIndex : this.props.cpicture.areas.length - 1
 			})
 			return
 		}
@@ -404,57 +387,35 @@ class EditPageModal extends React.Component {
 			width: _width,
 			rotate: 0
 		}
-		this.state.cpicture.areas.push({
+		this.props.cpicture.areas.push({
 			area: _area,
 			mark: 0,
-			num: this.state.cpicture.areas.length,
-			pageid: this.state.cpicture.pageId,
+			num: this.props.cpicture.areas.length,
+			pageid: this.props.cpicture.pageId,
 			type: 0,
 			selected: true,
 			addRect: true
 		})
 		this.setState({
-			cropIndex : this.state.cpicture.areas.length-1,
-			cpicture:this.state.cpicture
+			cropIndex : this.props.cpicture.areas.length-1,
+			cpicture:this.props.cpicture
 		})
 		console.log('new crop', this.state.cutTop, this.state.imageData)
 	}
   
 
-
-
-
-	showCropModel(p,i){
-		console.log('p: ', p);
-		this.setState({
-			showModal:true,
-			cpicture:p,
-			cpindex:i,
-			pageMarks:''
-		})
-	}
 	checkCpicture(){
 		// if(this.state.cpindex>=0){
 
-		// 	this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
+		// 	this.state.workPages.splice(this.state.cpindex,1,this.props.cpicture)
 		// }
 		this.setState({
-			showModal:false,
 			workPages:this.state.workPages
 		})
-		this.props.confirmPicture(this.state.cpicture)
-		console.log('this.state.cpindex,1,this.state.cpicture: ', this.state.cpindex,1,this.state.cpicture);
-		console.log('this.state.workPages: ', this.state.workPages,this.state.cpicture);
+		this.props.confirmPicture(this.props.cpicture)
+		console.log('this.state.workPages: ', this.state.workPages,this.props.cpicture);
 	}
 	cancelModel(e){
-		// this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
-		// this.state.cpicture.marks=''
-		// this.setState({
-		// 	cpicture:this.state.cpicture,
-		// 	workPages:this.state.workPages,
-		// 	showModal:false
-		// })
-		// console.log('e: ', e,this.state.cpicture,this.state.workPages);
 		this.props.hideModalHander()
 	}
 	
@@ -472,11 +433,11 @@ class EditPageModal extends React.Component {
 					<div key='1' style={{display:'inline-block',float:'left'}}>
 						备注：
 						<Input key='2' style={{width:'250px'}} type='text' 
-							value={this.state.cpicture.marks} 			
+							value={this.props.cpicture.marks} 			
 							onChange={(e)=>{
 										this.setState({
 											cpicture:{
-												...this.state.cpicture,
+												...this.props.cpicture,
 												marks:e.target.value
 											}
 										})
@@ -496,7 +457,7 @@ class EditPageModal extends React.Component {
 			>
 				<div className={style.img_box}>
 
-				<img style={{width:720}}  src={this.state.cpicture.serUrl} alt=""/>
+				<img style={{width:720}}  src={this.props.cpicture.serUrl} alt=""/>
 				<div className={style.crop_box} 
 					onMouseUp={(e)=>{
 						this.setState({mouseIsDown:false,hideBar:false}),
@@ -577,7 +538,7 @@ class EditPageModal extends React.Component {
 						:
 						<div className={style.rect_mask}>
 							{
-								this.state.cpicture.areas?this.state.cpicture.areas.map((item, i) => {
+								this.props.cpicture.areas?this.props.cpicture.areas.map((item, i) => {
 									return (
 										<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
 											key={item.num}  
@@ -614,7 +575,7 @@ class EditPageModal extends React.Component {
 		this.setState({
 			cpicture:this.props.cpicture
 		})
-		console.log("EditPageModal cpicture", this.state.cpicture)
+		console.log("EditPageModal cpicture", this.props.cpicture)
 	}, 500);
 
   }

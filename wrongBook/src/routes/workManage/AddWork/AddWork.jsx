@@ -18,22 +18,10 @@ const { Sider, Content,
 
 class WorkManage extends React.Component {
   constructor(props) {
-		super(props);
-    this.Ref = ref => {
-      this.refDom = ref
-		};
+	super(props);
 		this.showCropModel=this.showCropModel.bind(this);
-    this.state = {
-      nowclassid: '',
-      currentSudent:{},
-      questions:[],
-      file: [],
-      chechBtnLoaing:false,
-      classLoding:true,
-      sdate:'',
-      edate:'',
-      defaultDate:moment().locale('zh-cn').format('YYYY-MM-DD'),
-			excelMatching:false,
+    	this.state = {
+    
 			test:{
 				"areas": [
 					{
@@ -240,28 +228,20 @@ class WorkManage extends React.Component {
 			workPages:[
 				 
 			],
-			showModal:false,
+			showEditPictureModal:false,
 			cpicture:{},
 			visible:false,
-			scwidth:720,
-			cutLeft:0,cutTop:0,cutWidth:100,cutHeight:100,
-			showGifTip:false,
-			originalPos:{
-				mouseX:0,
-				mouseY:0
-			},
-			rectMinSize:10,
-			cropIndex:-1,
+			
 			cpindex:0,
 			commitWorking:false,
 			work:{
 				name:'未命名作业',
 				classes:[],
 				subjectId:1,
-				pages:[]
+				pages:[],
+				
 			},
 			editWorkName:false,
-			pageMarks:'',
 			editWorkName:false,
 			workNameFail:false,
 			lookQuestion:false,
@@ -281,460 +261,77 @@ class WorkManage extends React.Component {
 			ischecked:false,
 			drapQuetionIndex:[],
 			partActiveIndex:-1,
-			
-			imageData:{
-				displayImage:{
-					"width": 720,
-					"height": 959.5,
-					"left": 0,
-					"top": 0
-				}
-			},
-			originalItemArea: {
-				left: 0,
-				top: 0
-			  },
-			  mouseIsDown:false
+			mouseIsDown:false
     }
 	}
 
-	cropItemClick (index,e) {
-		this.setState({
-			cropIndex:index
-		})
-		console.log('click item', this.state.cpicture.areas[index])
-		let area = this.state.cpicture.areas[index].area
-		this.toShowCropBox(area.x / 720 * this.state.scwidth, area.y / 720 * this.state.scwidth, area.width / 720 * this.state.scwidth, area.height / 720 * this.state.scwidth)
-
-		// this.state.cpicture.areas[index]['selected']=!this.state.cpicture.areas[index]['selected']
-		console.log('this.state.cpicture: ', this.state.cpicture);
-		// e.stopPropagation()
-	}
-	_cutTouchStart (e, id) {
-        console.log("WorkManage -> _cutTouchStart -> e, id", e, id)
-		if (!id) return
-		let currentX = e.touches[0].clientX
-		let currentY = e.touches[0].clientY
-		if (id === 4) {
-			this._flag_cut_touch = true
-			this._flag_img_endtouch = true
-			this.CUT_START = {
-				width: this.state.cutWidth,
-				height: this.state.cutHeight,
-				x: currentX,
-				y: currentY,
-				corner: 4
-			}
-		} else if (id === 3) {
-			this._flag_cut_touch = true
-			this._flag_img_endtouch = true
-			this.CUT_START = {
-				width: this.state.cutWidth,
-				height: this.state.cutHeight,
-				x: currentX,
-				y: currentY,
-				cutTop: this.state.cutTop,
-				cutLeft: this.state.cutLeft,
-				corner: 3
-			}
-		} else if (id === 2) {
-			this._flag_cut_touch = true
-			this._flag_img_endtouch = true
-			this.CUT_START = {
-				width: this.state.cutWidth,
-				height: this.state.cutHeight,
-				cutTop: this.state.cutTop,
-				cutLeft: this.state.cutLeft,
-				x: currentX,
-				y: currentY,
-				corner: 2
-			}
-		} else if (id === 1) {
-			this._flag_cut_touch = true
-			this._flag_img_endtouch = true
-			this.CUT_START = {
-				width: this.state.cutWidth,
-				height: this.state.cutHeight,
-				cutTop: this.state.cutTop,
-				cutLeft: this.state.cutLeft,
-				x: currentX,
-				y: currentY,
-				corner: 1
-			}
-		}
-		e.stopPropagation()
-	}
-	_rectTouchStart (e) {
-		if (e.target.id == 'delete_9527') return
-		this.setState({mouseIsDown:true})
-        var elm = document.querySelector('#rect_item9527');
-		console.log(elm.offsetLeft, elm.offsetTop);
-		this.setState({
-			originalPos:{
-				mouseX : e.clientX,
-				mouseY : e.clientY
-			},
-			originalItemArea:{
-				left:elm.offsetLeft,
-				top:elm.offsetTop
-			}
-		})
-		//let _this = this
-		// var query = wx.createSelectorQuery()
-		// query.select('#rect_item9527').boundingClientRect()
-		// query.exec(function (res) {
-		//   console.log(e)
-		//   _this.state.originalItemArea.left = res[0].left
-		//   _this.state.originalItemArea.top = res[0].top
-		// })
-	}
-	_cutTouchMove (e, n) {
-        console.log("WorkManage -> _cutTouchMove -> e, n", e, n)
-		let width = this.state.cutWidth
-		let height = this.state.cutHeight
-		let cutTop = this.state.cutTop
-		let cutLeft = this.state.cutLeft
-		height = this.CUT_START.height + ((this.CUT_START.corner > 1 && this.CUT_START.corner < 4 ? 1 : -1) * (this.CUT_START.y - e.touches[0].clientY))
-		switch (this.CUT_START.corner) {
-			case 1:
-				width = this.CUT_START.width + this.CUT_START.x - e.touches[0].clientX
-				cutLeft = this.CUT_START.cutLeft - (width - this.CUT_START.width)
-				break
-			case 2:
-				width = this.CUT_START.width + this.CUT_START.x - e.touches[0].clientX
-				cutTop = this.CUT_START.cutTop - (height - this.CUT_START.height)
-				cutLeft = this.CUT_START.cutLeft - (width - this.CUT_START.width)
-				break
-			case 3:
-				width = this.CUT_START.width - this.CUT_START.x + e.touches[0].clientX
-				cutTop = this.CUT_START.cutTop - (height - this.CUT_START.height)
-				break
-			case 4:
-				width = this.CUT_START.width - this.CUT_START.x + e.touches[0].clientX
-				break
-		}
-		if (width < this.state.rectMinSize) {
-			width = this.state.rectMinSize
-		}
-		if (height < this.state.rectMinSize) {
-			height = this.state.rectMinSize
-		}
 	
-		let _height = this.state.imageData.displayImage.height - this.state.cutTop
-		console.log(height , _height,this.CUT_START.corner)
-		if (height >= _height) {
-			height = _height
-		}
-		if (height >= this.state.imageData.displayImage.height) {
-			height = this.state.imageData.displayImage.height
-		}
-		let _width = this.state.imageData.displayImage.width - this.state.cutLeft
-		if (width >= _width) {
-			width = _width
-		}
-
 	
-		this.setState({
-			cutWidth : width,
-			cutLeft : cutLeft,
-			cutHeight : height,
-			cutTop : cutTop
-		})
-		
-	}
-	_rectMove (e, index) {
-		// 移动题目框
-        console.log("this.state.mouseIsDown", this.state.mouseIsDown)
-		if(!this.state.mouseIsDown)return
-		let nl =e.clientX - (this.state.originalPos.mouseX - this.state.originalItemArea.left) - 0//this.state.imageData.displayImage.left
-		let nt =e.clientY - (this.state.originalPos.mouseY - this.state.originalItemArea.top) - 0//parseInt(this.state.imageData.displayImage.top)
-		let iw = this.state.imageData.displayImage.width
-		let ih = this.state.imageData.displayImage.height
-		const rw = this.state.cutWidth
-		if (rw >= iw) {
-			this.state.cutWidth = iw
-			
-		}
-		const rh = this.state.cutHeight
-		if (nl <= 0) {
-			nl = 0
-		}
-		if (nt <= 0) {
-			nt = 0
-		}
-		let _l = iw - rw
-		if (nl >= _l) {
-			nl = _l
-		}
-		if (nt >= ih - rh) {
-			nt = ih - rh
-		}
-
-		// this.state.cutLeft = nl
-		// this.state.cutTop = nt
-		this.setState({
-			cutLeft:nl,
-			cutTop:nt
-		})
-	}
-	getQnCropUrl () {
-		let _width = this.state.cutWidth / this.state.imageData.displayImage.width * this.state.cpicture.width
-		let _height = this.state.cutHeight / this.state.imageData.displayImage.height * this.state.cpicture.height
-		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.state.cpicture.width
-		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.state.cpicture.height
-		let purl = this.state.cpicture.serUrl || 'noqniu_img'
-		let _str = ''
-		if (purl.indexOf('?imageMogr2') === -1) {
-			_str = '?imageMogr2'
-		}
-		if (_x < 0) _x = 0
-		if (_y < 0) _y = 0
-		return `${purl}${_str}/crop/!${_width.toFixed(2)}x${_height.toFixed(2)}a${_x.toFixed(2)}a${_y.toFixed(2)}`
-	}
-	_deleteCropItem () {
-		if (this.state.cpicture.areas[this.state.cropIndex].addRect) {
-			this.state.cpicture.areas.splice(this.state.cropIndex, 1)
-			// 新增题目支持删除
-		} else {
-			this.state.cpicture.areas[this.state.cropIndex].selected = false
-		}
-
-		this.state.showCropBox = false
-		this.state.cropIndex = -1
-	}
-	saveCropItem (callback) {
-		if (this.state.cropIndex < 0) return
-        console.log("WorkManage -> saveCropItem -> this.state.cropIndex", this.state.cropIndex)
-		this.state.showCropBox = false
-		let _x = this.state.cutLeft / this.state.scwidth * 720
-		let _y = this.state.cutTop / this.state.scwidth * 720
-		let _width = this.state.cutWidth / this.state.scwidth * 720
-		let _height = this.state.cutHeight / this.state.scwidth * 720
-		let _imgUrl = this.getQnCropUrl()
-
-		let _area = {
-			x: _x,
-			y: _y,
-			height: _height,
-			width: _width,
-			rotate: 0,
-			imgUrl: _imgUrl,
-			index: 999
-		}
-
-		let _index = this.state.cropIndex
-		this.state.cpicture.areas[_index].area = _area
-        console.log("WorkManage -> saveCropItem -> this.state.cpicture", this.state.cpicture,_index)
-		
-		this.setState({
-			cpicture:this.state.cpicture,
-			cropIndex:-1
-		})
-		console.log('img crop saved', this.state.cropIndex, _imgUrl)
-		if (callback) callback()
-	}
-	needSave () {
-		return this.state.cropIndex > -1
-	}
-	reset () {
-		this.state.cropIndex = -1
-		this.showCropBox = false
-		this.state.showGifTip = true
-	}
-	isCropItem (x, y) {
-		let index = -1
-		let _dism = this.state.imageData.displayImage
-		let _x = x - _dism.left
-		let _y = y - _dism.top
-		for (let i = 0; i < this.state.cpicture.areas.length; i++) {
-			const ele = this.state.cpicture.areas[i].area
-			let minx = (ele.x) / 720 * this.state.scwidth
-			let maxx = (ele.x + ele.width) / 720 * this.state.scwidth
-
-			let miny = (ele.y) / 720 * this.state.scwidth
-			let maxy = (ele.y + ele.height) / 720 * this.state.scwidth
-			if (_x >= minx && _x <= maxx && _y >= miny && _y <= maxy) {
-				console.log('this click index', i)
-				index = i
-			}
-		}
-		return index
-	}
-	_cropMaskClick (e) {
-		console.log("WorkManage -> _cropMaskClick -> e", e.clientY)
-		//return
-		//this.saveCropItem()
-		// if (this.state.cpicture.areas.length > 0) {
-		// 	let _index = this.isCropItem(e.clientX, e.clientY)
-		// 	if (_index > -1) {
-		// 		this.showCropBox = false
-		// 		this.cropItemClick(_index)
-		// 	}
-		// }
-		// e.stopPropagation()
-	}
-	AddCropData () {
-		let cropSize={
-			height: 150,
-			width: 150
-		}
-		let iw=this.state.imageData.displayImage.width
-		let ih=this.state.imageData.displayImage.height
-		if(cropSize.width>iw) cropSize.width=iw
-		if(cropSize.height>ih) cropSize.height=ih
-		return {
-			cx: this.state.imageData.displayImage.width / 2 - cropSize.width / 2,
-			cy: this.state.imageData.displayImage.height / 2 - cropSize.height / 2,
-			cwidth: cropSize.width,
-			cheight: cropSize.height
-		}
-	}
-	checkCanAddCrop (_x, _y, _width, _height) {
-		if (this.state.cpicture.areas.length === 0) return true
-		let lastCrop = this.state.cpicture.areas[this.state.cpicture.areas.length - 1].area
-		if (lastCrop.x === _x && lastCrop.y === _y && lastCrop.width === _width && lastCrop.height === _height) {
-			// 应该做循环判定？
-			return false
-		} else {
-			return true
-		}
-	}
-	toShowCropBox (cx, cy, cw, ch) {
-		this.setState({
-			cutLeft : cx,
-			cutTop : cy,
-			cutWidth : cw,
-			cutHeight : ch,
-			showCropBox : true
-		})
-	}
-	newCropItem () {
-		// 还有优化空间...
-		if (this.state.cropIndex > -1) {
-			// 先保存上一个框
-			this.saveCropItem()
-		}
-		this.state.showGifTip = false
-		const {cx, cy, cwidth, cheight} = this.AddCropData()
-		let _x = cx / this.state.scwidth * 720
-		let _y = cy / this.state.scwidth * 720
-		let _width = cwidth / this.state.scwidth * 720
-		let _height = cheight / this.state.scwidth * 720
-		if (!this.checkCanAddCrop(_x, _y, _width, _height)) {
-			this.toShowCropBox(cx, cy, cwidth, cheight)
-			this.state.cropIndex = this.state.cpicture.areas.length - 1
-			return
-		}
-		// 新增一个框
-		this.toShowCropBox(cx, cy, cwidth, cheight)
-		this.state.cropIndex = this.state.cpicture.areas.length
-
-		let _area = {
-			x: _x,
-			y: _y,
-			height: _height,
-			width: _width,
-			rotate: 0
-		}
-		this.state.cpicture.areas.push({
-			area: _area,
-			mark: 0,
-			num: this.state.cpicture.areas.length,
-			pageid: this.state.cpicture.pageId,
-			type: 0,
-			selected: true,
-			addRect: true
-		})
-
-		console.log('new crop', this.state.cutTop, this.state.imageData)
-	}
   
-  onEditFinish=()=>{
-		if(!this.state.work.classes||!this.state.work.classes.length) {
-			message.destroy()
-			message.warn('请选择一个班级！')
-		}
-		this.setState({
-			commitWorking:true
-		})
-		store.set('workdata', this.state.workPages);
-		setTimeout(() => {
-			console.log('store.getworkdata): ', store.get('workdata'));
-			this.props.dispatch(routerRedux.push('/workManage'))
-		}, 1000);
-    
-  }
-  selectStudentFun(student){
-    this.setState({
-      currentSudent:student
-    })
-  }
+  
 
-  renderSubjectList() {
-    let subList = this.props.state.schoolSubjectList;
-		const children = [];
-    for (let i = 0; i < subList.length; i++) {
-      let item = subList[i]
-      children.push(	<Option key={i} value={item.k}>{item.v}</Option>);
-    }
-		return (
-      <>
-        <Select
-          style={{ width: 90,marginRight:20 }}
-          suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
-          optionFilterProp="children"
-          placeholder="学科"
-          value={this.props.state.schoolSubId}
-          onChange={(value) => {
-              this.props.dispatch({
-                type:"classModel/classSubjectData",
-                payload:{
-                  list:subList,
-                  value
-                }
-              })
-            }}>
-          {children}
-        </Select>
-      </>
-    )
-  }
-  renderClassList() {
-		let classes = this.props.state.workPageClass.list;
-		const children = [];
-    for (let i = 0; i < classes.length; i++) {
-      let item = classes[i]
-      children.push(	<Option key={i} value={item.classId}>{item.className}</Option>);
-    }
-		return (
-      <>
-        <Select
-					mode="multiple"
-          style={{ width: 200,marginRight:20 }}
-          suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
-					optionFilterProp="children"
-					value={this.props.state.workPageClass.value}
-          placeholder="请选择班级"
-          onChange={(value) => {
-						console.log('value: ', value);
-              this.props.dispatch({
-                type:"workManage/workPageClass",
-                payload:{
-                  list:classes,
-                  value
-                }
-							})
-							this.state.work.classes=value
-							this.setState({
-								work:this.state.work
-							})
-							console.log(this.state.work)
-            }}>
-          {children}
-        </Select>
-      </>
-    )
-  }
+	renderSchoolSubjectList() {
+		let subList = this.props.state.schoolSubjectList;
+			const children = [];
+		for (let i = 0; i < subList.length; i++) {
+		let item = subList[i]
+		children.push(	<Option key={i} value={item.k}>{item.v}</Option>);
+		}
+			return (
+		<>
+			<Select
+			style={{ width: 90,marginRight:20 }}
+			suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
+			optionFilterProp="children"
+			placeholder="学科"
+			value={this.props.state.schoolSubId}
+			onChange={(value) => {
+				this.props.dispatch({
+					type:"workManage/schoolSubId",
+					payload:value
+				})
+				}}>
+			{children}
+			</Select>
+		</>
+		)
+	}
+	renderClassList() {
+			let classes = this.props.state.workPageClass.list;
+			const children = [];
+		for (let i = 0; i < classes.length; i++) {
+		let item = classes[i]
+		children.push(	<Option key={i} value={item.classId}>{item.className}</Option>);
+		}
+			return (
+		<>
+			<Select
+						mode="multiple"
+			style={{ width: 200,marginRight:20 }}
+			suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
+						optionFilterProp="children"
+						value={this.props.state.workPageClass.value}
+			placeholder="请选择班级"
+			onChange={(value) => {
+							console.log('value: ', value);
+				this.props.dispatch({
+					type:"workManage/workPageClass",
+					payload:{
+					list:classes,
+					value
+					}
+								})
+								this.state.work.classes=value
+								this.setState({
+									work:this.state.work
+								})
+								console.log(this.state.work)
+				}}>
+			{children}
+			</Select>
+		</>
+		)
+	}
 
 
 	addImgBtnClick(){
@@ -746,19 +343,17 @@ class WorkManage extends React.Component {
 		console.log('workPages: ', this.state.workPages);
 	}
 	showCropModel(p,i){
-		console.log('p: ', p);
 		this.setState({
 			cpicture:p,
-			showModal:true,
-			cpindex:i,
-			pageMarks:''
+			showEditPictureModal:true,
+			cpindex:i
 		})
 	}
 	checkCpicture(){
 		let _pic=this.state.workPages[this.state.cpindex]
 		this.state.workPages.splice(this.state.cpindex,1,this.state.cpicture)
 		this.setState({
-			showModal:false,
+			showEditPictureModal:false,
 			workPages:this.state.workPages
 		})
 		console.log('this.state.cpindex,1,this.state.cpicture: ', this.state.cpindex,1,this.state.cpicture);
@@ -770,15 +365,9 @@ class WorkManage extends React.Component {
 		this.setState({
 			cpicture:this.state.cpicture,
 			workPages:this.state.workPages,
-			showModal:false
+			showEditPictureModal:false
 		})
 		console.log('e: ', e,this.state.cpicture,this.state.workPages);
-	}
-	upSection(){
-		this.setState({
-			workPages: this.state.workPages,
-		})
-		console.log('workPages: ', this.state.workPages);
 	}
 
 	initWorkName(subname){
@@ -840,7 +429,36 @@ class WorkManage extends React.Component {
 		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
 	}
 
-
+	onEditFinish=()=>{
+		this.state.work.pages=this.state.workPages
+		this.state.work.partQuestions=this.state.partQuestions
+		this.setState({
+			work:this.state.work
+		})
+		console.log('this.state.work',this.state.work,this.state.partQuestions,this.state.workPages)
+		let msg=''
+		  if(!this.state.work.subjectId) {
+			  msg='请选择一个学科！'
+		  }
+		  if(!this.state.work.classes||!this.state.work.classes.length) {
+			  msg='请选择一个班级！'
+		  }
+		  if(msg){
+			  message.destroy()
+			  message.warn(msg)
+			  return
+		  }
+		  // this.setState({
+		  // 	commitWorking:true
+		  // })
+		  return
+		  store.set('workdata', this.state.workPages);
+		  setTimeout(() => {
+			  console.log('store.getworkdata): ', store.get('workdata'));
+			  this.props.dispatch(routerRedux.push('/workManage'))
+		  }, 1000);
+	  
+	}
   	render() {
 
 		let pquestions=this.state.partQuestions.questions
@@ -872,9 +490,10 @@ class WorkManage extends React.Component {
 																			},
 																			editWorkName:false,workNameFail:false
 																		})
-																		console.log('this.state.work: ', this.state.work);
+																		
 																	}
 																}} 
+																style={{width:250}}
 																defaultValue={this.state.work.name} 
 																onKeyUp={(e)=>{
 																	this.setState({workNameFail:e.target.value.toString().length?false:true})
@@ -887,7 +506,7 @@ class WorkManage extends React.Component {
 											</h4>
 											<div style={{marginTop:14}}>
 												班级：{this.renderClassList()}
-												学科：{this.renderSubjectList()}
+												学科：{this.renderSchoolSubjectList()}
 											</div>
 										</div>
 						<div>
@@ -896,7 +515,7 @@ class WorkManage extends React.Component {
 									this.state.workPages.map((item, i) => {
 										return (
 											<div key={item.pageId}  className={style.uploadbox}>
-												<Upload getFun={this.showCropModel}  picture={item} index={i}
+												<Upload lookPicture={this.showCropModel}  picture={item} index={i}
 													deletePictureHander={(p,index)=>{
 														console.log('p,index: ', p,index);
 														this.deletePictureBonfirm(p,index)
@@ -937,97 +556,99 @@ class WorkManage extends React.Component {
 									})
 								}}
 						>显示试题</Checkbox>
-						<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14}} type='primary'>
+						<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14,position:'absolute'}} type='primary'>
 							发布作业
 						</Button>
 
 					</div>
 					<Layout style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
 					<Sider className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
-						<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
-							拖动题目调整顺序
-						</div>
-						<div className={style.que_group}>
-								{
-									pparts&&pparts.length?pparts.map((_part,p)=>{
-										return(
-											<div style={{marginTop:10}}  className={style.group_box} key={p} 
-												onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
-												onDragLeave={(e)=>{
-													this.setState({
-														partActiveIndex:-1
-													})
-												}}
-												onDragOver={(e)=>{this.dragOver(e,p)}}>
-												{this.state.editPartNameIndex===p&&this.state.editPartName?
-													<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
-														style={{width:100}} 
-														onBlur={(e)=>{
-															this.state.partQuestions.part[p].name=e.target.value
-															this.setState({
-																editPartNameIndex:-1,
-																editPartName:false,
-																partQuestions:this.state.partQuestions
-															})
-															
-															}} 
-
-															defaultValue={_part.name}
-													/>
-													:
-													<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
-														{_part.name}
-														<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
-															onClick={(e)=>{
+						<div className={style.sider_in}>
+							<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
+								拖动题目调整顺序
+							</div>
+							<div className={style.que_group}>
+									{
+										pparts&&pparts.length?pparts.map((_part,p)=>{
+											return(
+												<div style={{marginTop:10}}  className={style.group_box} key={p} 
+													onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
+													onDragLeave={(e)=>{
+														this.setState({
+															partActiveIndex:-1
+														})
+													}}
+													onDragOver={(e)=>{this.dragOver(e,p)}}>
+													{this.state.editPartNameIndex===p&&this.state.editPartName?
+														<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
+															style={{width:100}} 
+															onBlur={(e)=>{
+																this.state.partQuestions.part[p].name=e.target.value
 																this.setState({
-																	editPartNameIndex:p,
-																	editPartName:true
-																})
-															}}
-													/>
-													<Popconfirm placement="top" 
-															title={'确定要删除该题组吗？'} 
-															onConfirm={(e)=>{
-																this.state.partQuestions.part.splice(p,1)
-																this.setState({
+																	editPartNameIndex:-1,
+																	editPartName:false,
 																	partQuestions:this.state.partQuestions
 																})
-															}} 
-															okText="确定" 		
-															cancelText="取消"
-														>
-														<div style={{position:'absolute',right:5,
-															color:" #84888E",fontSize:12}}>删除</div>
-													</Popconfirm>
-													
-												</div>
-											}
-											{
-												_part.questions&&_part.questions.length?
-												
-													<div style={{width:"100%",marginTop:15}}>
-													{_part.questions.map((area, k) => {
-														return(
-														<span key={k} className={style.que_span}>{k+1}</span>
-														)
-													})}
-												</div>
-												
+																
+																}} 
 
-												:''
-											}
-										</div>
-										)
-									}):''
-								} 
+																defaultValue={_part.name}
+														/>
+														:
+														<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
+															{_part.name}
+															<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
+																onClick={(e)=>{
+																	this.setState({
+																		editPartNameIndex:p,
+																		editPartName:true
+																	})
+																}}
+														/>
+														<Popconfirm placement="top" 
+																title={'确定要删除该题组吗？'} 
+																onConfirm={(e)=>{
+																	this.state.partQuestions.part.splice(p,1)
+																	this.setState({
+																		partQuestions:this.state.partQuestions
+																	})
+																}} 
+																okText="确定" 		
+																cancelText="取消"
+															>
+															<div style={{position:'absolute',right:5,
+																color:" #84888E",fontSize:12}}>删除</div>
+														</Popconfirm>
+														
+													</div>
+												}
+												{
+													_part.questions&&_part.questions.length?
+													
+														<div style={{width:"100%",marginTop:15}}>
+														{_part.questions.map((area, k) => {
+															return(
+															<span key={k} className={style.que_span}>{k+1}</span>
+															)
+														})}
+													</div>
+													
+
+													:''
+												}
+											</div>
+											)
+										}):''
+									} 
+							</div>
+							<Button type='primary'
+								style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
+								onClick={()=>{
+									this.addPart()
+								}}
+								>添加题组	
+							</Button>
 						</div>
-						<Button type='primary'
-							style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
-							onClick={()=>{
-								this.addPart()
-							}}
-							>添加题组	
-						</Button>
 					</Sider>
 					<Content className={style._box} style={{ position: 'relative',padding:'20px',background:'#fff' }}  >
 							<div className={style.content} >
@@ -1142,13 +763,13 @@ class WorkManage extends React.Component {
 				</div>
 				
 				<EditPageModal 
-					hideModalHander={()=>{this.setState({showModal:false})}} 
-					cpicture={this.state.cpicture} visible={this.state.showModal}
+					hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
+					cpicture={this.state.cpicture} visible={this.state.showEditPictureModal}
 					confirmPicture={(p)=>{
 						this.state.workPages.splice(this.state.cpindex,1)
 						this.setState({
 							workPages:this.state.workPages,
-							showModal:false
+							showEditPictureModal:false
 						})
 						console.log('this.state.workPages',this.state.workPages)
 					}}
@@ -1158,36 +779,36 @@ class WorkManage extends React.Component {
   }
 
   componentDidMount() {
-		setTimeout(() => {
-			let partQuestions=this.state.partQuestions
-			let array=[this.state.test,this.state.test1]
-			// this.setState({
-			// 	workPages:[this.state.test,this.state.test1]
-			// })
-			this.setState({
-					workPages:[this.state.test]
-				})
-			console.log('works',this.state.workPages)
-			let _arr=[
-				
-			]
-			for (let index = 0; index < array.length; index++) {
-				const element = array[index]
-				if(element.areas.length){
-				
-					for (let j = 0; j < element.areas.length; j++) {
-						_arr.push(element.areas[j])
-						
-					}
+	setTimeout(() => {
+		let partQuestions=this.state.partQuestions
+		let array=[this.state.test,this.state.test1]
+		// this.setState({
+		// 	workPages:[this.state.test,this.state.test1]
+		// })
+		this.setState({
+				workPages:[this.state.test]
+			})
+		console.log('works',this.state.workPages)
+		let _arr=[
+			
+		]
+		for (let index = 0; index < array.length; index++) {
+			const element = array[index]
+			if(element.areas.length){
+			
+				for (let j = 0; j < element.areas.length; j++) {
+					_arr.push(element.areas[j])
+					
 				}
 			}
-			partQuestions.questions=_arr
+		}
+		partQuestions.questions=_arr
 
-			this.setState({
-				partQuestions:partQuestions
-			})
-			console.log('partQuestions: ', this.state.partQuestions);
-		}, 100);
+		this.setState({
+			partQuestions:partQuestions
+		})
+		console.log('partQuestions: ', this.state.partQuestions);
+	}, 100);
     
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
@@ -1198,8 +819,14 @@ class WorkManage extends React.Component {
     dispatch({
       type: 'workManage/getWorkPageClass',
       payload: data
-    }).then((classlist) => {
-      
+    }).then((classData) => {
+		this.setState({
+			work:{
+				...this.state.work,
+				classes:classData.value
+			}
+		})
+		console.log('classlist',classData,this.state.work)
     })
     dispatch({
 			type: 'workManage/getSchoolSubjectList'
@@ -1213,13 +840,6 @@ class WorkManage extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.dispatch({
-      type: 'classModel/classSubjectData',
-      payload: {
-        list:[],
-        value:''
-      }
-    })
   }
 
 
@@ -1231,14 +851,9 @@ export default connect((state) => ({
     ...state.report,
     ...state.classHome,
     ...state.homePage,
-    // ...state.temp,
     workPageClass:state.workManage.workPageClass,
-    getClassMembersFinish:state.classModel.getClassMembersFinish,
-    classStudentList:state.classModel.classStudentList,
     years: state.temp.years,
-    subList: state.temp.subList,
     schoolSubId:state.workManage.schoolSubId,
-    checkClassId:state.classModel.checkClassId,
     classSubjectData:state.classModel.classSubjectData,
     schoolSubjectList:state.workManage.schoolSubjectList
   }
