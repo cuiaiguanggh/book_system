@@ -33,3 +33,7 @@ export  function readExcelToJson(file,{complete}){
 		};
 		fileReader.readAsBinaryString(file);
 }
+
+export  function uploadIamge(file,{complete}){
+	
+}

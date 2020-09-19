@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Layout, Menu,Spin , Button, message,DatePicker, Select, Popover,Input, Icon, Popconfirm,Empty,Modal, Checkbox
 } from 'antd';
+import {ImageUploader} from '../../../utils/ImageUploader'
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
 import style from './AddWork.less';
@@ -226,8 +227,8 @@ class WorkManage extends React.Component {
 				"height": 3333
 			},
 			workPages:[
-				 
 			],
+				 
 			showEditPictureModal:false,
 			cpicture:{},
 			visible:false,
@@ -264,7 +265,18 @@ class WorkManage extends React.Component {
 			mouseIsDown:false,
 			hideTopContainer:false,
 			fixedWidth:'100%',
-			_boxWidth:''
+			_boxWidth:'',
+			picture:{
+				"areas": [],
+				"url": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
+				"serUrl": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
+				"_displayImage": {
+					"width": 720,
+					"height": 499.95,
+					"left": 0,
+					"top": 0
+				}
+			}
     }
 	}
 
@@ -336,15 +348,43 @@ class WorkManage extends React.Component {
 		)
 	}
 
-
-	addImgBtnClick(){
+	addImgBtnClick = file => {
 		let _arr=this.state.workPages
 		_arr.push(this.state.test)
 		this.setState({
 			workPages:_arr
 		})
 		console.log('workPages: ', this.state.workPages);
+		let image='local://'
+		
+		// this.props.dispatch({
+		// 	type:'workManage/uploadImage',
+		// 	payload:this.state.picture
+		// })
+
+		var reader = new FileReader();
+		//filses就是input[type=file]文件列表，files[0]就是第一个文件，这里就是将选择的第一个图片文件转化为base64的码
+		const { files } = file.target
+		reader.readAsDataURL(files[0]);
+		
+		reader.onload = ()=>{
+			//或者 e.target.result都是一样的，都是base64码
+			// let imgStr = reader.result.split(',')[1];
+			let a=reader.result
+			let imgStr=reader.result.substring(reader.result.indexOf(',/')+1)
+			console.log('需要上传的base64格式图片:' + imgStr);
+			this.setState({
+				picture:{
+					...this.state.picture,
+					base64:imgStr,
+					url:a
+				}
+			})
+			let _ImageUploader=new ImageUploader({picture:this.state.picture})
+			_ImageUploader.uploadQn(imgStr)
+		}
 	}
+
 	showCropModel(p,i){
 		this.setState({
 			cpicture:p,
@@ -525,6 +565,7 @@ class WorkManage extends React.Component {
 							学科：{this.renderSchoolSubjectList()}
 						</div>
 				</div>
+				<img src={this.state.picture.url} width={100} alt=""/>
 				<div>
 					<div className='clearfix'>
 							{
@@ -543,7 +584,18 @@ class WorkManage extends React.Component {
 							}
 						
 						<div className={style.uploadbox}>
-							<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
+							<div className={[style.uploadBtn,'cup'].join(' ')} 
+								
+							>
+							<input
+								type='file'
+								id='file'
+								accept='image/*'
+								title=''
+								onChange={this.addImgBtnClick}             
+							></input>
+							添加图片
+							</div>
 						</div>
 					</div>
 					<div style={{marginTop:32}}>

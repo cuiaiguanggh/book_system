@@ -48,6 +48,10 @@ export default {
 	},
 
 	effects: {
+		*uploadImage({ payload }, { put, select }){
+			let res = yield testPage();
+			console.log('res: ', res);
+		},
 		*testPage({ payload }, { put, select }){
 			let res = yield testPage();
 			console.log('res: ', res);
