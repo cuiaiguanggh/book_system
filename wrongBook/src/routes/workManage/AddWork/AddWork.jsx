@@ -261,7 +261,10 @@ class WorkManage extends React.Component {
 			ischecked:false,
 			drapQuetionIndex:[],
 			partActiveIndex:-1,
-			mouseIsDown:false
+			mouseIsDown:false,
+			hideTopContainer:false,
+			fixedWidth:'100%',
+			_boxWidth:''
     }
 	}
 
@@ -459,13 +462,56 @@ class WorkManage extends React.Component {
 		  }, 1000);
 	  
 	}
+	containetScroll(e) {
+		// if( e.currentTarget.scrollTop<=0){
+		// 	this.setState({
+		// 		scrollFlag:true
+		// 	})
+		// }
+
+		let _w=document.querySelector('#kacha_side').offsetWidth
+		let  scrollTop = e.currentTarget.scrollTop, 
+		elm =  document.querySelector('#_action_bar');
+		let _bool=(scrollTop>=elm.offsetTop)
+		console.error('...',scrollTop>=elm.offsetTop)
+		if(scrollTop>=elm.offsetTop){
+			this.setState({
+				hideTopContainer:true,
+				fixedWidth:`calc( 100% - ${_w}px )`,
+				_boxWidth:`calc( 100% - 200px )`,
+				orposition:elm.offsetTop
+			})
+		}else{
+			this.setState({
+				hideTopContainer:false,
+				fixedWidth:`100%`,
+				_boxWidth:''
+			})
+		}
+		
+	}
+	questionContainerScroll(e) {
+		// console.log("questionContainerScroll -> e.currentTarget.scrollTop<=0", e.currentTarget.scrollTop<=0)
+		// if( e.currentTarget.scrollTop<=0){
+		// 	this.setState({
+		// 		hideTopContainer:false,
+		// 		fixedWidth:`100%`,
+		// 		scrollFlag:false
+		// 	})
+		// }
+		
+		
+	}
+
   	render() {
 
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
 		// console.log('pparts: ', pparts,this.state.partQuestions);
 		return (
-		<div className={[style.page_box,"_position"].join(" ")}>
+		<div  className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
+			onScroll={this.containetScroll.bind(this)}
+		>
 					<div className={style.top_box}>
 						<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
 											<h4 style={{fontSize:20,height:40}} >
@@ -547,8 +593,9 @@ class WorkManage extends React.Component {
 							</div>
 					</div>
 				</div>
-				<div className={style.question_content}>
-					<div className={style._action_bar}>
+				<div className={style.question_content} >
+					<div id='_action_bar'></div>
+					<div className={style._action_bar}  style={{width:this.state.fixedWidth}}>
 							<Checkbox checked={this.state.lookQuestion}
 								onClick={()=>{
 									this.setState({
@@ -561,11 +608,11 @@ class WorkManage extends React.Component {
 						</Button>
 
 					</div>
-					<Layout style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
-					<Sider className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
+					<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
+					<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
 						<div className={style.sider_in}>
 							<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
-								拖动题目调整顺序
+								拖动题目调整分组
 							</div>
 							<div className={style.que_group}>
 									{
@@ -649,9 +696,13 @@ class WorkManage extends React.Component {
 								>添加题组	
 							</Button>
 						</div>
-					</Sider>
-					<Content className={style._box} style={{ position: 'relative',padding:'20px',background:'#fff' }}  >
-							<div className={style.content} >
+					</div>
+					<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}
+						onScroll={this.questionContainerScroll.bind(this)}
+					>
+							<div className={style.content} 
+								
+							>
 								<div>
 								{/* <div> 
 									<Popover placement="right"  trigger="hover" content={
@@ -758,8 +809,9 @@ class WorkManage extends React.Component {
 								
 								</div>
 						</div>
-					</Content>
-				</Layout>
+					</div>
+				
+					</div>
 				</div>
 				
 				<EditPageModal 

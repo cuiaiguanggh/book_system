@@ -768,6 +768,7 @@ class HomePageLeft extends Component {
         {/*  </div>*/}
         {/*</div>*/}
         <Sider
+          id='kacha_side'
           trigger={null}
           collapsible
           collapsed={this.state.collapsed}>

@@ -13,9 +13,9 @@ body,
 	max-width: 2000px;
 }
 
-:global(.HomePageFooter) {
+/* :global(.HomePageFooter) {
 	min-width: 1200px;
-}
+} */
 
 * {
 	font-family: 'MicrosoftYaHei';

@@ -24,6 +24,8 @@
 ._box{
     position: relative;
     width:100%;
+    padding:20px;
+    background:#fff,
 }
 .top_box{
     width: 100%;
@@ -107,12 +109,13 @@
   }
   .sider{
     overflow: auto;
-    width: 230px;
-    padding:14px;
-    padding-left: 30px;
-    padding-top: 20px;
+    width: 200px;
     // box-sizing: border-box;
+    display: inline-block;
     background: #FFFFFF;
+    padding: 14px;
+    box-sizing: border-box;
+    float: left;
     .sider_in{
       background: #FFFFFF;
       border: 1px solid #EEEEEE;
@@ -153,22 +156,41 @@
     width:100%;
     
   }
-  .page_box:global(._position1){
+  .page_box:global(._position){
+    position: relative;
     height: 100%;
-    overflow: hidden;
+    // overflow: hidden;
+    // .top_box{
+    //   display: none;
+    // }
     :global(.ant-layout){
       height: 100%;
     }
-    .question_content{
+    ._action_bar{
+      position: fixed;
+      top:62px;
       z-index: 999;
-      height: 100%;
-      position: absolute;
-      top:0;
-      ._box{
-        height: 100%;
-        box-sizing: border-box;
-        padding-bottom: 70px !important;
-      }
+    }
+    .sider{
+      position: fixed;
+      z-index: 999;
+      top:112px;
+    }
+    ._box{
+      padding-left: 200px;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+    .question_content{
+      // z-index: 999;
+      // height: 100%;
+      // position: fixed;
+      // top:65px;
+      // ._box{
+      //   height: 100%;
+      //   box-sizing: border-box;
+      //   padding-bottom: 140px !important;
+      // }
     }
   }
 
