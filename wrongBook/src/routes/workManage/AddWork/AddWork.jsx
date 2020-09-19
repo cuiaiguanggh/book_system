@@ -476,221 +476,202 @@ class WorkManage extends React.Component {
 	}
 
   	render() {
-
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
-		// console.log('pparts: ', pparts,this.state.partQuestions);
 		return (
-		<div  className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
+		<div className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
 			onScroll={this.containetScroll.bind(this)}
 		>
-					<div className={style.top_box}>
-						<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
-											<h4 style={{fontSize:20,height:40}} >
-												{
-													!this.state.editWorkName?
-													<>
-														{this.state.work.name}
-														<img style={{marginLeft:10}} className='cup' onClick={()=>{this.setState({editWorkName:true})}} src={require('../../images/edit.png')} alt=""/>
-													</>
-													:
-													<>
-														<Input autoFocus={true} type='text' 
-																onBlur={(e)=>{
+			<div className={style.top_box}>
+				<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
+						<h4 style={{fontSize:20,height:40}} >
+							{
+								!this.state.editWorkName?
+								<>
+									{this.state.work.name}
+									<img style={{marginLeft:10}} className='cup' onClick={()=>{this.setState({editWorkName:true})}} src={require('../../images/edit.png')} alt=""/>
+								</>
+								:
+								<>
+									<Input autoFocus={true} type='text' 
+											onBlur={(e)=>{
 
-																	if(!e.target.value.toString().length){
-																		this.setState({workNameFail:true})
-																	}else{
-																		this.setState({
-																			work:{
-																				...this.state.work,
-																				name:e.target.value
-																			},
-																			editWorkName:false,workNameFail:false
-																		})
-																		
-																	}
-																}} 
-																style={{width:250}}
-																defaultValue={this.state.work.name} 
-																onKeyUp={(e)=>{
-																	this.setState({workNameFail:e.target.value.toString().length?false:true})
-																}}
-															/>
-															{this.state.workNameFail?<div style={{color:'red',fontSize:12}}>作业名称不能为空.</div>:''}
-													</>
-
+												if(!e.target.value.toString().length){
+													this.setState({workNameFail:true})
+												}else{
+													this.setState({
+														work:{
+															...this.state.work,
+															name:e.target.value
+														},
+														editWorkName:false,workNameFail:false
+													})
+													
 												}
-											</h4>
-											<div style={{marginTop:14}}>
-												班级：{this.renderClassList()}
-												学科：{this.renderSchoolSubjectList()}
-											</div>
-										</div>
-						<div>
-						<div className='clearfix'>
-								{
-									this.state.workPages.map((item, i) => {
-										return (
-											<div key={item.pageId}  className={style.uploadbox}>
-												<Upload lookPicture={this.showCropModel}  picture={item} index={i}
-													deletePictureHander={(p,index)=>{
-														console.log('p,index: ', p,index);
-														this.deletePictureBonfirm(p,index)
-													}}
-												></Upload>
-											</div>
-											)
-										})
-								}
-							
-							<div className={style.uploadbox}>
-								<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
-							</div>
+											}} 
+											style={{width:250}}
+											defaultValue={this.state.work.name} 
+											onKeyUp={(e)=>{
+												this.setState({workNameFail:e.target.value.toString().length?false:true})
+											}}
+										/>
+										{this.state.workNameFail?<div style={{color:'red',fontSize:12}}>作业名称不能为空.</div>:''}
+								</>
+
+							}
+						</h4>
+						<div style={{marginTop:14}}>
+							班级：{this.renderClassList()}
+							学科：{this.renderSchoolSubjectList()}
 						</div>
-							<div style={{marginTop:32}}>
-								{
-									this.state.workPages.map((item, i) => {
-										return (
-											<div key={i} style={{marginTop:14}} className={style.queitem}>
-												<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.areas?item.areas.map((area, j) => {
-												return (
-												<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
-																)
-													}):''}
-											</div>
-											)
-										})
-								}
-							</div>
-					</div>
 				</div>
-				<div className={style.question_content} >
-					<div id='_action_bar'></div>
-					<div className={style._action_bar}  style={{width:this.state.fixedWidth}}>
-							<Checkbox checked={this.state.lookQuestion}
-								onClick={()=>{
-									this.setState({
-										lookQuestion:!this.state.lookQuestion
+				<div>
+					<div className='clearfix'>
+							{
+								this.state.workPages.map((item, i) => {
+									return (
+										<div key={item.pageId}  className={style.uploadbox}>
+											<Upload lookPicture={this.showCropModel}  picture={item} index={i}
+												deletePictureHander={(p,index)=>{
+													console.log('p,index: ', p,index);
+													this.deletePictureBonfirm(p,index)
+												}}
+											></Upload>
+										</div>
+										)
 									})
-								}}
-						>显示试题</Checkbox>
-						<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14,position:'absolute'}} type='primary'>
-							发布作业
-						</Button>
-
+							}
+						
+						<div className={style.uploadbox}>
+							<div className={[style.uploadBtn,'cup'].join(' ')} onClick={()=>this.addImgBtnClick()}>添加图片</div>
+						</div>
 					</div>
-					<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
-					<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
-						<div className={style.sider_in}>
-							<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
-								拖动题目调整分组
-							</div>
-							<div className={style.que_group}>
-									{
-										pparts&&pparts.length?pparts.map((_part,p)=>{
-											return(
-												<div style={{marginTop:10}}  className={style.group_box} key={p} 
-													onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
-													onDragLeave={(e)=>{
-														this.setState({
-															partActiveIndex:-1
-														})
-													}}
-													onDragOver={(e)=>{this.dragOver(e,p)}}>
-													{this.state.editPartNameIndex===p&&this.state.editPartName?
-														<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
-															style={{width:100}} 
-															onBlur={(e)=>{
-																this.state.partQuestions.part[p].name=e.target.value
-																this.setState({
-																	editPartNameIndex:-1,
-																	editPartName:false,
-																	partQuestions:this.state.partQuestions
-																})
-																
-																}} 
+					<div style={{marginTop:32}}>
+							{
+								this.state.workPages.map((item, i) => {
+									return (
+										<div key={i} style={{marginTop:14}} className={style.queitem}>
+											<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.areas?item.areas.map((area, j) => {
+											return (
+											<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
+															)
+												}):''}
+										</div>
+										)
+									})
+							}
+						</div>
+				</div>
+			</div>
+			{this.state.workPages.length==0?<div className={style._empty}>请点击左上角添加作业图片</div>:
+				<>
+					<div className={style.question_content} >
+						<div id='_action_bar'></div>
+						<div className={style._action_bar}  style={{width:this.state.fixedWidth}}>
+								<Checkbox checked={this.state.lookQuestion}
+									onClick={()=>{
+										this.setState({
+											lookQuestion:!this.state.lookQuestion
+										})
+									}}
+							>显示试题</Checkbox>
+							<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14,position:'absolute'}} type='primary'>
+								发布作业
+							</Button>
 
-																defaultValue={_part.name}
-														/>
-														:
-														<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
-															{_part.name}
-															<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
-																onClick={(e)=>{
+						</div>
+						<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
+						<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
+							<div className={style.sider_in}>
+								<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
+									拖动题目调整分组
+								</div>
+								<div className={style.que_group}>
+										{
+											pparts&&pparts.length?pparts.map((_part,p)=>{
+												return(
+													<div style={{marginTop:10}}  className={style.group_box} key={p} 
+														onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
+														onDragLeave={(e)=>{
+															this.setState({
+																partActiveIndex:-1
+															})
+														}}
+														onDragOver={(e)=>{this.dragOver(e,p)}}>
+														{this.state.editPartNameIndex===p&&this.state.editPartName?
+															<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
+																style={{width:100}} 
+																onBlur={(e)=>{
+																	this.state.partQuestions.part[p].name=e.target.value
 																	this.setState({
-																		editPartNameIndex:p,
-																		editPartName:true
-																	})
-																}}
-														/>
-														<Popconfirm placement="top" 
-																title={'确定要删除该题组吗？'} 
-																onConfirm={(e)=>{
-																	this.state.partQuestions.part.splice(p,1)
-																	this.setState({
+																		editPartNameIndex:-1,
+																		editPartName:false,
 																		partQuestions:this.state.partQuestions
 																	})
-																}} 
-																okText="确定" 		
-																cancelText="取消"
-															>
-															<div style={{position:'absolute',right:5,
-																color:" #84888E",fontSize:12}}>删除</div>
-														</Popconfirm>
-														
-													</div>
-												}
-												{
-													_part.questions&&_part.questions.length?
-													
-														<div style={{width:"100%",marginTop:15}}>
-														{_part.questions.map((area, k) => {
-															return(
-															<span key={k} className={style.que_span}>{k+1}</span>
-															)
-														})}
-													</div>
-													
+																	
+																	}} 
 
-													:''
-												}
-											</div>
-											)
-										}):''
-									} 
+																	defaultValue={_part.name}
+															/>
+															:
+															<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
+																{_part.name}
+																<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
+																	onClick={(e)=>{
+																		this.setState({
+																			editPartNameIndex:p,
+																			editPartName:true
+																		})
+																	}}
+															/>
+															<Popconfirm placement="top" 
+																	title={'确定要删除该题组吗？'} 
+																	onConfirm={(e)=>{
+																		this.state.partQuestions.part.splice(p,1)
+																		this.setState({
+																			partQuestions:this.state.partQuestions
+																		})
+																	}} 
+																	okText="确定" 		
+																	cancelText="取消"
+																>
+																<div style={{position:'absolute',right:5,
+																	color:" #84888E",fontSize:12}}>删除</div>
+															</Popconfirm>
+															
+														</div>
+													}
+													{
+														_part.questions&&_part.questions.length?
+														
+															<div style={{width:"100%",marginTop:15}}>
+															{_part.questions.map((area, k) => {
+																return(
+																<span key={k} className={style.que_span}>{k+1}</span>
+																)
+															})}
+														</div>
+														
+
+														:''
+													}
+												</div>
+												)
+											}):''
+										} 
+								</div>
+								<Button type='primary'
+									style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
+									onClick={()=>{
+										this.addPart()
+									}}
+									>添加题组	
+								</Button>
 							</div>
-							<Button type='primary'
-								style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
-								onClick={()=>{
-									this.addPart()
-								}}
-								>添加题组	
-							</Button>
 						</div>
-					</div>
-					<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}
-					
-					>
-							<div className={style.content} 
-								
-							>
-								<div>
-								{/* <div> 
-									<Popover placement="right"  trigger="hover" content={
-											pparts&&pparts.length?pparts.map((pt,n)=>{
-												return (
-														<Button className={style.partp} key={n} onClick={()=>{
-															this.removeQuestions(n)
-														}}>{pt.name}</Button>
-													)
-												}):'没有可选题组'
-											}>
-										<Button type='primary'>移动到题组</Button>
-									</Popover>
-		
-								</div> */}
-							  {
+						<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}>
+							<div className={style.content}>
+								{
 									pparts&&pparts.length?pparts.map((_part,p)=>{
 										return(
 											<div  className={style.group_box} key={p}>
@@ -725,7 +706,7 @@ class WorkManage extends React.Component {
 																		workPages: this.state.workPages,
 																	})
 																}}
-	
+
 																>
 
 														</Section>
@@ -768,37 +749,38 @@ class WorkManage extends React.Component {
 															})
 														}}
 
-	
+
 														>
 
 												</Section>
 												
 												</div>
 												)
-											})
-									}</>
-									:<div className={style._empty}>请点击左上角添加作业图片</div>}
-								
-								</div>
+									})
+								}</>
+								:''}
+							</div>
+						</div>
+					
 						</div>
 					</div>
+					
+					<EditPageModal 
+							hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
+							cpicture={this.state.cpicture} visible={this.state.showEditPictureModal}
+							confirmPicture={(p)=>{
+								this.state.workPages.splice(this.state.cpindex,1)
+								this.setState({
+									workPages:this.state.workPages,
+									showEditPictureModal:false
+								})
+								console.log('this.state.workPages',this.state.workPages)
+							}}
+						></EditPageModal>
 				
-					</div>
-				</div>
-				
-				<EditPageModal 
-					hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
-					cpicture={this.state.cpicture} visible={this.state.showEditPictureModal}
-					confirmPicture={(p)=>{
-						this.state.workPages.splice(this.state.cpindex,1)
-						this.setState({
-							workPages:this.state.workPages,
-							showEditPictureModal:false
-						})
-						console.log('this.state.workPages',this.state.workPages)
-					}}
-				></EditPageModal>
-				</div>
+				</>
+			}
+		</div>
     )
   }
 
@@ -810,7 +792,7 @@ class WorkManage extends React.Component {
 		// 	workPages:[this.state.test,this.state.test1]
 		// })
 		this.setState({
-				workPages:[this.state.test]
+				workPages:[]//[this.state.test]
 			})
 		console.log('works',this.state.workPages)
 		let _arr=[
