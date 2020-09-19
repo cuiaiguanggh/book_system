@@ -53,7 +53,7 @@ export default {
 			console.log('res: ', res);
 		},
 		*testPage({ payload }, { put, select }){
-			let res = yield testPage();
+			let res = yield testPage(payload);
 			console.log('res: ', res);
 		},
 		*getSchoolSubjectList({ payload }, { put, select }) {

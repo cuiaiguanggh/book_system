@@ -128,7 +128,7 @@ function toUploadQn (token,img) {
   // uploadImg(token,img)
   qiniuUploader.upload(img,(res)=>{
   console.log("toUploadQn -> res", res)
-
+  testPage(res.imageURL)
   })
 };
 

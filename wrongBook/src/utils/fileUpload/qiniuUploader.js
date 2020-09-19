@@ -99,7 +99,7 @@
         var dataObject = res
         dataObject=JSON.parse(dataObject)
         var imageUrl = config.qiniuImageURLPrefix + dataObject.key
-        dataObject.imageURL = imageUrl
+        dataObject.imageURL = imageUrl.replace('http:', 'https:')
         console.log('qiniu respose', dataObject, config.qiniuUploadToken)
         success(dataObject)
       }

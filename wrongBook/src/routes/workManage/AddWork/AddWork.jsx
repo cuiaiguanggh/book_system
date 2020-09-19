@@ -843,9 +843,9 @@ class WorkManage extends React.Component {
 		// this.setState({
 		// 	workPages:[this.state.test,this.state.test1]
 		// })
-		this.setState({
-				workPages:[]//[this.state.test]
-			})
+		// this.setState({
+		// 		workPages:[]//[this.state.test]
+		// 	})
 		console.log('works',this.state.workPages)
 		let _arr=[
 			
