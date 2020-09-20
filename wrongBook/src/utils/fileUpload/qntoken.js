@@ -22,7 +22,7 @@ export async function getQiniuToken (resolve) {
   let res=await getFileToken()
   console.error("getQiniuToken -> res", res)
   if (res.data.result === 0) {
-    options.uptoken = 'q_Za3hpOf8elLvd3scwkkC9-_UCm-mKrHcszjPGW:UPQPT43DkC3PNV6MgT9IUUC0K-0=:eyJzY29wZSI6ImhvbWV3b3JrIiwiZGVhZGxpbmUiOjE2MDA1NTAwNDd9'//res.data.data
+    options.uptoken = res.data.data
     qiniuUploader.init(options, function () {
       console.error("getQiniuToken -> res", 111)
       resolve(res)

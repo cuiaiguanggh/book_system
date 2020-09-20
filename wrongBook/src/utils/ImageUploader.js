@@ -132,3 +132,44 @@ function toUploadQn (token,img) {
   })
 };
 
+export function putb64(picBase,myUptoken) {
+  /*picUrl用来存储返回来的url*/
+  myUptoken='q_Za3hpOf8elLvd3scwkkC9-_UCm-mKrHcszjPGW:YP06068Mfaq-GtwAmVaTE1xjCTk=:eyJzY29wZSI6ImhvbWV3b3JrIiwiZGVhZGxpbmUiOjE2MDA1ODIzNzV9'
+  var picUrl;
+  /*把头部的data:image/png;base64,去掉。（注意：base64后面的逗号也去掉）*/
+  // picBase = picBase.substring(22);
+  /*通过base64编码字符流计算文件流大小函数*/
+  function fileSize(str) {
+        var fileSize;
+        if (str.indexOf('=') > 0) {
+              var indexOf = str.indexOf('=');
+              str = str.substring(0, indexOf); //把末尾的’=‘号去掉
+        }
+        fileSize = parseInt(str.length - (str.length / 8) * 2);
+        return fileSize;
+  }
+  /*把字符串转换成json*/
+  function strToJson(str) {
+        var json = eval('(' + str + ')');
+        return json;
+  }
+  var url = "http://up-z2.qiniup.com/putb64/" + fileSize(picBase)+'/key/'+window.btoa(`kacha/xcx/page/${new Date().getTime()}.jpg`);
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+              var keyText = xhr.responseText;
+              /*返回的key是字符串，需要装换成json*/
+              keyText = strToJson(keyText);
+              /* 前面是七牛云空间网址，keyText.key 是返回的图片文件名，这里得到的picUrl就是我们需要的图片地址了*/
+              picUrl = "https://homework.mizholdings.com/" + keyText.key
+              testPage(picUrl)
+              console.error("xhr.onreadystatechange -> picUrl", picUrl)
+              /*调用个人中页面的js来保存头像并刷新页面*/
+             
+        }
+  }
+  xhr.open("POST", url, false);
+  xhr.setRequestHeader("Content-Type", "application/octet-stream");
+  xhr.setRequestHeader("Authorization", "UpToken "+myUptoken);
+  xhr.send(picBase);
+}

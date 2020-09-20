@@ -2,7 +2,7 @@ import style from './Upload.less';
 import React, { useState, useEffect } from 'react';
 import { Modal, Spin} from 'antd';
 
-export default function Upload(props) {
+export default function Upload1(props) {
     const [uploadFinish, setUploadFinish] = useState(false);
     const [discernFail, setDiscernFail] = useState(false);
     useEffect(() => {

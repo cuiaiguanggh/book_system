@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,DatePicker, Select, Popover,Input, Icon, Popconfirm,Empty,Modal, Checkbox
+  Layout, Menu,Spin , Button, message,DatePicker, Upload,Select, Popover,Input, Icon, Popconfirm,Empty,Modal, Checkbox
 } from 'antd';
-import {ImageUploader} from '../../../utils/ImageUploader'
+import {ImageUploader,putb64} from '../../../utils/ImageUploader'
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
 import style from './AddWork.less';
 import moment from 'moment';
 import store from 'store';
-import Upload from '../Upload/Upload'
+import Upload1 from '../Upload/Upload'
 import Section from '../Section/Section'
 import EditPageModal from '../EditPageModal/EditPageModal'
 
@@ -276,7 +276,9 @@ class WorkManage extends React.Component {
 					"left": 0,
 					"top": 0
 				}
-			}
+			},
+			uploadToken:'',
+			fileKey:''
     }
 	}
 
@@ -373,15 +375,16 @@ class WorkManage extends React.Component {
 			let a=reader.result
 			let imgStr=reader.result.substring(reader.result.indexOf(',/')+1)
 			console.log('需要上传的base64格式图片:' + imgStr);
-			this.setState({
-				picture:{
-					...this.state.picture,
-					base64:imgStr,
-					url:a
-				}
-			})
-			let _ImageUploader=new ImageUploader({picture:this.state.picture})
-			_ImageUploader.uploadQn(imgStr)
+			// this.setState({
+			// 	picture:{
+			// 		...this.state.picture,
+			// 		base64:imgStr,
+			// 		url:a
+			// 	}
+			// })
+			// let _ImageUploader=new ImageUploader({picture:this.state.picture})
+			// _ImageUploader.uploadQn(imgStr)
+			putb64(imgStr,1)
 		}
 	}
 
@@ -514,7 +517,39 @@ class WorkManage extends React.Component {
 		})
 		
 	}
-
+	fetchUploadToken = () => {
+		const { dispatch } = this.props;
+		// dispatch({
+		//   type: 'blog/getUploadToken',
+		//   payload: {
+		//   },
+		//   callback: (res) => {
+			
+		//   }
+		// });
+		this.setState({
+			uploadToken: '',
+			fileKey: Date.now() + Math.floor(Math.random()*(999999-100000)+100000)+1
+		  })
+	  }
+	  getUploadToken = () => {
+		return {
+		  token : 'q_Za3hpOf8elLvd3scwkkC9-_UCm-mKrHcszjPGW:YP06068Mfaq-GtwAmVaTE1xjCTk=:eyJzY29wZSI6ImhvbWV3b3JrIiwiZGVhZGxpbmUiOjE2MDA1ODIzNzV9',//this.state.uploadToken,
+		  key : Date.now() + Math.floor(Math.random()*(999999-100000)+100000)+1
+		}
+	  }
+	  beforeUpload(file) {
+		return true;
+	  }
+	  handleUploadChange = info => {
+		// const { form } = this.props;
+		if(info.file.status === 'done'){
+		  const imageKey = info.file.response.key
+		  const uploadUrl = "http://cdn.yubuyun.com/"+imageKey;
+    		console.error("uploadUrl", uploadUrl)
+		//   form.setFieldsValue({cover:uploadUrl}); // 放到输入框中展示
+		}
+	  }
   	render() {
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
@@ -572,12 +607,12 @@ class WorkManage extends React.Component {
 								this.state.workPages.map((item, i) => {
 									return (
 										<div key={item.pageId}  className={style.uploadbox}>
-											<Upload lookPicture={this.showCropModel}  picture={item} index={i}
+											<Upload1 lookPicture={this.showCropModel}  picture={item} index={i}
 												deletePictureHander={(p,index)=>{
 													console.log('p,index: ', p,index);
 													this.deletePictureBonfirm(p,index)
 												}}
-											></Upload>
+											></Upload1>
 										</div>
 										)
 									})
@@ -596,6 +631,19 @@ class WorkManage extends React.Component {
 							></input>
 							添加图片
 							</div>
+						</div>
+						<div className={style.uploadbox}>
+						<Upload
+							name= 'file'
+							action= 'http://up-z2.qiniup.com'
+							data={this.getUploadToken}
+							beforeUpload={this.beforeUpload.bind(this)}
+							onChange={this.handleUploadChange}
+							>
+							<Button>
+							Click to Upload
+							</Button>
+						</Upload>
 						</div>
 					</div>
 					<div style={{marginTop:32}}>
