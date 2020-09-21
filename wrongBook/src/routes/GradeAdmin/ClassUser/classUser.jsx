@@ -214,6 +214,7 @@ class StuReport extends React.Component {
               this.props.dispatch(
                 routerRedux.push({
                   pathname: '/addclass',
+                  
                 })
               )
             }}>

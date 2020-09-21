@@ -151,7 +151,7 @@ class WorkManage extends React.Component {
 				"sections":[
 					{"name":'测测',areas:[],id:0}
 				],
-				"url": "http://tmp/wx9dd6bc8b32ac2723.o6zAJsytZ1_Wx-i4ldA6Hut1PwjM.ufgRn85AjFnI8f549d68a9e9abb2ff85744b03a659b9.jpg",
+				"url": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
 				"serUrl": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
 				"photoScore": 77,
 				"rotate": "",
@@ -166,6 +166,7 @@ class WorkManage extends React.Component {
 					"top": 1.5250000000000057
 				},
 				"pageId": 344215,
+				"_pageId": 344215,
 				"count": 5,
 				"width": 2500,
 				"height": 3333,
@@ -310,6 +311,9 @@ class WorkManage extends React.Component {
 					type:"workManage/schoolSubId",
 					payload:value
 				})
+				let item=subList.find((va)=>{return va.k==value})
+
+				this.initWorkName(item)
 				}}>
 			{children}
 			</Select>
@@ -373,12 +377,13 @@ class WorkManage extends React.Component {
 			this.setState({
 				workPages:this.state.workPages
 			})
-			console.log('this.state.workPages: ', this.state.workPages);
+			console.log('this.state.workPages: ', this.state.workPages,JSON.stringify(this.state.workPages));
 		})
 	}
 	addImgBtnClick = file => {
 		var reader = new FileReader();
 		const { files } = file.target
+		if(!files||files.length==0) return
 		reader.readAsDataURL(files[0]);
 		reader.onload = ()=>{
 			
@@ -402,6 +407,7 @@ class WorkManage extends React.Component {
 			showEditPictureModal:true,
 			cpindex:i
 		})
+		console.log('22',this.state.cpicture,p,i)
 	}
 	checkCpicture(){
 		let _pic=this.state.workPages[this.state.cpindex]
@@ -424,7 +430,7 @@ class WorkManage extends React.Component {
 		console.log('e: ', e,this.state.cpicture,this.state.workPages);
 	}
 
-	initWork(subjectData){
+	initWorkName(subjectData){
 		var date = new Date();
 		var year = (date.getFullYear())
 		var moun = (date.getMonth()+1)
@@ -436,6 +442,7 @@ class WorkManage extends React.Component {
 					...this.state.work,
 					name:`${year}年${moun}月${day}日${subjectData.v}作业`,
 					time:`${year}-${moun}-${day}`,
+					displayTime:`${year}年${moun}月${day}日`,
 					subjectId:subjectData.k
 				}
 			}
@@ -596,6 +603,15 @@ class WorkManage extends React.Component {
 				}
 			})
 		}
+		getClasses(classIdStr){
+			let _arr=[]
+			let cids=classIdStr.split(",")
+			return _arr=cids.map((item,i)=>{
+				if(item){
+					return parseInt(item)
+				}
+			})
+		}
   	render() {
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
@@ -603,7 +619,7 @@ class WorkManage extends React.Component {
 		<div className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
 			onScroll={this.containetScroll.bind(this)}
 		>
-			<div className={style.top_box}>
+			<div>
 				<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
 						<h4 style={{fontSize:20,height:40}} >
 							{
@@ -646,7 +662,7 @@ class WorkManage extends React.Component {
 							学科：{this.renderSchoolSubjectList()}
 						</div>
 				</div>
-				<div>
+				<div >
 
 					{
 						this.state.iscreateWOrk?
@@ -655,7 +671,8 @@ class WorkManage extends React.Component {
 							</div>
 						:
 						<>
-							<div className='clearfix'>
+						<div className={style.top_box}>
+						<div className='clearfix'>
 								{
 									this.state.workPages.map((item, i) => {
 										return (
@@ -683,7 +700,7 @@ class WorkManage extends React.Component {
 									title=''
 									onChange={this.addImgBtnClick}             
 								></input>
-								添加图片
+									添加图片
 								</div>
 							</div>
 						</div>
@@ -692,17 +709,24 @@ class WorkManage extends React.Component {
 									this.state.workPages.map((item, i) => {
 										return (
 											<div key={i} style={{marginTop:14}} className={style.queitem}>
-												<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.questions?item.questions.map((area, j) => {
-												return (
-												<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
-																)
-													}):''}
+												<div style={{width:60,minWidth:40}} className={style.quelabel}>图片{i+1}</div> 
+												{
+													<div>
+														{item.questions?item.questions.map((area, j) => {
+														return (
+														<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
+																		)
+															}):''}
+													</div>
+												}
 											</div>
 											)
 										})
 								}
 						</div>
 
+						</div>
+						
 						{this.state.workPages.length==0?<div className={style._empty}>请点击左上角添加作业图片</div>:
 						<>
 							<div className={style.question_content} >
@@ -931,29 +955,46 @@ class WorkManage extends React.Component {
   }
 
   componentDidMount() {
-	setTimeout(() => {
-		let partQuestions=this.state.partQuestions
-		let array=[this.state.test,this.state.test1]
-		// this.setState({
-		// 	workPages:[this.state.test,this.state.test1]
-		// })
-		// this.setState({
-		// 		workPages:[]//[this.state.test]
-		// 	})
-		console.log('works',this.state.workPages)
-		let _arr=[
-			
-		]
-		for (let index = 0; index < array.length; index++) {
-			const element = array[index]
-			if(element.questions.length){
-			
-				for (let j = 0; j < element.questions.length; j++) {
-					_arr.push(element.questions[j])
-					
+		console.log('this.props.location.query',this.props.location.query)
+		let aa={
+			classId: "2935",
+			className: "",
+			createTime: "2020-09-21 18:33:19",
+			createUserId: 4361471476795392,
+			examId: 10,
+			examName: "2020年09月21日科学作业-1",
+			schoolId: 8256,
+			status: 0,
+			subjectId: 10,
+			subjectName: "",
+			workTime: "2020-09-21 00:00:00",
+			_index: 1
+		}
+
+		setTimeout(() => {
+			let partQuestions=this.state.partQuestions
+			let array=[this.state.test,this.state.test1]
+			// this.setState({
+			// 	workPages:[this.state.test,this.state.test1]
+			// })
+			this.setState({
+					workPages:[this.state.test]
+			})
+			return
+			console.log('works',this.state.workPages)
+			let _arr=[
+				this.state.test
+			]
+			for (let index = 0; index < array.length; index++) {
+				const element = array[index]
+				if(element.questions.length){
+				
+					for (let j = 0; j < element.questions.length; j++) {
+						_arr.push(element.questions[j])
+						
+					}
 				}
 			}
-		}
 		partQuestions.questions=_arr
 
 		this.setState({
@@ -967,28 +1008,53 @@ class WorkManage extends React.Component {
     let data = {
       schoolId: userNews.schoolId,
       year: this.props.state.years
-    }
+		}
+		
+
     dispatch({
       type: 'workManage/getWorkPageClass',
       payload: data
     }).then((classData) => {
-		this.setState({
-			work:{
-				...this.state.work,
-				classes:classData.value
-			}
-		})
-		console.log('classlist',classData,this.state.work)
+			this.setState({
+				work:{
+					...this.state.work,
+					classes:classData.value
+				}
+			})
+
+			console.log('classlist',classData,this.state.work)
+			dispatch({
+				type: 'workManage/getSchoolSubjectList'
+			}).then((subs) => {
+				console.log('subs: ', subs);
+				if(subs.length){
+					// this.initWorkName(subs[0])
+					let {classId,examName,examId,subjectId}=aa
+					this.setState({
+						work:{
+							...this.state.work,
+							name:examName,
+							classes:classId,
+							subjectId
+						}
+					})
+	
+					dispatch({
+						type:"workManage/schoolSubId",
+						payload:subjectId
+					})
+					console.log('22',classId.split(","))
+					dispatch({
+						type:"workManage/workPageClass",
+						payload:{
+							list:classData.list,
+							value:this.getClasses(classId)
+						}
+					})
+				}
+			})
     })
-    dispatch({
-			type: 'workManage/getSchoolSubjectList'
-		}).then((subs) => {
-			console.log('subs: ', subs);
-			if(subs.length){
-				this.initWork(subs[0])
-			
-			}
-		})
+    
 
   }
 
@@ -1001,13 +1067,9 @@ class WorkManage extends React.Component {
 
 export default connect((state) => ({
   state: {
-    ...state.report,
-    ...state.classHome,
-    ...state.homePage,
     workPageClass:state.workManage.workPageClass,
     years: state.temp.years,
     schoolSubId:state.workManage.schoolSubId,
-    classSubjectData:state.classModel.classSubjectData,
     schoolSubjectList:state.workManage.schoolSubjectList
   }
 }))(WorkManage);

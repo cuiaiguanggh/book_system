@@ -7,7 +7,7 @@ import {
 } from '../services/tempService';
 
 import {
-	getWorkList,createWork, workList
+	areaDiscern,createWork, workList
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -61,12 +61,10 @@ export default {
 		},
 		*getSchoolSubjectList({ payload }, { put, select }) {
 			let res = yield subjectNodeList();
-			console.log('res: ', res);
 			let _subs=[]
 			if (res.data && res.data.result === 0&&res.data.data) {
 				_subs=res.data.data
 			} 
-			console.log('_subs: ', _subs);
 			yield put({
 				type: 'schoolSubjectList',
 				payload: _subs
@@ -172,6 +170,11 @@ export default {
 			// 	type: 'workList',
 			// 	payload: data
 			// })
+		},
+		*areaDiscern({ payload }, { put, select }){
+			let res = yield areaDiscern(payload);
+			console.log('areaDiscern res: ', res);
+
 		},
 		
 	},

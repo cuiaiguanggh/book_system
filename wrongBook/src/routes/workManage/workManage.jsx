@@ -128,7 +128,7 @@ class WorkManage extends React.Component {
               <WorkList  current='student'
                 editWork={(data)=>{
                   console.log('data: ', data);
-
+                  this.props.dispatch(routerRedux.push({pathname:'/addWork',query:data}))
                 }}
                 deleteWork={(item)=>{
                   console.log('data: ', item);
@@ -156,7 +156,6 @@ class WorkManage extends React.Component {
       type: 'workManage/getWorkPageClass',
       payload: data
     }).then((classlist) => {
-      console.log('classlist111111111111: ', classlist);
       dispatch({
         type: 'workManage/getSchoolSubjectList'
       }).then((res) => {

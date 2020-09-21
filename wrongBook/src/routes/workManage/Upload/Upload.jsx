@@ -8,14 +8,16 @@ export default function Upload1(props) {
     const [discernFail, setDiscernFail] = useState(false);
     useEffect(() => {
         console.log('upload load')
-        // setTimeout(() => {
-        //   setUploadFinish(true)
-        //   if(props.index==1){
-        //     setDiscernFail(true)
-        //   }
-        // }, 100);
+        setTimeout(() => {
+          // setUploadFinish(true)
+          // if(props.index==1){
+          //   setDiscernFail(true)
+          // }
+          //props.lookPicture(props.picture,props.index)
+        }, 100);
         // props.lookPicture(props.picture,props.index)
         // uploadImage()
+        
     },[]);
 
 		function deletePictureHander(p,index){

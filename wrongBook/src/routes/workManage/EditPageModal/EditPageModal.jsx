@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button,Input,Modal
+  Button,Input,Modal,Spin
 } from 'antd';
 import style from './EditPageModal.less';
 
@@ -32,7 +32,8 @@ class EditPageModal extends React.Component {
 				top: 0
 			  },
 			mouseIsDown:false,
-			hideBar:false
+			hideBar:false,
+			discovering:true
     }
 	}
 
@@ -382,7 +383,8 @@ class EditPageModal extends React.Component {
 			y: _y,
 			height: _height,
 			width: _width,
-			rotate: 0
+			rotate: 0,
+			_index:99
 		}
 		this.props.cpicture.questions.push({
 			area: _area,
@@ -416,9 +418,31 @@ class EditPageModal extends React.Component {
 		this.props.hideModalHander()
 	}
 	
-
-
-  	render() {
+	rediscover(){
+		console.log('开始重新识别...')
+		this.setState({
+			discovering:true
+		})
+	}
+	_confirmArea(_index){
+		//重新做排序
+		
+		this._saveCropItem()
+		// let _cropArea=this.state.cpicture.questions[_index]
+		console.log('this.state.cpicture.questions: ', this.props.cpicture.questions);
+		// let _areaReqData={
+		// 	partId:_cropArea.pageid,//分片id
+		// 	examId:10,//	int
+		// 	qusImgUrl:_cropArea.area.imgUrl,
+		// 	pointX:	_cropArea.area.x,
+		// 	pointY	:_cropArea.area.y,
+		// 	areaWidth:_cropArea.area.width,
+		// 	areaHeight:_cropArea.area.height,
+		// 	num:_cropArea.num
+		// }
+		// console.log('_cropArea: ', _cropArea,_areaReqData);
+	}
+	render() {
 		return (
 			<Modal
 				id="mask9527"
@@ -447,136 +471,139 @@ class EditPageModal extends React.Component {
 						,
 					<Button key='3' onClick={()=>{this.newCropItem()}}>手动框题</Button>
 					,
-					<Button key='4'>重新识别</Button>
+					<Button key='4'  onClick={()=>{this.rediscover()}}>重新识别</Button>
 					,
 					<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >
 						确定
 					</Button>
 				]}
 			>
-				<div className={style.img_box}>
+				<Spin spinning={false&&this.state.discovering}>
+					<div className={style.img_box}>
 
-				<img style={{width:720}}  src={this.props.cpicture.url} alt=""/>
-				<div className={style.crop_box} 
-					onMouseUp={(e)=>{
-						this.setState({mouseIsDown:false,hideBar:false}),
-						console.log('mouseup...')
-					}}
-					
-					>
-					{
-						this.state.showCropBox?
-						<div className={style.crop_content} 
-							
-							onClick={(e)=>{
-								console.log('click mask...')
-								// this._cropMaskClick(e)
-								// this.setState({
-								// 	showCropBox:false
-								// })
-							}}  
-							onMouseMove={(e)=>this._handerMove(e)}>
-							<div  className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
-							<div   className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
-								<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
-								<div id="rect_item9527" 
-									onMouseDown={(e)=>this._rectTouchStart(e)}  
-									
-									className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
+						<img style={{width:720}}  src={this.props.cpicture.url} alt=""/>
+						<div className={style.crop_box} 
+						onMouseUp={(e)=>{
+							this.setState({mouseIsDown:false,hideBar:false}),
+							console.log('mouseup...')
+						}}
+						
+						>
+						{
+							this.state.showCropBox?
+							<div className={style.crop_content} 
+								
+								onClick={(e)=>{
+									console.log('click mask...')
+									// this._cropMaskClick(e)
+									// this.setState({
+									// 	showCropBox:false
+									// })
+								}}  
+								onMouseMove={(e)=>this._handerMove(e)}>
+								<div  className={[style.content_top,style.bg_gray].join(' ')} style={{height:this.state.cutTop+'px'}}></div>
+								<div   className={style.content_middle} style={{height:this.state.cutHeight+'px'}}>
+									<div className={style.content_middle_left} style={{width:this.state.cutLeft+'px'}}></div>
+									<div id="rect_item9527" 
+										onMouseDown={(e)=>this._rectTouchStart(e)}  
+										
+										className={style.content_middle_middle} style={{width:this.state.cutWidth+'px',height:this.state.cutHeight+'px'}}>
 
-								<div className={[style.rect_hander,style.rect_hander1].join(' ')} 
-									onMouseDown={(e)=>this._handerStart(e,1)} 
-									
-									>
-									<div className={style.rect_hander_border}></div>
-								</div>
-								<div className={[style.rect_hander,style.rect_hander2].join(' ')} 
-									onMouseDown={(e)=>this._handerStart(e,2)}  
-									>
-									<div className={style.rect_hander_border}></div>
-								</div>
-								<div className={[style.rect_hander,style.rect_hander3].join(' ')} 
-									onMouseDown={(e)=>this._handerStart(e,3)} 
-									>
-									<div className={style.rect_hander_border}></div>
+									<div className={[style.rect_hander,style.rect_hander1].join(' ')} 
+										onMouseDown={(e)=>this._handerStart(e,1)} 
+										
+										>
+										<div className={style.rect_hander_border}></div>
 									</div>
-								<div className={[style.rect_hander,style.rect_hander4].join(' ')} 
-									onMouseDown={(e)=>this._handerStart(e,4)} 
-									>
-									<div className={style.rect_hander_border}></div>
-								</div>
-								{
-									!this.state.hideBar?
-									<div className={style._confirm_box} 
-									
-									>
-									<Button 
-										id='delete_9527' 
-										onMouseUp={(e)=>{
-											this._deleteCropItem()
-											e.stopPropagation()
-										}}
-									>
-									删除
-									</Button>
-									<Button 
-										onMouseUp={(e)=>{
-											this.setState({
-												showCropBox:false
-											})
-										}}
-									>
-									取消
-									</Button>
-									<Button 
-										onMouseUp={(e)=>{
-											this._saveCropItem()
-											e.stopPropagation()
-										}}
-									>确认</Button>
-								</div>:''
-								}
-	
+									<div className={[style.rect_hander,style.rect_hander2].join(' ')} 
+										onMouseDown={(e)=>this._handerStart(e,2)}  
+										>
+										<div className={style.rect_hander_border}></div>
+									</div>
+									<div className={[style.rect_hander,style.rect_hander3].join(' ')} 
+										onMouseDown={(e)=>this._handerStart(e,3)} 
+										>
+										<div className={style.rect_hander_border}></div>
+										</div>
+									<div className={[style.rect_hander,style.rect_hander4].join(' ')} 
+										onMouseDown={(e)=>this._handerStart(e,4)} 
+										>
+										<div className={style.rect_hander_border}></div>
+									</div>
+									{
+										!this.state.hideBar?
+										<div className={style._confirm_box} 
+										
+										>
+										<Button 
+											id='delete_9527' 
+											onMouseUp={(e)=>{
+												this._deleteCropItem()
+												e.stopPropagation()
+											}}
+										>
+										删除
+										</Button>
+										<Button 
+											onMouseUp={(e)=>{
+												this.setState({
+													showCropBox:false
+												})
+											}}
+										>
+										取消
+										</Button>
+										<Button 
+											onMouseUp={(e)=>{
+												this._confirmArea(this.state.cropIndex)
+												
+												e.stopPropagation()
+											}}
+										>确认</Button>
+									</div>:''
+									}
 		
-								</div>
-								<div className={[style.content_middle_right,style.bg_gray].join(' ')}></div>
-							</div>
-							<div className={[style.content_bottom,style.bg_gray].join(' ')} ></div>
-						</div>
-						:
-						<div className={style.rect_mask}>
-							{
-								this.props.cpicture.questions?this.props.cpicture.questions.map((item, i) => {
-									return (
-										<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
-											key={item.num}  
-											style={{
-													width:item.area.width/720*this.state.scwidth+'px',
-													height:item.area.height/720*this.state.scwidth+'px',
-													left:item.area.x/720*this.state.scwidth+'px',
-													top:item.area.y/720*this.state.scwidth+'px'
-											}} 
-											onClick={(e)=>{this.cropItemClick(i,e)}} 
-										
-											>
-											<Input  key={i} onMouseUp={(e)=>{
-												e.stopPropagation()
-											}} onClick={(e)=>{
-												e.stopPropagation()
-											}}  className={style.inputnum} defaultValue={i+1}/>
+			
 									</div>
-										
-										)
-									}):''
-							}
-							
-						</div>
-					}
+									<div className={[style.content_middle_right,style.bg_gray].join(' ')}></div>
+								</div>
+								<div className={[style.content_bottom,style.bg_gray].join(' ')} ></div>
+							</div>
+							:
+							<div className={style.rect_mask}>
+								{
+									this.props.cpicture.questions?this.props.cpicture.questions.map((item, i) => {
+										return (
+											<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
+												key={item.num}  
+												style={{
+														width:item.area.width/720*this.state.scwidth+'px',
+														height:item.area.height/720*this.state.scwidth+'px',
+														left:item.area.x/720*this.state.scwidth+'px',
+														top:item.area.y/720*this.state.scwidth+'px',
+														zIndex:item._index||50-i
+												}} 
+												onClick={(e)=>{this.cropItemClick(i,e)}} 
+											
+												>
+												<Input  key={i} onMouseUp={(e)=>{
+													e.stopPropagation()
+												}} onClick={(e)=>{
+													e.stopPropagation()
+												}}  className={style.inputnum} defaultValue={i+1}/>
+										</div>
+											
+											)
+										}):''
+								}
+								
+							</div>
+						}
+						
 					
-				
-			</div>
-			</div>
-
+				</div>
+					</div>
+				</Spin>
 			</Modal>
 		)
   }

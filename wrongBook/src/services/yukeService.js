@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-10 09:35:26
- * @LastEditTime: 2020-09-21 16:15:13
+ * @LastEditTime: 2020-09-21 19:48:42
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\services\yukeService.js
@@ -34,11 +34,18 @@ function workList(payload) {
         method: 'post'
     });
 }
+function areaDiscern(payload) {
+    return areaDiscern(`${burl}exam/areaDiscern?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 
 //
 export {
     fetchQuestions,
     getWorkList,
     createWork,
-    workList
+    workList,
+    areaDiscern
 };
