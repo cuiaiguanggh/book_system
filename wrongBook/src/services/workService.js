@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-09-21 09:17:18
+ * @LastEditTime: 2020-09-21 15:58:54
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \wrongBook\src\services\workService.js
+ */
 import request from '../utils/request';
 import { dataCenter } from '../config/dataCenter';
 

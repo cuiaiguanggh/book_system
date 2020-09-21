@@ -240,7 +240,7 @@ class WorkManage extends React.Component {
 				classes:[],
 				subjectId:1,
 				pages:[],
-				
+				time:''
 			},
 			editWorkName:false,
 			editWorkName:false,
@@ -279,7 +279,9 @@ class WorkManage extends React.Component {
 				resCode:-1
 			},
 			uploadToken:'',
-			fileKey:''
+			fileKey:'',
+			iscreateWOrk:true,
+			createWorking:false
     }
 	}
 
@@ -432,7 +434,8 @@ class WorkManage extends React.Component {
 		this.setState({
 				work:{
 					...this.state.work,
-					name:`${year}年${moun}月${day}日${subname}作业`
+					name:`${year}年${moun}月${day}日${subname}作业`,
+					time:`${year}-${moun}-${day}`
 				}
 			}
 		)
@@ -547,15 +550,51 @@ class WorkManage extends React.Component {
 	  beforeUpload(file) {
 		return true;
 	  }
-	  handleUploadChange = info => {
-		// const { form } = this.props;
-		if(info.file.status === 'done'){
-		  const imageKey = info.file.response.key
-		  const uploadUrl = "http://cdn.yubuyun.com/"+imageKey;
-    		console.error("uploadUrl", uploadUrl)
-		//   form.setFieldsValue({cover:uploadUrl}); // 放到输入框中展示
+	  createWork(){
+			let msg=''
+		  if(!this.state.work.subjectId) {
+			  msg='请选择一个学科！'
+		  }
+		  if(!this.state.work.classes||!this.state.work.classes.length) {
+			  msg='请选择一个班级！'
+			}
+			if(!store.get('wrongBookNews').schoolId){
+				msg='没有学校！'
+			}
+		  if(msg){
+			  message.destroy()
+			  message.warn(msg)
+			  return
+			}
+			this.setState({
+				createWorking:true
+			})
+			const {name,subjectId,classes,time}=this.state.work
+			let data={
+				examName:name,
+				subjectId,
+				classId:classes.join(','),
+				schoolId:store.get('wrongBookNews').schoolId,
+				workTime:time
+			}
+			console.log('data: ', data);
+			this.props.dispatch({
+				type:"workManage/createWork",
+				payload:data
+			}).then((res)=>{
+				this.setState({
+					createWorking:true
+				})
+				if(res.data.result===0){
+					message.success('作业创建成功')
+					setTimeout(() => {
+						this.props.dispatch(routerRedux.push('/workManage'))
+					}, 500)
+				}else{
+					message.warn('作业创建失败：'+res.data.msg)
+				}
+			})
 		}
-	  }
   	render() {
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
@@ -607,192 +646,241 @@ class WorkManage extends React.Component {
 						</div>
 				</div>
 				<div>
-					<div className='clearfix'>
-							{
-								this.state.workPages.map((item, i) => {
-									return (
-										<div key={item._pageId}  className={style.uploadbox}>
-											<UploadItem lookPicture={this.showCropModel}  picture={item} index={i}
-												deletePictureHander={(p,index)=>{
-														console.log('p,index: ', p,index);
-														this.deletePictureBonfirm(p,index)
+
+					{
+						this.state.iscreateWOrk?
+							<div style={{display:'flex',justifyContent:'center',marginTop:40}}>
+								<Button loading={this.state.createWorking} type='primary' onClick={()=>this.createWork()}>添加作业</Button>
+							</div>
+						:
+						<>
+							<div className='clearfix'>
+								{
+									this.state.workPages.map((item, i) => {
+										return (
+											<div key={item._pageId}  className={style.uploadbox}>
+												<UploadItem lookPicture={this.showCropModel}  picture={item} index={i}
+													deletePictureHander={(p,index)=>{
+															console.log('p,index: ', p,index);
+															this.deletePictureBonfirm(p,index)
+														}
 													}
-												}
-											></UploadItem>
-										</div>
-										)
-									})
-							}
-						
-						<div className={style.uploadbox}>
-							<div className={[style.uploadBtn,'cup'].join(' ')} 
-	
-							>
-							<input
-								type='file'
-								className={style._file}
-								accept='image/*'
-								title=''
-								onChange={this.addImgBtnClick}             
-							></input>
-							 添加图片
+												></UploadItem>
+											</div>
+											)
+										})
+								}
+							
+							<div className={style.uploadbox}>
+								<div className={[style.uploadBtn,'cup'].join(' ')} 
+		
+								>
+								<input
+									type='file'
+									className={style._file}
+									accept='image/*'
+									title=''
+									onChange={this.addImgBtnClick}             
+								></input>
+								添加图片
+								</div>
 							</div>
 						</div>
-					</div>
-					<div style={{marginTop:32}}>
-							{
-								this.state.workPages.map((item, i) => {
-									return (
-										<div key={i} style={{marginTop:14}} className={style.queitem}>
-											<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.questions?item.questions.map((area, j) => {
-											return (
-											<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
-															)
-												}):''}
-										</div>
-										)
-									})
-							}
-						</div>
-				</div>
-			</div>
-			{this.state.workPages.length==0?<div className={style._empty}>请点击左上角添加作业图片</div>:
-				<>
-					<div className={style.question_content} >
-						<div id='_action_bar'></div>
-						<div className={style._action_bar}  style={{width:this.state.fixedWidth}}>
-								<Checkbox checked={this.state.lookQuestion}
-									onClick={()=>{
-										this.setState({
-											lookQuestion:!this.state.lookQuestion
+						<div style={{marginTop:32}}>
+								{
+									this.state.workPages.map((item, i) => {
+										return (
+											<div key={i} style={{marginTop:14}} className={style.queitem}>
+												<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.questions?item.questions.map((area, j) => {
+												return (
+												<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
+																)
+													}):''}
+											</div>
+											)
 										})
-									}}
-							>显示试题</Checkbox>
-							<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14,position:'absolute'}} type='primary'>
-								发布作业
-							</Button>
-
+								}
 						</div>
-						<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
-						<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
-							<div className={style.sider_in}>
-								<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
-									拖动题目调整分组
+
+						{this.state.workPages.length==0?<div className={style._empty}>请点击左上角添加作业图片</div>:
+						<>
+							<div className={style.question_content} >
+								<div id='_action_bar'></div>
+								<div className={style._action_bar}  style={{width:this.state.fixedWidth}}>
+										<Checkbox checked={this.state.lookQuestion}
+											onClick={()=>{
+												this.setState({
+													lookQuestion:!this.state.lookQuestion
+												})
+											}}
+									>显示试题</Checkbox>
+									<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14,position:'absolute'}} type='primary'>
+										发布作业
+									</Button>
+
 								</div>
-								<div className={style.que_group}>
+								<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
+								<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
+									<div className={style.sider_in}>
+										<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
+											拖动题目调整分组
+										</div>
+										<div className={style.que_group}>
+												{
+													pparts&&pparts.length?pparts.map((_part,p)=>{
+														return(
+															<div style={{marginTop:10}}  className={style.group_box} key={p} 
+																onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
+																onDragLeave={(e)=>{
+																	this.setState({
+																		partActiveIndex:-1
+																	})
+																}}
+																onDragOver={(e)=>{this.dragOver(e,p)}}>
+																{this.state.editPartNameIndex===p&&this.state.editPartName?
+																	<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
+																		style={{width:100}} 
+																		onBlur={(e)=>{
+																			this.state.partQuestions.part[p].name=e.target.value
+																			this.setState({
+																				editPartNameIndex:-1,
+																				editPartName:false,
+																				partQuestions:this.state.partQuestions
+																			})
+																			
+																			}} 
+
+																			defaultValue={_part.name}
+																	/>
+																	:
+																	<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
+																		{_part.name}
+																		<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
+																			onClick={(e)=>{
+																				this.setState({
+																					editPartNameIndex:p,
+																					editPartName:true
+																				})
+																			}}
+																	/>
+																	<Popconfirm placement="top" 
+																			title={'确定要删除该题组吗？'} 
+																			onConfirm={(e)=>{
+																				this.state.partQuestions.part.splice(p,1)
+																				this.setState({
+																					partQuestions:this.state.partQuestions
+																				})
+																			}} 
+																			okText="确定" 		
+																			cancelText="取消"
+																		>
+																		<div style={{position:'absolute',right:5,
+																			color:" #84888E",fontSize:12}}>删除</div>
+																	</Popconfirm>
+																	
+																</div>
+															}
+															{
+																_part.questions&&_part.questions.length?
+																
+																	<div style={{width:"100%",marginTop:15}}>
+																	{_part.questions.map((area, k) => {
+																		return(
+																		<span key={k} className={style.que_span}>{k+1}</span>
+																		)
+																	})}
+																</div>
+																
+
+																:''
+															}
+														</div>
+														)
+													}):''
+												} 
+										</div>
+										<Button type='primary'
+											style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
+											onClick={()=>{
+												this.addPart()
+											}}
+											>添加题组	
+										</Button>
+									</div>
+								</div>
+								<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}>
+									<div className={style.content}>
 										{
 											pparts&&pparts.length?pparts.map((_part,p)=>{
 												return(
-													<div style={{marginTop:10}}  className={style.group_box} key={p} 
-														onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
-														onDragLeave={(e)=>{
-															this.setState({
-																partActiveIndex:-1
-															})
-														}}
-														onDragOver={(e)=>{this.dragOver(e,p)}}>
-														{this.state.editPartNameIndex===p&&this.state.editPartName?
-															<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
-																style={{width:100}} 
-																onBlur={(e)=>{
-																	this.state.partQuestions.part[p].name=e.target.value
-																	this.setState({
-																		editPartNameIndex:-1,
-																		editPartName:false,
-																		partQuestions:this.state.partQuestions
-																	})
-																	
-																	}} 
-
-																	defaultValue={_part.name}
-															/>
-															:
-															<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
-																{_part.name}
-																<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
-																	onClick={(e)=>{
-																		this.setState({
-																			editPartNameIndex:p,
-																			editPartName:true
-																		})
-																	}}
-															/>
-															<Popconfirm placement="top" 
-																	title={'确定要删除该题组吗？'} 
-																	onConfirm={(e)=>{
-																		this.state.partQuestions.part.splice(p,1)
-																		this.setState({
-																			partQuestions:this.state.partQuestions
-																		})
-																	}} 
-																	okText="确定" 		
-																	cancelText="取消"
-																>
-																<div style={{position:'absolute',right:5,
-																	color:" #84888E",fontSize:12}}>删除</div>
-															</Popconfirm>
-															
-														</div>
-													}
-													{
+													<div  className={style.group_box} key={p}>
+														<div style={{marginBottom:10}} > {_part.name}</div>
+														
+														{
 														_part.questions&&_part.questions.length?
-														
-															<div style={{width:"100%",marginTop:15}}>
-															{_part.questions.map((area, k) => {
+														<div style={{width:"100%",marginBottom:15,background:'#efefef',padding:'20px 20px'}}>
+														{
+															_part.questions.map((item, k) => {
 																return(
-																<span key={k} className={style.que_span}>{k+1}</span>
-																)
-															})}
-														</div>
-														
+																	<div
+																		key={k}
+																		className={[style.section_box,this.state.drapQuetionIndex.length?'drap_cursor':''].join(' ')}
+																		draggable="true" 
+																		
+																		onDragStart={(e)=>{
+																			this.setState({
+																				drapQuetionIndex:[p,k]
+																			})
+																			console.log('_key,_index: ', 'start');
+																		}}
+												
+																		>
+																		<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+																		index={k} question={item} 
+																		key={`${item.pageid}${k}`} 
 
-														:''
+																		deleteSectionHander={(index)=>{
+																			this.state.workPages.splice(index,1)
+																			this.setState({
+																				workPages: this.state.workPages,
+																			})
+																		}}
+
+																		>
+
+																</Section>
+													
+																	</div>
+																	
+																)
+															})
+														}
+													</div>
+														:
+														''
 													}
+
 												</div>
 												)
 											}):''
 										} 
-								</div>
-								<Button type='primary'
-									style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
-									onClick={()=>{
-										this.addPart()
-									}}
-									>添加题组	
-								</Button>
-							</div>
-						</div>
-						<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}>
-							<div className={style.content}>
-								{
-									pparts&&pparts.length?pparts.map((_part,p)=>{
-										return(
-											<div  className={style.group_box} key={p}>
-												<div style={{marginBottom:10}} > {_part.name}</div>
-												
-												{
-												_part.questions&&_part.questions.length?
-												<div style={{width:"100%",marginBottom:15,background:'#efefef',padding:'20px 20px'}}>
-												{
-													_part.questions.map((item, k) => {
-														return(
-															<div
-																key={k}
-																className={[style.section_box,this.state.drapQuetionIndex.length?'drap_cursor':''].join(' ')}
-																draggable="true" 
-																
-																onDragStart={(e)=>{
-																	this.setState({
-																		drapQuetionIndex:[p,k]
-																	})
-																	console.log('_key,_index: ', 'start');
-																}}
-										
-																>
-																<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
-																index={k} question={item} 
-																key={`${item.pageid}${k}`} 
-
+										{pquestions&&pquestions.length>0?<>{
+											pquestions.map((item, i) => {
+													return (
+														<div 
+															key={i}
+															className={style.section_box}
+															draggable="true" 
+															
+															onDragStart={(e)=>{
+																this.setState({
+																	drapQuetionIndex:[i]
+																})
+															}}
+															>
+															<Section  ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+																index={i} question={item} 
+																key={`${item.pageid}${i}`} 
 																deleteSectionHander={(index)=>{
 																	this.state.workPages.splice(index,1)
 																	this.setState({
@@ -800,79 +888,43 @@ class WorkManage extends React.Component {
 																	})
 																}}
 
+
 																>
 
 														</Section>
-											
-															</div>
-															
+														
+														</div>
 														)
-													})
-												}
-											</div>
-												:
-												''
-											}
-
-										</div>
-										)
-									}):''
-								} 
-								{pquestions&&pquestions.length>0?<>{
-									pquestions.map((item, i) => {
-											return (
-												<div 
-													key={i}
-													className={style.section_box}
-													draggable="true" 
-													
-													onDragStart={(e)=>{
-														this.setState({
-															drapQuetionIndex:[i]
-														})
-													}}
-													>
-													<Section  ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
-														index={i} question={item} 
-														key={`${item.pageid}${i}`} 
-														deleteSectionHander={(index)=>{
-															this.state.workPages.splice(index,1)
-															this.setState({
-																workPages: this.state.workPages,
-															})
-														}}
-
-
-														>
-
-												</Section>
-												
-												</div>
-												)
-									})
-								}</>
-								:''}
+											})
+										}</>
+										:''}
+									</div>
+								</div>
+							
+								</div>
 							</div>
-						</div>
-					
-						</div>
-					</div>
-					
-					<EditPageModal 
-							hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
-							cpicture={this.state.cpicture} visible={this.state.showEditPictureModal}
-							confirmPicture={(p)=>{
-								this.state.workPages.splice(this.state.cpindex,1)
-								this.setState({
-									workPages:this.state.workPages,
-									showEditPictureModal:false
-								})
-								console.log('this.state.workPages',this.state.workPages)
-							}}
-						></EditPageModal>
-				
-				</>
-			}
+							
+							<EditPageModal 
+									hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
+									cpicture={this.state.cpicture} visible={this.state.showEditPictureModal}
+									confirmPicture={(p)=>{
+										this.state.workPages.splice(this.state.cpindex,1)
+										this.setState({
+											workPages:this.state.workPages,
+											showEditPictureModal:false
+										})
+										console.log('this.state.workPages',this.state.workPages)
+									}}
+								></EditPageModal>
+						
+						</>
+					}
+						</>
+					}
+
+				</div>
+			</div>
+			
 		</div>
     )
   }

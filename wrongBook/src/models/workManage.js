@@ -7,7 +7,7 @@ import {
 } from '../services/tempService';
 
 import {
-	getWorkList
+	getWorkList,createWork, workList
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -48,6 +48,17 @@ export default {
 	},
 
 	effects: {
+		*createWork({ payload }, { put, select }){
+			let res = yield createWork(payload);
+			console.log('res: ', res);
+			return res
+		},
+		*getWorkList({ payload }, { put, select }){
+			let res = yield workList(payload);
+			console.log('res: ', res);
+			return res
+		},
+		
 		*uploadImage({ payload }, { put, select }){
 			let res = yield testPage();
 			console.log('res: ', res);
