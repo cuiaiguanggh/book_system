@@ -39,15 +39,20 @@ export async function uploadBase64 (picBase,complete){
   let res=await getFileToken()
   console.log('token: ', res);
   if(res.data.result===0){
-    putb64(picBase,res.data.data,async (imgurl)=>{
-      let res1= await testPage(imgurl)
+    putb64(picBase,res.data.data,async (key)=>{
+      if(!key){
+        message.error('图片上传失败')
+        return complete({code:1})
+      }
+      let picUrl = "https://homework.mizholdings.com/" + key
+      let res1= await testPage(picUrl)
       if(res1.data.result===0){
         let _data=initReposeData(res1.data.data)
-        _data.serUrl=imgurl
-        complete({code:0,data:_data})
+        _data.serUrl=picUrl
+        complete({code:_data.questions?0:2,data:_data})
       }else{
         message.error('识别失败')
-        complete({code:1})
+        complete({code:-2})
       }
     })
   }else{
@@ -87,8 +92,7 @@ export function putb64(picBase,myUptoken,call) {
         if (xhr.readyState == 4) {
               var keyText = xhr.responseText;
               keyText = strToJson(keyText);
-              picUrl = "https://homework.mizholdings.com/" + keyText.key
-              call(picUrl)
+              call(keyText.key)
         }
   }
   xhr.open("POST", url, false);

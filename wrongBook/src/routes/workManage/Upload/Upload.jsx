@@ -1,7 +1,7 @@
 import style from './Upload.less';
 import React, { useState, useEffect } from 'react';
 import {ImageUploader,putb64,uploadBase64} from '../../../utils/ImageUploader'
-import { Modal, Spin} from 'antd';
+import { message, Modal, Spin} from 'antd';
 
 export default function Upload1(props) {
     const [uploadFinish, setUploadFinish] = useState(false);
@@ -51,13 +51,21 @@ export default function Upload1(props) {
         setUploadFinish(true)
 			})
     }
+
 		return (
       <Spin spinning={props.picture.resCode<0} tip="正在识别...">
         <div className={style.uploadin}>
           <div className={style.num}>{props.index+1}</div>
-          <img onClick={()=>props.lookPicture(props.picture,props.index)} src={props.picture.url} alt=""/>
+          <img onClick={()=>{
+            if(props.picture.resCode==1){
+              return message.warn('上传失败的图片无法手动框题目')
+            }
+            props.lookPicture(props.picture,props.index)
+            }} 
+          src={props.picture.url} alt=""/>
           <img className={style.delpng} onClick={()=>deletePictureHander(props.picture,props.index)} src={require('../../images/pdelete.png')} alt=""/>
           {props.picture.resCode==-2?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
+          {props.picture.resCode==1?<div className={style.fail_box}>上传失败</div>:''}
         </div>
       </Spin>
     )

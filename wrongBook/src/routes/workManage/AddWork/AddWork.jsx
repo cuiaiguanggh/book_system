@@ -352,26 +352,26 @@ class WorkManage extends React.Component {
 	}
 	uploadImage(base64img,_pageId){
 		let imgStr=base64img.substring(base64img.indexOf(',/')+1)
+		let _index=this.state.workPages.findIndex((value)=>value._pageId==_pageId)
 		uploadBase64(imgStr,(res)=>{
 			console.log('upload res: ', res.data);
-			if(res.code===0){
-				let _newdata={
-					...this.state.workPages[0],
-					...res.data,
-					resCode:0
-				}
-				let _index=this.state.workPages.findIndex((value)=>value._pageId==_pageId)
-				this.state.workPages.splice(_index,1,_newdata)
-				this.setState({
-					workPages:this.state.workPages
-				})
-				console.log('this.state.workPages: ', this.state.workPages);
-				if(res.data.questions){
-				}else{
+			let _newdata={
+				...this.state.workPages[_index]
+			}
+			if(res.code===0||res.code===2){
+				_newdata={
+					..._newdata,
+					...res.data
 				}
 			}else{
-
+				
 			}
+			_newdata.resCode=res.code
+			this.state.workPages.splice(_index,1,_newdata)
+			this.setState({
+				workPages:this.state.workPages
+			})
+			console.log('this.state.workPages: ', this.state.workPages);
 		})
 	}
 	addImgBtnClick = file => {
