@@ -50,30 +50,23 @@ export default {
 	effects: {
 		*createWork({ payload }, { put, select }){
 			let res = yield createWork(payload);
-			console.log('res: ', res);
-			return res
-		},
-		*getWorkList({ payload }, { put, select }){
-			let res = yield workList(payload);
-			console.log('res: ', res);
 			return res
 		},
 		
 		*uploadImage({ payload }, { put, select }){
 			let res = yield testPage();
-			console.log('res: ', res);
 		},
 		*testPage({ payload }, { put, select }){
 			let res = yield testPage(payload);
-			console.log('res: ', res);
 		},
 		*getSchoolSubjectList({ payload }, { put, select }) {
 			let res = yield subjectNodeList();
+			console.log('res: ', res);
 			let _subs=[]
 			if (res.data && res.data.result === 0&&res.data.data) {
 				_subs=res.data.data
-			} else {
-			}
+			} 
+			console.log('_subs: ', _subs);
 			yield put({
 				type: 'schoolSubjectList',
 				payload: _subs
@@ -139,25 +132,46 @@ export default {
 				type: 'getWorkListFinish',
 				payload: false
 			})
-			let data=[]
-			for (let i = 0; i < 100; i++) {
-				data.push({
-					_index: i,
-					_name: `work ${i}`,
-					_id: i,
-					_classes: [`一年 ${i}班`,`一年 ${i+1}班`],
-					_subject:'学科',
-					_time:"0907",
-				});
+			let wres=yield workList(payload)
+
+			
+			if(wres.data.result===0){
+				if(wres.data.data.list){
+					let nwlist=wres.data.data.list.map((item,i)=>{
+						return {...item,_index:i+1}
+					})
+					yield put({
+						type: 'workList',
+						payload: nwlist||[]
+					})
+				}
+				
+			}else{
+				message.error('获取作业列表失败：'+wres.data.msg)
 			}
 			yield put({
 				type: 'getWorkListFinish',
 				payload: true
 			})
-			yield put({
-				type: 'workList',
-				payload: data
-			})
+			// let data=[]
+			// for (let i = 0; i < 100; i++) {
+			// 	data.push({
+			// 		_index: i,
+			// 		_name: `work ${i}`,
+			// 		_id: i,
+			// 		_classes: [`一年 ${i}班`,`一年 ${i+1}班`],
+			// 		_subject:'学科',
+			// 		_time:"0907",
+			// 	});
+			// }
+			// yield put({
+			// 	type: 'getWorkListFinish',
+			// 	payload: true
+			// })
+			// yield put({
+			// 	type: 'workList',
+			// 	payload: data
+			// })
 		},
 		
 	},

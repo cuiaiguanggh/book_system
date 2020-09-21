@@ -54,6 +54,9 @@ class WorkManage extends React.Component {
                 type:"workManage/schoolSubId",
                 payload:value
               })
+              this.getWorkList({
+                subjectId:value
+              })
             }}>
           {children}
         </Select>
@@ -62,7 +65,7 @@ class WorkManage extends React.Component {
   }
   renderClassList() {
     //内部维护一个班级
-    let classes = this.props.state.pageClassList;
+    let classes = this.props.state.workPageClass.list;
 		const children = [];
     for (let i = 0; i < classes.length; i++) {
       let item = classes[i]
@@ -75,15 +78,18 @@ class WorkManage extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="班级"
+          value={this.props.state.workPageClass.value}
           onChange={(value) => {
-            //   this.props.dispatch({
-            //     type:"classModel/classSubjectData",
-            //     payload:{
-            //       list:classes,
-            //       value
-            //     }
-            //   })
-            //   this.getQuestions(value)
+              this.props.dispatch({
+                type:"workManage/workPageClass",
+                payload:{
+                  list:classes,
+                  value
+                }
+              })
+              this.getWorkList({
+                classId:value
+              })
             }}>
           {children}
         </Select>
@@ -91,28 +97,43 @@ class WorkManage extends React.Component {
     )
   }
 
-
+    getWorkList(option){
+      const{classId,subjectId}=option
+      this.props.dispatch({
+        type: 'workManage/getWorkList',
+        payload:{
+          subjectId:classId||this.props.state.schoolSubId,
+          classId:subjectId||this.props.state.workPageClass.list[0].classId
+        }
+      })
+    }
     addWork(){
         this.props.dispatch(routerRedux.push('/addWork'))
     }
     render() {
       return (
       <>
-      {this.props.state.pageClassList.length?<div className={style.whoBox}> 
-            {this.renderClassList()}
-            { 
-              this.renderSubjectList()
-            }
-            <Button onClick={()=>this.addWork()} type="primary">添加作业</Button>
-           
-        </div>:""}
-
+        <div className={style.whoBox} style={{display:'flex',alignItems:'center'}}>
+          {this.renderClassList()}
+          { 
+            this.renderSubjectList()
+          }
+          <Button onClick={()=>this.addWork()} type="primary">添加作业</Button>
+        </div>
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
           <div className={style.layout}>
             <Layout className={style.innerOut}>
               <Content className={style.content} ref='warpper'>
                 
-              <WorkList  current='student'  location={this.props.location}>
+              <WorkList  current='student'
+                editWork={(data)=>{
+                  console.log('data: ', data);
+
+                }}
+                deleteWork={(item)=>{
+                  console.log('data: ', item);
+                }}
+              >
               </WorkList>
                 
               </Content>
@@ -132,18 +153,23 @@ class WorkManage extends React.Component {
       year: this.props.state.years
     }
     dispatch({
-      type: 'classModel/getPageClass',
+      type: 'workManage/getWorkPageClass',
       payload: data
     }).then((classlist) => {
-      
-      
-    })
-    dispatch({
+      console.log('classlist111111111111: ', classlist);
+      dispatch({
         type: 'workManage/getSchoolSubjectList'
       }).then((res) => {
-          console.log('res: ', res);
-       
+        console.log('this.props.state.schoolSubId: ', this.props.state.schoolSubId);
+        if(classlist.list){
+          this.getWorkList({})
+        }
       })
+      
+      
+     
+    })
+    
 
   }
 
@@ -160,9 +186,8 @@ export default connect((state) => ({
     ...state.report,
     ...state.classHome,
     ...state.homePage,
-    pageClassList:state.classModel.pageClassList,
+    workPageClass:state.workManage.workPageClass,
     years: state.temp.years,
-    classSubjectData:state.classModel.classSubjectData,
     schoolSubjectList:state.workManage.schoolSubjectList,
     schoolSubId:state.workManage.schoolSubId
   }

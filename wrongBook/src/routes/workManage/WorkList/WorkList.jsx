@@ -22,30 +22,30 @@ class HomeworkCenter extends React.Component {
 				title: '序号',
 				align: 'center',
 				dataIndex: '_index',
-				render: (text, record, index) => `${text+1}` // 显示每一行的序号
+				render: (text, record, index) => `${text}` // 显示每一行的序号
 			},
 			{
 			title: '作业名称',
-			dataIndex: '_name',
+			dataIndex: 'examName',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (text)
 		}, {
 			title: '班级',
-			dataIndex: '_classes',
+			dataIndex: 'className',
 			align: 'center',
 			editable: true,
 			render: (text, record) => (text)
 		},{
 			title: '学科',
-			dataIndex: '_subject',
+			dataIndex: 'subjectName',
 			align: 'center',
 			editable: false,
 			className:'thphone',
 			render: (text, record) => (text)
 		}, {
 			title: <div >时间</div>,
-			dataIndex: '_time',
+			dataIndex: 'createTime',
 			align: 'center',
 			editable: false,
 			className:'thphone',
@@ -59,8 +59,8 @@ class HomeworkCenter extends React.Component {
 					<>
 						<span className={style.caozuospan}>错题录入</span>
 						<span className={style.caozuospan}>查看报告</span>
-						<span className={style.caozuospan}>编辑</span>
-						<span className={style.caozuospan}>删除</span>
+						<span className={style.caozuospan} onClick={()=>props.editWork(record)}>编辑</span>
+						<span className={style.caozuospan} onClick={()=>this.deleteWork(record)}>删除</span>
 					</>
 				)
 			}
@@ -69,10 +69,24 @@ class HomeworkCenter extends React.Component {
 
 	}
 
+	deleteWork(witem){
+		console.log('witem: ', witem);
+		const { confirm } = Modal
+		confirm({
+			content: '确定要删除该份作业吗?',
+			onOk() {
+				this.props.deleteWork(witem)
+			},
+			onCancel() {
+				
+			},
+		});
 
+	}
 	render() {
 
 		const data = this.props.state.workList;
+
 
 		let columns = this.workColum;
 		return (
@@ -87,7 +101,7 @@ class HomeworkCenter extends React.Component {
 								<Spin spinning={!this.props.state.getWorkListFinish} style={{height:'100%'}}> 
 									<div className={style.table}>
 										<Table
-											rowKey={record => record.userId}
+											rowKey={record => record._index}
 											className={style.scoreDetTable}
 											dataSource={data}
 											columns={columns}
@@ -105,13 +119,7 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount() {
-		let data={}
-		this.props.dispatch({
-			type: 'workManage/getWorkList',
-			payload: data
-		  }).then((classlist) => {
-			
-		  })
+	
 	}
 
 

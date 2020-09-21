@@ -280,7 +280,7 @@ class WorkManage extends React.Component {
 			},
 			uploadToken:'',
 			fileKey:'',
-			iscreateWOrk:true,
+			iscreateWOrk:false,
 			createWorking:false
     }
 	}
@@ -424,7 +424,7 @@ class WorkManage extends React.Component {
 		console.log('e: ', e,this.state.cpicture,this.state.workPages);
 	}
 
-	initWorkName(subname){
+	initWork(subjectData){
 		var date = new Date();
 		var year = (date.getFullYear())
 		var moun = (date.getMonth()+1)
@@ -434,8 +434,9 @@ class WorkManage extends React.Component {
 		this.setState({
 				work:{
 					...this.state.work,
-					name:`${year}年${moun}月${day}日${subname}作业`,
-					time:`${year}-${moun}-${day}`
+					name:`${year}年${moun}月${day}日${subjectData.v}作业`,
+					time:`${year}-${moun}-${day}`,
+					subjectId:subjectData.k
 				}
 			}
 		)
@@ -984,7 +985,8 @@ class WorkManage extends React.Component {
 		}).then((subs) => {
 			console.log('subs: ', subs);
 			if(subs.length){
-				this.initWorkName(subs[0].v)
+				this.initWork(subs[0])
+			
 			}
 		})
 
