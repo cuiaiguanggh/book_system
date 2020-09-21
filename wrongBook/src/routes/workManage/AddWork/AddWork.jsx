@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-  Layout, Menu,Spin , Button, message,DatePicker, Upload,Select, Popover,Input, Icon, Popconfirm,Empty,Modal, Checkbox
+  Layout, Menu,Spin , Button, message,DatePicker,Select, Popover,Input, Icon, Popconfirm,Empty,Modal, Checkbox
 } from 'antd';
-import {ImageUploader,putb64} from '../../../utils/ImageUploader'
+import {ImageUploader,putb64,uploadBase64} from '../../../utils/ImageUploader'
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
 import style from './AddWork.less';
 import moment from 'moment';
 import store from 'store';
-import Upload1 from '../Upload/Upload'
+import UploadItem from '../Upload/Upload'
 import Section from '../Section/Section'
 import EditPageModal from '../EditPageModal/EditPageModal'
 
@@ -24,7 +24,7 @@ class WorkManage extends React.Component {
     	this.state = {
     
 			test:{
-				"areas": [
+				"questions": [
 					{
 					"num": 0,
 					"pageid": 344215,
@@ -173,7 +173,7 @@ class WorkManage extends React.Component {
 			},
 			test1:{
 				"name":'',
-				"areas": [{
+				"questions": [{
 					"num": 0,
 					"areas": [{
 						"imgUrl": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient/gravity/NorthWest/rotate/-0.0/crop/!1070.991947907834x449.173828125a139.9599609375a117.17578125",
@@ -267,7 +267,7 @@ class WorkManage extends React.Component {
 			fixedWidth:'100%',
 			_boxWidth:'',
 			picture:{
-				"areas": [],
+				"questions": [],
 				"url": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
 				"serUrl": "https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient",
 				"_displayImage": {
@@ -275,7 +275,8 @@ class WorkManage extends React.Component {
 					"height": 499.95,
 					"left": 0,
 					"top": 0
-				}
+				},
+				resCode:-1
 			},
 			uploadToken:'',
 			fileKey:''
@@ -349,42 +350,47 @@ class WorkManage extends React.Component {
 		</>
 		)
 	}
+	uploadImage(base64img,_pageId){
+		let imgStr=base64img.substring(base64img.indexOf(',/')+1)
+		uploadBase64(imgStr,(res)=>{
+			console.log('upload res: ', res.data);
+			if(res.code===0){
+				let _newdata={
+					...this.state.workPages[0],
+					...res.data,
+					resCode:0
+				}
+				let _index=this.state.workPages.findIndex((value)=>value._pageId==_pageId)
+				this.state.workPages.splice(_index,1,_newdata)
+				this.setState({
+					workPages:this.state.workPages
+				})
+				console.log('this.state.workPages: ', this.state.workPages);
+				if(res.data.questions){
+				}else{
+				}
+			}else{
 
-	addImgBtnClick = file => {
-		let _arr=this.state.workPages
-		_arr.push(this.state.test)
-		this.setState({
-			workPages:_arr
+			}
 		})
-		console.log('workPages: ', this.state.workPages);
-		let image='local://'
-		
-		// this.props.dispatch({
-		// 	type:'workManage/uploadImage',
-		// 	payload:this.state.picture
-		// })
-
+	}
+	addImgBtnClick = file => {
 		var reader = new FileReader();
-		//filses就是input[type=file]文件列表，files[0]就是第一个文件，这里就是将选择的第一个图片文件转化为base64的码
 		const { files } = file.target
 		reader.readAsDataURL(files[0]);
-		
 		reader.onload = ()=>{
-			//或者 e.target.result都是一样的，都是base64码
-			// let imgStr = reader.result.split(',')[1];
-			let a=reader.result
-			let imgStr=reader.result.substring(reader.result.indexOf(',/')+1)
-			console.log('需要上传的base64格式图片:' + imgStr);
-			// this.setState({
-			// 	picture:{
-			// 		...this.state.picture,
-			// 		base64:imgStr,
-			// 		url:a
-			// 	}
-			// })
-			// let _ImageUploader=new ImageUploader({picture:this.state.picture})
-			// _ImageUploader.uploadQn(imgStr)
-			putb64(imgStr,1)
+			
+			let _arr=this.state.workPages
+			let _pid=`_id:${new Date().getTime()}`
+			_arr.push({
+				...this.state.picture,
+				url:reader.result,
+				_pageId:_pid
+			})
+			this.setState({
+				workPages:_arr
+			})
+			this.uploadImage(reader.result,_pid)
 		}
 	}
 
@@ -600,19 +606,19 @@ class WorkManage extends React.Component {
 							学科：{this.renderSchoolSubjectList()}
 						</div>
 				</div>
-				<img src={this.state.picture.url} width={100} alt=""/>
 				<div>
 					<div className='clearfix'>
 							{
 								this.state.workPages.map((item, i) => {
 									return (
-										<div key={item.pageId}  className={style.uploadbox}>
-											<Upload1 lookPicture={this.showCropModel}  picture={item} index={i}
+										<div key={item._pageId}  className={style.uploadbox}>
+											<UploadItem lookPicture={this.showCropModel}  picture={item} index={i}
 												deletePictureHander={(p,index)=>{
-													console.log('p,index: ', p,index);
-													this.deletePictureBonfirm(p,index)
-												}}
-											></Upload1>
+														console.log('p,index: ', p,index);
+														this.deletePictureBonfirm(p,index)
+													}
+												}
+											></UploadItem>
 										</div>
 										)
 									})
@@ -620,30 +626,17 @@ class WorkManage extends React.Component {
 						
 						<div className={style.uploadbox}>
 							<div className={[style.uploadBtn,'cup'].join(' ')} 
-								
+	
 							>
 							<input
 								type='file'
-								id='file'
+								className={style._file}
 								accept='image/*'
 								title=''
 								onChange={this.addImgBtnClick}             
 							></input>
-							添加图片
+							 添加图片
 							</div>
-						</div>
-						<div className={style.uploadbox}>
-						<Upload
-							name= 'file'
-							action= 'http://up-z2.qiniup.com'
-							data={this.getUploadToken}
-							beforeUpload={this.beforeUpload.bind(this)}
-							onChange={this.handleUploadChange}
-							>
-							<Button>
-							Click to Upload
-							</Button>
-						</Upload>
 						</div>
 					</div>
 					<div style={{marginTop:32}}>
@@ -651,7 +644,7 @@ class WorkManage extends React.Component {
 								this.state.workPages.map((item, i) => {
 									return (
 										<div key={i} style={{marginTop:14}} className={style.queitem}>
-											<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.areas?item.areas.map((area, j) => {
+											<span style={{width:60}} className={style.quelabel}>图片{i+1}</span> {item.questions?item.questions.map((area, j) => {
 											return (
 											<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
 															)
@@ -900,10 +893,10 @@ class WorkManage extends React.Component {
 		]
 		for (let index = 0; index < array.length; index++) {
 			const element = array[index]
-			if(element.areas.length){
+			if(element.questions.length){
 			
-				for (let j = 0; j < element.areas.length; j++) {
-					_arr.push(element.areas[j])
+				for (let j = 0; j < element.questions.length; j++) {
+					_arr.push(element.questions[j])
 					
 				}
 			}
