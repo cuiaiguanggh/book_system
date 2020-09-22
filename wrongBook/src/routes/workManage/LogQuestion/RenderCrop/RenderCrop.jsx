@@ -28,43 +28,44 @@ class LogContent extends React.Component {
 		})
 	}
 	render() {
-		let picture=this.state.cpicture
 		return (
-			<div className={style.img_box} >
-							<img style={{width:720}}  src={picture.serUrl} alt=""/>
-							{
-								picture.areas?picture.areas.map((item, i) => {
-									return (
-										<div className={style.rect_item}        
-											key={i}  
-											style={{
-													width:item.area.width/720*this.state.scwidth+'px',
-													height:item.area.height/720*this.state.scwidth+'px',
-													left:item.area.x/720*this.state.scwidth+'px',
-													top:item.area.y/720*this.state.scwidth+'px',
-													zIndex:50-i,
-											}} 
-											onClick={(e)=>{this.cropItemClick(i,picture)}} 
-										
-											>
-											<span className={style.inputnum}>{i+1}</span>
-											{item.iscuowu?<img style={{width:20}} src={require('../../../images/cuowu.png')}></img>:""}
-									</div>
-										
-										)
-									}):''
-							}
-				</div>
+			
+			this.props._partList.map((part, j) => {
+				return(
+					<div className={style.img_box} key={part.partId}>
+						<img style={{width:720}}  src={part.partUrl} alt=""/>
+						{
+							part.questions?part.questions.map((item, i) => {
+								return (
+									<div className={style.rect_item}        
+										key={`${item.aftId}${i}`}  
+										style={{
+												width:item.areaList[0].areaWidth/720*this.state.scwidth+'px',
+												height:item.areaList[0].areaHeight/720*this.state.scwidth+'px',
+												left:item.areaList[0].pointX/720*this.state.scwidth+'px',
+												top:item.areaList[0].pointY/720*this.state.scwidth+'px',
+												zIndex:50-i,
+										}} 
+										onClick={(e)=>{this.props._updateChecked(j,i)}}  
+									
+										>
+										<span className={style.inputnum}>{i+1}</span>
+										{item.iscuowu?<img style={{width:20}} src={require('../../../images/cuowu.png')}></img>:""}
+								</div>
+									
+									)
+								}):''
+						}
+					</div>
+				)
+		})
 		);
+	
 	}
 	componentDidMount() {
-		this.setState({
-			cpicture:this.props.picture
-		})
+	
 	}
-	UNSAFE_componentWillMount() {
-		
-	}
+
 
 }
 

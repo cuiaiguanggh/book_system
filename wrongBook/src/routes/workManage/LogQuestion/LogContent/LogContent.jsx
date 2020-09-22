@@ -183,23 +183,18 @@ class LogContent extends React.Component {
 
 	}
 
-	cropItemClick (index,i,pic) {
 
-		pic['areas'][i]['selected']=!pic['areas'][i]['selected']
-		// this.state.cpicture.areas[index]['selected']=!this.state.cpicture.areas[index]['selected']
-		console.log('this.state.cpicture: ', pic);
-	}
 	render() {
-		let wpages=this.state.tests
+		let wpages=this.props._prop_partList
+		console.log('wpages: ', wpages);
 		return (
 			<div style={{padding:!this.props.state.logType?'20px':''}}>
 				{
-					wpages.map((picture, j) => {
-						let _t=JSON.stringify(picture)
-						return (
-							<>
-								{!this.props.state.logType?<RenderCropItem picture={picture} index={j} key={j}></RenderCropItem>:<RenderCrop picture={JSON.parse(_t)} key={j}></RenderCrop>}
-							</>
+					wpages.map((part, j) => {
+						// return (
+						// 	<>
+						// 		{!this.props.state.logType?<RenderCropItem _updateChecked={(j,i,p)=>this.props._updateChecked(j,i,p)} _questions={part.questions} index={j} key={part.partId}></RenderCropItem>:<RenderCrop picture={part} key={j}></RenderCrop>}
+						// 	</>
 							
 							)
 						})

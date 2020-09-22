@@ -1,6 +1,7 @@
 import {
 	pageClass,
-	subjectNodeList
+	subjectNodeList,
+	teacherList
 } from '../services/classHomeService';
 import {
 	testPage
@@ -30,9 +31,17 @@ export default {
 			groupList:[]
 		},
 		workPartList:[],
-		workPartInfo:{}
+		workPartInfo:{},
+		logType:false,
+		students:[]
 	},
 	reducers: {
+		students(state, { payload }) {
+			return { ...state, students: payload };
+		},
+		logType(state, { payload }) {
+			return { ...state, logType: payload };
+		},
 		workList(state, { payload }) {
 			return { ...state, workList: payload };
 		},
@@ -61,6 +70,36 @@ export default {
 	},
 
 	effects: {
+		getStudents: [function* ({ payload }, { put, select }) {
+			yield put({
+				type: 'getClassMembersFinish',
+				payload: false
+			})
+			let userNews = store.get('wrongBookNews');
+			let data = {
+				type: 3,
+				schoolId: userNews.schoolId,
+				page: 1,
+				pageSize: 9999,
+				classId:payload.classId
+			}
+			let _classStudentList=[]
+			let res = yield teacherList(data);
+			if (res.data && res.data.result === 0&&res.data.data) {
+				_classStudentList=res.data.data
+			}
+			
+			yield put({
+				type: 'students',
+				payload:_classStudentList
+			})
+			yield put({
+				type: 'getClassMembersFinish',
+				payload: true
+			})
+			return _classStudentList
+
+		}],
 		*createWork({ payload }, { put, select }){
 			let res = yield createWork(payload);
 			return res
