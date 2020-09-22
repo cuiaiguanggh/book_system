@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-10 09:35:26
- * @LastEditTime: 2020-09-22 10:28:00
+ * @LastEditTime: 2020-09-22 14:14:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\services\yukeService.js
@@ -52,12 +52,27 @@ function createPartAndDiscover(payload) {
         method: 'post'
     });
 }
+
 //
+function workPartList(payload) {
+    return requestYk(`${burl}exam/partList?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
+function workPartInfo(payload) {
+    return requestYk(`${burl}exam/partInfo?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 export {
     fetchQuestions,
     getWorkList,
     createWork,
     workList,
     areaDiscern,
-    createPartAndDiscover
+    createPartAndDiscover,
+    workPartList,
+    workPartInfo,
 };

@@ -7,7 +7,7 @@ import {
 } from '../services/tempService';
 
 import {
-	areaDiscern,createWork, workList,createPartAndDiscover
+	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -23,7 +23,12 @@ export default {
 		schoolSubjectList:[],
 		schoolSubId:0,
 		getWorkListFinish:false,
-		workList:[]
+		workList:[],
+		work:{
+			workPartList:[]
+		},
+		workPartList:[],
+		workPartInfo:{}
 	},
 	reducers: {
 		workList(state, { payload }) {
@@ -40,6 +45,12 @@ export default {
 		},
 		schoolSubjectList(state, { payload }) {
 			return { ...state, schoolSubjectList: payload };
+		},
+		workPartList(state, { payload }) {
+			return { ...state, workPartList: payload };
+		},
+		workPartInfo(state, { payload }) {
+			return { ...state, workPartInfo: payload };
 		},
 		
 	},
@@ -181,7 +192,27 @@ export default {
 			console.log('createPartAndDiscover res: ', res);
 
 		},
-		
+		*getWorkPartList({ payload }, { put, select }){
+			let res = yield workPartList(payload);
+			
+			if(res.data.result===0){
+				if(res.data.data.list){
+					yield put({
+						type: 'workPartList',
+						payload:res.data.data.list
+					})
+				}
+			}
+			console.log('workPartList res: ', res);
+
+		},
+		*getWorkPartInfo({ payload }, { put, select }){
+			let res = yield workPartInfo(payload);
+			
+			
+			console.log('workPartInfo res: ', res);
+
+		},
 		
 	},
 

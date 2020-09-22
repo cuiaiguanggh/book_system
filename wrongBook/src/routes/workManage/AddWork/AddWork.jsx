@@ -1056,7 +1056,7 @@ class WorkManage extends React.Component {
       year: this.props.state.years
 		}
 		
-
+		let {classId,examName,examId,subjectId}=aa
     dispatch({
       type: 'workManage/getWorkPageClass',
       payload: data
@@ -1075,7 +1075,7 @@ class WorkManage extends React.Component {
 				console.log('subs: ', subs);
 				if(subs.length){
 					// this.initWorkName(subs[0])
-					let {classId,examName,examId,subjectId}=aa
+					
 					this.setState({
 						work:{
 							...this.state.work,
@@ -1100,7 +1100,15 @@ class WorkManage extends React.Component {
 				}
 			})
     })
-    
+		
+		dispatch({
+			type:"workManage/getWorkPartList",
+			payload:{
+				examId
+			}
+		}).then(partlist=>{
+			//调用partinfo接口
+		})
 
   }
 
