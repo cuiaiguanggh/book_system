@@ -356,10 +356,16 @@ class WorkManage extends React.Component {
 		</>
 		)
 	}
-	uploadImage(base64img,_pageId){
+	uploadImage(base64img,pitem){
 		let imgStr=base64img.substring(base64img.indexOf(',/')+1)
-		let _index=this.state.workPages.findIndex((value)=>value._pageId==_pageId)
-		uploadBase64(imgStr,(res)=>{
+		let _index=this.state.workPages.findIndex((value)=>value._pageId==pitem._pageId)
+		let option={
+			examId:10,
+			partName:pitem.partName,
+			remark:pitem.partName,
+			picBase:imgStr
+		}
+		uploadBase64(option,(res)=>{
 			console.log('upload res: ', res.data);
 			let _newdata={
 				...this.state.workPages[_index]
@@ -389,15 +395,19 @@ class WorkManage extends React.Component {
 			
 			let _arr=this.state.workPages
 			let _pid=`_id:${new Date().getTime()}`
-			_arr.push({
+			let _num=_arr.length+1
+			let pitem={
 				...this.state.picture,
 				url:reader.result,
-				_pageId:_pid
-			})
+				_pageId:_pid,
+				partName:'图片'+_num,
+				remark:'图片'+_num,
+			}
+			_arr.push(pitem)
 			this.setState({
 				workPages:_arr
 			})
-			this.uploadImage(reader.result,_pid)
+			this.uploadImage(reader.result,pitem)
 		}
 	}
 

@@ -1,6 +1,7 @@
 
 import { getQiniuToken } from './fileUpload/qntoken'
-import { testPage,getFileToken } from '../services/workService'
+import {getFileToken} from '../services/workService'
+import { testPage,createPartAndDiscover } from '../services/yukeService'
 import { message } from 'antd'
 const qiniuUploader = require('./fileUpload/qiniuUploader')
 class ImageUploader {
@@ -35,7 +36,11 @@ class ImageUploader {
 
 export {ImageUploader}
 
-export async function uploadBase64 (picBase,complete){
+export async function uploadBase64 (option,complete){
+  const {picBase, examId,
+  partName,
+  remark}=option
+
   let res=await getFileToken()
   console.log('token: ', res);
   if(res.data.result===0){
@@ -44,11 +49,17 @@ export async function uploadBase64 (picBase,complete){
         message.error('图片上传失败')
         return complete({code:1})
       }
-      let picUrl = "https://homework.mizholdings.com/" + key
-      let res1= await testPage(picUrl)
+      let partUrl = "https://homework.mizholdings.com/" + key
+      let redata={
+        examId,
+        partName,
+        partUrl,
+        remark
+      }
+      let res1= await createPartAndDiscover(redata)
       if(res1.data.result===0){
         let _data=initReposeData(res1.data.data)
-        _data.serUrl=picUrl
+        _data.serUrl=partUrl
         complete({code:_data.questions?0:2,data:_data})
       }else{
         message.error('识别失败')

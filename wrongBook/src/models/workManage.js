@@ -7,7 +7,7 @@ import {
 } from '../services/tempService';
 
 import {
-	areaDiscern,createWork, workList
+	areaDiscern,createWork, workList,createPartAndDiscover
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -176,6 +176,12 @@ export default {
 			console.log('areaDiscern res: ', res);
 
 		},
+		*createPartAndDiscover({ payload }, { put, select }){
+			let res = yield createPartAndDiscover(payload);
+			console.log('createPartAndDiscover res: ', res);
+
+		},
+		
 		
 	},
 

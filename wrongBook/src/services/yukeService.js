@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-10 09:35:26
- * @LastEditTime: 2020-09-21 19:48:42
+ * @LastEditTime: 2020-09-22 10:28:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\services\yukeService.js
@@ -35,17 +35,29 @@ function workList(payload) {
     });
 }
 function areaDiscern(payload) {
-    return areaDiscern(`${burl}exam/areaDiscern?token=${token}`, {
+    return requestYk(`${burl}exam/areaDiscern?token=${token}`, {
         data: payload,
         method: 'post'
     });
 }
 
+//7.创建分片和识别
+// body.examId	int,关联作业ID	
+// body.partName	string,分片名称	
+// body.partUrl	string,分片图片URL	
+// body.remark	string,备注
+function createPartAndDiscover(payload) {
+    return requestYk(`${burl}exam/createPart?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 //
 export {
     fetchQuestions,
     getWorkList,
     createWork,
     workList,
-    areaDiscern
+    areaDiscern,
+    createPartAndDiscover
 };

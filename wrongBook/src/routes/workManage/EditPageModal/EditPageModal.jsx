@@ -456,12 +456,12 @@ class EditPageModal extends React.Component {
 					<div key='1' style={{display:'inline-block',float:'left'}}>
 						备注：
 						<Input key='2' style={{width:'250px'}} type='text' 
-							value={this.props.cpicture.marks} 			
+							value={this.props.cpicture.remark} 			
 							onChange={(e)=>{
 										this.setState({
 											cpicture:{
 												...this.props.cpicture,
-												marks:e.target.value
+												remark:e.target.value
 											}
 										})
 								}}
