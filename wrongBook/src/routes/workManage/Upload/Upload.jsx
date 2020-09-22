@@ -14,6 +14,7 @@ class Upload1 extends React.Component {
   }
   
   deletePictureHander(p,index){
+    let _this=this
     Modal.confirm({
       title: '提示',
       content: '确定要删除该图片吗',
@@ -21,7 +22,7 @@ class Upload1 extends React.Component {
       cancelText: '取消',
       onOk(e){
         Modal.destroyAll()
-        this.props.deletePictureHander(p,index)
+        _this.props.deletePictureHander(p,index)
       }
     })
   }
@@ -61,7 +62,7 @@ class Upload1 extends React.Component {
           }} 
         src={this.props.picture.url} alt=""/>
         <img className={style.delpng} onClick={()=>this.deletePictureHander(this.props.picture,this.props.index)} src={require('../../images/pdelete.png')} alt=""/>
-        {this.props.picture.resCode==-2?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
+        {this.props.picture.resCode==2?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
         {this.props.picture.resCode==1?<div className={style.fail_box}>上传失败</div>:''}
       </div>
     </Spin>
@@ -69,7 +70,7 @@ class Upload1 extends React.Component {
   }
 
   componentDidMount() {
-		console.error('upload item mounted')
+		console.error('upload item mounted',this.props.picture)
 		
   }
 

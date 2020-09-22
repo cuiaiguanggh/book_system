@@ -7,7 +7,7 @@ import {
 } from '../services/tempService';
 
 import {
-	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo
+	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -25,7 +25,9 @@ export default {
 		getWorkListFinish:false,
 		workList:[],
 		work:{
-			workPartList:[]
+			info:{},
+			patrList:[],
+			groupList:[]
 		},
 		workPartList:[],
 		workPartInfo:{}
@@ -213,6 +215,32 @@ export default {
 			console.log('workPartInfo res: ', res);
 
 		},
+		*delPart({ payload }, { put, select }){
+			let res = yield delPart(payload);
+			if(res.data.result===0){
+				
+			}
+			console.log('examId res: ', res);
+		},
+		*publishWork({ payload }, { put, select }){
+			return  yield publishWork(payload);
+		},
+		*updateWork({ payload }, { put, select }){
+			return  yield updateWork(payload);
+		},
+		
+		*getExamInfo({ payload }, { put, select }){
+			let res = yield examInfo({examId:10});
+			if(res.data.result===0){
+				yield put({
+					type: 'work',
+					payload: res.data.data
+				})
+				
+			}
+			return res.data.data
+			console.log('examId res: ', res);
+		}
 		
 	},
 

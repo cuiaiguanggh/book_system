@@ -6,7 +6,7 @@ import axios from 'axios';
 class ImageUploader {
   constructor (option) {
     console.log('option: ', option);
-    
+    //-1正在处理  0 识别成功  1上传失败  2 识别失败
   };
   
   async uploadToQiniu(file){
@@ -35,7 +35,7 @@ class ImageUploader {
       return {code:_data.questions?0:2,data:_data}
     }else{
       message.error('识别失败')
-      return{code:-2}
+      return{code:2}
     }
   }
 

@@ -383,8 +383,8 @@ class EditPageModal extends React.Component {
 			y: _y,
 			height: _height,
 			width: _width,
-			rotate: 0,
-			_index:99
+			rotate: 0
+			
 		}
 		this.props.cpicture.questions.push({
 			area: _area,
@@ -393,7 +393,8 @@ class EditPageModal extends React.Component {
 			pageid: this.props.cpicture.pageId,
 			type: 0,
 			selected: true,
-			addRect: true
+			addRect: true,
+			_index:99
 		})
 		this.setState({
 			cropIndex : this.props.cpicture.questions.length-1,
@@ -408,6 +409,7 @@ class EditPageModal extends React.Component {
 
 		// 	this.state.workPages.splice(this.state.cpindex,1,this.props.cpicture)
 		// }
+		console.log('点击确认 重新排序')
 		this.setState({
 			workPages:this.state.workPages
 		})
@@ -430,6 +432,9 @@ class EditPageModal extends React.Component {
 		this._saveCropItem()
 		// let _cropArea=this.state.cpicture.questions[_index]
 		console.log('this.state.cpicture.questions: ', this.props.cpicture.questions);
+		let _questions=this.props.cpicture.questions
+		this.getOrderQuestions(_questions)
+		//针对questions做一次新的排序
 		// let _areaReqData={
 		// 	partId:_cropArea.pageid,//分片id
 		// 	examId:10,//	int
@@ -442,6 +447,50 @@ class EditPageModal extends React.Component {
 		// }
 		// console.log('_cropArea: ', _cropArea,_areaReqData);
 	}
+
+	getOrderQuestions(_questions){
+		function compare (property) {
+			return function (a, b) {
+				var area0 = a[property]
+				var area1 = b[property]
+				return SetSortRule(area1,area0)// 从小到大排列， v2 - v1从大到小排列
+			}
+		}
+
+		function SetSortRule(p1, p2) {
+				if (p1.x > p2.x) {
+						return false;
+				}
+				else if (p1.x == p2.x) {
+						return (p1.y > p2.y);
+				}
+				else {
+						return false;
+				}
+		}
+		_questions = _questions.sort(compare('area'))
+		console.log('新排序_questions: ', _questions);
+	}
+	getOrderQuestions1(xyArray){
+		var i, j, t,
+				n = xyArray.length;
+		for(i=1; i<n; i++){
+				for(j=0; j<n-i; j++){
+						if(xyArray[j].area.y == xyArray[j+1].area.y && xyArray[j].area.x > xyArray[j+1].area.x){
+								t = xyArray[j].area;
+								xyArray[j].area=xyArray[j+1].area;
+								xyArray[j+1].area= t;
+						}else if(xyArray[j].area.y > xyArray[j+1].area.y){
+								t = xyArray[j].area;
+								xyArray[j]=xyArray[j+1].area;
+								xyArray[j+1]= t;
+						}
+				}
+		}
+		console.log('xyArray: ', xyArray);
+		return xyArray;
+}
+
 	render() {
 		return (
 			<Modal

@@ -236,6 +236,7 @@ class WorkManage extends React.Component {
 			
 			cpindex:0,
 			commitWorking:false,
+			saveWorking:false,
 			work:{
 				name:'未命名作业',
 				classes:[],
@@ -282,7 +283,8 @@ class WorkManage extends React.Component {
 			uploadToken:'',
 			fileKey:'',
 			iscreateWOrk:false,
-			createWorking:false
+			createWorking:false,
+			_work:{}
     }
 	}
 
@@ -507,11 +509,18 @@ class WorkManage extends React.Component {
 
 
 	deletePictureBonfirm(p,index) {
-		this.state.workPages.splice(index,1)
-		this.setState({
-			workPages:this.state.workPages
+		console.log('(p,index: ', p,index)
+		// this.state.workPages.splice(index,1)
+		// this.setState({
+		// 	workPages:this.state.workPages
+		// })
+		this.props.dispatch({
+			type:"workManage/delPart",
+			payload:{
+				examId:p.examId,
+				partId:p.partId
+			}
 		})
-		
 	}
 	dragOver(e,_partIndex){
 		this.setState({
@@ -538,35 +547,101 @@ class WorkManage extends React.Component {
 		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
 	}
 
-	onEditFinish=()=>{
+	// onEditFinish=()=>{
+	// 	this.state.work.pages=this.state.workPages
+	// 	this.state.work.partQuestions=this.state.partQuestions
+	// 	this.setState({
+	// 		work:this.state.work
+	// 	})
+	// 	console.log('this.state.work',this.state.work,this.state.partQuestions,this.state.workPages)
+	// 	let msg=''
+	// 	  if(!this.state.work.subjectId) {
+	// 		  msg='请选择一个学科！'
+	// 	  }
+	// 	  if(!this.state.work.classes||!this.state.work.classes.length) {
+	// 		  msg='请选择一个班级！'
+	// 	  }
+	// 	  if(msg){
+	// 		  message.destroy()
+	// 		  message.warn(msg)
+	// 		  return
+	// 	  }
+	// 	  this.setState({
+	// 	  	commitWorking:true
+	// 	  })
+	// 	  setTimeout(() => {
+	// 		  this.props.dispatch({
+	// 				type:"workManage/publishWork",
+	// 				payload:{
+	// 					examId:10
+	// 				}
+	// 			}).then(res=>{
+	// 				message.destroy()
+	// 				if(res.data.result===0){
+	// 					message.success('作业发布成功')
+	// 				}else{
+	// 					message.error('作业发布失败')
+	// 				}
+	// 				this.setState({
+	// 					commitWorking:false
+	// 				})
+	// 			})
+				
+	// 		}, 200);
+			
+	  
+	// }
+	checkWorkValue(){
+		let msg=''
+		if(!this.state.work.subjectId) {
+			msg='请选择一个学科！'
+		}
+		if(!this.state.work.classes||!this.state.work.classes.length) {
+			msg='请选择一个班级！'
+		}
+		if(msg){
+			message.destroy()
+			message.warn(msg)
+		}
+		return msg
+	}
+	updateWork=(type)=>{
 		this.state.work.pages=this.state.workPages
 		this.state.work.partQuestions=this.state.partQuestions
 		this.setState({
 			work:this.state.work
 		})
 		console.log('this.state.work',this.state.work,this.state.partQuestions,this.state.workPages)
-		let msg=''
-		  if(!this.state.work.subjectId) {
-			  msg='请选择一个学科！'
-		  }
-		  if(!this.state.work.classes||!this.state.work.classes.length) {
-			  msg='请选择一个班级！'
-		  }
-		  if(msg){
-			  message.destroy()
-			  message.warn(msg)
-			  return
-		  }
-		  // this.setState({
-		  // 	commitWorking:true
-		  // })
-		  return
-		  store.set('workdata', this.state.workPages);
-		  setTimeout(() => {
-			  console.log('store.getworkdata): ', store.get('workdata'));
-			  this.props.dispatch(routerRedux.push('/workManage'))
-		  }, 1000);
-	  
+		if(this.checkWorkValue())return
+		(type=='updateWork')?this.setState({saveWorking:true}):this.setState({
+			commitWorking:true
+		})
+		const {name,subjectId,classes,time}=this.state.work
+		let prdata={
+			examName:name,
+			subjectId,
+			classId:Array.isArray(classes)?classes.join(','):classes,
+			schoolId:store.get('wrongBookNews').schoolId,
+			workTime:time,
+			examId:10
+		}
+		setTimeout(() => {
+			this.props.dispatch({
+				type:`workManage/${type}`,
+				payload:prdata
+			}).then(res=>{
+				message.destroy()
+				if(res.data.result===0){
+					message.success('作业保存成功')
+				}else{
+					message.error('作业保存失败'+res.data.msg)
+				}
+				(type=='updateWork')?this.setState({saveWorking:false}):this.setState({
+					commitWorking:false
+				})
+			})
+			
+		}, 200);
 	}
 	containetScroll(e) {
 		let _w=document.querySelector('#kacha_side').offsetWidth
@@ -785,10 +860,16 @@ class WorkManage extends React.Component {
 												})
 											}}
 									>显示试题</Checkbox>
-									<Button loading={this.state.commitWorking} onClick={()=>{this.onEditFinish()}} style={{marginLeft:14,position:'absolute'}} type='primary'>
-										发布作业
-									</Button>
 
+									<div className={style.btn_box}>
+										<Button loading={this.state.commitWorking} onClick={()=>{this.updateWork('updateWork')}} >
+											保存作业
+										</Button>
+										<Button loading={this.state.saveWorking} className={style.saveworkbtn} onClick={()=>{this.updateWork('pulishWork')}} style={{marginLeft:14}} type='primary'>
+											发布作业
+										</Button>
+									</div>
+									
 								</div>
 								<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
 								<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
@@ -949,7 +1030,7 @@ class WorkManage extends React.Component {
 																})
 															}}
 															>
-															<Section  ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+															<Section   showQuestion={this.state.lookQuestion} 
 																index={i} question={item} 
 																key={`${item.pageid}${i}`} 
 																deleteSectionHander={(index)=>{
@@ -1017,8 +1098,8 @@ class WorkManage extends React.Component {
 			_index: 1
 		}
 
+		let partQuestions=this.state.partQuestions
 		setTimeout(() => {
-			let partQuestions=this.state.partQuestions
 			let array=[this.state.test,this.state.test1]
 			// this.setState({
 			// 	workPages:[this.state.test,this.state.test1]
@@ -1074,7 +1155,7 @@ class WorkManage extends React.Component {
 			}).then((subs) => {
 				console.log('subs: ', subs);
 				if(subs.length){
-					// this.initWorkName(subs[0])
+					this.initWorkName(subs[0])
 					
 					this.setState({
 						work:{
@@ -1102,14 +1183,36 @@ class WorkManage extends React.Component {
     })
 		
 		dispatch({
-			type:"workManage/getWorkPartList",
+			type:"workManage/getExamInfo",
 			payload:{
 				examId
 			}
-		}).then(partlist=>{
+		}).then(workdata=>{
+			console.log('workdata: ', workdata);
 			//调用partinfo接口
-		})
+			this.setState({
+				_work:workdata
+			})
 
+
+			let _arr=[]
+			for (let index = 0; index < workdata.partList.length; index++) {
+				const element = workdata.partList[index]
+				if(element.questions.length){
+				
+					for (let j = 0; j < element.questions.length; j++) {
+						_arr.push(element.questions[j])
+						
+					}
+				}
+			}
+			partQuestions.questions=_arr
+
+			this.setState({
+				partQuestions:partQuestions
+			})
+		})
+		
   }
 
   componentWillUnmount() {

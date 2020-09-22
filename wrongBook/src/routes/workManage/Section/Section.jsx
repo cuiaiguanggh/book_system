@@ -56,11 +56,11 @@ export default function Section(props) {
 						</div>
 						<div className={style._content}>
 							<div>
-								<img style={{marginBottom:14}} src={props.question.area?props.question.area.imgUrl:''} alt=""/>
+								<img style={{marginBottom:14}} src={props.question.areaList?props.question.areaList[0].areaUrl:''} alt=""/>
 							</div>
-							{props.showQuestion&&props.question.question?<>
+							{props.showQuestion&&props.question?<>
 							<div>
-								<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: props.question.question.title }}>
+								<div className={style.qtitle} dangerouslySetInnerHTML={{ __html: props.question.qusContent }}>
 								</div>
 							</div>
 
@@ -75,7 +75,7 @@ export default function Section(props) {
 								</div>
 								<div className={[showParse?'hide qparse':'qparse'].join(' ')} >
 									【解析】
-									<div  dangerouslySetInnerHTML={{ __html: props.question.question.parse }}>
+									<div  dangerouslySetInnerHTML={{ __html: props.question.analysis }}>
 									</div>
 								</div >
 
