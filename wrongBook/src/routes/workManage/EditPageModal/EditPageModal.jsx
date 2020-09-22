@@ -609,12 +609,7 @@ class EditPageModal extends React.Component {
   }
 
   componentDidMount() {
-	setTimeout(() => {
-		this.setState({
-			cpicture:this.props.cpicture
-		})
-		console.log("EditPageModal cpicture", this.props.cpicture)
-	}, 500);
+
 
   }
 

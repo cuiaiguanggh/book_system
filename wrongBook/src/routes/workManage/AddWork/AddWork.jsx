@@ -293,7 +293,7 @@ class WorkManage extends React.Component {
 
 	renderSchoolSubjectList() {
 		let subList = this.props.state.schoolSubjectList;
-			const children = [];
+		const children = [];
 		for (let i = 0; i < subList.length; i++) {
 		let item = subList[i]
 		children.push(	<Option key={i} value={item.k}>{item.v}</Option>);
@@ -304,7 +304,8 @@ class WorkManage extends React.Component {
 			style={{ width: 90,marginRight:20 }}
 			suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 			optionFilterProp="children"
-			placeholder="学科"
+			placeholder="请选择学科"
+			defaultValue='学科'
 			value={this.props.state.schoolSubId}
 			onChange={(value) => {
 				this.props.dispatch({
@@ -356,39 +357,45 @@ class WorkManage extends React.Component {
 		</>
 		)
 	}
-	uploadImage(base64img,pitem){
-		let imgStr=base64img.substring(base64img.indexOf(',/')+1)
+	async uploadImage(file,pitem){
+		// let imgStr=base64img.substring(base64img.indexOf(',/')+1)
 		let _index=this.state.workPages.findIndex((value)=>value._pageId==pitem._pageId)
+
+
+		let _ImageUploader=new ImageUploader()
+		let partUrl=await _ImageUploader.uploadToQiniu(file)
+		console.log('imgurl: ', partUrl);
+		if(!partUrl) return 
 		let option={
 			examId:10,
 			partName:pitem.partName,
 			remark:pitem.partName,
-			picBase:imgStr
+			partUrl
 		}
-		uploadBase64(option,(res)=>{
-			console.log('upload res: ', res.data);
-			let _newdata={
-				...this.state.workPages[_index]
+
+		let res=await _ImageUploader.createPartAndDiscover(option)
+		console.log('upload res: ', res.data);
+		let _newdata={
+			...this.state.workPages[_index]
+		}
+		if(res.code===0||res.code===2){
+			_newdata={
+				..._newdata,
+				...res.data
 			}
-			if(res.code===0||res.code===2){
-				_newdata={
-					..._newdata,
-					...res.data
-				}
-			}else{
-				
-			}
-			_newdata.resCode=res.code
-			this.state.workPages.splice(_index,1,_newdata)
-			this.setState({
-				workPages:this.state.workPages
-			})
-			console.log('this.state.workPages: ', this.state.workPages,JSON.stringify(this.state.workPages));
+		}else{
+			
+		}
+		_newdata.resCode=res.code
+		this.state.workPages.splice(_index,1,_newdata)
+		this.setState({
+			workPages:this.state.workPages
 		})
+		console.log('this.state.workPages: ', this.state.workPages);
 	}
-	addImgBtnClick = file => {
+	addImgBtnClick = e => {
 		var reader = new FileReader();
-		const { files } = file.target
+		const { files } = e.target
 		if(!files||files.length==0) return
 		reader.readAsDataURL(files[0]);
 		reader.onload = ()=>{
@@ -407,10 +414,39 @@ class WorkManage extends React.Component {
 			this.setState({
 				workPages:_arr
 			})
-			this.uploadImage(reader.result,pitem)
-		}
-	}
 
+			this.uploadImage(files[0],pitem)
+		}
+
+		//
+
+
+
+	}
+// 	uploadImg(file){
+// 		return new Promise((resolve,reject)=>{
+// 				let {token} = window.localStorage;
+// 				let params = {
+// 						token,
+// 						fileType : 1 
+// 				}
+// 				getUpToken(params).then((res)=>{
+// 						let {uptoken} = res.data.data;
+// 						let uploadParams = {
+// 								token : uptoken,
+// 								key : uuid() + file.name.replace(/[^\u4e00-\u9fa5a-zA-Z\d]+/g,''),
+// 								filename : file.name,
+// 								size : file.size,
+// 								file : file
+// 						}
+// 						uploadQiniu.post('/',uploadParams).then((res)=>{
+// 								console.log(res.data);
+// 								resolve('http://images.mizholdings.com/' + res.data.key);
+// 						}).catch(reject)
+// 				})
+// 		})
+		
+// }
 	showCropModel(p,i){
 		this.setState({
 			cpicture:p,
@@ -719,7 +755,7 @@ class WorkManage extends React.Component {
 									this.state.workPages.map((item, i) => {
 										return (
 											<div key={i} style={{marginTop:14}} className={style.queitem}>
-												<div style={{width:60,minWidth:40}} className={style.quelabel}>图片{i+1}</div> 
+												<div style={{width:60,minWidth:40,lineHeight:"30px"}} className={style.quelabel}>图片{i+1}</div> 
 												{
 													<div>
 														{item.questions?item.questions.map((area, j) => {
