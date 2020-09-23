@@ -8,7 +8,7 @@ import {
 } from '../services/tempService';
 
 import {
-	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork
+	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -278,6 +278,11 @@ export default {
 				
 			}
 			return res.data.data
+			console.log('examId res: ', res);
+		},
+		*addOrUpdateExamGroup({ payload }, { put, select }){
+			let res = yield updateGroup(payload);
+			
 			console.log('examId res: ', res);
 		}
 		

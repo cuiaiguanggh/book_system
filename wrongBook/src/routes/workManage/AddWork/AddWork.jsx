@@ -496,15 +496,22 @@ class WorkManage extends React.Component {
 			}
 		)
 	}
-	addPart(){
-		this.state.partQuestions.part.push(
-				{name:`题组${this.state.partQuestions.part.length+1}`,
-				questions:[]
+	addExamGroup(){
+		this.props.dispatch({
+			type:"workManage/addOrUpdateExamGroup",
+			payload:{
+				groupName:`题组${this.state.partQuestions.part.length+1}`,
+				examId:10
 			}
-		)
-		this.setState({
-			partQuestions:this.state.partQuestions
 		})
+		// this.state.partQuestions.part.push(
+		// 		{name:`题组${this.state.partQuestions.part.length+1}`,
+		// 		questions:[]
+		// 	}
+		// )
+		// this.setState({
+		// 	partQuestions:this.state.partQuestions
+		// })
 	}
 
 
@@ -954,7 +961,7 @@ class WorkManage extends React.Component {
 										<Button type='primary'
 											style={{marginTop:15,height:32,lineHeight:'32px',minHeight:32}}
 											onClick={()=>{
-												this.addPart()
+												this.addExamGroup()
 											}}
 											>添加题组	
 										</Button>
