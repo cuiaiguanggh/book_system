@@ -8,7 +8,8 @@ import {
 } from '../services/tempService';
 
 import {
-	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup
+	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup,commitQuestions
+	,getStudentQuestions
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -284,8 +285,19 @@ export default {
 			let res = yield updateGroup(payload);
 			
 			console.log('examId res: ', res);
+		},
+		*doCommitQuestions({ payload }, { put, select }){
+			let res = yield commitQuestions(payload);
+			
+			console.log('examId res: ', res);
+			return res
+		},
+		*doGetStudentQuestions({ payload }, { put, select }){
+			let res = yield getStudentQuestions(payload);
+			
+			console.log('examId res: ', res);
+			return res.data
 		}
-		
 	},
 
 

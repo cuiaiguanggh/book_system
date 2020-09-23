@@ -76,6 +76,7 @@ class StuReport extends React.Component {
         students:arr1
       }
     })
+    this.getStudentWork(currentStudent[0].userId)
   }
   initStudents1(_students){
     this.getArrEqual(_students,this.state.loggedStudents)
@@ -300,10 +301,84 @@ class StuReport extends React.Component {
         partList:_pl
       }
     })
-    console.log('_work: ', _work,this.state._work);
+    
+  }
+  getStudentWork(_userId){
+    this.props.dispatch({
+      type:"workManage/doGetStudentQuestions",
+      payload:{
+        userId:_userId,
+        examId:10,
+      }
+    }).then(res=>{
+      console.log('doGetStudentQuestions: ', res);
+      if(res.data&&res.data.list){
+        //提交过错题
+        this.initUserWork(res.data.list)
+      }
+    })
   }
   commitStudentQuestions(){
-    
+    let userQuids=this.getUserWrongQuestionIds()
+    this.props.dispatch({
+      type:"workManage/doCommitQuestions",
+      payload:{
+        userId:this.state.nowuserid,
+        examId:10,
+        qusIds:userQuids.length&&userQuids.join(',')
+      }
+    }).then(res=>{
+      if(res.data.result===0){
+				message.destroy()
+				message.success(`【${this.state.studentName}】的错题提交成功!`)
+			}else{
+        message.destroy()
+				message.error(`【${this.state.studentName}】的错题提交失败!`)
+      }
+    })
+  }
+  _getStudentQuestionIds(_stuques){
+    let _qids=[]
+    for (let index = 0; index < _stuques.length; index++) {
+      const stuque = _stuques[index]
+      _qids.push(stuque.qusId)
+    }
+    return _qids
+  }
+
+  initUserWork(_stuques){
+    let _partList=this.state._work.partList
+    let _userhasQids=this._getStudentQuestionIds(_stuques)
+
+    if(_partList.length){
+      for (let index = 0; index < _partList.length; index++) {
+        const part = _partList[index];
+        for (let j = 0; j < part.questions.length; j++) {
+          const question = part.questions[j];
+          if(_userhasQids.includes(question.qusId)) question.iscuowu=true
+          
+        }
+      }
+    }
+    console.log('new user _partList: ', _partList);
+    return _partList
+  }
+
+  getUserWrongQuestionIds(){
+    let _partList=this.state._work.partList
+    let _qids=[]
+    if(_partList.length){
+      for (let index = 0; index < _partList.length; index++) {
+        const part = _partList[index];
+        for (let j = 0; j < part.questions.length; j++) {
+          const question = part.questions[j];
+          if(question.iscuowu) {
+            _qids.push(question.qusId) 
+          }
+        }
+      }
+    }
+    return _qids
   }
   render() {
       return (

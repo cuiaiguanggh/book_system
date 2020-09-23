@@ -499,10 +499,11 @@ class WorkManage extends React.Component {
 	addExamGroup(){
 		this.props.dispatch({
 			type:"workManage/addOrUpdateExamGroup",
-			payload:{
-				groupName:`题组${this.state.partQuestions.part.length+1}`,
-				examId:10
-			}
+			payload:[
+				{groupName:`题组${this.state.partQuestions.part.length+1}`,
+				examId:10,
+				quesIds:""}
+			]
 		})
 		// this.state.partQuestions.part.push(
 		// 		{name:`题组${this.state.partQuestions.part.length+1}`,
@@ -869,10 +870,10 @@ class WorkManage extends React.Component {
 									>显示试题</Checkbox>
 
 									<div className={style.btn_box}>
-										<Button loading={this.state.commitWorking} onClick={()=>{this.updateWork('updateWork')}} >
+										<Button loading={this.state.saveWorking} onClick={()=>{this.updateWork('updateWork')}} >
 											保存作业
 										</Button>
-										<Button loading={this.state.saveWorking} className={style.saveworkbtn} onClick={()=>{this.updateWork('pulishWork')}} style={{marginLeft:14}} type='primary'>
+										<Button loading={this.state.commitWorking} className={style.saveworkbtn} onClick={()=>{this.updateWork('publishWork')}} style={{marginLeft:14}} type='primary'>
 											发布作业
 										</Button>
 									</div>
