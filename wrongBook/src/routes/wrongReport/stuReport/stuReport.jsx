@@ -57,7 +57,8 @@ class StuReport extends React.Component {
       currentPageIndex:1,
       queryQuestionsType:'text',
       queryStr:'',
-      queryZsdStr:''
+      queryZsdStr:'',
+      currentQuestionIndex:-1
     }
   }
 
@@ -1027,9 +1028,23 @@ class StuReport extends React.Component {
     })
 
   }
-  spliceQuestion=(item)=>{
+  spliceQuestion=(item,index)=>{
     console.log('item: ', item);
+    this.setState({
+      currentQuestionIndex:index
+    })
 
+    setTimeout(() => {
+      this.props.dispatch({
+        type:"report/doSpliceQuestion",
+        payload:''
+      }).then(res=>{
+        console.log('res: ', res);
+        this.setState({
+          currentQuestionIndex:-1
+        })
+      })
+    }, 200);
   }
   changePagination=(page,pagesize)=>{
     console.log('page,pagesize: ', page,pagesize);
@@ -1378,10 +1393,10 @@ class StuReport extends React.Component {
                 <Spin spinning={this.state.quering.queryText||this.state.quering.queryZsd1}>
                   <div style={{border:'1px solid #eee',padding:'10px',marginTop:15,maxHeight:700,overflowY:'auto',minHeight:200}}>
                     <h3 style={{color:"#1890FF"}}>{this.props.state._questions.length?"请从下面的搜索结果中选择一道题，点击确定":''}</h3>
-                    {this.props.state._questions.length?this.props.state._questions.map(item => (
+                    {this.props.state._questions.length?this.props.state._questions.map((item,index) => (
                         <div className='clearfix' key={item.title} style={{borderBottom:'1px solid #eee',padding:10}}>
                           <div>{item.title}</div>
-                          <Button type='primary' style={{float:'right'}} onClick={()=>this.spliceQuestion(item)}>确定</Button>
+                          <Button loading={this.state.currentQuestionIndex===index} type='primary' style={{float:'right'}} onClick={()=>this.spliceQuestion(item,index)}>确定</Button>
                         </div>
                     )):<Empty description='暂无题目'></Empty>}
   

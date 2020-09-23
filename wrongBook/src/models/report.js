@@ -24,7 +24,7 @@ import {
 	maidian,
 } from '../services/reportService';
 import {
-	queryQuestionsBy,getZsd
+	queryQuestionsBy,getZsd,spliceQuestion
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -882,7 +882,21 @@ export default {
 
 			
 		},
-		
+		*doSpliceQuestion({ payload }, { put, select }) {
+			let zres=yield  spliceQuestion(payload)
+			let res=[
+				1,2,31
+			]
+			if(!res.length){
+				message.destroy()
+				message.warn('没有搜索到题目')
+				return
+			}
+			console.log('res: ', res);
+			return res
+
+			
+		},
 	},
 
 };
