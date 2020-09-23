@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Checkbox, Spin, DatePicker, Empty
+  Layout, Menu, Button, message, Select, Modal, Icon, Checkbox, Spin, DatePicker, Empty,Input,Pagination 
 } from 'antd';
 import { connect } from 'dva';
 import style from './stuReport.less';
@@ -18,6 +18,7 @@ const { RangePicker } = DatePicker;
 const {
   Header, Footer, Sider, Content,
 } = Layout;
+const { TextArea } = Input;
 const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />;
 const confirm = Modal.confirm;
 let hei = 200;
@@ -44,7 +45,19 @@ class StuReport extends React.Component {
       nowWindows: {},
       optimizationcuotiMistakes: [],
       nowRecommendId: '',
-      videoId: ''
+      videoId: '',
+      thvisilble:false,
+      quering:{
+        queryText:false,
+        queryZsd:false,
+        queryZsd1:false
+      },
+      zsds:[],
+      zsdid:-1,
+      currentPageIndex:1,
+      queryQuestionsType:'text',
+      queryStr:'',
+      queryZsdStr:''
     }
   }
 
@@ -470,6 +483,7 @@ class StuReport extends React.Component {
                     </span>
                   </div>
                   <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
+                    console.log('item: ', item);
                     if (item.picId) {
                       this.props.dispatch({
                         type: 'report/recommend',
@@ -938,15 +952,104 @@ class StuReport extends React.Component {
       },
     });
   }
+  getZsd=()=>{
+    console.log('...')
+    if(!this.state.queryZsdStr.length){
+      message.destroy()
+      message.warn('请输入要查询知识点的关键字')
+      return
+    }
+    this.setState({
+      quering:{
+        ...this.state.quering,
+        queryZsd:true
+      }
+    })
+    this.props.dispatch({
+      type:'report/getZsdByText',
+      payload:{
+        tesxt:''
+      }
+    }).then((res)=>{
+      this.setState({
+        zsds:res
+      })
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryZsd:false
+        }
+      })
+    })
+  }
+  queryQuestionsBy=text=>{
+    if(text){
+      if(!this.state.queryStr.length){
+        message.destroy()
+        message.warn('请输入要查询题目的关键字')
+        return
+      }
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryText:true,
+          queryQuestionsType:'text'
+        }
+      })
+    }else{
+      if(this.state.zsdid==-1){
+        message.destroy()
+        return message.warn('请选择知识点')
+        
+      }
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryZsd1:true,
+          queryQuestionsType:'zsd'
+        }
+      })
+    }
+    this.props.dispatch({
+      type:"report/queryQuestionsBy",
+      payload:{
+        text
+      }
+    }).then(res=>{
+      console.log('res: ', res);
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryText:false,
+          queryZsd1:false
+        }
+      })
+    })
 
+  }
+  spliceQuestion=(item)=>{
+    console.log('item: ', item);
 
+  }
+  changePagination=(page,pagesize)=>{
+    console.log('page,pagesize: ', page,pagesize);
+    this.setState({
+      currentPageIndex:page
+    })
+    //this.getCurrentQuestions(page,pagesize)
+  }
+  getCurrentQuestions(page,pageSize){
+    let cques=this.props.state._questions.slice(page*pageSize,(page+1)*pageSize)
+    console.log('cques: ', cques,this.props.state._questions);
+    
+  }
   render() {
     let mounthList = this.props.state.mounthList;
     let knowledgeList = this.props.state.knowledgeList;
     let studentList = this.props.state.studentList;
     let detail = this.props.state.qrdetailList1;
     let fileLink = this.props.state.pdfUrl.fileLink;
-
+    let items=[1,2,3]
     this.sfgun = detail.data && detail.data.end;
     return (
       <Content style={{ background: '#fff', minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper'>
@@ -1086,6 +1189,7 @@ class StuReport extends React.Component {
             </Content>
           </Layout>
           <Modal
+            zIndex={101}
             visible={this.state.visible}
             width={(this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy) ? '80%' : '50%'}
             className="showques"
@@ -1100,9 +1204,18 @@ class StuReport extends React.Component {
             {this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy ?
               <div style={{ display: 'flex' }}>
                 <div className={style.topicbox} style={{ width: '40%' }}>
-                  <h3 className={style.fonsfwc} style={{ marginBottom: 20 }}>题目
+                  <h3 className={style.fonsfwc} style={{ marginBottom: 20,height:35,lineHeight:"35px" }}>
+                    题目
+
                     <span className={style.matchingError} onClick={this.pipeicw.bind(this)}>
-                      <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错 </span></h3>
+                      <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错
+                    </span>
+                    <Button style={{float:"right",marginRight:15}} onClick={()=>{
+                      this.setState({thvisilble:true})
+                      console.log('111')
+                    }}>替换</Button>
+
+                  </h3>
                   <div style={{ overflow: 'auto', maxHeight: '600px', minHeight: '230px' }}>
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.title }} />
                     <div className={style.leftText}>【考点】 </div>
@@ -1207,6 +1320,78 @@ class StuReport extends React.Component {
             </div>
 
           </Modal>
+
+
+
+          <Modal
+            zIndex={102}
+            visible={true||this.state.thvisilble}
+            footer={null}
+            style={{top:50,minWidth:950}}
+            width='950px'
+            title='选择题目替换'
+            onCancel={()=>{
+              this.setState({
+                thvisilble: false
+              })
+            }}
+            >
+            <div>
+                <div style={{display:'flex',justifyContent:'space-between'}}>
+                  <div>
+                    <TextArea onKeyUp={(e)=>{
+                        this.setState({
+                          queryStr:e.target.value
+                        })
+                      }} 
+                      style={{width:"260px",marginRight:15,height:75}}></TextArea> 
+                    <Button loading={this.state.quering.queryText} onClick={()=>this.queryQuestionsBy('text')}>按关键字匹配</Button>
+                  </div>
+
+                  <div style={{width:350}}>
+                    <Input style={{width:"200px",marginRight:15}} placeholder='输入关键字查询知识点'
+                      onChange={(e)=>{
+                        this.setState({
+                          queryZsdStr:e.target.value
+                        })
+                      }} 
+                    ></Input> 
+                    <Button loading={this.state.quering.queryZsd} onClick={()=>this.getZsd()}>搜索知识点</Button>
+                    <div style={{marginTop:10}}>
+                      <Select
+                          style={{ width: 200 }}
+                          placeholder="选择知识点"
+                          onChange={(value)=>{
+                            this.setState({
+                              zsdid:value
+                            })
+                          }}
+                        >
+                        {this.state.zsds.map(item => (
+                          <Option key={item}>{item}</Option>
+                        ))}
+                      </Select>
+                      <Button style={{marginLeft:15}} onClick={()=>this.queryQuestionsBy()}> 按知识点匹配</Button>
+                    </div>
+                  </div>
+                </div>
+                <Spin spinning={this.state.quering.queryText||this.state.quering.queryZsd1}>
+                  <div style={{border:'1px solid #eee',padding:'10px',marginTop:15,maxHeight:700,overflowY:'auto',minHeight:200}}>
+                    <h3 style={{color:"#1890FF"}}>{this.props.state._questions.length?"请从下面的搜索结果中选择一道题，点击确定":''}</h3>
+                    {this.props.state._questions.length?this.props.state._questions.map(item => (
+                        <div className='clearfix' key={item.title} style={{borderBottom:'1px solid #eee',padding:10}}>
+                          <div>{item.title}</div>
+                          <Button type='primary' style={{float:'right'}} onClick={()=>this.spliceQuestion(item)}>确定</Button>
+                        </div>
+                    )):<Empty description='暂无题目'></Empty>}
+  
+                  </div>
+                </Spin>
+                <div style={{paddingTop:15}}>
+                  <Pagination  current={this.state.currentPageIndex} hideOnSinglePage={true} onChange={(page,pagesize)=>this.changePagination(page,pagesize)} total={this.props.state._questions.length} />
+                </div>
+            </div>
+          </Modal>
         </div>
       </Content>
     )
@@ -1252,6 +1437,37 @@ class StuReport extends React.Component {
       type: 'report/maidian',
       payload: { functionId: 7, actId: 2 }
     })
+
+    let item={
+      knowledgeName: "反应类型的判定,根据化学反应方程式的计算",
+      num: 0,
+      parse: `解：（1）观察方程式2CaO+mSO↵<sub>2</sub>+O↵<sub>2</sub>↵<span class="afanti-latex"><span class="dG cT" tabindex="0" style="font-size: 97%;"><span class="dO" role="math"><span class="eA"><span class="eL"><span class="dL"><span class="eU"><span class="dC"><span class="eW"><span class="eP" style="font-size: 70.7%; padding-bottom: 0.157em; padding-top: 0.141em;"><span class="dX"><span class="dA" style="width: 0px; margin-top: -0.175em; padding: 0px 2.788em 0.225em 0px;"><span class="dB" style="width: 0px; margin: -0.825em 0px -0.225em; position: relative; top: -0.15em; left: 0.389em;"><span class="eA"><span class="fD"><span class="eA"><span class="dV"><span class="dD" style="padding-top: 0.454em; padding-bottom: 0.197em;"><span class="dE aW" style="padding-bottom: 0.399em; width: 1.005em;">高</span></span></span></span></span><span class="fD"><span class="eA"><span class="dV"><span class="dD" style="padding-top: 0.454em; padding-bottom: 0.197em;"><span class="dE aW" style="padding-bottom: 0.399em; width: 1.005em;">温</span></span></span></span></span></span></span><span class="eX"></span></span></span></span><span class="eO"><span class="dV"><span class="dH"><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin: 0px -0.056em;">=</span><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin: 0px 0.142em 0px -0.254em; letter-spacing: -0.408em;">==</span><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin-right: -0.056em; margin-bottom: 0px; margin-top: 0px;">=</span></span></span></span></span></span></span><span class="eU"><span class="fE" style="font-size: 70.7%; padding-top: 0.636em; padding-bottom: 0.141em; padding-left: 1.005em;"><span class="dX"><span class="dA" style="width: 0px; margin-top: -1em; padding: 0px 0.778em 0px 0px;"><span class="dB" style="width: 0px; margin: 0px; position: relative; top: 0.24em; left: 0.389em;"><span class="eA"></span></span><span class="eX"></span></span></span></span></span></span></span></span></span></span></span>mCaSO↵<sub>4</sub>，反应前有2个钙原子，则反应后也应有2个钙原子，所以m=2；↵<br>（2）该反应是由三种物质生成一种物质，属于化合反应；↵<br>（3）含氧化钙80%的生石灰中含氧化钙1400t×80%=1120t↵<br>设理论上最多可吸收二氧化硫的质量为x↵<br>2CaO+2SO↵<sub>2</sub>+O↵<sub>2</sub>↵<span class="afanti-latex"><span class="dG cT" tabindex="0" style="font-size: 97%;"><span class="dO" role="math"><span class="eA"><span class="eL"><span class="dL"><span class="eU"><span class="dC"><span class="eW"><span class="eP" style="font-size: 70.7%; padding-bottom: 0.157em; padding-top: 0.141em;"><span class="dX"><span class="dA" style="width: 0px; margin-top: -0.175em; padding: 0px 2.788em 0.225em 0px;"><span class="dB" style="width: 0px; margin: -0.825em 0px -0.225em; position: relative; top: -0.15em; left: 0.389em;"><span class="eA"><span class="fD"><span class="eA"><span class="dV"><span class="dD" style="padding-top: 0.454em; padding-bottom: 0.197em;"><span class="dE aW" style="padding-bottom: 0.399em; width: 1.005em;">高</span></span></span></span></span><span class="fD"><span class="eA"><span class="dV"><span class="dD" style="padding-top: 0.454em; padding-bottom: 0.197em;"><span class="dE aW" style="padding-bottom: 0.399em; width: 1.005em;">温</span></span></span></span></span></span></span><span class="eX"></span></span></span></span><span class="eO"><span class="dV"><span class="dH"><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin: 0px -0.056em;">=</span><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin: 0px 0.142em 0px -0.254em; letter-spacing: -0.408em;">==</span><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin-right: -0.056em; margin-bottom: 0px; margin-top: 0px;">=</span></span></span></span></span></span></span><span class="eU"><span class="fE" style="font-size: 70.7%; padding-top: 0.636em; padding-bottom: 0.141em; padding-left: 1.005em;"><span class="dX"><span class="dA" style="width: 0px; margin-top: -1em; padding: 0px 0.778em 0px 0px;"><span class="dB" style="width: 0px; margin: 0px; position: relative; top: 0.24em; left: 0.389em;"><span class="eA"></span></span><span class="eX"></span></span></span></span></span></span></span></span></span></span></span>2CaSO↵<sub>4</sub>↵<br>112&nbsp;&nbsp;&nbsp;128↵<br>1120t x↵<br>↵<span class="afanti-latex"><span class="dG cT" tabindex="0" style="font-size: 97%;"><span class="dO" role="math"><span class="eA"><span class="eD"><span class="eA"><span class="dR"><span class="dB bE" style="width: 2.561em; padding: 0px 0.12em;"><span class="eN" style="width: 2.561em; top: -1.368em;"><span class="dU"><span class="dD aH" style="padding-top: 0.39em; padding-bottom: 0.325em;">112</span></span></span><span class="dJ" style="width: 2.561em; bottom: -0.749em;"><span class="eA"><span class="dU"><span class="dD aH" style="padding-top: 0.39em; padding-bottom: 0.39em;">1120</span></span><span class="dS"><span class="dD aJ" style="padding-top: 0.39em; padding-bottom: 0.261em;">t</span></span></span></span><span class="dN" style="border-bottom-width: 1.3px; border-bottom-style: solid; top: -0.29em; width: 2.561em;"></span></span><span class="fF" style="height: 2.117em; vertical-align: -0.749em;"></span></span></span></span></span></span></span></span>=↵<span class="afanti-latex"><span class="dG cT" tabindex="0" style="font-size: 97%;"><span class="dO" role="math"><span class="eA"><span class="eD"><span class="eA"><span class="dR"><span class="dB bE" style="width: 1.7em; padding: 0px 0.12em;"><span class="eN" style="width: 1.7em; top: -1.368em;"><span class="dU"><span class="dD aH" style="padding-top: 0.39em; padding-bottom: 0.39em;">128</span></span></span><span class="dJ" style="width: 1.7em; bottom: -0.722em;"><span class="dS"><span class="dD aJ" style="padding-top: 0.197em; padding-bottom: 0.261em;">x</span></span></span><span class="dN" style="border-bottom-width: 1.3px; border-bottom-style: solid; top: -0.29em; width: 1.7em;"></span></span><span class="fF" style="height: 2.089em; vertical-align: -0.722em;"></span></span></span></span></span></span></span></span>&nbsp;↵<br>&nbsp;&nbsp;&nbsp;&nbsp; x=1280t↵<br>故答案为：（1）2；（2）化合反应；&nbsp;（3）加入含氧化钙80%的生石灰1400t，最多可吸收二氧化硫的质量为1280t．`,
+      picId: "uqid-28281",
+      questionId: "15928",
+      questionUrl: "https://homework.mizholdings.com/kacha/xcx/page/4565490614290432.4565490234656768.1567495210002.jpg?imageMogr2/auto-orient/gravity/NorthWest/rotate/-0.0/crop/!3613.910592196214x815.0a64.0a236.0",
+      recommendId: 15928,
+      teachVideo: null,
+      title: `在煤中加入适量的生石灰（CaO）制成供居民采暖用的“环保煤”，以减少二氧化硫的排放，减弱二氧化硫对空气的污染．燃烧时生石灰吸收二氧化硫的化学方程式为：2CaO+mSO↵<sub>2</sub>+O↵<sub>2</sub>↵<span class="afanti-latex"><span class="dG cT" tabindex="0" style="font-size: 97%;"><span class="dO" role="math"><span class="eA"><span class="eL"><span class="dL"><span class="eU"><span class="dC"><span class="eW"><span class="eP" style="font-size: 70.7%; padding-bottom: 0.157em; padding-top: 0.141em;"><span class="dX"><span class="dA" style="width: 0px; margin-top: -0.175em; padding: 0px 2.788em 0.225em 0px;"><span class="dB" style="width: 0px; margin: -0.825em 0px -0.225em; position: relative; top: -0.15em; left: 0.389em;"><span class="eA"><span class="fD"><span class="eA"><span class="dV"><span class="dD" style="padding-top: 0.454em; padding-bottom: 0.197em;"><span class="dE aW" style="padding-bottom: 0.399em; width: 1.005em;">高</span></span></span></span></span><span class="fD"><span class="eA"><span class="dV"><span class="dD" style="padding-top: 0.454em; padding-bottom: 0.197em;"><span class="dE aW" style="padding-bottom: 0.399em; width: 1.005em;">温</span></span></span></span></span></span></span><span class="eX"></span></span></span></span><span class="eO"><span class="dV"><span class="dH"><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin: 0px -0.056em;">=</span><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin: 0px 0.142em 0px -0.254em; letter-spacing: -0.408em;">==</span><span class="dD aH" style="padding-top: 0.078em; padding-bottom: 0.422em; margin-right: -0.056em; margin-bottom: 0px; margin-top: 0px;">=</span></span></span></span></span></span></span><span class="eU"><span class="fE" style="font-size: 70.7%; padding-top: 0.636em; padding-bottom: 0.141em; padding-left: 1.005em;"><span class="dX"><span class="dA" style="width: 0px; margin-top: -1em; padding: 0px 0.778em 0px 0px;"><span class="dB" style="width: 0px; margin: 0px; position: relative; top: 0.24em; left: 0.389em;"><span class="eA"></span></span><span class="eX"></span></span></span></span></span></span></span></span></span></span></span>mCaSO↵<sub>4</sub>请回答下列问题：↵<br>（1）m值是↵<!--BA-->↵<div class="quizPutTag"></div>↵<!--EA-->；↵<br>（2）该反应属于基本反应类型中的↵<!--BA-->↵<div class="quizPutTag"></div>↵<!--EA-->↵<br>（3）若煤厂一次共加入含氧化钙80%的生石灰1400&nbsp;吨，则理论上最多可吸收二氧化硫多少吨？`,
+      type: 0,
+    }
+    return
+    if (item) {
+      this.props.dispatch({
+        type: 'report/recommend',
+        payload: {
+          uqId: 28281
+        }
+      }).then((res) => {
+        this.setState({
+          optimizationcuotiMistakes: res
+        })
+      })
+    }
+    this.setState({
+      nowWindows: item,
+      visible: true,
+      pptype: item.type
+    });
   }
 
   componentWillUnmount() {

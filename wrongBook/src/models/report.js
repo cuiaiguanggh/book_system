@@ -23,6 +23,10 @@ import {
 	remove,
 	maidian,
 } from '../services/reportService';
+import {
+	queryQuestionsBy,getZsd
+} from '../services/yukeService';
+
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
@@ -63,11 +67,15 @@ export default {
 		c: 0,
 		d: 0,
 		standardAnswer: null,
-		questionType: null
+		questionType: null,
+		_questions:[]
 	},
 	reducers: {
 		discern(state, { payload }) {
 			return { ...state, a: payload.a, b: payload.b, c: payload.c, d: payload.d, standardAnswer: payload.standardAnswer, questionType: payload.questionType };
+		},
+		_questions(state, { payload }) {
+			return { ...state, _questions: payload };
 		},
 		improveRate(state, { payload }) {
 			return { ...state, improveRate: payload };
@@ -845,6 +853,36 @@ export default {
 				console.log(`${payload.functionId}埋点`)
 			}
 		},
+		*queryQuestionsBy({ payload }, { put, select }) {
+			let arr=[]
+			for (let index = 0; index < 100; index++) {
+				arr.push({title:`第${index}题`,id:index})
+				
+			}
+			// let res = yield queryQuestionsBy(payload);
+			// console.log('res: ', res);
+			yield put({
+				type: '_questions',
+				payload: arr
+			})
+			return arr
+		},
+		*getZsdByText({ payload }, { put, select }) {
+			let zres=yield  getZsd(payload)
+			let res=[
+				1,2,31
+			]
+			if(!res.length){
+				message.destroy()
+				message.warn('该关键字下没有搜索到知识点')
+				return
+			}
+			console.log('res: ', res);
+			return res
+
+			
+		},
+		
 	},
 
 };
