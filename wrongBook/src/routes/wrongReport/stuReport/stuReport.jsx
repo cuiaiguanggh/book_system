@@ -56,8 +56,8 @@ class StuReport extends React.Component {
       zsdid:-1,
       currentPageIndex:1,
       queryQuestionsType:'text',
-      queryStr:'',
-      queryZsdStr:'',
+      _questionKeyword:'',
+      _zsdKeyword:'',
       currentQuestionIndex:-1,
       currentQuestion:{}
     }
@@ -958,12 +958,11 @@ class StuReport extends React.Component {
     });
   }
   getZsd=()=>{
-    console.log('...')
-    // if(!this.state.queryZsdStr.length){
-    //   message.destroy()
-    //   message.warn('请输入要查询知识点的关键字')
-    //   return
-    // }
+    if(!this.state._zsdKeyword.length){
+      message.destroy()
+      message.warn('请输入要查询知识点的关键字')
+      return
+    }
     this.setState({
       quering:{
         ...this.state.quering,
@@ -972,9 +971,7 @@ class StuReport extends React.Component {
     })
     this.props.dispatch({
       type:'report/getZsdByKeyWord',
-      payload:{
-        tesxt:''
-      }
+      payload:this.state._zsdKeyword
     }).then((res)=>{
       if(res.length){
         this.setState({
@@ -995,11 +992,11 @@ class StuReport extends React.Component {
   }
   queryQuestionsBy=(text,index)=>{
     if(text==='text'){
-      // if(!this.state.queryStr.length){
-      //   message.destroy()
-      //   message.warn('请输入要查询题目的关键字')
-      //   return
-      // }
+      if(!this.state._questionKeyword.length){
+        message.destroy()
+        message.warn('请输入要查询题目的关键字')
+        return
+      }
       this.setState({
         quering:{
           ...this.state.quering,
@@ -1022,7 +1019,7 @@ class StuReport extends React.Component {
       })
     }
     console.log(this.state.zsdid)
-    let zsdKeyword=this.state.zsds.find((v)=>{return(v.id===this.state.zsdid)}).knowledgeName
+    
     let data={
       
       pageNum:index||1,
@@ -1030,8 +1027,9 @@ class StuReport extends React.Component {
     }
 
     if(text=='text') {
-      data.questionKeyword=this.state.queryZsdStr||'数学常识'
-    }else{
+      data.questionKeyword=this.state._questionKeyword
+    }else if(this.state.zsdid>-1){
+      let zsdKeyword=this.state.zsds.find((v)=>{return(v.id===this.state.zsdid)}).knowledgeName
       data.knowledgeKeyword=zsdKeyword
     }
     this.props.dispatch({
@@ -1048,6 +1046,32 @@ class StuReport extends React.Component {
       })
     })
 
+  }
+
+  resetThModal(){
+    console.log('resetThModal: ');
+    this.setState({
+      quering:{
+        queryText:false,
+        queryZsd:false,
+        queryZsd1:false
+      },
+      zsds:[],
+      zsdid:-1,
+      currentPageIndex:1,
+      queryQuestionsType:'text',
+      _questionKeyword:'',
+      _zsdKeyword:'',
+      currentQuestionIndex:-1,
+      currentQuestion:{}
+    })
+    this.props.dispatch({
+      type:'report/_questiondata',
+      payload:{
+        count:0,
+        qsList:[]
+      }
+    })
   }
   doUpdateQuestion=(item,index)=>{
     let _cuque=this.state.currentQuestion
@@ -1423,8 +1447,9 @@ class StuReport extends React.Component {
 
           <Modal
             zIndex={102}
-            destroyOnClose={true}
+            afterClose={()=>this.resetThModal()}
             visible={this.state.thvisilble}
+            destroyOnClose={true}
             footer={null}
             style={{top:50,minWidth:950}}
             width='950px'
@@ -1440,7 +1465,7 @@ class StuReport extends React.Component {
                   <div>
                     <TextArea onKeyUp={(e)=>{
                         this.setState({
-                          queryStr:e.target.value
+                          _questionKeyword:e.target.value
                         })
                       }} 
                       style={{width:"260px",marginRight:15,height:75}}></TextArea> 
@@ -1451,7 +1476,7 @@ class StuReport extends React.Component {
                     <Input style={{width:"200px",marginRight:15}} placeholder='输入关键字查询知识点'
                       onChange={(e)=>{
                         this.setState({
-                          queryZsdStr:e.target.value
+                          _zsdKeyword:e.target.value
                         })
                       }} 
                     ></Input> 

@@ -877,7 +877,7 @@ export default {
 				// pageSize:''
 			//
 			let data={
-				knowledgeKeyword:'数学常识'||payload,
+				knowledgeKeyword:payload||'数学常识',
 				pageNum:1,
 				pageSize:9999
 			}
