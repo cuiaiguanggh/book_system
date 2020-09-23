@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-03 14:32:40
- * @LastEditTime: 2020-09-03 15:03:19
+ * @LastEditTime: 2020-09-23 16:32:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\utils\requestYk.js
@@ -37,11 +37,13 @@ function checkStatus(response) {
 export default function requestYk(url, options) {
   options = options || {};
   options.method = options.method || 'post';
-  options.headers={}
-  options.headers['Content-Type'] =  'application/json';
+  // options.headers['Content-Type'] =  'application/json';
+  options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
   let data = options.data || {}
+
+  data = formatOpt(data);
   if (options.method === 'post') {
-    options.body = JSON.stringify(data);
+    options.body = data;
   } else {
     url = `${url}?${formatOpt(data)}`;
   }

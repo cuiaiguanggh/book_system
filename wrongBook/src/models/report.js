@@ -24,7 +24,7 @@ import {
 	maidian,
 } from '../services/reportService';
 import {
-	queryQuestionsBy,getZsd,spliceQuestion
+	queryQuestionsBy,getZsd,updateQuestion
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -68,14 +68,17 @@ export default {
 		d: 0,
 		standardAnswer: null,
 		questionType: null,
-		_questions:[]
+		_questiondata:{
+			count:0,
+			qsList:[]
+		}
 	},
 	reducers: {
 		discern(state, { payload }) {
 			return { ...state, a: payload.a, b: payload.b, c: payload.c, d: payload.d, standardAnswer: payload.standardAnswer, questionType: payload.questionType };
 		},
-		_questions(state, { payload }) {
-			return { ...state, _questions: payload };
+		_questiondata(state, { payload }) {
+			return { ...state, _questiondata: payload };
 		},
 		improveRate(state, { payload }) {
 			return { ...state, improveRate: payload };
@@ -854,49 +857,57 @@ export default {
 			}
 		},
 		*queryQuestionsBy({ payload }, { put, select }) {
-			let arr=[]
-			for (let index = 0; index < 100; index++) {
-				arr.push({title:`第${index}题`,id:index})
-				
+			let res = yield queryQuestionsBy(payload);
+			if(res.data.result===0){
+				if(res.data.data){
+					yield put({
+						type: '_questiondata',
+						payload: res.data.data
+					})
+				}
+			}else{
+				message.destroy()
+				message.error('查询失败'+res.data.msg)
 			}
-			// let res = yield queryQuestionsBy(payload);
-			// console.log('res: ', res);
-			yield put({
-				type: '_questions',
-				payload: arr
-			})
-			return arr
 		},
-		*getZsdByText({ payload }, { put, select }) {
-			let zres=yield  getZsd(payload)
-			let res=[
-				1,2,31
-			]
-			if(!res.length){
+		*getZsdByKeyWord({ payload }, { put, select }) {
+			//
+				// knowledgeKeyword:"",
+				// pageNum:'',
+				// pageSize:''
+			//
+			let data={
+				knowledgeKeyword:'数学常识'||payload,
+				pageNum:1,
+				pageSize:9999
+			}
+			let zsdslist=[]
+			let zres=yield  getZsd(data)
+			if(zres.data.result===0){
+				if(zres.data.data.kdList.length) zsdslist=zres.data.data.kdList
+			}else{
+				message.error('查询失败:'+zres.data.msg)
+			}
+			if(!zsdslist.length){
 				message.destroy()
 				message.warn('该关键字下没有搜索到知识点')
-				return
+
 			}
-			console.log('res: ', res);
+			return zsdslist
+
+			
+		},
+
+		*doUpdateQuestion({ payload }, { put, select }) {
+			console.log('payload: ', payload);
+			let res=yield updateQuestion(payload)
+
+			
 			return res
 
 			
 		},
-		*doSpliceQuestion({ payload }, { put, select }) {
-			let zres=yield  spliceQuestion(payload)
-			let res=[
-				1,2,31
-			]
-			if(!res.length){
-				message.destroy()
-				message.warn('没有搜索到题目')
-				return
-			}
-			console.log('res: ', res);
-			return res
-
-			
-		},
+	
 	},
 
 };
