@@ -1501,7 +1501,7 @@ class StuReport extends React.Component {
                   </div>
                 </div>
                 <Spin spinning={this.state.quering.queryText||this.state.quering.queryZsd1}>
-                  <div style={{border:'1px solid #eee',padding:'10px',marginTop:15,maxHeight:700,overflowY:'auto',minHeight:200}}>
+                  <div style={{border:'1px solid #eee',padding:'10px',marginTop:15,maxHeight:600,overflowY:'auto',minHeight:200}}>
                     <h3 style={{color:"#1890FF"}}>{this.props.state._questiondata.count?"请从下面的搜索结果中选择一道题，点击确定":''}</h3>
                     {this.props.state._questiondata.count?this.props.state._questiondata.qsList.map((item,index) => (
                         <div className='clearfix' key={item.title} style={{borderBottom:'1px solid #eee',padding:10}}>
