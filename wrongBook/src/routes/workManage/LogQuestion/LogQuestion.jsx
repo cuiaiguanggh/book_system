@@ -301,7 +301,10 @@ class StuReport extends React.Component {
       }
     })
     console.log('_work: ', _work,this.state._work);
-	}
+  }
+  commitStudentQuestions(){
+    
+  }
   render() {
       return (
       <>
@@ -318,7 +321,7 @@ class StuReport extends React.Component {
             <span>{this.state._work.info.examName}</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span>数据录入</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span style={{color:'#8E8E8E'}}>{this.state.studentName}</span> 
 
               <div className={style.r_b_box}>
-                <Button type="primary">提交</Button>
+                <Button type="primary" onClick={()=>this.commitStudentQuestions()}>提交</Button>
                 <div className={style.swicth_box} onClick={()=>this.swicthLog()}>
                   <Spin spinning={this.state.isSwitchLog}>
                     <Icon type="swap" style={{marginRight:4}}/>
