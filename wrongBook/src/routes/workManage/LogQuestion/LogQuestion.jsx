@@ -425,9 +425,16 @@ class StuReport extends React.Component {
                   <div>
                     {
                       <div style={{padding:!this.props.state.logType?'20px':''}}>
-                        {!this.props.state.logType?
-                        <RenderCropItem _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCropItem>:
-                        <RenderCrop  _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCrop>}
+                        {
+                          !this.state._work.partList.length?
+                          <Empty className='noclass' description='该份作业暂无内容' style={{ position: 'relative',marginTop:100 }} />:
+                          <>
+                            {!this.props.state.logType?
+                            <RenderCropItem _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCropItem>:
+                            <RenderCrop  _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCrop>}
+                          </>
+                        }
+                        
                       </div>
                     }
                   </div>
@@ -472,14 +479,17 @@ class StuReport extends React.Component {
     dispatch({
 			type:"workManage/getExamInfo",
 			payload:{
-				examId:10
+				examId:this.props.location.examId||17
 			}
 		}).then(workdata=>{
 			console.log('workdata: ', workdata);
-			//调用partinfo接口
-			this.setState({
-				_work:workdata
-			})
+      //调用partinfo接口
+      if(workdata.info){
+        this.setState({
+          _work:workdata
+        })
+      }
+			
 
 
 

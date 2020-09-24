@@ -282,7 +282,7 @@ class WorkManage extends React.Component {
 			},
 			uploadToken:'',
 			fileKey:'',
-			iscreateWOrk:false,
+			iscreateWOrk:true,
 			createWorking:false,
 			_work:{}
     }
@@ -425,30 +425,7 @@ class WorkManage extends React.Component {
 
 
 	}
-// 	uploadImg(file){
-// 		return new Promise((resolve,reject)=>{
-// 				let {token} = window.localStorage;
-// 				let params = {
-// 						token,
-// 						fileType : 1 
-// 				}
-// 				getUpToken(params).then((res)=>{
-// 						let {uptoken} = res.data.data;
-// 						let uploadParams = {
-// 								token : uptoken,
-// 								key : uuid() + file.name.replace(/[^\u4e00-\u9fa5a-zA-Z\d]+/g,''),
-// 								filename : file.name,
-// 								size : file.size,
-// 								file : file
-// 						}
-// 						uploadQiniu.post('/',uploadParams).then((res)=>{
-// 								console.log(res.data);
-// 								resolve('http://images.mizholdings.com/' + res.data.key);
-// 						}).catch(reject)
-// 				})
-// 		})
-		
-// }
+
 	showCropModel(p,i){
 		this.setState({
 			cpicture:p,
@@ -687,7 +664,7 @@ class WorkManage extends React.Component {
 	  beforeUpload(file) {
 		return true;
 	  }
-	  createWork(){
+	  createWork=()=>{
 			let msg=''
 		  if(!this.state.work.subjectId) {
 			  msg='请选择一个学科！'
@@ -722,7 +699,7 @@ class WorkManage extends React.Component {
 				this.setState({
 					createWorking:true
 				})
-				if(res.data.result===0){
+				if(res&&res.data.result===0){
 					message.success('作业创建成功')
 					setTimeout(() => {
 						this.props.dispatch(routerRedux.push('/workManage'))
@@ -741,6 +718,9 @@ class WorkManage extends React.Component {
 				}
 			})
 		}
+		_iscreateWOrk=()=>{
+		
+		}
   	render() {
 		let pquestions=this.state.partQuestions.questions
 		let pparts=this.state.partQuestions.part
@@ -749,7 +729,7 @@ class WorkManage extends React.Component {
 			onScroll={this.containetScroll.bind(this)}
 		>
 			<div>
-				<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22}}>
+				<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:10}}>
 						<h4 style={{fontSize:20,height:40}} >
 							{
 								!this.state.editWorkName?
@@ -1090,7 +1070,11 @@ class WorkManage extends React.Component {
   }
 
   componentDidMount() {
-		console.log('this.props.location.query',this.props.location.query)
+		console.log('this.props.location.query',this.props.location.isCreate)
+		let iscreateWOrk=this.props.location.isCreate
+		this.setState({
+			iscreateWOrk
+		})
 		let aa={
 			classId: "2935",
 			className: "",
@@ -1107,93 +1091,73 @@ class WorkManage extends React.Component {
 		}
 
 		let partQuestions=this.state.partQuestions
-		setTimeout(() => {
-			let array=[this.state.test,this.state.test1]
-			// this.setState({
-			// 	workPages:[this.state.test,this.state.test1]
-			// })
-			this.setState({
-					workPages:[this.state.test]
+	// 	setTimeout(() => {
+	// 		this.setState({
+	// 				workPages:[this.state.test]
+	// 		})
+	// }, 100);
+		
+		if(iscreateWOrk){
+			const { dispatch } = this.props;
+			let userNews = store.get('wrongBookNews');
+			let data = {
+				schoolId: userNews.schoolId,
+				year: this.props.state.years
+			}
+			
+			// let {classId,examName,examId,subjectId}=aa
+			dispatch({
+				type: 'workManage/getWorkPageClass',
+				payload: data
+			}).then((classData) => {
+				this.setState({
+					work:{
+						...this.state.work,
+						classes:classData.value
+					}
+				})
+
+				console.log('classlist',classData,this.state.work)
+				dispatch({
+					type: 'workManage/getSchoolSubjectList'
+				}).then((subs) => {
+					console.log('subs: ', subs);
+					if(subs.length){
+						this.initWorkName(subs[0])
+						
+						// this.setState({
+						// 	work:{
+						// 		...this.state.work,
+						// 		name:examName,
+						// 		classes:classId,
+						// 		subjectId
+						// 	}
+						// })
+		
+						// dispatch({
+						// 	type:"workManage/schoolSubId",
+						// 	payload:subjectId
+						// })
+						// console.log('22',classId.split(","))
+						// dispatch({
+						// 	type:"workManage/workPageClass",
+						// 	payload:{
+						// 		list:classData.list,
+						// 		value:this.getClasses(classId)
+						// 	}
+						// })
+					}
+				})
 			})
 			return
-			console.log('works',this.state.workPages)
-			let _arr=[
-				this.state.test
-			]
-			for (let index = 0; index < array.length; index++) {
-				const element = array[index]
-				if(element.questions.length){
-				
-					for (let j = 0; j < element.questions.length; j++) {
-						_arr.push(element.questions[j])
-						
-					}
-				}
-			}
-		partQuestions.questions=_arr
-
-		this.setState({
-			partQuestions:partQuestions
-		})
-		console.log('partQuestions: ', this.state.partQuestions);
-	}, 100);
-    
-    const { dispatch } = this.props;
-    let userNews = store.get('wrongBookNews');
-    let data = {
-      schoolId: userNews.schoolId,
-      year: this.props.state.years
 		}
+    
 		
-		let {classId,examName,examId,subjectId}=aa
-    dispatch({
-      type: 'workManage/getWorkPageClass',
-      payload: data
-    }).then((classData) => {
-			this.setState({
-				work:{
-					...this.state.work,
-					classes:classData.value
-				}
-			})
-
-			console.log('classlist',classData,this.state.work)
-			dispatch({
-				type: 'workManage/getSchoolSubjectList'
-			}).then((subs) => {
-				console.log('subs: ', subs);
-				if(subs.length){
-					this.initWorkName(subs[0])
-					
-					this.setState({
-						work:{
-							...this.state.work,
-							name:examName,
-							classes:classId,
-							subjectId
-						}
-					})
-	
-					dispatch({
-						type:"workManage/schoolSubId",
-						payload:subjectId
-					})
-					console.log('22',classId.split(","))
-					dispatch({
-						type:"workManage/workPageClass",
-						payload:{
-							list:classData.list,
-							value:this.getClasses(classId)
-						}
-					})
-				}
-			})
-    })
-		
-		dispatch({
+		console.log('this.props.location.examId: ', this.props.location.examId);
+		this.props.dispatch({
 			type:"workManage/getExamInfo",
 			payload:{
-				examId
+				examId:this.props.location.examId||16
 			}
 		}).then(workdata=>{
 			console.log('workdata: ', workdata);

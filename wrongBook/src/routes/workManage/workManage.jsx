@@ -108,7 +108,7 @@ class WorkManage extends React.Component {
       })
     }
     addWork(){
-        this.props.dispatch(routerRedux.push('/addWork'))
+        this.props.dispatch(routerRedux.push({ pathname: '/addWork',isCreate:true }))
     }
     render() {
       return (
@@ -127,11 +127,13 @@ class WorkManage extends React.Component {
                 
               <WorkList  current='student'
                 editWork={(data)=>{
-                  console.log('data: ', data);
-                  this.props.dispatch(routerRedux.push({pathname:'/addWork',query:data}))
+                  this.props.dispatch(routerRedux.push({pathname:'/addWork',examId:data.examId}))
                 }}
                 deleteWork={(item)=>{
                   console.log('data: ', item);
+                }}
+                logQuestions={(data)=>{
+                  this.props.dispatch(routerRedux.push({pathname:'/LogQuestion',examId:data.examId}))
                 }}
               >
               </WorkList>

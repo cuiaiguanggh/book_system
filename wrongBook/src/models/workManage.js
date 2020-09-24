@@ -270,7 +270,7 @@ export default {
 		},
 		
 		*getExamInfo({ payload }, { put, select }){
-			let res = yield examInfo({examId:10});
+			let res = yield examInfo(payload);
 			if(res.data.result===0){
 				yield put({
 					type: 'work',
