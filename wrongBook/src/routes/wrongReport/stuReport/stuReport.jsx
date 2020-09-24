@@ -509,7 +509,7 @@ class StuReport extends React.Component {
                     });
                   }}>
                     {/* type==2时候也显示匹配题目 type不清楚是什么 item.title&& item.type === 0|| !item.questionUrl */}
-                    {item.title  ?
+                    {item.title&&item.type === 0  ?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
                       <img key={i} style={{ width: '100%' }}
@@ -1386,11 +1386,15 @@ class StuReport extends React.Component {
                 </div>
               </div> :
               <div>
-                <div>
-                    <Button style={{float:"right",marginBottom:15}} onClick={()=>{
-                      this.setState({thvisilble:true,updateRecommend:false})
-                    }}>替换</Button>
-                </div>
+                {
+                   this.state.nowWindows.type === 0?
+                   <div>
+                      <Button style={{float:"right",marginBottom:15}} onClick={()=>{
+                        this.setState({thvisilble:true,updateRecommend:false})
+                      }}>替换</Button>
+                  </div>:''
+                }
+                
                 {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
                   <img key={i} style={{ width: '100%', margin: 'auto' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                 ))}
