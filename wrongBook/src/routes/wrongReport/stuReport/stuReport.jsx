@@ -22,7 +22,7 @@ const { TextArea } = Input;
 const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />;
 const confirm = Modal.confirm;
 let hei = 200;
-
+let _currentQuestion={}
 class StuReport extends React.Component {
   constructor(props) {
     super(props);
@@ -490,6 +490,7 @@ class StuReport extends React.Component {
                       this.setState({
                         currentQuestion:item
                       })
+                      _currentQuestion=item
                       this.props.dispatch({
                         type: 'report/recommend',
                         payload: {
@@ -1063,8 +1064,9 @@ class StuReport extends React.Component {
       _questionKeyword:'',
       _zsdKeyword:'',
       currentQuestionIndex:-1,
-      currentQuestion:{}
+      currentQuestion:{},
     })
+    _currentQuestion={}
     this.props.dispatch({
       type:'report/_questiondata',
       payload:{
@@ -1074,13 +1076,15 @@ class StuReport extends React.Component {
     })
   }
   doUpdateQuestion=(item,index)=>{
-    let _cuque=this.state.currentQuestion
-    console.log('替换的原始题目数据 ', this.state.currentQuestion);
+    let _cuque=_currentQuestion//this.state.currentQuestion
+    console.log('_currentQuestion: ',_currentQuestion);
+    console.log('new item: ',item);
     this.setState({
       currentQuestionIndex:index
     })
     let data={
-      uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
+      // uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
+      uqId:_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0,
       oldQuestionId:_cuque.questionId,
       nowQuestionId:item.id,
     }
@@ -1092,13 +1096,11 @@ class StuReport extends React.Component {
     }else{
       data.adviseId=currentRecommend.adviseId
     }
-    console.log('data: ', data);
     setTimeout(() => {
       this.props.dispatch({
         type:"report/doUpdateQuestion",
         payload:data
       }).then(res=>{
-        console.log('res: ', res);
         this.setState({
           currentQuestionIndex:-1
         })
