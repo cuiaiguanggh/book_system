@@ -238,11 +238,17 @@ class WorkManage extends React.Component {
 			commitWorking:false,
 			saveWorking:false,
 			work:{
-				name:'未命名作业',
-				classes:[],
-				subjectId:1,
-				pages:[],
-				time:''
+				info:{
+					examName:'未命名作业',
+					className:'',
+					classId:[], //classess
+					subjectId:1,
+					pages:[],
+					workTime:''//time
+				},
+				groupList:[],
+				partList:[]
+			
 			},
 			editWorkName:false,
 			editWorkName:false,
@@ -282,9 +288,9 @@ class WorkManage extends React.Component {
 			},
 			uploadToken:'',
 			fileKey:'',
-			iscreateWOrk:true,
+			iscreateWork:true,
 			createWorking:false,
-			_work:{}
+			_editWorkClassList:[]
     }
 	}
 
@@ -309,6 +315,9 @@ class WorkManage extends React.Component {
 			placeholder="请选择学科"
 			defaultValue='学科'
 			value={this.props.state.schoolSubId}
+			onPopupScroll={(e)=>{
+				e.stopPropagation()
+			}}
 			onChange={(value) => {
 				this.props.dispatch({
 					type:"workManage/schoolSubId",
@@ -325,36 +334,44 @@ class WorkManage extends React.Component {
 	}
 	renderClassList() {
 			let classes = this.props.state.workPageClass.list;
+			let _value=this.props.state.workPageClass.value
+			if(!this.state.createWork){
+				_value=this.state._editWorkClassList
+			}
 			const children = [];
-		for (let i = 0; i < classes.length; i++) {
-		let item = classes[i]
-		children.push(	<Option key={i} value={item.classId}>{item.className}</Option>);
-		}
-			return (
-		<>
+			for (let i = 0; i < classes.length; i++) {
+			let item = classes[i]
+			//要根据编辑和创建动态处理
+			children.push(	<Option key={i} value={item.classId}>{item.className}</Option>);
+			}
+				return (
+			<>
 			<Select
 						mode="multiple"
-			style={{ width: 200,marginRight:20 }}
-			suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
+						style={{ width: 200,marginRight:20 }}
+						suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 						optionFilterProp="children"
-						value={this.props.state.workPageClass.value}
-			placeholder="请选择班级"
-			onChange={(value) => {
-							console.log('value: ', value);
-				this.props.dispatch({
-					type:"workManage/workPageClass",
-					payload:{
-					list:classes,
-					value
-					}
+						value={_value}
+						placeholder="请选择班级"
+						onPopupScroll={(e)=>{
+							e.stopPropagation()
+						}}
+						onChange={(value) => {
+								console.log('value: ', value);
+								this.props.dispatch({
+									type:"workManage/workPageClass",
+									payload:{
+										list:classes,
+										value
+									}
 								})
-								this.state.work.classes=value
+								this.state.work.info.classId=value
 								this.setState({
 									work:this.state.work
 								})
 								console.log(this.state.work)
-				}}>
-			{children}
+						}}>
+					{children}
 			</Select>
 		</>
 		)
@@ -462,14 +479,12 @@ class WorkManage extends React.Component {
 		let day = date.getDate()
 		if(moun<10) moun='0'+moun
 		if(day<10) day='0'+day
+		this.state.work.info.examName=`${year}年${moun}月${day}日${subjectData.v}作业`,
+		this.state.work.info.workTime=`${year}-${moun}-${day}`,
+		this.state.work.info.displayTime=`${year}年${moun}月${day}日`,
+		this.state.work.info.subjectId=subjectData.k
 		this.setState({
-				work:{
-					...this.state.work,
-					name:`${year}年${moun}月${day}日${subjectData.v}作业`,
-					time:`${year}-${moun}-${day}`,
-					displayTime:`${year}年${moun}月${day}日`,
-					subjectId:subjectData.k
-				}
+				work:this.state.work
 			}
 		)
 	}
@@ -629,6 +644,8 @@ class WorkManage extends React.Component {
 		}, 200);
 	}
 	containetScroll(e) {
+		console.log('e: ', e);
+		if(!document.querySelector('#kacha_side')) return
 		let _w=document.querySelector('#kacha_side').offsetWidth
 		let  scrollTop = e.currentTarget.scrollTop, 
 		elm =  document.querySelector('#_action_bar');
@@ -643,10 +660,12 @@ class WorkManage extends React.Component {
 
 	  createWork=()=>{
 			let msg=''
-		  if(!this.state.work.subjectId) {
+			let workInfo=this.state.work.info
+			console.log('workInfo: ', workInfo);
+		  if(!workInfo.subjectId) {
 			  msg='请选择一个学科！'
 		  }
-		  if(!this.state.work.classes||!this.state.work.classes.length) {
+		  if(!workInfo.classId||!workInfo.classId.length) {
 			  msg='请选择一个班级！'
 			}
 			if(!store.get('wrongBookNews').schoolId){
@@ -660,13 +679,13 @@ class WorkManage extends React.Component {
 			this.setState({
 				createWorking:true
 			})
-			const {name,subjectId,classes,time}=this.state.work
+			const {examName,subjectId,classId,workTime}=workInfo
 			let data={
-				examName:name,
+				examName:examName,
 				subjectId,
-				classId:classes.join(','),
+				classId:classId.join(','),
 				schoolId:store.get('wrongBookNews').schoolId,
-				workTime:time
+				workTime:workTime
 			}
 			console.log('data: ', data);
 			this.props.dispatch({
@@ -711,7 +730,7 @@ class WorkManage extends React.Component {
 							{
 								!this.state.editWorkName?
 								<>
-									{this.state.work.name}
+									{this.state.work.info.examName}
 									<img style={{marginLeft:10}} className='cup' onClick={()=>{this.setState({editWorkName:true})}} src={require('../../images/edit.png')} alt=""/>
 								</>
 								:
@@ -725,7 +744,10 @@ class WorkManage extends React.Component {
 													this.setState({
 														work:{
 															...this.state.work,
-															name:e.target.value
+															info:{
+																...this.state.info,
+																examName:e.target.value
+															}
 														},
 														editWorkName:false,workNameFail:false
 													})
@@ -733,7 +755,7 @@ class WorkManage extends React.Component {
 												}
 											}} 
 											style={{width:250}}
-											defaultValue={this.state.work.name} 
+											defaultValue={this.state.work.info.examName} 
 											onKeyUp={(e)=>{
 												this.setState({workNameFail:e.target.value.toString().length?false:true})
 											}}
@@ -751,7 +773,7 @@ class WorkManage extends React.Component {
 				<div >
 
 					{
-						this.state.iscreateWOrk?
+						this.state.iscreateWork?
 							<div style={{display:'flex',justifyContent:'center',marginTop:40}}>
 								<Button loading={this.state.createWorking} type='primary' onClick={()=>this.createWork()}>添加作业</Button>
 							</div>
@@ -1039,7 +1061,7 @@ class WorkManage extends React.Component {
 
 										let _areaData={
 											partId:this.state.cpicture.pageId,	
-											examId:this.state._work.examId,	
+											examId:this.state.work.examId,	
 											qusImgUrl:_area.area.imgUrl,	
 											pointX:_area.area.x,	
 											pointY:_area.area.y,	
@@ -1070,24 +1092,11 @@ class WorkManage extends React.Component {
 
   componentDidMount() {
 		console.log('this.props.location.query',this.props.location.isCreate)
-		let iscreateWOrk=this.props.location.isCreate
+		let iscreateWork=false&&this.props.location.isCreate
 		this.setState({
-			iscreateWOrk
+			iscreateWork
 		})
-		let aa={
-			classId: "2935",
-			className: "",
-			createTime: "2020-09-21 18:33:19",
-			createUserId: 4361471476795392,
-			examId: 10,
-			examName: "2020年09月21日科学作业-1",
-			schoolId: 8256,
-			status: 0,
-			subjectId: 10,
-			subjectName: "",
-			workTime: "2020-09-21 00:00:00",
-			_index: 1
-		}
+
 
 		let partQuestions=this.state.partQuestions
 		setTimeout(() => {
@@ -1095,94 +1104,107 @@ class WorkManage extends React.Component {
 					workPages:[this.state.test]
 				})
 		}, 100);
-		
-		if(iscreateWOrk){
-			const { dispatch } = this.props;
-			let userNews = store.get('wrongBookNews');
-			let data = {
-				schoolId: userNews.schoolId,
-				year: this.props.state.years
-			}
-			
-			// let {classId,examName,examId,subjectId}=aa
-			dispatch({
-				type: 'workManage/getWorkPageClass',
-				payload: data
-			}).then((classData) => {
-				this.setState({
-					work:{
-						...this.state.work,
-						classes:classData.value
-					}
-				})
 
-				console.log('classlist',classData,this.state.work)
-				dispatch({
-					type: 'workManage/getSchoolSubjectList'
-				}).then((subs) => {
-					console.log('subs: ', subs);
-					if(subs.length){
-						this.initWorkName(subs[0])
-						
-						// this.setState({
-						// 	work:{
-						// 		...this.state.work,
-						// 		name:examName,
-						// 		classes:classId,
-						// 		subjectId
-						// 	}
-						// })
-		
-						// dispatch({
-						// 	type:"workManage/schoolSubId",
-						// 	payload:subjectId
-						// })
-						// console.log('22',classId.split(","))
-						// dispatch({
-						// 	type:"workManage/workPageClass",
-						// 	payload:{
-						// 		list:classData.list,
-						// 		value:this.getClasses(classId)
-						// 	}
-						// })
-					}
-				})
-			})
-			return
+		const { dispatch } = this.props;
+		let userNews = store.get('wrongBookNews');
+		let data = {
+			schoolId: userNews.schoolId,
+			year: this.props.state.years
 		}
-    
+		
+		// let {classId,examName,examId,subjectId}=aa
+		//编辑和新建的情况都要获取学科和班级的
+		dispatch({
+			type: 'workManage/getWorkPageClass',
+			payload: data
+		}).then((classData) => {
+			
+			if(iscreateWork) {
+				console.log('classData: ', classData);
+				this.state.work.info.classId=classData.value
+				this.setState({
+					work:this.state.work
+				})
+			}
+		})
+		dispatch({
+			type: 'workManage/getSchoolSubjectList'
+		}).then((subs) => {
+			if(subs.length){
+				if(iscreateWork) {
+					this.initWorkName(subs[0])
+				}
+				
+				// this.setState({
+				// 	work:{
+				// 		...this.state.work,
+				// 		name:examName,
+				// 		classes:classId,
+				// 		subjectId
+				// 	}
+				// })
+
+				// dispatch({
+				// 	type:"workManage/schoolSubId",
+				// 	payload:subjectId
+				// })
+				// console.log('22',classId.split(","))
+				// dispatch({
+				// 	type:"workManage/workPageClass",
+				// 	payload:{
+				// 		list:classData.list,
+				// 		value:this.getClasses(classId)
+				// 	}
+				// })
+			}
+		})
 		
 		console.log('this.props.location.examId: ', this.props.location.examId);
-		this.props.dispatch({
-			type:"workManage/getExamInfo",
-			payload:{
-				examId:this.props.location.examId||16
-			}
-		}).then(workdata=>{
-			console.log('workdata: ', workdata);
-			//调用partinfo接口
-			this.setState({
-				_work:workdata
-			})
+		if(!iscreateWork){
+			console.log('编辑作业...')
+			this.props.dispatch({
+				type:"workManage/getExamInfo",
+				payload:{
+					examId:this.props.location.examId||18
+				}
+			}).then(workdata=>{
+				console.log('workdata: ', workdata);
 
-
-			let _arr=[]
-			for (let index = 0; index < workdata.partList.length; index++) {
-				const element = workdata.partList[index]
-				if(element.questions.length){
+				let _classids=workdata.info.classId.split(',')
+				let classarr=[]
+				for (let index = 0; index < _classids.length; index++) {
+					const classid = _classids[index];
+					if(classid) classarr.push(parseInt(classid))
+				}
+				//编辑作业的情况
 				
-					for (let j = 0; j < element.questions.length; j++) {
-						_arr.push(element.questions[j])
-						
+				this.setState({
+					work:{
+						...workdata
+					},
+					_editWorkClassList:classarr
+				})
+	
+	
+				let _arr=[]
+				for (let index = 0; index < workdata.partList.length; index++) {
+					const element = workdata.partList[index]
+					if(element.questions.length){
+					
+						for (let j = 0; j < element.questions.length; j++) {
+							_arr.push(element.questions[j])
+							
+						}
 					}
 				}
-			}
-			partQuestions.questions=_arr
-
-			this.setState({
-				partQuestions:partQuestions
+				partQuestions.questions=_arr
+	
+				this.setState({
+					partQuestions:partQuestions
+				})
 			})
-		})
+		}
+		
 		
   }
 

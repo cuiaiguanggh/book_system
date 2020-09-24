@@ -84,7 +84,7 @@ class WorkManage extends React.Component {
                 type:"workManage/workPageClass",
                 payload:{
                   list:classes,
-                  value
+                  value:[value]
                 }
               })
               this.getWorkList({
@@ -99,11 +99,12 @@ class WorkManage extends React.Component {
 
     getWorkList(option){
       const{classId,subjectId}=option
+      console.log('this.props.state.workPageClass.value: ', this.props.state.workPageClass.value);
       this.props.dispatch({
         type: 'workManage/getWorkList',
         payload:{
-          subjectId:classId||this.props.state.schoolSubId,
-          classId:subjectId||this.props.state.workPageClass.list[0].classId
+          subjectId:subjectId||this.props.state.schoolSubId,
+          // classId:classId||this.props.state.workPageClass.value.join(',')
         }
       })
     }
@@ -163,7 +164,7 @@ class WorkManage extends React.Component {
       }).then((res) => {
         console.log('this.props.state.schoolSubId: ', this.props.state.schoolSubId);
         if(classlist.list){
-          this.getWorkList({})
+          this.getWorkList({classId:classlist.list[0].classId,subjectId:this.props.state.schoolSubId})
         }
       })
       
