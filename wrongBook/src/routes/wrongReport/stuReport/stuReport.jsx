@@ -1447,6 +1447,7 @@ class StuReport extends React.Component {
 
           <Modal
             zIndex={102}
+            maskClosable={false}
             afterClose={()=>this.resetThModal()}
             visible={this.state.thvisilble}
             destroyOnClose={true}
