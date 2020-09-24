@@ -1079,9 +1079,7 @@ class StuReport extends React.Component {
     let _cuque=_currentQuestion//this.state.currentQuestion
     console.log('_currentQuestion: ',_currentQuestion);
     console.log('new item: ',item);
-    this.setState({
-      currentQuestionIndex:index
-    })
+
     let data={
       // uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
       uqId:_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0,
@@ -1098,6 +1096,14 @@ class StuReport extends React.Component {
         data.adviseId=currentRecommend.adviseId
       }
     }
+    if(!data.adviseId){
+      message.destroy()
+      message.warn('题目数据错误')
+      return
+    }
+    this.setState({
+      currentQuestionIndex:index
+    })
     setTimeout(() => {
       this.props.dispatch({
         type:"report/doUpdateQuestion",
@@ -1350,9 +1356,12 @@ class StuReport extends React.Component {
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.parse }} />
                     <h2 className={style.leftText}>
                       {serverType === 0 && this.state.optimizationcuotiMistakes.length > 0 && this.state.optimizationcuotiMistakes[0].isGood === 1 ? '【优选错题】' : '优选错题'}
-                      <Button style={{float:"right",marginRight:15}} onClick={()=>{
+                      {
+                        this.state.optimizationcuotiMistakes.length>0&&this.state.optimizationcuotiMistakes[0].adviseId?
+                        <Button style={{float:"right",marginRight:15}} onClick={()=>{
                           this.setState({thvisilble:true,updateRecommend:true})
-                        }}>替换</Button>
+                        }}>替换</Button>:''
+                      }
                     </h2>
 
                     {this.state.optimizationcuotiMistakes.length === 0 ?
