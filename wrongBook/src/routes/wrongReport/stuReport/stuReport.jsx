@@ -1079,7 +1079,6 @@ class StuReport extends React.Component {
     let _cuque=_currentQuestion//this.state.currentQuestion
     console.log('_currentQuestion: ',_currentQuestion);
     console.log('new item: ',item);
-
     let data={
       // uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
       uqId:_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0,
@@ -1087,7 +1086,9 @@ class StuReport extends React.Component {
       nowQuestionId:item.id,
     }
     let currentRecommend=this.state.optimizationcuotiMistakes[0]
+    console.log('优选错题: ',currentRecommend);
     if(this.state.updateRecommend){
+      //替换优选错题
       data.adviseId=item.id
       data.oldQuestionId=currentRecommend.questionId
       delete data.nowQuestionId
@@ -1096,10 +1097,12 @@ class StuReport extends React.Component {
         data.adviseId=currentRecommend.adviseId
       }
     }
+    console.log('data: ', data);
     if(!data.adviseId){
-      message.destroy()
-      message.warn('题目数据错误')
-      return
+      // message.destroy()
+      // message.warn('题目数据错误')
+      // return
+      delete data.adviseId
     }
     this.setState({
       currentQuestionIndex:index
