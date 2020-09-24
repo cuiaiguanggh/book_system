@@ -1094,7 +1094,9 @@ class StuReport extends React.Component {
       data.oldQuestionId=currentRecommend.questionId
       delete data.nowQuestionId
     }else{
-      data.adviseId=currentRecommend.adviseId
+      if(currentRecommend&&currentRecommend.adviseId){
+        data.adviseId=currentRecommend.adviseId
+      }
     }
     setTimeout(() => {
       this.props.dispatch({
