@@ -49,8 +49,8 @@ class LogContent extends React.Component {
 										onClick={(e)=>{this.props._updateChecked(j,i)}}  
 									
 										>
-										<span className={style.inputnum}>{i+1}</span>
-										{item.iscuowu?<img style={{width:20}} src={require('../../../images/cuowu.png')}></img>:""}
+										<span className={style.inputnum}>{item.orderBy}</span>
+										{item.iscuowu?<img style={{minHeight:20,height:'70%'}} src={require('../../../images/cuowu.png')}></img>:""}
 								</div>
 									
 									)

@@ -38,7 +38,7 @@ class RenderCropItem extends React.Component {
 															onClick={(e)=>{this.props._updateChecked(j,i)}} 
 														
 															>
-															{i+1}
+															{item.orderBy}
 															{item.iscuowu?<img style={{width:20}} src={require('../../../images/cuowu.png')}></img>:""}
 													</div>
 														

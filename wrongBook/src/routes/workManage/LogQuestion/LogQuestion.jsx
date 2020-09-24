@@ -24,7 +24,7 @@ class StuReport extends React.Component {
       currentSudent:{},
       chechBtnLoaing:false,
       classLoding:true,
-      isSwitchLog:false,
+      initWroking:false,
       nowuserid:-1,
       _work:{
         partList:[],
@@ -38,7 +38,8 @@ class StuReport extends React.Component {
       _students:{
         students:[],
         loggedStudents:[]
-      }
+      },
+      isCommitWrongQues:false
     }
   }
 
@@ -77,6 +78,15 @@ class StuReport extends React.Component {
       }
     })
     this.getStudentWork(currentStudent[0].userId)
+  }
+  onclickStudentItem(item){
+    console.log('item: ', item);
+
+    this.setState({
+      nowuserid:item.userId,
+      studentName:item.userName
+    })
+    this.getStudentWork(item.userId)
   }
   initStudents1(_students){
     this.getArrEqual(_students,this.state.loggedStudents)
@@ -132,20 +142,8 @@ class StuReport extends React.Component {
       nowuserid:currentStudent[0].userId,
       studentName:currentStudent[0].userName
     })
-
-    // this.setState({
-    //   nowuserid:currentStudent[0].userId,
-    //   studentName:currentStudent[0].userName
-    // })
-    
-    // this.setState({
-    //   _students:{
-    //     loggedStudents:newArr,
-    //     students:arr1
-    //   }
-    // })
   }
-  studentMenuList() {
+  renderStudentMenu() {
     let students  = this.props.state.students;
     let loggedStudents= this.state._students.loggedStudents
     let _students= this.state._students.students
@@ -164,11 +162,7 @@ class StuReport extends React.Component {
                   !this.state.hideLoggedStudent?loggedStudents.map((item, i) => {
                     return (
                       <li key={item.userId} className={['islog',this.state.nowuserid===item.userId?'checked':''].join(' ')} onClick={()=>{
-                        let name=loggedStudents.find((student)=>{return student.userId===item.userId}).userName
-                        this.setState({
-                          nowuserid:item.userId,
-                          studentName:name
-                        })
+                        this.onclickStudentItem(item)
                       }}>
                         <span> {item.userName}</span>
                         <img style={{float:'right'}} src={require('../../images/islog.png')}></img>
@@ -181,11 +175,7 @@ class StuReport extends React.Component {
                   _students.map((item, i) => {
                     return (
                       <li key={item.userId} className={this.state.nowuserid===item.userId?'checked':''} onClick={()=>{
-                        let name=_students.find((student)=>{return student.userId===item.userId}).userName
-                        this.setState({
-                          nowuserid:item.userId,
-                          studentName:name
-                        })
+                        this.onclickStudentItem(item)
                       }}>
                         <span> {item.userName}</span>
                       </li>
@@ -247,7 +237,7 @@ class StuReport extends React.Component {
 
 
 
-  renderClassList() {
+  renderClassSelect() {
     let classes = this.props.state.pageClassList;
 		const children = [];
     for (let i = 0; i < classes.length; i++) {
@@ -277,7 +267,7 @@ class StuReport extends React.Component {
   }
   swicthLog(){
     this.setState({
-      isSwitchLog:true
+      initWroking:true
     })
     let _type=this.props.state.logType
     setTimeout(() => {
@@ -286,7 +276,7 @@ class StuReport extends React.Component {
         payload:!_type
       })
       this.setState({
-        isSwitchLog:false
+        initWroking:false
       })
     }, 300);
   }
@@ -304,6 +294,9 @@ class StuReport extends React.Component {
     
   }
   getStudentWork(_userId){
+    this.setState({
+      initWroking:true
+    })
     this.props.dispatch({
       type:"workManage/doGetStudentQuestions",
       payload:{
@@ -314,11 +307,23 @@ class StuReport extends React.Component {
       console.log('doGetStudentQuestions: ', res);
       if(res.data&&res.data.list){
         //提交过错题
-        this.initUserWork(res.data.list)
+        
+        this.setState({
+          _work:{
+            ...this.state._work,
+            partList:this.initThisStudentWork(res.data.list)
+          }
+        })
       }
+      this.setState({
+        initWroking:false
+      })
     })
   }
   commitStudentQuestions(){
+    this.setState({
+      isCommitWrongQues:true
+    })
     let userQuids=this.getUserWrongQuestionIds()
     this.props.dispatch({
       type:"workManage/doCommitQuestions",
@@ -335,6 +340,9 @@ class StuReport extends React.Component {
         message.destroy()
 				message.error(`【${this.state.studentName}】的错题提交失败!`)
       }
+      this.setState({
+        isCommitWrongQues:false
+      })
     })
   }
   _getStudentQuestionIds(_stuques){
@@ -346,7 +354,7 @@ class StuReport extends React.Component {
     return _qids
   }
 
-  initUserWork(_stuques){
+  initThisStudentWork(_stuques){
     let _partList=this.state._work.partList
     let _userhasQids=this._getStudentQuestionIds(_stuques)
 
@@ -354,14 +362,13 @@ class StuReport extends React.Component {
       for (let index = 0; index < _partList.length; index++) {
         const part = _partList[index];
         for (let j = 0; j < part.questions.length; j++) {
-          const question = part.questions[j];
-          if(_userhasQids.includes(question.qusId)) question.iscuowu=true
-          
+          part.questions[j].iscuowu=_userhasQids.includes(part.questions[j].qusId)
         }
       }
     }
     console.log('new user _partList: ', _partList);
     return _partList
+
   }
 
   getUserWrongQuestionIds(){
@@ -384,7 +391,7 @@ class StuReport extends React.Component {
       return (
       <>
       {this.props.state.pageClassList.length?<div className={style.whoBox}> 
-            {this.renderClassList()}
+            {this.renderClassSelect()}
             {/* { 
               this.renderSubjectList()
             }
@@ -396,9 +403,9 @@ class StuReport extends React.Component {
             <span>{this.state._work.info.examName}</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span>数据录入</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span style={{color:'#8E8E8E'}}>{this.state.studentName}</span> 
 
               <div className={style.r_b_box}>
-                <Button type="primary" onClick={()=>this.commitStudentQuestions()}>提交</Button>
+                <Button type="primary" loading={this.state.isCommitWrongQues} onClick={()=>this.commitStudentQuestions()}>提交</Button>
                 <div className={style.swicth_box} onClick={()=>this.swicthLog()}>
-                  <Spin spinning={this.state.isSwitchLog}>
+                  <Spin spinning={this.state.initWroking}>
                     <Icon type="swap" style={{marginRight:4}}/>
                         切换录入方式
                   </Spin>
@@ -408,11 +415,11 @@ class StuReport extends React.Component {
           <div className={style.layout} style={{paddingBottom:56,width:'100%',height:'100%',boxSizing:'border-box'}}>
             <Layout style={{width:'100%',height:'100%',boxSizing:'border-box'}}>
               <Sider className={style.sider}>
-                {this.studentMenuList()}
+                {this.renderStudentMenu()}
               </Sider>
 
               <Content className={style.content}>
-                <Spin spinning={this.state.isSwitchLog}>
+                <Spin spinning={this.state.initWroking}>
                   {/* <LogContent  _updateChecked={(j,i,p)=>this.updateChecked(j,i,p)}  selectStudentHander={this.selectStudentFun.bind(this)} _prop_partList={this.state._work.partList}>
                   </LogContent> */}
                   <div>
@@ -490,17 +497,11 @@ class StuReport extends React.Component {
 
 export default connect((state) => ({
   state: {
-    ...state.report,
-    ...state.classHome,
-    ...state.homePage,
-    // ...state.temp,
     pageClassList:state.classModel.pageClassList,
     getClassMembersFinish:state.classModel.getClassMembersFinish,
     students:state.workManage.students,
     years: state.temp.years,
     subList: state.temp.subList,
-    subId:state.temp.subId,
-    checkClassId:state.classModel.checkClassId,
     classSubjectData:state.classModel.classSubjectData,
     schoolSubjectList:state.workManage.schoolSubjectList,
     logType:state.workManage.logType
