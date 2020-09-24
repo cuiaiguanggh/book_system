@@ -70,7 +70,7 @@ class Upload1 extends React.Component {
   }
 
   componentDidMount() {
-		console.error('upload item mounted',this.props.picture)
+		console.log('upload item mounted',this.props.picture)
 		
   }
 

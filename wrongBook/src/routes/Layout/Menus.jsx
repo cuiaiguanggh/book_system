@@ -904,7 +904,7 @@ class HomePageLeft extends Component {
 
   componentWillUnmount(){
     console.log('top menu Unmount...')
-    observer.remove('updateClass')
+    // observer.remove('updateClass')
   }
   componentDidMount() {
 
