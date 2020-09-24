@@ -1322,7 +1322,7 @@ class StuReport extends React.Component {
             }}
           >
             {this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy ?
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex',userSelect:'text' }}>
                 <div className={style.topicbox} style={{ width: '40%' }}>
                   <h3 className={style.fonsfwc} style={{ marginBottom: 20,height:35,lineHeight:"35px" }}>
                     题目
