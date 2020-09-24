@@ -1480,7 +1480,9 @@ class StuReport extends React.Component {
             <div>
                 <div style={{display:'flex',justifyContent:'space-between'}}>
                   <div>
-                    <TextArea onKeyUp={(e)=>{
+                    <TextArea 
+                      onChange={(e)=>{
+                        console.log('e: ', e,e.target.value);
                         this.setState({
                           _questionKeyword:e.target.value
                         })
