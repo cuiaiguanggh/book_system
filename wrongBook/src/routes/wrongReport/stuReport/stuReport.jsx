@@ -507,8 +507,8 @@ class StuReport extends React.Component {
                       pptype: item.type
                     });
                   }}>
-
-                    {(item.title && item.type === 0) || !item.questionUrl ?
+                    {/* type==2时候也显示匹配题目 type不清楚是什么 item.title&& item.type === 0|| !item.questionUrl */}
+                    {item.title  ?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
                       <img key={i} style={{ width: '100%' }}
