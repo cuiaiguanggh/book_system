@@ -899,7 +899,6 @@ export default {
 		},
 
 		*doUpdateQuestion({ payload }, { put, select }) {
-			console.log('payload: ', payload);
 			let res=yield updateQuestion(payload)
 
 			

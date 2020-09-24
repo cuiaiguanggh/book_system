@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-09-10 09:35:26
+ * @LastEditTime: 2020-09-24 12:07:41
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \wrongBook\src\services\yukeService.js
+ */
 
 import store from 'store';
 import requestYk from '../utils/requestYk';
@@ -28,7 +36,6 @@ function getZsd(payload) {
     })
 }
 function updateQuestion(payload) {
-    console.log('payload1: ', payload);
     return requestYk(`${burl}ques/updateQuestion?token=${_token}`, {
         data: payload,
         method: 'post',

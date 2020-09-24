@@ -1075,7 +1075,7 @@ class StuReport extends React.Component {
   }
   doUpdateQuestion=(item,index)=>{
     let _cuque=this.state.currentQuestion
-    console.log('this.state.currentQuestion: ', this.state.currentQuestion);
+    console.log('替换的原始题目数据 ', this.state.currentQuestion);
     this.setState({
       currentQuestionIndex:index
     })
