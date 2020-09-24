@@ -1075,19 +1075,22 @@ class StuReport extends React.Component {
   }
   doUpdateQuestion=(item,index)=>{
     let _cuque=this.state.currentQuestion
+    console.log('this.state.currentQuestion: ', this.state.currentQuestion);
     this.setState({
       currentQuestionIndex:index
     })
     let data={
-      uqId:_cuque.picId?_cuque.picId.split('-')[1]:0,
+      uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
       oldQuestionId:_cuque.questionId,
       nowQuestionId:item.id,
     }
+    let currentRecommend=this.state.optimizationcuotiMistakes[0]
     if(this.state.updateRecommend){
-      let currentRecommend=this.state.optimizationcuotiMistakes[0]
       data.adviseId=item.id
       data.oldQuestionId=currentRecommend.questionId
       delete data.nowQuestionId
+    }else{
+      data.adviseId=currentRecommend.adviseId
     }
     console.log('data: ', data);
     setTimeout(() => {
@@ -1379,6 +1382,11 @@ class StuReport extends React.Component {
                 </div>
               </div> :
               <div>
+                <div>
+                    <Button style={{float:"right",marginBottom:15}} onClick={()=>{
+                      this.setState({thvisilble:true,updateRecommend:false})
+                    }}>替换</Button>
+                </div>
                 {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
                   <img key={i} style={{ width: '100%', margin: 'auto' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                 ))}
