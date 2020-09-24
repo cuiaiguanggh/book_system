@@ -366,7 +366,6 @@ class WorkManage extends React.Component {
 
 		let _ImageUploader=new ImageUploader()
 		let partUrl=await _ImageUploader.uploadToQiniu(file)
-		console.log('imgurl: ', partUrl);
 		if(!partUrl) return 
 		let option={
 			examId:10,
@@ -389,6 +388,7 @@ class WorkManage extends React.Component {
 			
 		}
 		_newdata.resCode=res.code
+		console.log('_newdata: ', _newdata);
 		this.state.workPages.splice(_index,1,_newdata)
 		this.setState({
 			workPages:this.state.workPages
@@ -640,30 +640,7 @@ class WorkManage extends React.Component {
 		})
 		
 	}
-	fetchUploadToken = () => {
-		const { dispatch } = this.props;
-		// dispatch({
-		//   type: 'blog/getUploadToken',
-		//   payload: {
-		//   },
-		//   callback: (res) => {
-			
-		//   }
-		// });
-		this.setState({
-			uploadToken: '',
-			fileKey: Date.now() + Math.floor(Math.random()*(999999-100000)+100000)+1
-		  })
-	  }
-	  getUploadToken = () => {
-		return {
-		  token : 'q_Za3hpOf8elLvd3scwkkC9-_UCm-mKrHcszjPGW:YP06068Mfaq-GtwAmVaTE1xjCTk=:eyJzY29wZSI6ImhvbWV3b3JrIiwiZGVhZGxpbmUiOjE2MDA1ODIzNzV9',//this.state.uploadToken,
-		  key : Date.now() + Math.floor(Math.random()*(999999-100000)+100000)+1
-		}
-	  }
-	  beforeUpload(file) {
-		return true;
-	  }
+
 	  createWork=()=>{
 			let msg=''
 		  if(!this.state.work.subjectId) {
@@ -1055,6 +1032,28 @@ class WorkManage extends React.Component {
 										})
 										console.log('this.state.workPages',this.state.workPages)
 									}}
+									_confirmAreaHander={(index)=>{
+										let _area=this.state.cpicture.questions[index]
+										console.log('_area: ', _area,this.state.cpicture);
+										// this.state.workPages.splice(this.state.cpindex,1)
+
+										let _areaData={
+											partId:this.state.cpicture.pageId,	
+											examId:this.state._work.examId,	
+											qusImgUrl:_area.area.imgUrl,	
+											pointX:_area.area.x,	
+											pointY:_area.area.y,	
+											areaWidth:_area.area.width,		
+											areaHeight:_area.area.height,	
+											num:_area.num
+										}
+										console.log('_areaData: ', _areaData);
+										// this.setState({
+										// 	// workPages:this.state.workPages,
+										// 	showEditPictureModal:false
+										// })
+										console.log('this.state.workPages',this.state.workPages)
+									}}
 								></EditPageModal>
 						
 						</>
@@ -1091,11 +1090,11 @@ class WorkManage extends React.Component {
 		}
 
 		let partQuestions=this.state.partQuestions
-	// 	setTimeout(() => {
-	// 		this.setState({
-	// 				workPages:[this.state.test]
-	// 		})
-	// }, 100);
+		setTimeout(() => {
+			this.setState({
+					workPages:[this.state.test]
+				})
+		}, 100);
 		
 		if(iscreateWOrk){
 			const { dispatch } = this.props;

@@ -40,7 +40,12 @@ function areaDiscern(payload) {
         method: 'post'
     });
 }
-
+function areaDiscern1(payload) {
+    return requestYk(`${burl}exam/areaDiscern?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 //7.创建分片和识别
 // body.examId	int,关联作业ID	
 // body.partName	string,分片名称	

@@ -43,7 +43,7 @@ class EditPageModal extends React.Component {
 		})
 		console.log('click item', this.props.cpicture.questions[index])
 		let area = this.props.cpicture.questions[index].area
-		this.toShowCropBox(area.x / 720 * this.state.scwidth, area.y / 720 * this.state.scwidth, area.width / 720 * this.state.scwidth, area.height / 720 * this.state.scwidth)
+		this.toShowCropBox(area.pointX / 720 * this.state.scwidth, area.pointY / 720 * this.state.scwidth, area.areaWidth / 720 * this.state.scwidth, area.areaHeight / 720 * this.state.scwidth)
 		// this.props.cpicture.questions[index]['selected']=!this.props.cpicture.questions[index]['selected']
 	}
 	_handerStart (e, id) {
@@ -379,10 +379,10 @@ class EditPageModal extends React.Component {
 
 		
 		let _area = {
-			x: _x,
-			y: _y,
-			height: _height,
-			width: _width,
+			pointX: _x,
+			pointY: _y,
+			areaHeight: _height,
+			areaWidth: _width,
 			rotate: 0
 			
 		}
@@ -430,19 +430,23 @@ class EditPageModal extends React.Component {
 		//重新做排序
 		
 		this._saveCropItem()
-		// let _cropArea=this.state.cpicture.questions[_index]
-		console.log('this.state.cpicture.questions: ', this.props.cpicture.questions);
-		let _questions=this.props.cpicture.questions
-		this.getOrderQuestions(_questions)
+		let _cropArea=this.props.cpicture//.questions//[_index]
+		console.log('_cropArea: ', _cropArea);
+		// console.log('this.state.cpicture.questions: ', this.props.cpicture.questions);
+		// this.props._confirmAreaHander(_index)
+		// let _questions=this.props.cpicture.questions
+		// this.getOrderQuestions(_questions)
+
+
 		//针对questions做一次新的排序
 		// let _areaReqData={
 		// 	partId:_cropArea.pageid,//分片id
 		// 	examId:10,//	int
 		// 	qusImgUrl:_cropArea.area.imgUrl,
-		// 	pointX:	_cropArea.area.x,
-		// 	pointY	:_cropArea.area.y,
-		// 	areaWidth:_cropArea.area.width,
-		// 	areaHeight:_cropArea.area.height,
+		// 	pointX:	_cropArea.area.pointX,
+		// 	pointY	:_cropArea.area.pointY,
+		// 	areaWidth:_cropArea.area.areaWidth,
+		// 	areaHeight:_cropArea.area.areaHeight,
 		// 	num:_cropArea.num
 		// }
 		// console.log('_cropArea: ', _cropArea,_areaReqData);
@@ -476,11 +480,11 @@ class EditPageModal extends React.Component {
 				n = xyArray.length;
 		for(i=1; i<n; i++){
 				for(j=0; j<n-i; j++){
-						if(xyArray[j].area.y == xyArray[j+1].area.y && xyArray[j].area.x > xyArray[j+1].area.x){
+						if(xyArray[j].area.pointY == xyArray[j+1].area.pointY && xyArray[j].area.pointX > xyArray[j+1].area.pointX){
 								t = xyArray[j].area;
 								xyArray[j].area=xyArray[j+1].area;
 								xyArray[j+1].area= t;
-						}else if(xyArray[j].area.y > xyArray[j+1].area.y){
+						}else if(xyArray[j].area.pointY > xyArray[j+1].area.pointY){
 								t = xyArray[j].area;
 								xyArray[j]=xyArray[j+1].area;
 								xyArray[j+1]= t;
@@ -626,10 +630,10 @@ class EditPageModal extends React.Component {
 											<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
 												key={item.num}  
 												style={{
-														width:item.area.width/720*this.state.scwidth+'px',
-														height:item.area.height/720*this.state.scwidth+'px',
-														left:item.area.x/720*this.state.scwidth+'px',
-														top:item.area.y/720*this.state.scwidth+'px',
+														width:item.area.areaWidth/720*this.state.scwidth+'px',
+														height:item.area.areaHeight/720*this.state.scwidth+'px',
+														left:item.area.pointX/720*this.state.scwidth+'px',
+														top:item.area.pointY/720*this.state.scwidth+'px',
 														zIndex:item._index||50-i
 												}} 
 												onClick={(e)=>{this.cropItemClick(i,e)}} 

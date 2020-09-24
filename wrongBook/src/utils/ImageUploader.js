@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-09-24 15:18:30
+ * @LastEditTime: 2020-09-24 16:52:54
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \wrongBook\src\utils\ImageUploader.js
+ */
 
 import {getFileToken} from '../services/workService'
 import { createPartAndDiscover } from '../services/yukeService'
@@ -30,9 +38,10 @@ class ImageUploader {
   async createPartAndDiscover(redata){
     let res1= await createPartAndDiscover(redata)
     if(res1.data.result===0){
-      let _data=initReposeData(res1.data.data)
-      _data.serUrl=redata.partUrl
-      return {code:_data.questions?0:2,data:_data}
+      let _partInfo=initReposeData(res1.data.data.partInfo)
+      console.log('_data222222222222: ', _partInfo);
+      _partInfo.serUrl=redata.partUrl
+      return {code:_partInfo.questions&&_partInfo.questions.length?0:2,data:_partInfo}
     }else{
       message.error('识别失败')
       return{code:2}
@@ -49,7 +58,7 @@ function initReposeData (data) {
   let questions = data.questions
   if (questions && questions.length) {
     for (let i = 0; i < questions.length; i++) {
-      data.questions[i].area = data.questions[i].areas[0]
+      data.questions[i].area = data.questions[i].areaList[0]
     }
   }
   return data
