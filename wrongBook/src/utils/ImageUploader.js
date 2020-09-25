@@ -32,6 +32,7 @@ class ImageUploader {
       file : file
     }
     let qiuniudata=await uploadQiniu.post('/',uploadParams)
+
     return 'https://homework.mizholdings.com/' + qiuniudata.data.key
   }
 

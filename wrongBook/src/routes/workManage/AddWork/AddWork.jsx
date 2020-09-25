@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Layout, Menu,Spin , Button, message,DatePicker,Select, Popover,Input, Icon, Popconfirm,Empty,Modal, Checkbox
 } from 'antd';
-import {ImageUploader,putb64,uploadBase64} from '../../../utils/ImageUploader'
+import {ImageUploader} from '../../../utils/ImageUploader'
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
 import style from './AddWork.less';
@@ -1060,20 +1060,24 @@ class WorkManage extends React.Component {
 										// this.state.workPages.splice(this.state.cpindex,1)
 
 										let _areaData={
-											partId:this.state.cpicture.pageId,	
+											partId:this.state.cpicture.partId,	
 											examId:this.state.cpicture.examId,	
 											qusImgUrl:_area.area.imgUrl,	
 											pointX:_area.area.x,	
 											pointY:_area.area.y,	
 											areaWidth:_area.area.width,		
 											areaHeight:_area.area.height,	
-											num:_area.num
+											num:_area.num||10||_area.orderBy
 										}
 										console.log('_areaData: ', _areaData);
 										// this.setState({
 										// 	// workPages:this.state.workPages,
 										// 	showEditPictureModal:false
 										// })
+										this.props.dispatch({
+											type:'workManage/areaDiscern',
+											payload:_areaData
+										})
 										console.log('this.state.workPages',this.state.workPages)
 									}}
 								></EditPageModal>
@@ -1097,8 +1101,30 @@ class WorkManage extends React.Component {
 			iscreateWork
 		})
 
-
-		let partQuestions=this.state.partQuestions
+	// 	function getImageInfo(url, callback) {
+ 
+	// 		var img = new Image();
+	// 		img.src = url;
+	// 		if (img.complete) {
+	// 		// 如果图片被缓存，则直接返回缓存数据
+	// 				callback(img.width, img.height);
+	// 		} else {
+	// 				img.onload = function () {
+	// 						callback(img.width, img.height);
+	// 				}
+	// 		}
+	// }
+		var img = new Image();
+		img.src = 'https://homework.mizholdings.com/kacha/xcx/page/4645964827397120.5041112551802880.1600164913791.jpg?imageMogr2/auto-orient';
+		if (img.complete) {
+		// 如果图片被缓存，则直接返回缓存数据
+		console.log(img.width,img.height)
+		} else {
+				img.onload = function () {
+					console.log(img.width,img.height)
+				}
+		}
+			let partQuestions=this.state.partQuestions
 		setTimeout(() => {
 			this.setState({
 					workPages:[this.state.test]

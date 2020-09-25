@@ -24,8 +24,11 @@ class EditPageModal extends React.Component {
 					"width": 720,
 					"height": 959.5,
 					"left": 0,
-					"top": 0
-				}
+					"top": 0,
+					
+				},
+				originWidth:1200,
+				originHeight:800
 			},
 			originalItemArea: {
 				left: 0,
@@ -216,10 +219,10 @@ class EditPageModal extends React.Component {
 		})
 	}
 	getQnCropUrl () {
-		let _width = this.state.cutWidth / this.state.imageData.displayImage.width * this.props.cpicture.width
-		let _height = this.state.cutHeight / this.state.imageData.displayImage.height * this.props.cpicture.height
-		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.props.cpicture.width
-		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.props.cpicture.height
+		let _width = this.state.cutWidth / this.state.imageData.displayImage.width * this.state.imageData.originWidth
+		let _height = this.state.cutHeight / this.state.imageData.displayImage.height * this.state.imageData.originHeight
+		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.state.imageData.originWidth
+		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.state.imageData.originHeight
 		let purl = this.props.cpicture.serUrl || 'noqniu_img'
 		console.log(_height,_height,_x,_y)
 		let _str = ''
@@ -255,10 +258,10 @@ class EditPageModal extends React.Component {
 		let _imgUrl = this.getQnCropUrl()
 
 		let _area = {
-			x: _x,
-			y: _y,
-			height: _height,
-			width: _width,
+			x: parseInt(_x),
+			y: parseInt(_y),
+			height: parseInt(_height),
+			width: parseInt(_width),
 			rotate: 0,
 			imgUrl: _imgUrl,
 			index: 999
@@ -390,7 +393,7 @@ class EditPageModal extends React.Component {
 		this.props.cpicture.questions.push({
 			area: _area,
 			mark: 0,
-			num: this.props.cpicture.questions.length,
+			num: this.props.cpicture.questions.length+1,
 			pageid: this.props.cpicture.pageId,
 			type: 0,
 			selected: true,
@@ -496,6 +499,32 @@ class EditPageModal extends React.Component {
 		return xyArray;
 }
 
+imgLoaded(url, callback) {
+  var img = new Image();
+  img.src = url;
+  if (img.complete) {
+  // 如果图片被缓存，则直接返回缓存数据
+		// callback(img);
+		this.state.imageData.originWidth=img.width
+		this.state.imageData.originHeight=img.height
+		this.state.imageData.displayImage.height=720/(img.width/img.height)
+		this.setState({
+			imageData:this.state.imageData
+		})
+		console.log('img loaded...',img.width,img.height,this.state.imageData)
+  } else {
+    img.onload = function () {
+			// callback(img);
+			this.state.imageData.originWidth=img.width
+			this.state.imageData.originHeight=img.height
+			this.state.imageData.displayImage.height=720/(img.width/img.height)
+			this.setState({
+				imageData:this.state.imageData
+			})
+			console.log('img loaded...',img.width,img.height,this.state.imageData)
+    }
+  }
+}
 	render() {
 		return (
 			<Modal
@@ -535,7 +564,11 @@ class EditPageModal extends React.Component {
 				<Spin spinning={false&&this.state.discovering}>
 					<div className={style.img_box}>
 
-						<img style={{width:720}}  src={this.props.cpicture.url} alt=""/>
+						<img style={{width:720}} onLoad={(e)=>{
+							console.log('111',e)
+							this.imgLoaded(this.props.cpicture.url)
+						}}  
+						src={this.props.cpicture.url} alt=""/>
 						<div className={style.crop_box} 
 						onMouseUp={(e)=>{
 							this.setState({mouseIsDown:false,hideBar:false}),
