@@ -1093,17 +1093,13 @@ class StuReport extends React.Component {
       data.oldQuestionId=currentRecommend.questionId
       delete data.nowQuestionId
     }else{
-      if(currentRecommend&&currentRecommend.adviseId){
-        data.adviseId=currentRecommend.adviseId
-      }
+      //替换原题时候不保留优选错题
+      // if(currentRecommend&&currentRecommend.adviseId){
+      //   data.adviseId=currentRecommend.adviseId
+      // }
     }
     console.log('data: ', data);
-    if(!data.adviseId){
-      // message.destroy()
-      // message.warn('题目数据错误')
-      // return
-      delete data.adviseId
-    }
+
     this.setState({
       currentQuestionIndex:index
     })
