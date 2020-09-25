@@ -221,13 +221,14 @@ class EditPageModal extends React.Component {
 		let _x = this.state.cutLeft / this.state.imageData.displayImage.width * this.props.cpicture.width
 		let _y = this.state.cutTop / this.state.imageData.displayImage.height * this.props.cpicture.height
 		let purl = this.props.cpicture.serUrl || 'noqniu_img'
+		console.log(_height,_height,_x,_y)
 		let _str = ''
 		if (purl.indexOf('?imageMogr2') === -1) {
 			_str = '?imageMogr2'
 		}
 		if (_x < 0) _x = 0
 		if (_y < 0) _y = 0
-		return `${purl}${_str}/crop/!${_width.toFixed(2)}x${_height.toFixed(2)}a${_x.toFixed(2)}a${_y.toFixed(2)}`
+		return `${purl}${_str}/crop/!${parseInt(_width)}x${parseInt(_height)}a${parseInt(_x)}a${parseInt(_y)}`
 	}
 	_deleteCropItem () {
 		if (this.props.cpicture.questions[this.state.cropIndex].addRect) {
@@ -433,7 +434,7 @@ class EditPageModal extends React.Component {
 		let _cropArea=this.props.cpicture.questions[_index]
 		console.log('_cropArea: ', _cropArea);
 		// console.log('this.state.cpicture.questions: ', this.props.cpicture.questions);
-		// this.props._confirmAreaHander(_index)
+		this.props._confirmAreaHander(_index)
 		// let _questions=this.props.cpicture.questions
 		// this.getOrderQuestions(_questions)
 
@@ -626,6 +627,7 @@ class EditPageModal extends React.Component {
 							<div className={style.rect_mask}>
 								{
 									this.props.cpicture.questions?this.props.cpicture.questions.map((item, i) => {
+										// {console.log('item',item)}
 										return (
 											<div className={item.selected?'rect_item_active rect_item':'rect_item'}        
 												key={`item.examId${item.partId}${i}`}  

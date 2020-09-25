@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-24 15:18:30
- * @LastEditTime: 2020-09-24 16:52:54
+ * @LastEditTime: 2020-09-25 10:16:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\utils\ImageUploader.js
@@ -58,7 +58,22 @@ function initReposeData (data) {
   let questions = data.questions
   if (questions && questions.length) {
     for (let i = 0; i < questions.length; i++) {
-      data.questions[i].area = data.questions[i].areaList[0]
+      const {areaHeight,
+        areaId,
+        areaUrl,
+        areaWidth,
+        pointX,
+        pointY,
+        qusId} =data.questions[i].areaList[0]
+      data.questions[i].area ={
+        x:pointX,
+        y:pointY,
+        height:areaHeight,
+        width:areaWidth,
+        qusId,
+        areaId,
+        imgUrl:areaUrl
+      }
     }
   }
   return data

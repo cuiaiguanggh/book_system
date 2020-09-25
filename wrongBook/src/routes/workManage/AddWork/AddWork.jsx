@@ -1061,7 +1061,7 @@ class WorkManage extends React.Component {
 
 										let _areaData={
 											partId:this.state.cpicture.pageId,	
-											examId:this.state.work.examId,	
+											examId:this.state.cpicture.examId,	
 											qusImgUrl:_area.area.imgUrl,	
 											pointX:_area.area.x,	
 											pointY:_area.area.y,	
