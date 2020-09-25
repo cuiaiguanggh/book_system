@@ -43,15 +43,6 @@ class StuReport extends React.Component {
     }
   }
 
-
-  
- 
-
-
-  menuClick(item){
-    console.log('item: ', item);
-
-  }
   initStudents(arr1) {
     let arr2=this.state.loggedStudents
     let newArr = [];
@@ -63,8 +54,6 @@ class StuReport extends React.Component {
             }
         }
     }
-    console.log('newArr: ', newArr,arr1);
-
     let currentStudent=newArr.length?newArr:arr1
     this.setState({
       nowuserid:currentStudent[0].userId,
@@ -80,59 +69,11 @@ class StuReport extends React.Component {
     this.getStudentWork(currentStudent[0].userId)
   }
   onclickStudentItem(item){
-    console.log('item: ', item);
-
     this.setState({
       nowuserid:item.userId,
       studentName:item.userName
     })
     this.getStudentWork(item.userId)
-  }
-  initStudents1(_students){
-    this.getArrEqual(_students,this.state.loggedStudents)
-    return 
-    console.log('_students: ', _students);
-    let loggeds=this.state.loggedStudents
-    let loggedStudents=[],
-    students=[];
-
-
-    
-    let _arr = [];
-    let _arr1=[]
-    for (let i = 0; i < _students.length; i++) {
-      let isExit;
-      for (let j = 0; j < loggeds.length; j++) {
-          if(loggeds[j] === _students[i].userId){
-              isExit = true;
-          }else{
-            isExit = false
-          }
-      }
-      isExit?_arr.push(_students[i]):''
-
-    }
-
-    // for (let index = 0; index < _students.length; index++) {
-    //   const ele = _students[index]
-    //   for (let i = 0; i < loggeds.length; i++) {
-    //     if(ele.userId===loggeds[i]){
-    //       loggedStudents.push(ele)
-    //     }else{
-    //       students.push(ele)
-    //     }
-       
-    //   }
-      
-    // }
-    // this.setState({
-    //   _students:{
-    //     loggedStudents,
-    //     students
-    //   }
-    // })
-    console.log('22',_arr)
-
   }
   hideLogged(e){
     console.log('e: ', e);
@@ -238,7 +179,7 @@ class StuReport extends React.Component {
 
 
   renderClassSelect() {
-    let classes = this.props.state.pageClassList;
+    let classes = this.props.state.workPageClass.list;
 		const children = [];
     for (let i = 0; i < classes.length; i++) {
       let item = classes[i]
@@ -251,12 +192,14 @@ class StuReport extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="班级"
+          value={this.props.state.workPageClass.singleValue}
           onChange={(value) => {
               this.props.dispatch({
-                type:"classModel/classSubjectData",
+                type:"workManage/workPageClass",
                 payload:{
                   list:classes,
-                  value
+                  value:this.props.state.workPageClass.value,
+                  singleValue:value
                 }
               })
             }}>
@@ -391,7 +334,7 @@ class StuReport extends React.Component {
   render() {
       return (
       <>
-      {this.props.state.pageClassList.length?<div className={style.whoBox}> 
+      {this.props.state.workPageClass.list.length?<div className={style.whoBox}> 
             {this.renderClassSelect()}
             {/* { 
               this.renderSubjectList()
@@ -420,24 +363,19 @@ class StuReport extends React.Component {
               </Sider>
 
               <Content className={style.content}>
-                <Spin spinning={this.state.initWroking}>
+                <Spin spinning={true||this.state.initWroking}>
                   {/* <LogContent  _updateChecked={(j,i,p)=>this.updateChecked(j,i,p)}  selectStudentHander={this.selectStudentFun.bind(this)} _prop_partList={this.state._work.partList}>
                   </LogContent> */}
-                  <div>
-                    {
-                      <div style={{padding:!this.props.state.logType?'20px':''}}>
-                        {
-                          !this.state._work.partList.length?
-                          <Empty className='noclass' description='该份作业暂无内容' style={{ position: 'relative',marginTop:100 }} />:
-                          <>
-                            {!this.props.state.logType?
-                            <RenderCropItem _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCropItem>:
-                            <RenderCrop  _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCrop>}
-                          </>
-                        }
-                        
-                      </div>
-                    }
+                  <div style={{padding:!this.props.state.logType?'20px':'',height:'100%',boxSizing:'border-box',position:'relative'}}>
+                      {
+                        !this.state._work.partList.length?
+                        <Empty className={style.nowork} description='该份作业暂无内容' />:
+                        <>
+                          {!this.props.state.logType?
+                          <RenderCropItem _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCropItem>:
+                          <RenderCrop  _updateChecked={(index,i,p)=>{this.updateChecked(index,i,p)}} _partList={this.state._work.partList}></RenderCrop>}
+                        </>
+                      }     
                   </div>
                 </Spin>
               </Content>
@@ -457,20 +395,19 @@ class StuReport extends React.Component {
       year: this.props.state.years
     }
     dispatch({
-      type: 'classModel/getPageClass',
+      type: 'workManage/getWorkPageClass',
       payload: data
-    }).then((classlist) => {
-      console.log('classlist: ', classlist);
+    }).then((classData) => {
+      console.log('classlist: ', classData);
       
-      if (classlist && classlist.length > 0) {
+      if (classData && classData.list.length > 0) {
         this.props.dispatch({
           type: 'workManage/getStudents',
           payload: {
-            classId:classlist[0].classId||0
+            classId:classData.singleValue
           }
         }).then(res=>{
           if(res.length>0){
-            
             this.initStudents(res)
           }
         })
@@ -508,7 +445,7 @@ class StuReport extends React.Component {
 
 export default connect((state) => ({
   state: {
-    pageClassList:state.classModel.pageClassList,
+    workPageClass:state.workManage.workPageClass,
     getClassMembersFinish:state.classModel.getClassMembersFinish,
     students:state.workManage.students,
     years: state.temp.years,

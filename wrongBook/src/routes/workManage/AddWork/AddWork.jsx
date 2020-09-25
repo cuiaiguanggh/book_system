@@ -644,7 +644,6 @@ class WorkManage extends React.Component {
 		}, 200);
 	}
 	containetScroll(e) {
-		console.log('e: ', e);
 		if(!document.querySelector('#kacha_side')) return
 		let _w=document.querySelector('#kacha_side').offsetWidth
 		let  scrollTop = e.currentTarget.scrollTop, 

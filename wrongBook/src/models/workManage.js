@@ -20,7 +20,8 @@ export default {
 	state: {
 		workPageClass:{
 			list:[],
-			value:[]
+			value:[],
+			singleValue:-1
 		},
 		schoolSubjectList:[],
 		schoolSubId:0,
@@ -163,18 +164,17 @@ export default {
 			if(_classList.length){
 				_v=_classList[0].classId
 			}
+			let _data={
+				list:_classList,
+				value:[_v],
+				singleValue:_v
+			}
 			yield put({
 				type: 'workPageClass',
-				payload: {
-					list:_classList,
-					value:[_v]
-				}
+				payload:_data
 			})
 
-			return {
-				list:_classList,
-				value:[_v]
-			}
+			return _data
 		},
 		*getWorkList({ payload }, { put, select }){
 			// let res = yield getWorkList(payload);
