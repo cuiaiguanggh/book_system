@@ -43,8 +43,7 @@ class StuReport extends React.Component {
     }
   }
 
-  initStudents(arr1) {
-    let arr2=this.state.loggedStudents
+  initStudents(arr1,arr2) {
     let newArr = [];
     for (let i = 0; i < arr2.length; i++) {
         for (let j = 0; j < arr1.length; j++) {
@@ -202,6 +201,30 @@ class StuReport extends React.Component {
                   singleValue:value
                 }
               })
+              if (value) {
+                this.props.dispatch({
+                  type: 'workManage/getStudents',
+                  payload: {
+                    classId:value
+                  }
+                }).then(allstudent=>{
+                  if(!allstudent.length>0)return
+                  this.props.dispatch({
+                    type: 'workManage/hasLoggedStudents',
+                    payload: {
+                      classIds:value,
+                      examId:this.props.location.examId||17
+                    }
+                  }).then(wusers=>{
+                    
+                    console.log('wusers',wusers)
+                    this.initStudents(allstudent,wusers)
+                  })
+        
+                })
+        
+        
+              }
             }}>
           {children}
         </Select>
@@ -244,7 +267,7 @@ class StuReport extends React.Component {
       type:"workManage/doGetStudentQuestions",
       payload:{
         userId:_userId,
-        examId:10,
+        examId:this.props.location.examId||17,
       }
     }).then(res=>{
       console.log('doGetStudentQuestions: ', res);
@@ -272,7 +295,7 @@ class StuReport extends React.Component {
       type:"workManage/doCommitQuestions",
       payload:{
         userId:this.state.nowuserid,
-        examId:10,
+        examId:this.props.location.examId||17,
         qusIds:userQuids.length&&userQuids.join(','),
         allRight:userQuids.length?0:1
       }
@@ -316,6 +339,7 @@ class StuReport extends React.Component {
   }
 
   getUserWrongQuestionIds(){
+    console.log('this.state._work.partList',this.state._work)
     let _partList=this.state._work.partList
     let _qids=[]
     if(_partList.length){
@@ -363,7 +387,7 @@ class StuReport extends React.Component {
               </Sider>
 
               <Content className={style.content}>
-                <Spin spinning={true||this.state.initWroking}>
+                <Spin spinning={this.state.initWroking}>
                   {/* <LogContent  _updateChecked={(j,i,p)=>this.updateChecked(j,i,p)}  selectStudentHander={this.selectStudentFun.bind(this)} _prop_partList={this.state._work.partList}>
                   </LogContent> */}
                   <div style={{padding:!this.props.state.logType?'20px':'',height:'100%',boxSizing:'border-box',position:'relative'}}>
@@ -406,11 +430,23 @@ class StuReport extends React.Component {
           payload: {
             classId:classData.singleValue
           }
-        }).then(res=>{
-          if(res.length>0){
-            this.initStudents(res)
-          }
+        }).then(allstudent=>{
+          if(!allstudent.length>0)return
+          dispatch({
+            type: 'workManage/hasLoggedStudents',
+            payload: {
+              classIds:classData.singleValue,
+              examId:this.props.location.examId||17
+            }
+          }).then(wusers=>{
+            if(wusers&&wusers.length)
+            console.log('wusers',wusers)
+            this.initStudents(allstudent,wusers)
+          })
+
         })
+
+
       }
     })
 
@@ -420,7 +456,10 @@ class StuReport extends React.Component {
 				examId:this.props.location.examId||17
 			}
 		}).then(workdata=>{
-			console.log('workdata: ', workdata);
+      console.log('workdata: ', workdata);
+      this.setState({
+        initWroking:false
+      })
       //调用partinfo接口
       if(workdata.info){
         this.setState({

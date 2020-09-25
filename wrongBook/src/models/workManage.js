@@ -9,7 +9,7 @@ import {
 
 import {
 	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup,commitQuestions
-	,getStudentQuestions
+	,getStudentQuestions,wrongUsers
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -297,7 +297,17 @@ export default {
 			
 			console.log('examId res: ', res);
 			return res.data
+		},
+		*hasLoggedStudents({ payload }, { put, select }){
+			let res = yield wrongUsers(payload);
+			if(res.data.result!==0){
+
+				message.error('获取录入学生错误：'+res.data.msg)
+				return
+			}
+			return res.data.data.list
 		}
+		
 	},
 
 

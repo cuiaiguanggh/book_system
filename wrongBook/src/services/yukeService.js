@@ -113,7 +113,12 @@ function getStudentQuestions(payload) {
         method: 'post'
     });
 }
-
+function wrongUsers(payload) {
+    return requestYk(`${burl}exam/wrongUsers?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 export {
     fetchQuestions,
     getWorkList,
@@ -127,5 +132,5 @@ export {
     delPart,
     publishWork,
     updateWork,
-    updateGroup,commitQuestions,getStudentQuestions
+    updateGroup,commitQuestions,getStudentQuestions,wrongUsers
 };

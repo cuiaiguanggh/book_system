@@ -486,9 +486,10 @@ class WorkManage extends React.Component {
 	renderClassList() {
 			let classes = this.props.state.workPageClass.list;
 			let _value=this.props.state.workPageClass.value
-			if(!this.state.createWork){
+			if(false&&!this.state.createWork){
 				_value=this.state._editWorkClassList
 			}
+			console.log('value',_value)
 			const children = [];
 			for (let i = 0; i < classes.length; i++) {
 			let item = classes[i]
@@ -536,7 +537,7 @@ class WorkManage extends React.Component {
 		let partUrl=await _ImageUploader.uploadToQiniu(file)
 		if(!partUrl) return 
 		let option={
-			examId:10,
+			examId:this.state.work.info.examId,
 			partName:pitem.partName,
 			remark:pitem.partName,
 			partUrl
@@ -685,6 +686,25 @@ class WorkManage extends React.Component {
 			}
 		)
 	}
+	getWorkNameAndSubName(classidArr,subid){
+		this.props.state.workPageClass.value
+		this.props.state.schoolSubId
+
+		let _subdata=this.props.state.schoolSubjectList.find((v)=>{return v.k===this.props.state.schoolSubId})
+		let _cnameArr=[]
+		this.props.state.workPageClass.list.map((item,i)=>{
+			if(this.props.state.workPageClass.value.includes(item.classId)){
+				console.log('11')
+				_cnameArr.push(item.className)
+			}
+		})
+
+		console.log('22',_cnameArr,_subdata)
+		return {
+			cname:1,
+			sname:_subdata?_subdata.v:''
+		}
+	}
 	addExamGroup(){
 		// this.props.dispatch({
 		// 	type:"workManage/addOrUpdateExamGroup",
@@ -699,8 +719,12 @@ class WorkManage extends React.Component {
 				questions:[]
 			}
 		)
+		this.state.work.groupList=this.state.partQuestions
+		// this.setState({
+		// 	partQuestions:this.state.partQuestions
+		// })
 		this.setState({
-			partQuestions:this.state.partQuestions
+			work:this.state.work
 		})
 	}
 
@@ -748,46 +772,100 @@ class WorkManage extends React.Component {
 	questionGroupDrop(e,to){
 		let _from=this.state.drapQuetionIndex
 
-		let dtagQue=this.state.partQuestions.questions[_from[0]]
-		let currentGroup=this.state.partQuestions.part[to]
+		// let dtagQue=this.state.partQuestions.questions[_from[0]]
+		
 
-		console.log('dtagQue: ', dtagQue,currentGroup);
-		this.toRequestDrag(dtagQue,currentGroup)
-		return
+		// console.log('dtagQue: ', dtagQue);
+		// this.toRequestDrag(dtagQue,to)
+		// return
 		if(_from.length>1){
-			//从组拖拽
+			//从组内拖拽
 			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.part[_from[0]].questions[_from[1]])
 			this.state.partQuestions.part[_from[0]].questions.splice(_from[1],1)
 			
 		}else{
 			//从组外拖拽
-			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.questions[_from[0]])
+			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.questions[_from[0]].qusId)
 			this.state.partQuestions.questions.splice(_from[0],1)//
 		}
 		this.setState({
-			partQuestions:this.state.partQuestions,
+			// partQuestions:this.state.partQuestions,
 			partActiveIndex:-1
 		})
 		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
+		this.toUpdateGroupList(this.state.partQuestions.part)
 	}
-	toRequestDrag(dragque,curgroup){
-		console.log('curgroup: ', curgroup);
-		let data={
+	toUpdateGroupList(allpart){
 
+
+		let requestDroupList=[]
+		for (let index = 0; index < allpart.length; index++) {
+			const part = allpart[index]
+			if(part.questions.length){
+				
+				requestDroupList.push({
+					groupName:part.name,
+					examId:18||this.state.work.info.examId||10,
+					quesIds:part.questions.join(',')
+				})
+			}
+			
 		}
-		let qidArr=curgroup.questions
-		qidArr.push(dragque.qusId)
-		console.log('qidArr: ', qidArr);
+		console.log('curgroup:,requestDroupList ',this.state.partQuestions,requestDroupList);
 		//return
+		// let qidArr=curgroup.questions
+		// qidArr.push(dragque.qusId)
+		// console.log('allGroup: ', allGroup);
+		// //return
 		this.props.dispatch({
 			type:"workManage/addOrUpdateExamGroup",
-			payload:[
-				{groupName:curgroup.name,
-				examId:10,
-				quesIds:qidArr.join(',')
+			payload:requestDroupList
+		}).then(res=>{
+			
+			
+			this.props.dispatch({
+				type:"workManage/getExamInfo",
+				payload:{
+					examId:18||this.props.location.examId||18
 				}
-			]
+			}).then(newWorkData=>{
+				console.log('newWorkData: ', newWorkData);
+				this.setState({
+					work:newWorkData
+				})
+			})
 		})
+	}
+	toRequestDrag(dragque,groupIndex){
+		let curgroup=this.state.partQuestions.part[groupIndex]
+		let data={
+			
+		}
+		let allGroup=this.state.partQuestions
+		this.state.partQuestions.part[groupIndex].questions.push(dragque.qusId)
+		let requestDroupList=[]
+		for (let index = 0; index < this.state.partQuestions.part.length; index++) {
+			const part = this.state.partQuestions.part[index]
+			if(part.questions.length){
+				requestDroupList.push(part)
+			}
+			
+		}
+		console.log('curgroup: ',this.state.partQuestions,requestDroupList);
+		return
+		// let qidArr=curgroup.questions
+		// qidArr.push(dragque.qusId)
+		// console.log('allGroup: ', allGroup);
+		// //return
+		// this.props.dispatch({
+		// 	type:"workManage/addOrUpdateExamGroup",
+		// 	payload:[
+		// 		{groupName:curgroup.name,
+		// 		examId:10,
+		// 		quesIds:qidArr.join(',')
+		// 		}
+		// 	]
+		// })
 	}
 	// onEditFinish=()=>{
 	// 	this.state.work.pages=this.state._partList
@@ -900,77 +978,78 @@ class WorkManage extends React.Component {
 		
 	}
 
-	  createWork=()=>{
-			let msg=''
-			let workInfo=this.state.work.info
-			console.log('workInfo: ', workInfo);
-		  if(!workInfo.subjectId) {
-			  msg='请选择一个学科！'
-		  }
-		  if(!workInfo.classId||!workInfo.classId.length) {
-			  msg='请选择一个班级！'
-			}
-			if(!store.get('wrongBookNews').schoolId){
-				msg='没有学校！'
-			}
-		  if(msg){
-			  message.destroy()
-			  message.warn(msg)
-			  return
-			}
-			this.setState({
-				createWorking:true
-			})
-			const {examName,subjectId,classId,workTime}=workInfo
-			let data={
-				examName:examName,
-				subjectId,
-				classId:classId.join(','),
-				schoolId:store.get('wrongBookNews').schoolId,
-				workTime:workTime
-			}
-			console.log('data: ', data);
-			this.props.dispatch({
-				type:"workManage/createWork",
-				payload:data
-			}).then((res)=>{
-				this.setState({
-					createWorking:true
-				})
-				if(res&&res.data.result===0){
-					message.success('作业创建成功')
-					setTimeout(() => {
-						this.props.dispatch(routerRedux.push('/workManage'))
-					}, 500)
-				}else{
-					message.warn('作业创建失败：'+res.data.msg)
-				}
-			})
+createWork=()=>{
+	let msg=''
+	let workInfo=this.state.work.info
+	console.log('workInfo: ', workInfo);
+	if(!workInfo.subjectId) {
+		msg='请选择一个学科！'
+	}
+	if(!workInfo.classId||!workInfo.classId.length) {
+		msg='请选择一个班级！'
+	}
+	if(!store.get('wrongBookNews').schoolId){
+		msg='没有学校！'
+	}
+	if(msg){
+		message.destroy()
+		message.warn(msg)
+		return
+	}
+	this.setState({
+		createWorking:true
+	})
+	this.getWorkNameAndSubName()
+	return
+	const {examName,subjectId,classId,workTime}=workInfo
+	let data={
+		examName:examName,
+		subjectId,
+		classId:classId.join(','),
+		schoolId:store.get('wrongBookNews').schoolId,
+		workTime:workTime
+	}
+	console.log('data: ', data);
+	this.props.dispatch({
+		type:"workManage/createWork",
+		payload:data
+	}).then((res)=>{
+		this.setState({
+			createWorking:true
+		})
+		if(res&&res.data.result===0){
+			message.success('作业创建成功')
+			setTimeout(() => {
+				this.props.dispatch(routerRedux.push('/workManage'))
+			}, 500)
+		}else{
+			message.warn('作业创建失败：'+res.data.msg)
 		}
-		getClasses(classIdStr){
-			let _arr=[]
-			let cids=classIdStr.split(",")
-			return _arr=cids.map((item,i)=>{
-				if(item){
-					return parseInt(item)
-				}
-			})
+	})
+}
+getClasses(classIdStr){
+	let _arr=[]
+	let cids=classIdStr.split(",")
+	return _arr=cids.map((item,i)=>{
+		if(item){
+			return parseInt(item)
 		}
-		_iscreateWOrk=()=>{
-		
-		}
-  	render() {
+	})
+}
+
+	render() {
 		let pquestions=this.state.partQuestions.questions
-		let pparts=this.state.partQuestions.part
+		// let groupList=this.state.partQuestions.part
 		// let partList=this.state.work.partList
 		let partList=this.state._partList
-		// console.log('partList: ', partList);
+		let groupList=this.state.work.groupList
+		console.log('groupList: ', groupList);
 		return (
 		<div className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
 			onScroll={this.containetScroll.bind(this)}
 		>
 			<div>
-				<div style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:10}}>
+				<div className='work_name_area' style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:10}}>
 						<h4 style={{fontSize:20,height:40}} >
 							{
 								!this.state.editWorkName?
@@ -1015,7 +1094,7 @@ class WorkManage extends React.Component {
 							学科：{this.renderSchoolSubjectList()}
 						</div>
 				</div>
-				<div >
+				<div className='work_con_area'>
 
 					{
 						this.state.iscreateWork?
@@ -1025,7 +1104,7 @@ class WorkManage extends React.Component {
 						:
 						<>
 						<div className={style.top_box}>
-						<div className='clearfix'>
+						<div className='clearfix work_part_area'>
 								{
 									partList.map((item, i) => {
 										return (
@@ -1056,6 +1135,7 @@ class WorkManage extends React.Component {
 								</div>
 							</div>
 						</div>
+
 						<div style={{marginTop:32}}>
 								{
 									this.state._partList.map((item, i) => {
@@ -1102,7 +1182,9 @@ class WorkManage extends React.Component {
 									</div>
 									
 								</div>
-								<div style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
+
+								{/* 作业题目部分 */}
+								<div  style={{width:'100%',boxSizing:'border-box',background:"#fff"}}>
 								<div className={style.sider} style={{height: 'calc( 100% - 50px )'}}>
 									<div className={style.sider_in}>
 										<div style={{color:"#84888E",fontSize:14,marginBottom:14}}>
@@ -1110,7 +1192,7 @@ class WorkManage extends React.Component {
 										</div>
 										<div className={style.que_group}>
 												{
-													pparts&&pparts.length?pparts.map((_part,p)=>{
+													groupList&&groupList.length?groupList.map((group,p)=>{
 														return(
 															<div style={{marginTop:10}}  className={style.group_box} key={p} 
 																onDropCapture={(e)=>{this.questionGroupDrop(e,p)}} 
@@ -1124,20 +1206,26 @@ class WorkManage extends React.Component {
 																	<Input autoFocus={this.state.editPartNameIndex===p&&this.state.editPartName} 
 																		style={{width:100}} 
 																		onBlur={(e)=>{
-																			this.state.partQuestions.part[p].name=e.target.value
-																			this.setState({
-																				editPartNameIndex:-1,
-																				editPartName:false,
-																				partQuestions:this.state.partQuestions
-																			})
+																			// this.state.partQuestions.part[p].name=e.target.value
+																				this.state.work.groupList[p].groupName=e.target.value
+																				this.setState({
+																					editPartNameIndex:-1,
+																					editPartName:false,
+																					partQuestions:this.state.partQuestions,
+																					work:this.state.work
+																				}, () => {
+
+																					this.toUpdateGroupList(this.state.work.groupList)
+																		
+																				})
 																			
 																			}} 
 
-																			defaultValue={_part.name}
+																			defaultValue={group.groupName}
 																	/>
 																	:
 																	<div key={p} className={[style._part_title,p===this.state.partActiveIndex?style._active:''].join(' ')}>
-																		{_part.name}
+																		{group.groupName}
 																		<img style={{marginLeft:8}}  className='cup' src={require('../../images/edit.png')} alt=""
 																			onClick={(e)=>{
 																				this.setState({
@@ -1164,10 +1252,10 @@ class WorkManage extends React.Component {
 																</div>
 															}
 															{
-																_part.questions&&_part.questions.length?
+																group.quesList&&group.quesList.length?
 																
 																	<div style={{width:"100%",marginTop:15}}>
-																	{_part.questions.map((area, k) => {
+																	{group.quesList.map((area, k) => {
 																		return(
 																		<span key={k} className={style.que_span}>{k+1}</span>
 																		)
@@ -1191,19 +1279,20 @@ class WorkManage extends React.Component {
 										</Button>
 									</div>
 								</div>
+								{/* 题目部分 */}
 								<div className={style._box} style={{width: 'calc( 100% - 200px )',display:'inline-block'}}>
 									<div className={style.content}>
 										{
-											pparts&&pparts.length?pparts.map((_part,p)=>{
+											groupList&&groupList.length?groupList.map((group,p)=>{
 												return(
 													<div  className={style.group_box} key={p}>
-														<div style={{marginBottom:10}} > {_part.name}</div>
+														<div style={{marginBottom:10}} > {group.name}</div>
 														
 														{
-														_part.questions&&_part.questions.length?
+														group.quesList&&group.quesList.length?
 														<div style={{width:"100%",marginBottom:15,background:'#efefef',padding:'20px 20px'}}>
 														{
-															_part.questions.map((item, k) => {
+															group.quesList.map((item, k) => {
 																return(
 																	<div
 																		key={k}
@@ -1340,28 +1429,12 @@ class WorkManage extends React.Component {
 
   componentDidMount() {
 		console.log('this.props.location.query',this.props.location.isCreate)
-		let iscreateWork=false&&this.props.location.isCreate
+		let iscreateWork=this.props.location.isCreate
 		this.setState({
 			iscreateWork
 		})
 
-	// 	function getImageInfo(url, callback) {
- 
-	// 		var img = new Image();
-	// 		img.src = url;
-	// 		if (img.complete) {
-	// 		// 如果图片被缓存，则直接返回缓存数据
-	// 				callback(img.width, img.height);
-	// 		} else {
-	// 				img.onload = function () {
-	// 						callback(img.width, img.height);
-	// 				}
-	// 		}
-	// }
-
 		let partQuestions=this.state.partQuestions
-
-
 		const { dispatch } = this.props;
 		let userNews = store.get('wrongBookNews');
 		let data = {
@@ -1423,12 +1496,12 @@ class WorkManage extends React.Component {
 			this.props.dispatch({
 				type:"workManage/getExamInfo",
 				payload:{
-					examId:this.props.location.examId||18
+					examId:18||this.props.location.examId||18
 				}
-			}).then(workdata1=>{
-				console.log('workdata: ', workdata1);
+			}).then(workdata=>{
+				console.log('workdata: ', workdata);
 
-				let workdata=this.state.test22
+				//  let workdata=this.state.test22
 				console.log('workdata: ', workdata);
 				let _classids=workdata.info.classId.split(',')
 				let classarr=[]

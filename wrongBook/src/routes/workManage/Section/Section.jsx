@@ -54,9 +54,10 @@ export default function Section(props) {
 								
 							</div>
 						</div>
+						{console.log('props.question',props.question)}
 						<div className={style._content}>
 							<div>
-								<img style={{marginBottom:14}} src={props.question.areaList?props.question.areaList[0].areaUrl:''} alt=""/>
+								<img style={{marginBottom:14}} src={props.question.areaList&&props.question.areaList.length>0?props.question.areaList[0].areaUrl:''} alt=""/>
 							</div>
 							{props.showQuestion&&props.question?<>
 							<div>
