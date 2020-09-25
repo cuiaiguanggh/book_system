@@ -330,7 +330,8 @@ class StuReport extends React.Component {
       payload:{
         userId:this.state.nowuserid,
         examId:10,
-        qusIds:userQuids.length&&userQuids.join(',')
+        qusIds:userQuids.length&&userQuids.join(','),
+        allRight:userQuids.length?0:1
       }
     }).then(res=>{
       if(res.data.result===0){
