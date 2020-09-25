@@ -60,7 +60,7 @@ class Upload1 extends React.Component {
           }
           this.props.lookPicture(this.props.picture,this.props.index)
           }} 
-        src={this.props.picture.url} alt=""/>
+        src={this.props.picture.url||this.props.picture.partUrl} alt=""/>
         <img className={style.delpng} onClick={()=>this.deletePictureHander(this.props.picture,this.props.index)} src={require('../../images/pdelete.png')} alt=""/>
         {this.props.picture.resCode==2?<div className={style.fail_box}>识别失败，请手动框题</div>:''}
         {this.props.picture.resCode==1?<div className={style.fail_box}>上传失败</div>:''}
