@@ -24,7 +24,7 @@ import {
 	maidian,
 } from '../services/reportService';
 import {
-	queryQuestionsBy,getZsd,updateQuestion
+	queryQuestionsBy,getZsd,updateQuestion,recoverQuestion
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -906,6 +906,14 @@ export default {
 
 			
 		},
+		*doRecoverQuestion({ payload }, { put, select }) {
+			let res=yield recoverQuestion(payload)
+
+			
+			return res
+
+			
+		}
 	
 	},
 

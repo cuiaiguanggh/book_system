@@ -46,8 +46,17 @@ function updateQuestion(payload) {
         }
     })
 }
+function recoverQuestion(payload) {
+    return requestYk(`${burl2}ques/recoverQuestion?token=${_token}`, {
+        data: payload,
+        method: 'post',
+        headers:{
+            'Content-Type':'application/x-www-form-urlencoded'
+        }
+    })
+}
 export {
     fetchQuestions,
     queryQuestionsBy,
-    getZsd,updateQuestion
+    getZsd,recoverQuestion
 };

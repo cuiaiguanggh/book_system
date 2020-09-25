@@ -952,10 +952,34 @@ class StuReport extends React.Component {
             userId: store.get('wrongBookNews').userId,
             way: 2
           }
+        }).then(res=>{
+          that.state.nowWindows.type = 1;
         });
+        // that.reFreshQueryQuestions()
         that.setState({ topicxy: true })
-        that.state.nowWindows.type = 1;
+       
       },
+    });
+  }
+  showPipei(){
+    this.props.dispatch({
+      type: 'report/doRecoverQuestion',
+      payload: {
+        uqId: this.state.nowWindows.recommendId,
+        userId: store.get('wrongBookNews').userId
+      }
+    }).then(res=>{
+      message.destroy()
+      if(res.data.result===0){
+        message.success('恢复匹配成功')
+        this.reFreshQueryQuestions()
+        this.setState({
+          visible:false,
+          topicxy:false
+        })
+      }else{
+        message.error('恢复匹配失败')
+      }
     });
   }
   getZsd=()=>{
@@ -1333,6 +1357,7 @@ class StuReport extends React.Component {
               this.setState({ visible: false, topicxy: false, })
             }}
           >
+            {console.log('this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy',this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy,this.state.nowWindows.title,this.state.pptype === 0 ,!this.state.topicxy)}
             {this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy ?
               <div style={{ display: 'flex',userSelect:'text' }}>
                 <div className={style.topicbox} style={{ width: '40%' }}>
@@ -1342,6 +1367,7 @@ class StuReport extends React.Component {
                     <span className={style.matchingError} onClick={this.pipeicw.bind(this)}>
                       <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错
                     </span>
+
                     <Button style={{float:"right",marginRight:15}} onClick={()=>{
                       this.setState({thvisilble:true,updateRecommend:false})
                     }}>替换</Button>
@@ -1361,6 +1387,7 @@ class StuReport extends React.Component {
                           this.setState({thvisilble:true,updateRecommend:true})
                         }}>替换</Button>:''
                       }
+                      
                     </h2>
 
                     {this.state.optimizationcuotiMistakes.length === 0 ?
@@ -1395,14 +1422,19 @@ class StuReport extends React.Component {
               </div> :
               <div>
                 {
-                   this.state.nowWindows.type === 0?
+                   this.state.nowWindows.type === 0&&this.state.nowWindows.type!=2?
                    <div>
                       <Button style={{float:"right",marginBottom:15}} onClick={()=>{
                         this.setState({thvisilble:true,updateRecommend:false})
                       }}>替换</Button>
                   </div>:''
                 }
-                
+                {
+                  (this.state.nowWindows.type===2||this.state.nowWindows.type===1)?
+                  <span className={style.matchingError} style={{marginBottom:10}} onClick={this.showPipei.bind(this)}>
+                    恢复匹配
+                  </span>:''
+                }
                 {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
                   <img key={i} style={{ width: '100%', margin: 'auto' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                 ))}
