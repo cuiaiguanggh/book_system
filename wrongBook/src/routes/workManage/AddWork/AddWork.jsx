@@ -1045,7 +1045,7 @@ getClasses(classIdStr){
 		// let partList=this.state.work.partList
 		let partList=this.state._partList
 		//let groupList=this.state.work.groupList
-		console.log('groupList: ', groupList);
+		// console.log('groupList: ', groupList);
 		return (
 		<div id='con_work' className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
 			onScroll={(e)=>{
@@ -1390,8 +1390,6 @@ getClasses(classIdStr){
 									_confirmAreaHander={(index)=>{
 										let _area=this.state.cpicture.questions[index]
 										console.log('_area: ', _area,this.state.cpicture);
-										// this.state._partList.splice(this.state.cpindex,1)
-
 										let _areaData={
 											partId:this.state.cpicture.partId,	
 											examId:this.state.cpicture.examId||10,	
@@ -1421,6 +1419,7 @@ getClasses(classIdStr){
 												partId:this.state.cpicture.partId
 											}
 										})
+										//重新调用一下
 									}}
 								></EditPageModal>
 						

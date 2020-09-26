@@ -35,9 +35,14 @@ export default {
 		workPartList:[],
 		workPartInfo:{},
 		logType:false,
-		students:[]
+		students:[],
+		getClassStudentsFinish:false
 	},
 	reducers: {
+		
+		getClassStudentsFinish(state, { payload }) {
+			return { ...state, getClassStudentsFinish: payload };
+		},
 		students(state, { payload }) {
 			return { ...state, students: payload };
 		},
@@ -73,8 +78,9 @@ export default {
 
 	effects: {
 		getStudents: [function* ({ payload }, { put, select }) {
+			
 			yield put({
-				type: 'getClassMembersFinish',
+				type: 'getClassStudentsFinish',
 				payload: false
 			})
 			let userNews = store.get('wrongBookNews');
@@ -96,7 +102,7 @@ export default {
 				payload:_classStudentList
 			})
 			yield put({
-				type: 'getClassMembersFinish',
+				type: 'getClassStudentsFinish',
 				payload: true
 			})
 			return _classStudentList
@@ -156,7 +162,7 @@ export default {
 					message.error(res.data.msg)
 				}
 				yield put({
-					type: 'getClassMembersFinish',
+					type: 'getClassStudentsFinish',
 					payload: true
 				})
 			}

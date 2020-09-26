@@ -111,9 +111,9 @@ class StuReport extends React.Component {
                       justifyContent: "center"}}>
             <Checkbox disabled={!this.state._students.students.length} checked={this.state.hideLoggedStudent} onChange={(e)=>{this.hideLogged(e)}}> 隐藏已录入</Checkbox>
         </div>
-      <Spin spinning={false} >
+      <Spin spinning={!this.props.state.getClassStudentsFinish} >
         {
-          loggedStudents.length||_students.length?<ul  className={style.my_ul}
+         ( loggedStudents.length||_students.length)?<ul className={style.my_ul}
               >
                 {
                   !this.state.hideLoggedStudent?loggedStudents.map((item, i) => {
@@ -144,7 +144,7 @@ class StuReport extends React.Component {
                     })
                 }
             
-          </ul>:this.props.state.getClassMembersFinish?<Empty className='noclass' description='暂无学生' style={{ position: 'relative', top: '50%', transform: 'translate(0, -50%)' }} />:''
+          </ul>:<Empty className='noclass' description='暂无学生' style={{ position: 'relative', top: '50%', transform: 'translate(0, -100px)' }} />
         }
        <div>
         </div> 
@@ -519,7 +519,7 @@ class StuReport extends React.Component {
 export default connect((state) => ({
   state: {
     workPageClass:state.workManage.workPageClass,
-    getClassMembersFinish:state.classModel.getClassMembersFinish,
+    getClassStudentsFinish:state.workManage.getClassStudentsFinish,
     students:state.workManage.students,
     years: state.temp.years,
     subList: state.temp.subList,
