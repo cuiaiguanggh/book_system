@@ -119,6 +119,12 @@ function wrongUsers(payload) {
         method: 'post'
     });
 }
+function quesDelete(payload) {
+    return requestYk(`${burl}exam/quesDelete?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 export {
     fetchQuestions,
     getWorkList,
@@ -132,5 +138,5 @@ export {
     delPart,
     publishWork,
     updateWork,
-    updateGroup,commitQuestions,getStudentQuestions,wrongUsers
+    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete
 };

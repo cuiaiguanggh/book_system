@@ -437,8 +437,6 @@ class WorkManage extends React.Component {
 				},
 				resCode:-1
 			},
-			uploadToken:'',
-			fileKey:'',
 			iscreateWork:true,
 			createWorking:false,
 			_editWorkClassList:[]
@@ -575,7 +573,11 @@ class WorkManage extends React.Component {
 			}
 		}).then(workdata=>{
 			console.log('workdata: ', workdata);
-
+			if(!workdata){
+				message.destroy()
+				message.warn('作业没有数据')
+				return
+			}
 			let _classids=workdata.info.classId.split(',')
 			let classarr=[]
 			for (let index = 0; index < _classids.length; index++) {
@@ -701,8 +703,8 @@ class WorkManage extends React.Component {
 
 		console.log('22',_cnameArr,_subdata)
 		return {
-			cname:1,
-			sname:_subdata?_subdata.v:''
+			_cnameArr,
+			_subdata
 		}
 	}
 	addExamGroup(){
@@ -913,11 +915,15 @@ class WorkManage extends React.Component {
 	// }
 	checkWorkValue(){
 		let msg=''
-		if(!this.state.work.subjectId) {
+
+		if(!this.state.work.info.subjectId) {
 			msg='请选择一个学科！'
 		}
-		if(!this.state.work.classes||!this.state.work.classes.length) {
+		if(!this.state.work.info.classId||!this.state.work.info.classId.length) {
 			msg='请选择一个班级！'
+		}
+		if(!store.get('wrongBookNews').schoolId){
+			msg='没有学校！'
 		}
 		if(msg){
 			message.destroy()
@@ -979,32 +985,24 @@ class WorkManage extends React.Component {
 	}
 
 createWork=()=>{
-	let msg=''
+	let msg=this.checkWorkValue()
 	let workInfo=this.state.work.info
 	console.log('workInfo: ', workInfo);
-	if(!workInfo.subjectId) {
-		msg='请选择一个学科！'
-	}
-	if(!workInfo.classId||!workInfo.classId.length) {
-		msg='请选择一个班级！'
-	}
-	if(!store.get('wrongBookNews').schoolId){
-		msg='没有学校！'
-	}
-	if(msg){
-		message.destroy()
-		message.warn(msg)
-		return
-	}
+
+	if(msg)return
 	this.setState({
 		createWorking:true
 	})
-	this.getWorkNameAndSubName()
-	return
+
+	let {_cnameArr,
+		_subdata} =this.getWorkNameAndSubName()
+	//return
 	const {examName,subjectId,classId,workTime}=workInfo
 	let data={
 		examName:examName,
 		subjectId,
+		className:_cnameArr.length?_cnameArr.join(','):'',
+		subjectName:_subdata?_subdata.v:'',
 		classId:classId.join(','),
 		schoolId:store.get('wrongBookNews').schoolId,
 		workTime:workTime
@@ -1046,7 +1044,10 @@ getClasses(classIdStr){
 		console.log('groupList: ', groupList);
 		return (
 		<div className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
-			onScroll={this.containetScroll.bind(this)}
+			onScroll={(e)=>{
+				this.containetScroll.bind(this)
+				e.stopPropagation()
+			}}
 		>
 			<div>
 				<div className='work_name_area' style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:10}}>
@@ -1065,14 +1066,9 @@ getClasses(classIdStr){
 												if(!e.target.value.toString().length){
 													this.setState({workNameFail:true})
 												}else{
+													this.state.work.info.examName=e.target.value
 													this.setState({
-														work:{
-															...this.state.work,
-															info:{
-																...this.state.info,
-																examName:e.target.value
-															}
-														},
+														work:this.state.work,
 														editWorkName:false,workNameFail:false
 													})
 													
@@ -1108,7 +1104,7 @@ getClasses(classIdStr){
 								{
 									partList.map((item, i) => {
 										return (
-											<div key={item.partId}  className={style.uploadbox}>
+											<div key={`${i}-${i}`}  className={style.uploadbox}>
 												<UploadItem lookPicture={this.showCropModel}  picture={item} index={i}
 													deletePictureHander={(p,index)=>{
 															this.deletePictureBonfirm(p,index)
@@ -1394,7 +1390,7 @@ getClasses(classIdStr){
 
 										let _areaData={
 											partId:this.state.cpicture.partId,	
-											examId:this.state.cpicture.examId,	
+											examId:this.state.cpicture.examId||10,	
 											qusImgUrl:_area.area.imgUrl,	
 											pointX:_area.area.x,	
 											pointY:_area.area.y,	
@@ -1412,6 +1408,15 @@ getClasses(classIdStr){
 											payload:_areaData
 										})
 										console.log('this.state._partList',this.state._partList)
+									}}
+									_deleteCropItemHander={(index)=>{
+										this.props.dispatch({
+											type:'workManage/doQuesDelete',
+											payload:{
+												qusId:this.state.cpicture.questions[index].qusId,
+												partId:this.state.cpicture.partId
+											}
+										})
 									}}
 								></EditPageModal>
 						
@@ -1493,6 +1498,9 @@ getClasses(classIdStr){
 		console.log('this.props.location.examId: ', this.props.location.examId);
 		if(!iscreateWork){
 			console.log('编辑作业...')
+
+			this.getWorkData()
+			return
 			this.props.dispatch({
 				type:"workManage/getExamInfo",
 				payload:{
@@ -1500,7 +1508,11 @@ getClasses(classIdStr){
 				}
 			}).then(workdata=>{
 				console.log('workdata: ', workdata);
-
+				if(!workdata){
+					message.destroy()
+					message.warn('作业没有数据')
+					return
+				}
 				//  let workdata=this.state.test22
 				console.log('workdata: ', workdata);
 				let _classids=workdata.info.classId.split(',')

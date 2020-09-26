@@ -9,7 +9,7 @@ import {
 
 import {
 	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup,commitQuestions
-	,getStudentQuestions,wrongUsers
+	,getStudentQuestions,wrongUsers,quesDelete
 } from '../services/yukeService';
 
 import { routerRedux } from 'dva/router';
@@ -306,6 +306,11 @@ export default {
 				return
 			}
 			return res.data.data.list
+		},
+		*doQuesDelete({ payload }, { put, select }){
+			let res = yield quesDelete(payload);
+            console.log("*doQuesDelete -> res", res)
+			
 		}
 		
 	},

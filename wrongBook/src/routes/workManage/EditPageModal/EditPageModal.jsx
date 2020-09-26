@@ -625,7 +625,7 @@ imgLoaded(url, callback) {
 										<Button 
 											id='delete_9527' 
 											onMouseUp={(e)=>{
-												this._deleteCropItem()
+												this.props._deleteCropItemHander(this.state.cropIndex)
 												e.stopPropagation()
 											}}
 										>

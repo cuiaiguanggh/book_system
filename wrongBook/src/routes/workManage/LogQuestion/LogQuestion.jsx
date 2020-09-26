@@ -44,6 +44,7 @@ class StuReport extends React.Component {
   }
 
   initStudents(arr1,arr2) {
+    arr2=[5084815555692544]
     let newArr = [];
     for (let i = 0; i < arr2.length; i++) {
         for (let j = 0; j < arr1.length; j++) {
@@ -75,13 +76,25 @@ class StuReport extends React.Component {
     this.getStudentWork(item.userId)
   }
   hideLogged(e){
-    console.log('e: ', e);
-    let currentStudent=this.state._students.students
+    let currentStudent=this.state._students.loggedStudents
     this.setState({
-      hideLoggedStudent:e.target.checked,
-      nowuserid:currentStudent[0].userId,
-      studentName:currentStudent[0].userName
+      hideLoggedStudent:e.target.checked
     })
+    if(e.target.checked){ 
+      //隐藏已录入的情况 判断当前子女是否在已录入的子女里面
+      if(currentStudent.findIndex((value)=>{return value.userId===this.state.nowuserid })>-1){
+        currentStudent=this.state._students.students
+        this.setState({
+          nowuserid:currentStudent[0].userId,
+          studentName:currentStudent[0].userName
+        })
+        this.getStudentWork(currentStudent[0].userId)
+      }
+      
+    }
+    
+   
+
   }
   renderStudentMenu() {
     let students  = this.props.state.students;
@@ -213,7 +226,7 @@ class StuReport extends React.Component {
                     type: 'workManage/hasLoggedStudents',
                     payload: {
                       classIds:value,
-                      examId:this.props.location.examId||17
+                      examId:this.props.location.examId||25
                     }
                   }).then(wusers=>{
                     
@@ -267,7 +280,7 @@ class StuReport extends React.Component {
       type:"workManage/doGetStudentQuestions",
       payload:{
         userId:_userId,
-        examId:this.props.location.examId||17,
+        examId:this.props.location.examId||25,
       }
     }).then(res=>{
       console.log('doGetStudentQuestions: ', res);
@@ -295,7 +308,7 @@ class StuReport extends React.Component {
       type:"workManage/doCommitQuestions",
       payload:{
         userId:this.state.nowuserid,
-        examId:this.props.location.examId||17,
+        examId:this.props.location.examId||25,
         qusIds:userQuids.length&&userQuids.join(','),
         allRight:userQuids.length?0:1
       }
@@ -371,7 +384,7 @@ class StuReport extends React.Component {
             <span>{this.state._work.info.examName}</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span>数据录入</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span style={{color:'#8E8E8E'}}>{this.state.studentName}</span> 
 
               <div className={style.r_b_box}>
-                <Button type="primary" loading={this.state.isCommitWrongQues} onClick={()=>this.commitStudentQuestions()}>提交</Button>
+                <Button type="primary" disabled={this.state._work.partList.length==0} loading={this.state.isCommitWrongQues} onClick={()=>this.commitStudentQuestions()}>提交</Button>
                 <div className={style.swicth_box} onClick={()=>this.swicthLog()}>
                   <Spin spinning={this.state.initWroking}>
                     <Icon type="swap" style={{marginRight:4}}/>
@@ -388,8 +401,6 @@ class StuReport extends React.Component {
 
               <Content className={style.content}>
                 <Spin spinning={this.state.initWroking}>
-                  {/* <LogContent  _updateChecked={(j,i,p)=>this.updateChecked(j,i,p)}  selectStudentHander={this.selectStudentFun.bind(this)} _prop_partList={this.state._work.partList}>
-                  </LogContent> */}
                   <div style={{padding:!this.props.state.logType?'20px':'',height:'100%',boxSizing:'border-box',position:'relative'}}>
                       {
                         !this.state._work.partList.length?
@@ -436,12 +447,12 @@ class StuReport extends React.Component {
             type: 'workManage/hasLoggedStudents',
             payload: {
               classIds:classData.singleValue,
-              examId:this.props.location.examId||17
+              examId:this.props.location.examId||25
             }
           }).then(wusers=>{
-            if(wusers&&wusers.length)
             console.log('wusers',wusers)
             this.initStudents(allstudent,wusers)
+
           })
 
         })
@@ -453,7 +464,7 @@ class StuReport extends React.Component {
     dispatch({
 			type:"workManage/getExamInfo",
 			payload:{
-				examId:this.props.location.examId||17
+				examId:this.props.location.examId||25
 			}
 		}).then(workdata=>{
       console.log('workdata: ', workdata);
@@ -461,7 +472,7 @@ class StuReport extends React.Component {
         initWroking:false
       })
       //调用partinfo接口
-      if(workdata.info){
+      if(workdata&&workdata.info){
         this.setState({
           _work:workdata
         })
