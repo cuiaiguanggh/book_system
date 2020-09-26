@@ -263,10 +263,13 @@ export default {
 		},
 		*delPart({ payload }, { put, select }){
 			let res = yield delPart(payload);
-			if(res.data.result===0){
-				
+			if(res.data.result!==0){
+				message.destroy()
+				message.warn('图片删除失败')
+				return
 			}
 			console.log('examId res: ', res);
+			return res.data.data.partList
 		},
 		*publishWork({ payload }, { put, select }){
 			return  yield publishWork(payload);
