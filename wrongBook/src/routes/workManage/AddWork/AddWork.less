@@ -35,7 +35,7 @@
 .top_box{
     width: 100%;
     background: #fff;
-    padding:30px;
+    padding:20px 30px;
     box-sizing: border-box;
     .uploadbox{
         width: 170px;
@@ -88,6 +88,7 @@
         font-weight: bold;
         color: #000000;
         display: flex;
+        max-height:60px;min-width:60px;
       }
       .quespanbtn{
         width: 90px;
@@ -107,6 +108,7 @@
     color: #6A6A6A;
     line-height: 18px;
     text-align: center;
+    padding-bottom: 50px;
   }
   .partp{
     padding: 0;
@@ -230,4 +232,17 @@
   &:hover{
     background: rgba(0,0,0,.8);
   }
+}
+:global(.ant-spin-nested-loading),:global(.ant-spin-container){
+  background-color: transparent !important;
+}
+.top_inner{
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  background-color: #1088e9;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
 }

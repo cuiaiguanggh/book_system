@@ -55,7 +55,7 @@ export {ImageUploader}
 
 
 
-function initReposeData (data) {
+export function initReposeData (data) {
   let questions = data.questions
   if (questions && questions.length) {
     for (let i = 0; i < questions.length; i++) {

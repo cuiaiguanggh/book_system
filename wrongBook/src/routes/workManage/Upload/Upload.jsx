@@ -14,15 +14,15 @@ class Upload1 extends React.Component {
   }
   
   deletePictureHander(p,index){
-    let _this=this
     Modal.confirm({
       title: '提示',
-      content: '确定要删除该图片吗',
+      content: '删除之后无法恢复，确定要删除该图片吗',
       okText: '确认',
       cancelText: '取消',
-      onOk(e){
+      okType:'danger',
+      onOk:(e)=>{
         Modal.destroyAll()
-        _this.props.deletePictureHander(p,index)
+        this.props.deletePictureHander(p,index)
       }
     })
   }
@@ -58,7 +58,7 @@ class Upload1 extends React.Component {
           if(this.props.picture.resCode==1){
             return message.warn('上传失败的图片无法手动框题目')
           }
-          this.props.lookPicture(this.props.picture,this.props.index)
+          this.props.lookPicture(this.props.index)
           }} 
         src={this.props.picture.url||this.props.picture.partUrl} alt=""/>
         <img className={style.delpng} onClick={()=>this.deletePictureHander(this.props.picture,this.props.index)} src={require('../../images/pdelete.png')} alt=""/>
