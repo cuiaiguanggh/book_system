@@ -688,7 +688,7 @@ class WorkManage extends React.Component {
 			}
 		)
 	}
-	getWorkNameAndSubName(classidArr,subid){
+	getWorkNameAndSubName(){
 		this.props.state.workPageClass.value
 		this.props.state.schoolSubId
 
@@ -716,17 +716,21 @@ class WorkManage extends React.Component {
 		// 		quesIds:""}
 		// 	]
 		// })
+		// this.state.work.groupList.push(
+		// 	{	name:`题组${this.state.partQuestions.part.length+1}`,
+		// 		questions:[]
+		// 	})
 		this.state.partQuestions.part.push(
 				{name:`题组${this.state.partQuestions.part.length+1}`,
 				questions:[]
 			}
 		)
-		this.state.work.groupList=this.state.partQuestions
+		//this.state.work.groupList=this.state.partQuestions
 		// this.setState({
 		// 	partQuestions:this.state.partQuestions
 		// })
 		this.setState({
-			work:this.state.work
+			partQuestions:this.state.partQuestions
 		})
 	}
 
@@ -753,7 +757,7 @@ class WorkManage extends React.Component {
 		})
 		e.preventDefault();
 	}
-	questionGroupDrop0(e,to){
+	questionGroupDrop(e,to){
 		let _from=this.state.drapQuetionIndex
 		if(_from.length>1){
 			//从组拖拽
@@ -769,9 +773,8 @@ class WorkManage extends React.Component {
 			partQuestions:this.state.partQuestions,
 			partActiveIndex:-1
 		})
-		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
 	}
-	questionGroupDrop(e,to){
+	questionGroupDrop0(e,to){
 		let _from=this.state.drapQuetionIndex
 
 		// let dtagQue=this.state.partQuestions.questions[_from[0]]
@@ -780,16 +783,16 @@ class WorkManage extends React.Component {
 		// console.log('dtagQue: ', dtagQue);
 		// this.toRequestDrag(dtagQue,to)
 		// return
-		if(_from.length>1){
-			//从组内拖拽
-			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.part[_from[0]].questions[_from[1]])
-			this.state.partQuestions.part[_from[0]].questions.splice(_from[1],1)
+		// if(_from.length>1){
+		// 	//从组内拖拽
+		// 	this.state.partQuestions.part[to].questions.push(this.state.partQuestions.part[_from[0]].questions[_from[1]])
+		// 	this.state.partQuestions.part[_from[0]].questions.splice(_from[1],1)
 			
-		}else{
-			//从组外拖拽
-			this.state.partQuestions.part[to].questions.push(this.state.partQuestions.questions[_from[0]].qusId)
-			this.state.partQuestions.questions.splice(_from[0],1)//
-		}
+		// }else{
+		// 	//从组外拖拽
+		// 	this.state.partQuestions.part[to].questions.push(this.state.partQuestions.questions[_from[0]].qusId)
+		// 	this.state.partQuestions.questions.splice(_from[0],1)//
+		// }
 		this.setState({
 			// partQuestions:this.state.partQuestions,
 			partActiveIndex:-1
@@ -798,7 +801,6 @@ class WorkManage extends React.Component {
 		this.toUpdateGroupList(this.state.partQuestions.part)
 	}
 	toUpdateGroupList(allpart){
-
 
 		let requestDroupList=[]
 		for (let index = 0; index < allpart.length; index++) {
@@ -1039,10 +1041,10 @@ getClasses(classIdStr){
 
 	render() {
 		let pquestions=this.state.partQuestions.questions
-		// let groupList=this.state.partQuestions.part
+		let groupList=this.state.partQuestions.part
 		// let partList=this.state.work.partList
 		let partList=this.state._partList
-		let groupList=this.state.work.groupList
+		//let groupList=this.state.work.groupList
 		console.log('groupList: ', groupList);
 		return (
 		<div id='con_work' className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
