@@ -29,7 +29,7 @@ class RenderCropItem extends React.Component {
 						return (
 							<div className={style.item_box} key={part.partId}>
 										<div className={style._title}><span className={style.line}></span>第{j+1}部分</div>
-										<div className={style._con} style={{padding:20,paddingBottom:0}}>
+										<div className={style._con} style={{paddingTop:20,paddingLeft:20}}>
 											{
 												part.questions?part.questions.map((item, i) => {
 													return (

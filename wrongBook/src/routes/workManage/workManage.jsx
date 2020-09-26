@@ -104,7 +104,8 @@ class WorkManage extends React.Component {
         type: 'workManage/getWorkList',
         payload:{
           subjectId:subjectId||this.props.state.schoolSubId,
-          // classId:classId||this.props.state.workPageClass.value.join(',')
+          classId:classId||this.props.state.workPageClass.singleValue,
+          schoolId:store.get('wrongBookNews').schoolId
         }
       })
     }

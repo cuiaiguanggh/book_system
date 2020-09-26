@@ -970,12 +970,14 @@ class WorkManage extends React.Component {
 		}, 200);
 	}
 	containetScroll(e) {
+
 		if(!document.querySelector('#kacha_side')) return
 		let _w=document.querySelector('#kacha_side').offsetWidth
 		let  scrollTop = e.currentTarget.scrollTop, 
 		elm =  document.querySelector('#_action_bar');
 		if(!elm)return
 		let _bool=(scrollTop>=elm.offsetTop)
+		// if(_bool&&this.state.hideTopContainer)return
 		this.setState({
 			hideTopContainer:_bool,
 			fixedWidth:_bool?`calc( 100% - ${_w}px )`:`100%`,
@@ -1043,10 +1045,10 @@ getClasses(classIdStr){
 		let groupList=this.state.work.groupList
 		console.log('groupList: ', groupList);
 		return (
-		<div className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
+		<div id='con_work' className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}
 			onScroll={(e)=>{
-				this.containetScroll.bind(this)
 				e.stopPropagation()
+				this.containetScroll(e)
 			}}
 		>
 			<div>
@@ -1427,7 +1429,14 @@ getClasses(classIdStr){
 
 				</div>
 			</div>
-			
+			{this.state.hideTopContainer?
+				<div className={style.back_top}  onClick={() => {
+					document.getElementById('con_work').scrollTop = 0;
+					}}>
+					<Icon type="up" />
+				</div>
+			:''}
+
 		</div>
     )
   }

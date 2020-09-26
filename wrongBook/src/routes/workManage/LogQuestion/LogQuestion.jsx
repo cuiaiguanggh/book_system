@@ -43,8 +43,9 @@ class StuReport extends React.Component {
     }
   }
 
-  initStudents(arr1,arr2) {
-    arr2=[5084815555692544]
+  initStudents(arr1,arr2,noupdateCheckMenu) {
+    console.log("StuReport -> initStudents -> arr1,arr2", arr1,arr2)
+    // arr2=[5084815555692544]
     let newArr = [];
     for (let i = 0; i < arr2.length; i++) {
         for (let j = 0; j < arr1.length; j++) {
@@ -55,18 +56,20 @@ class StuReport extends React.Component {
         }
     }
     let currentStudent=newArr.length?newArr:arr1
-    this.setState({
-      nowuserid:currentStudent[0].userId,
-      studentName:currentStudent[0].userName
-    })
-    
+
+    if(!noupdateCheckMenu){
+      this.setState({
+        nowuserid:currentStudent[0].userId,
+        studentName:currentStudent[0].userName
+      })
+    }
     this.setState({
       _students:{
         loggedStudents:newArr,
         students:arr1
       }
     })
-    this.getStudentWork(currentStudent[0].userId)
+    this.getStudentWork(this.state.nowuserid)
   }
   onclickStudentItem(item){
     this.setState({
@@ -97,19 +100,20 @@ class StuReport extends React.Component {
 
   }
   renderStudentMenu() {
-    let students  = this.props.state.students;
+
     let loggedStudents= this.state._students.loggedStudents
+    console.log("renderStudentMenu -> loggedStudents", loggedStudents)
     let _students= this.state._students.students
     return (
       <div className={style.leftInfo}>
         <div style={{height:44,borderBottom:'1px solid #e7e7e7', display: "flex",
                       alignItems: "center",
                       justifyContent: "center"}}>
-            <Checkbox checked={this.state.hideLoggedStudent} onChange={(e)=>{this.hideLogged(e)}}> 隐藏已录入</Checkbox>
+            <Checkbox disabled={!this.state._students.students.length} checked={this.state.hideLoggedStudent} onChange={(e)=>{this.hideLogged(e)}}> 隐藏已录入</Checkbox>
         </div>
       <Spin spinning={false} >
         {
-          students.length?<ul  className={style.my_ul}
+          loggedStudents.length||_students.length?<ul  className={style.my_ul}
               >
                 {
                   !this.state.hideLoggedStudent?loggedStudents.map((item, i) => {
@@ -117,7 +121,10 @@ class StuReport extends React.Component {
                       <li key={item.userId} className={['islog',this.state.nowuserid===item.userId?'checked':''].join(' ')} onClick={()=>{
                         this.onclickStudentItem(item)
                       }}>
-                        <span> {item.userName}</span>
+                        <span style={{maxWidth: 75,
+                          display: "inline-block",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis"}}> {item.userName}</span>
                         <img style={{float:'right'}} src={require('../../images/islog.png')}></img>
                       </li>
                       
@@ -130,7 +137,7 @@ class StuReport extends React.Component {
                       <li key={item.userId} className={this.state.nowuserid===item.userId?'checked':''} onClick={()=>{
                         this.onclickStudentItem(item)
                       }}>
-                        <span> {item.userName}</span>
+                        <span > {item.userName}</span>
                       </li>
                       
                       )
@@ -313,16 +320,32 @@ class StuReport extends React.Component {
         allRight:userQuids.length?0:1
       }
     }).then(res=>{
+
       if(res.data.result===0){
+        this.props.dispatch({
+          type: 'workManage/hasLoggedStudents',
+          payload: {
+            classIds:this.props.state.workPageClass.singleValue,
+            examId:this.props.location.examId||25
+          }
+        }).then(wusers=>{
+          console.log('wusers',wusers)
+          this.initStudents(this.state._students.students.concat(this.state._students.loggedStudents),wusers,true)
+
+        })
 				message.destroy()
-				message.success(`【${this.state.studentName}】的错题提交成功!`)
+        message.success(`【${this.state.studentName}】的错题提交成功!`)
+        this.setState({
+          isCommitWrongQues:false
+        })
 			}else{
         message.destroy()
-				message.error(`【${this.state.studentName}】的错题提交失败!`)
+        message.error(`【${this.state.studentName}】的错题提交失败!`)
+        this.setState({
+          isCommitWrongQues:false
+        })
       }
-      this.setState({
-        isCommitWrongQues:false
-      })
+
     })
   }
   _getStudentQuestionIds(_stuques){
