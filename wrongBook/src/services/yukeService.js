@@ -12,15 +12,15 @@ import requestYk from '../utils/requestYk';
 let burl = process.env.API_ENV === 't' ? "http://dayour.mizholdings.com:8080/mizhu/api/" : 'https://cloud.mizholdings.com/mizhu/api/'
 
 let burl2 = process.env.API_ENV === 't' ? "http://dayour.mizholdings.com:8080/mizhu/api/" : 'https://api.huijudi.cn/mizhu/api/'
-let _token=store.get('wrongBookToken')
+
 function fetchQuestions(payload) {
-    return requestYk(`${burl}exam/quick?token=${_token}`, {
+    return requestYk(`${burl}exam/quick?token=`, {
         data: payload,
         method: 'post'
     })
 }
 function queryQuestionsBy(payload) {
-    return requestYk(`${burl2}ques/getQuestion?token=${_token}`, {
+    return requestYk(`${burl2}ques/getQuestion?token=`, {
         data: payload,
         method: 'post',
         headers:{
@@ -29,7 +29,7 @@ function queryQuestionsBy(payload) {
     })
 }
 function getZsd(payload) {
-    return requestYk(`${burl2}knowbas/aftList?token=${_token}`, {
+    return requestYk(`${burl2}knowbas/aftList?token=`, {
         data: payload,
         method: 'post',
         headers:{
@@ -38,7 +38,7 @@ function getZsd(payload) {
     })
 }
 function updateQuestion(payload) {
-    return requestYk(`${burl2}ques/updateQuestion?token=${_token}`, {
+    return requestYk(`${burl2}ques/updateQuestion?token=`, {
         data: payload,
         method: 'post',
         headers:{
@@ -47,7 +47,7 @@ function updateQuestion(payload) {
     })
 }
 function recoverQuestion(payload) {
-    return requestYk(`${burl2}ques/recoverQuestion?token=${_token}`, {
+    return requestYk(`${burl2}ques/recoverQuestion?token=`, {
         data: payload,
         method: 'post',
         headers:{
@@ -58,5 +58,5 @@ function recoverQuestion(payload) {
 export {
     fetchQuestions,
     queryQuestionsBy,
-    getZsd,recoverQuestion
+    getZsd,recoverQuestion,updateQuestion
 };

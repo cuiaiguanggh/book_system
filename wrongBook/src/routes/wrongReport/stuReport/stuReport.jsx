@@ -953,7 +953,10 @@ class StuReport extends React.Component {
             way: 2
           }
         }).then(res=>{
-          that.state.nowWindows.type = 1;
+          that.state.nowWindows.type = 2;
+          that.setState({
+            nowWindows:that.state.nowWindows
+          })
         });
         // that.reFreshQueryQuestions()
         that.setState({ topicxy: true })
@@ -1088,7 +1091,7 @@ class StuReport extends React.Component {
       _questionKeyword:'',
       _zsdKeyword:'',
       currentQuestionIndex:-1,
-      currentQuestion:{},
+      // currentQuestion:{},
     })
     _currentQuestion={}
     this.props.dispatch({
@@ -1101,11 +1104,12 @@ class StuReport extends React.Component {
   }
   doUpdateQuestion=(item,index)=>{
     let _cuque=_currentQuestion//this.state.currentQuestion
+    let _uqId=_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0
     console.log('_currentQuestion: ',_currentQuestion);
     console.log('new item: ',item);
     let data={
       // uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
-      uqId:_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0,
+      uqId:_uqId,
       oldQuestionId:_cuque.questionId,
       nowQuestionId:item.id,
     }
@@ -1114,7 +1118,8 @@ class StuReport extends React.Component {
     if(this.state.updateRecommend){
       //替换优选错题
       data.adviseId=item.id
-      data.oldQuestionId=currentRecommend.questionId
+      // data.oldQuestionId=currentRecommend.questionId
+      // data.oldQuestionId=currentRecommend.questionId
       delete data.nowQuestionId
     }else{
       //替换原题时候不保留优选错题
@@ -1357,7 +1362,7 @@ class StuReport extends React.Component {
               this.setState({ visible: false, topicxy: false, })
             }}
           >
-            {console.log('this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy',this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy,this.state.nowWindows.title,this.state.pptype === 0 ,!this.state.topicxy)}
+            
             {this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy ?
               <div style={{ display: 'flex',userSelect:'text' }}>
                 <div className={style.topicbox} style={{ width: '40%' }}>
@@ -1381,13 +1386,18 @@ class StuReport extends React.Component {
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.parse }} />
                     <h2 className={style.leftText}>
                       {serverType === 0 && this.state.optimizationcuotiMistakes.length > 0 && this.state.optimizationcuotiMistakes[0].isGood === 1 ? '【优选错题】' : '优选错题'}
-                      {
+                      {/* {
                         this.state.optimizationcuotiMistakes.length>0&&this.state.optimizationcuotiMistakes[0].adviseId?
                         <Button style={{float:"right",marginRight:15}} onClick={()=>{
                           this.setState({thvisilble:true,updateRecommend:true})
                         }}>替换</Button>:''
+                      } */}
+                      {
+                        true?
+                        <Button style={{float:"right",marginRight:15}} onClick={()=>{
+                          this.setState({thvisilble:true,updateRecommend:true})
+                        }}>替换</Button>:''
                       }
-                      
                     </h2>
 
                     {this.state.optimizationcuotiMistakes.length === 0 ?

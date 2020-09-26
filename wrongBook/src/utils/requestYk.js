@@ -6,6 +6,7 @@
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\utils\requestYk.js
  */
+import store from 'store';
 import fetch from 'dva/fetch';
 
 function parseJSON(response, options, dataBody) {
@@ -35,6 +36,8 @@ function checkStatus(response) {
 
 
 export default function requestYk(url, options) {
+  let _token=store.get('wrongBookToken')
+  url+=_token
   options = options || {};
   options.method = options.method || 'post';
   // options.headers['Content-Type'] =  'application/json';
