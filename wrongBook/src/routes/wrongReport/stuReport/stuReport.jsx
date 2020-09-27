@@ -501,6 +501,8 @@ class StuReport extends React.Component {
                           optimizationcuotiMistakes: res
                         })
                       })
+                    }else{
+                      message.warn('没有picid')
                     }
                     this.setState({
                       nowWindows: item,
@@ -1102,13 +1104,35 @@ class StuReport extends React.Component {
       }
     })
   }
+  toUpdateOldQuestion(newquestion){
+    console.log('oldquestion...: ',_currentQuestion,this.state.nowWindows);
+    console.log('newquestion...: ',newquestion);
+    _currentQuestion.questionId=newquestion.id?newquestion.id.toString():'-1'
+    _currentQuestion.title=newquestion.title
+    _currentQuestion.parse=newquestion.parse
+    _currentQuestion.answer=newquestion.answer
+
+    this.setState({
+      nowWindows:_currentQuestion
+    })
+    this.props.dispatch({
+      type: 'report/recommend',
+      payload: {
+        uqId: _currentQuestion.picId.split('-')[1]
+      }
+    }).then((res) => {
+      this.setState({
+        optimizationcuotiMistakes: res
+      })
+    })
+  }
   doUpdateQuestion=(item,index)=>{
     let _cuque=_currentQuestion//this.state.currentQuestion
     let _uqId=_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0
     console.log('_currentQuestion: ',_currentQuestion,this.state.nowWindows);
     console.log('new item: ',item);
+    //return
     let data={
-      // uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
       uqId:_uqId,
       oldQuestionId:_cuque.questionId,
       nowQuestionId:item.id,
@@ -1142,13 +1166,12 @@ class StuReport extends React.Component {
         })
 
         if(res.data.result===0){
-         
-
           //关掉model刷新页面
-          this.reFreshQueryQuestions()
+          // this.reFreshQueryQuestions()
+          this.toUpdateOldQuestion(item)
           this.setState({
             thvisilble:false,
-            visible:false
+            //visible:false
           })
           message.destroy()
           let msg='题目替换成功'
