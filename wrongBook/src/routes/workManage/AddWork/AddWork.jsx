@@ -480,7 +480,6 @@ class WorkManage extends React.Component {
 			if(!this.state.iscreateWork){
 				_value=this.state._editWorkClassList
 			}
-			console.log("WorkManage -> renderClassList -> _value", _value,this.props.state.workPageClass)
 			const children = [];
 			for (let i = 0; i < classes.length; i++) {
 				let item = classes[i]
@@ -547,12 +546,10 @@ class WorkManage extends React.Component {
 			
 		}
 		_newdata.resCode=res.code
-		console.log('_newdata: ', _newdata);
 		this.state._partList.splice(_index,1,_newdata)
 		this.setState({
 			_partList:this.state._partList
 		})
-		console.log('this.state._partList: ', this.state._partList);
 		this.getWorkData()
 	}
 
@@ -645,7 +642,7 @@ class WorkManage extends React.Component {
 			_currentPicture:this.state._currentPicture,
 			cpindex:i
 		})
-		console.error('22',this.state._currentPicture,this.state.cpindex,this.state.work.partList[i])
+		console.error('current pageinfo',this.state._currentPicture)
 		this.setState({
 			showEditPictureModal:true
 		})
@@ -987,13 +984,12 @@ class WorkManage extends React.Component {
 		elm =  document.querySelector('#_action_bar');
 		if(!elm)return
 		let _bool=(scrollTop>=elm.offsetTop)
-		// if(_bool&&this.state.hideTopContainer)return
+		if(_bool===this.state.hideTopContainer)return
 		this.setState({
 			hideTopContainer:_bool,
 			fixedWidth:_bool?`calc( 100% - ${_w}px )`:`100%`,
 			_boxWidth:_bool?`calc( 100% - 200px )`:''
 		})
-		
 	}
 
 createWork=()=>{
@@ -1111,7 +1107,6 @@ createWork=()=>{
 										partList.map((item, i) => {
 											return (
 												<div key={item.partName+i}  className={style.uploadbox}>
-													{console.log("render -> item", item)}
 													<UploadItem lookPicture={(index)=>this.showCropModel(index)}  picture={item} index={i}
 														deletePictureHander={(p,index)=>{
 																this.deletePictureBonfirm(p,index)
@@ -1452,7 +1447,8 @@ createWork=()=>{
 			</Spin>
 		</div>
 	)
-  }
+	}
+	
 
   componentDidMount() {
 		console.log('this.props.location.query',this.props.location.isCreate)
@@ -1553,7 +1549,9 @@ createWork=()=>{
 
 		
   }
-
+	// shouldComponentUpdate(nextProps,nextState){
+	// 	// return (nextState.work!=this.state.work)
+	// }
   componentWillUnmount() {
   }
 
