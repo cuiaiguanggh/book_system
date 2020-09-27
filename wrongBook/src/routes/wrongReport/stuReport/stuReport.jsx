@@ -1093,7 +1093,7 @@ class StuReport extends React.Component {
       currentQuestionIndex:-1,
       // currentQuestion:{},
     })
-    _currentQuestion={}
+    //_currentQuestion={}
     this.props.dispatch({
       type:'report/_questiondata',
       payload:{
@@ -1105,7 +1105,7 @@ class StuReport extends React.Component {
   doUpdateQuestion=(item,index)=>{
     let _cuque=_currentQuestion//this.state.currentQuestion
     let _uqId=_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0
-    console.log('_currentQuestion: ',_currentQuestion);
+    console.log('_currentQuestion: ',_currentQuestion,this.state.nowWindows);
     console.log('new item: ',item);
     let data={
       // uqId:this.state.currentQuestion.picId?this.state.currentQuestion.picId.split('-')[1]:0,
