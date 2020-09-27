@@ -721,7 +721,7 @@ class WorkManage extends React.Component {
 		// 		questions:[]
 		// 	})
 		this.state.partQuestions.part.push(
-				{name:`题组${this.state.partQuestions.part.length+1}`,
+				{groupName:`题组${this.state.partQuestions.part.length+1}`,
 				questions:[]
 			}
 		)
