@@ -210,6 +210,7 @@ export default {
 				type: 'getWorkListFinish',
 				payload: true
 			})
+			return wres
 			// let data=[]
 			// for (let i = 0; i < 100; i++) {
 			// 	data.push({
@@ -316,8 +317,13 @@ export default {
 		},
 		*doQuesDelete({ payload }, { put, select }){
 			let res = yield quesDelete(payload);
-            console.log("*doQuesDelete -> res", res)
+			console.log("*doQuesDelete -> res", res)
 			
+		},
+		*deleteWork({ payload }, { put, select }){
+			let res = yield quesDelete(payload);
+			console.log("*doQuesDelete -> res", res)
+			return res
 		}
 		
 	},

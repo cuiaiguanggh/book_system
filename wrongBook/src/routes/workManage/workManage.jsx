@@ -14,6 +14,7 @@ import WorkList from './WorkList/WorkList'
 import * as XLSX from 'xlsx';
 import {readExcelToJson}  from '../../utils/file';
 import observer from '../../utils/observer'
+import { deleteTeachVideo } from '../../services/reportService';
 const { RangePicker } = DatePicker;
 
 //作业中心界面内容
@@ -97,15 +98,35 @@ class WorkManage extends React.Component {
     )
   }
 
-    getWorkList(option){
+    async getWorkList(option){
       const{classId,subjectId}=option
       console.log('this.props.state.workPageClass.value: ', option);
-      this.props.dispatch({
+      let res=await this.props.dispatch({
         type: 'workManage/getWorkList',
         payload:{
           subjectId:subjectId||this.props.state.schoolSubId,
           classId:classId||this.props.state.workPageClass.singleValue,
           schoolId:store.get('wrongBookNews').schoolId
+        }
+      })
+      console.log('res: ', res);
+      return res
+    }
+    async toDeleteWork(item){
+      const key='deleteworkmodal'
+      message.destroy()
+      message.loading({ content: '正在删除作业...',  duration: 2,key })
+      this.props.dispatch({
+        type:'workManage/deleteWork',
+        payload:{
+          examId:item.examId
+        }
+      }).then( async (res)=>{
+        if(res.data.result===0){
+          await this.getWorkList({})
+          message.success({ content: '作业删除成功！',  duration: 2,key });
+        }else{
+          message.error({ content: '作业删除失败！',  duration: 2,key });
         }
       })
     }
@@ -132,14 +153,7 @@ class WorkManage extends React.Component {
                   this.props.dispatch(routerRedux.push({pathname:'/addWork',examId:data.examId}))
                 }}
                 deleteWorkHnder={(item)=>{
-                  console.log('data: ', item);
-                  const key='deleteworkmodal'
-                  message.destroy()
-                  
-                  message.loading({ content: '正在删除作业...',  duration: 2,key })
-                  setTimeout(() => {
-                    message.success({ content: '作业删除成功！',  duration: 2,key });
-                  }, 1000);
+                 this.toDeleteWork(item)
                 }}
                 logQuestions={(data)=>{
                   this.props.dispatch(routerRedux.push({pathname:'/LogQuestion',examId:data.examId}))
@@ -171,7 +185,7 @@ class WorkManage extends React.Component {
         type: 'workManage/getSchoolSubjectList'
       }).then((res) => {
         console.log('this.props.state.schoolSubId: ', this.props.state.schoolSubId);
-        if(classlist.list){
+        if(classlist&&classlist.list&&classlist.list.length){
           this.getWorkList({classId:classlist.list[0].classId,subjectId:this.props.state.schoolSubId})
         }
       })
