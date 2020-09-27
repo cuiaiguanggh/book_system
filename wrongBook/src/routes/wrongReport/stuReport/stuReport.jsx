@@ -1167,11 +1167,11 @@ class StuReport extends React.Component {
 
         if(res.data.result===0){
           //关掉model刷新页面
-          // this.reFreshQueryQuestions()
-          this.toUpdateOldQuestion(item)
+          this.reFreshQueryQuestions()
+          //this.toUpdateOldQuestion(item)
           this.setState({
             thvisilble:false,
-            //visible:false
+            visible:false
           })
           message.destroy()
           let msg='题目替换成功'
@@ -1193,7 +1193,7 @@ class StuReport extends React.Component {
       userId: this.props.state.userId,
       info: 0,
       pageSize: 20,
-      pageNum: this.props.state.propsPageNum
+      pageNum: 1
     }
     //月份
     if (this.props.state.mouNow != 0) {
