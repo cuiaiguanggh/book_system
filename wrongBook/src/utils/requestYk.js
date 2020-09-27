@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-03 14:32:40
- * @LastEditTime: 2020-09-23 16:32:58
+ * @LastEditTime: 2020-09-27 12:21:41
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\utils\requestYk.js
@@ -37,19 +37,26 @@ function checkStatus(response) {
 
 export default function requestYk(url, options) {
   let _token=store.get('wrongBookToken')
-  url+=_token
+
   options = options || {};
   options.method = options.method || 'post';
   // options.headers['Content-Type'] =  'application/json';
-  options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
+  // options.headers['Content-Type'] = options.headers&&options.headers['Content-Type'] || 'application/json';
   let data = options.data || {}
-
-  data = formatOpt(data);
-  if (options.method === 'post') {
-    options.body = data;
-  } else {
-    url = `${url}?${formatOpt(data)}`;
+  if(options.headers['Content-Type'] !==  'application/json'){
+    url+=_token
+    data = formatOpt(data);
+    if (options.method === 'post') {
+      options.body = data;
+    } else {
+      url = `${url}?${formatOpt(data)}`;
+    }
+  }else{
+    url+="ad106f62a09a4e3abaf2f2e728a61c46"
+    options.body=JSON.stringify(data)
   }
+  // options.body = data;
+  console.log('options.body: ', options.body);
 
   return fetch(url, options)
     .then(checkStatus)

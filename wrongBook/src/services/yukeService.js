@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-10 09:35:26
- * @LastEditTime: 2020-09-25 14:15:40
+ * @LastEditTime: 2020-09-27 12:07:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\services\yukeService.js
@@ -16,7 +16,11 @@ let burl2 = process.env.API_ENV === 't' ? "http://dayour.mizholdings.com:8080/mi
 function fetchQuestions(payload) {
     return requestYk(`${burl}exam/quick?token=`, {
         data: payload,
-        method: 'post'
+        method: 'post',
+        headers:{
+            'Content-Type':'application/json'
+        }
+        
     })
 }
 function queryQuestionsBy(payload) {
