@@ -99,7 +99,7 @@ class WorkManage extends React.Component {
 
     getWorkList(option){
       const{classId,subjectId}=option
-      console.log('this.props.state.workPageClass.value: ', this.props.state.workPageClass.value);
+      console.log('this.props.state.workPageClass.value: ', option);
       this.props.dispatch({
         type: 'workManage/getWorkList',
         payload:{
@@ -131,8 +131,15 @@ class WorkManage extends React.Component {
                 editWork={(data)=>{
                   this.props.dispatch(routerRedux.push({pathname:'/addWork',examId:data.examId}))
                 }}
-                deleteWork={(item)=>{
+                deleteWorkHnder={(item)=>{
                   console.log('data: ', item);
+                  const key='deleteworkmodal'
+                  message.destroy()
+                  
+                  message.loading({ content: '正在删除作业...',  duration: 2,key })
+                  setTimeout(() => {
+                    message.success({ content: '作业删除成功！',  duration: 2,key });
+                  }, 1000);
                 }}
                 logQuestions={(data)=>{
                   this.props.dispatch(routerRedux.push({pathname:'/LogQuestion',examId:data.examId}))

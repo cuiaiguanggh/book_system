@@ -70,12 +70,14 @@ class HomeworkCenter extends React.Component {
 	}
 
 	deleteWork(witem){
-		console.log('witem: ', witem);
 		const { confirm } = Modal
 		confirm({
 			content: '确定要删除该份作业吗?',
-			onOk() {
-				this.props.deleteWork(witem)
+			okText:'确定',
+			cancelText:'取消',
+			okType:'danger',
+			onOk:()=> {
+				this.props.deleteWorkHnder(witem)
 			},
 			onCancel() {
 				

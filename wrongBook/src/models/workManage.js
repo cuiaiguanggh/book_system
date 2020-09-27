@@ -303,8 +303,6 @@ export default {
 		},
 		*doGetStudentQuestions({ payload }, { put, select }){
 			let res = yield getStudentQuestions(payload);
-			
-			console.log('examId res: ', res);
 			return res.data
 		},
 		*hasLoggedStudents({ payload }, { put, select }){

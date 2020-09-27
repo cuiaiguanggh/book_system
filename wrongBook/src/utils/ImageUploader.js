@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-24 15:18:30
- * @LastEditTime: 2020-09-25 10:16:23
+ * @LastEditTime: 2020-09-27 09:54:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\utils\ImageUploader.js
@@ -39,9 +39,9 @@ class ImageUploader {
   async createPartAndDiscover(redata){
     let res1= await createPartAndDiscover(redata)
     if(res1.data.result===0){
-      let _partInfo=initReposeData(res1.data.data.partInfo)
-      console.log('_data222222222222: ', _partInfo);
+      let _partInfo=res1.data.data.partInfo
       _partInfo.serUrl=redata.partUrl
+      console.log('this part data: ', _partInfo);
       return {code:_partInfo.questions&&_partInfo.questions.length?0:2,data:_partInfo}
     }else{
       message.error('识别失败')
@@ -56,6 +56,7 @@ export {ImageUploader}
 
 
 export function initReposeData (data) {
+  console.log('data: ', data);
   let questions = data.questions
   if (questions && questions.length) {
     for (let i = 0; i < questions.length; i++) {

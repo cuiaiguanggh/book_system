@@ -39,7 +39,12 @@ class StuReport extends React.Component {
         students:[],
         loggedStudents:[]
       },
-      isCommitWrongQues:false
+      isCommitWrongQues:false,
+      _userhasQids:[],
+      needCommitQuesData:{
+        commit:false,
+        studentId:''
+      }
     }
   }
 
@@ -69,14 +74,21 @@ class StuReport extends React.Component {
         students:arr1
       }
     })
-    this.getStudentWork(this.state.nowuserid)
+    this.getStudentQuestions(this.state.nowuserid)
   }
   onclickStudentItem(item){
     this.setState({
       nowuserid:item.userId,
       studentName:item.userName
     })
-    this.getStudentWork(item.userId)
+    this.getStudentQuestions(item.userId)
+    if(item.userId===this.state.nowuserid){
+      console.log('点击当前子女...')
+    }else{
+      console.log('切换子女...')
+      this.onlyCommitStudentQuestions()
+    }
+    
   }
   hideLogged(e){
     let currentStudent=this.state._students.loggedStudents
@@ -91,7 +103,7 @@ class StuReport extends React.Component {
           nowuserid:currentStudent[0].userId,
           studentName:currentStudent[0].userName
         })
-        this.getStudentWork(currentStudent[0].userId)
+        this.getStudentQuestions(currentStudent[0].userId)
       }
       
     }
@@ -100,9 +112,7 @@ class StuReport extends React.Component {
 
   }
   renderStudentMenu() {
-
     let loggedStudents= this.state._students.loggedStudents
-    console.log("renderStudentMenu -> loggedStudents", loggedStudents)
     let _students= this.state._students.students
     return (
       <div className={style.leftInfo}>
@@ -118,9 +128,10 @@ class StuReport extends React.Component {
                 {
                   !this.state.hideLoggedStudent?loggedStudents.map((item, i) => {
                     return (
-                      <li key={item.userId} className={['islog',this.state.nowuserid===item.userId?'checked':''].join(' ')} onClick={()=>{
-                        this.onclickStudentItem(item)
-                      }}>
+                      <li key={item.userId} className={['islog',this.state.nowuserid===item.userId?'checked':''].join(' ')} 
+                        onClick={()=>{
+                          this.onclickStudentItem(item)
+                        }}>
                         <span style={{maxWidth: 75,
                           display: "inline-block",
                           overflow: "hidden",
@@ -236,8 +247,6 @@ class StuReport extends React.Component {
                       examId:this.props.location.examId||25
                     }
                   }).then(wusers=>{
-                    
-                    console.log('wusers',wusers)
                     this.initStudents(allstudent,wusers)
                   })
         
@@ -267,6 +276,12 @@ class StuReport extends React.Component {
     }, 300);
   }
   updateChecked (index,i) {
+    this.setState({
+      needCommitQuesData:{
+        commit:true,
+        studentId:this.state.nowuserid
+      }
+    })
     let _pl=this.state._work.partList
     console.log('_pl: ', _pl);
     _pl[index].questions[i]['iscuowu']=! _pl[index].questions[i]['iscuowu']
@@ -279,7 +294,8 @@ class StuReport extends React.Component {
     })
     
   }
-  getStudentWork(_userId){
+  getStudentQuestions(_userId){
+    
     this.setState({
       initWroking:true
     })
@@ -306,7 +322,52 @@ class StuReport extends React.Component {
       })
     })
   }
+
+  //只提交题目
+  onlyCommitStudentQuestions(){
+    console.log('切换子女是否需要提交题目...',this.state.needCommitQuesData.commit)
+    let userQuids=this.getUserWrongQuestionIds()
+    // console.log('_userhasQids',this.state._userhasQids,...this.state._userhasQids)
+    // console.log('_userhasQids',userQuids,...userQuids,userQuids.join(',')==this.state._userhasQids.join(','))
+    //比对两次题目数据不能作为提交标准，可能存在没有请求到结果//userQuids.join(',')==this.state._userhasQids.join(',')
+    // this.setState({
+    //   needCommitQuesData:{
+    //     commit:true,
+    //     studentId:this.state.nowuserid
+    //   }
+    // })
+    if(this.state.needCommitQuesData.commit){
+      this.props.dispatch({
+        type:"workManage/doCommitQuestions",
+        payload:{
+          userId:this.state.needCommitQuesData.studentId,
+          examId:this.props.location.examId||25,
+          qusIds:userQuids.length?userQuids.join(','):'',
+          allRight:userQuids.length?0:1
+        }
+      }).then(res=>{
+      //   if(res.data.result===0){
+      //     message.destroy()
+      //     message.success(`【${this.state.studentName}】的错题提交成功!`)
+      //     this.setState({
+      //       isCommitWrongQues:false
+      //     })
+      //   }else{
+      //     message.destroy()
+      //     message.error(`【${this.state.studentName}】的错题提交失败!`)
+      //   }
+       })
+    }
+    this.setState({
+      needCommitQuesData:{
+        commit:false,
+        studentId:''
+      }
+    })
+  }
+  //提交题目
   commitStudentQuestions(){
+    message.loading(`【${this.state.studentName}】的错题正在提交..`)
     this.setState({
       isCommitWrongQues:true
     })
@@ -316,7 +377,7 @@ class StuReport extends React.Component {
       payload:{
         userId:this.state.nowuserid,
         examId:this.props.location.examId||25,
-        qusIds:userQuids.length&&userQuids.join(','),
+        qusIds:userQuids.length?userQuids.join(','):'',
         allRight:userQuids.length?0:1
       }
     }).then(res=>{
@@ -359,23 +420,23 @@ class StuReport extends React.Component {
 
   initThisStudentWork(_stuques){
     let _partList=this.state._work.partList
-    let _userhasQids=this._getStudentQuestionIds(_stuques)
-
+    // let _userhasQids=this._getStudentQuestionIds(_stuques)
+    this.setState({
+      _userhasQids:this._getStudentQuestionIds(_stuques)
+    })
     if(_partList.length){
       for (let index = 0; index < _partList.length; index++) {
         const part = _partList[index];
         for (let j = 0; j < part.questions.length; j++) {
-          part.questions[j].iscuowu=_userhasQids.includes(part.questions[j].qusId)
+          part.questions[j].iscuowu=this.state._userhasQids.includes(part.questions[j].qusId)
         }
       }
     }
-    console.log('new user _partList: ', _partList);
     return _partList
 
   }
 
   getUserWrongQuestionIds(){
-    console.log('this.state._work.partList',this.state._work)
     let _partList=this.state._work.partList
     let _qids=[]
     if(_partList.length){
@@ -407,7 +468,7 @@ class StuReport extends React.Component {
             <span>{this.state._work.info.examName}</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span>数据录入</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span style={{color:'#8E8E8E'}}>{this.state.studentName}</span> 
 
               <div className={style.r_b_box}>
-                <Button type="primary" disabled={this.state._work.partList.length==0} loading={this.state.isCommitWrongQues} onClick={()=>this.commitStudentQuestions()}>提交</Button>
+                {/* <Button type="primary" disabled={this.state._work.partList.length==0} loading={this.state.isCommitWrongQues} onClick={()=>this.commitStudentQuestions()}>提交</Button> */}
                 <div className={style.swicth_box} onClick={()=>this.swicthLog()}>
                   <Spin spinning={this.state.initWroking}>
                     <Icon type="swap" style={{marginRight:4}}/>
@@ -439,6 +500,11 @@ class StuReport extends React.Component {
               </Content>
             </Layout>
           </div>
+          <Button  className={style.commitQuestionRadiusBtn}
+            disabled={this.state._work.partList.length==0} 
+            loading={this.state.isCommitWrongQues} 
+            onClick={()=>this.commitStudentQuestions()}
+          >{this.state.isCommitWrongQues?'':'提交'}</Button>
         </Content>
       </>
     )

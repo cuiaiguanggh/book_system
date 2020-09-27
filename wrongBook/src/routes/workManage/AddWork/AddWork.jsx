@@ -1292,7 +1292,7 @@ createWork=()=>{
 													groupList&&groupList.length?groupList.map((group,p)=>{
 														return(
 															<div  className={style.group_box} key={p}>
-																<div style={{marginBottom:10}} > {group.name}</div>
+																<div style={{marginBottom:10}} > {group.groupName}</div>
 																
 																{
 																group.quesList&&group.quesList.length?
