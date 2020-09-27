@@ -465,7 +465,7 @@ class StuReport extends React.Component {
 
         <Content style={{ minHeight: 500, overflow: 'hidden', position: 'relative',padding:20 }}  >
           <div className={style.top_bar}>
-            <span>{this.state._work.info.examName}</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span>数据录入</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span style={{color:'#8E8E8E'}}>{this.state.studentName}</span> 
+            <span>{this.state._work.info.examName||'未命名作业'}</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span>数据录入</span> <span style={{marginLeft:10,marginRight:10}}>&gt;</span> <span style={{color:'#8E8E8E'}}>{this.state.studentName}</span> 
 
               <div className={style.r_b_box}>
                 {/* <Button type="primary" disabled={this.state._work.partList.length==0} loading={this.state.isCommitWrongQues} onClick={()=>this.commitStudentQuestions()}>提交</Button> */}

@@ -568,6 +568,9 @@ class WorkManage extends React.Component {
 			if(!workdata){
 				message.destroy()
 				message.warn('作业没有数据')
+				this.setState({
+					getWorking:false
+				})
 				return
 			}
 			let _classids=workdata.info.classId.split(',')
