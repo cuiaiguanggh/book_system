@@ -49,7 +49,7 @@ class WorkManage extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="学科"
-          value={this.props.state.schoolSubId}
+          value={this.props.state.schoolSubId<=0?this.props.state.schoolSubId:'请选择学科'}
           onChange={(value) => {
               this.props.dispatch({
                 type:"workManage/schoolSubId",
@@ -74,6 +74,7 @@ class WorkManage extends React.Component {
     }
     const _classData=this.props.location.data
     const _classValue=_classData?_classData.classId:this.props.state.workPageClass.singleValue
+    console.log('_classValue: ', _classValue);
 		return (
       <>
         <Select
@@ -81,7 +82,7 @@ class WorkManage extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="班级"
-          value={_classValue}
+          value={_classValue==-1?'请选择班级':_classValue}
           onChange={(value) => {
               this.props.dispatch({
                 type:"workManage/workPageClass",
