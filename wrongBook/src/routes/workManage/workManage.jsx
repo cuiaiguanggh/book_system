@@ -102,7 +102,6 @@ class WorkManage extends React.Component {
 
     async getWorkList(option){
       const{classId,subjectId}=option
-      console.log('this.props.state.workPageClass.value: ', option);
       let res=await this.props.dispatch({
         type: 'workManage/getWorkList',
         payload:{
@@ -181,6 +180,10 @@ class WorkManage extends React.Component {
       this.getWorkList({classId:query.classId,subjectId:query.subjectId})
       return
     }
+    this.props.dispatch({
+      type:'workManage/getWorkListFinish',
+      payload:false
+    })
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
     let data = {
