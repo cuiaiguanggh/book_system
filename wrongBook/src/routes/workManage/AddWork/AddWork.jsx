@@ -639,10 +639,14 @@ class WorkManage extends React.Component {
 	}
 
 	showCropModel(i){
-		this.state._currentPicture=initReposeData(this.state.work.partList[i])
+		let _picture=this.state._currentPicture=initReposeData(this.props.state.propsWork.partList[i])
 		this.setState({
 			_currentPicture:this.state._currentPicture,
 			cpindex:i
+		})
+		this.props.dispatch({
+			type:'workManage/_currentPicture2',
+			payload:_picture
 		})
 		console.error('current pageinfo',this.state._currentPicture)
 		this.setState({
@@ -754,9 +758,14 @@ class WorkManage extends React.Component {
         	console.log("deletePictureBonfirm -> res", newPartList)
 			// this.getWorkData()
 			if(newPartList) {
-				this.state.work.partList=newPartList
-				this.setState({
-					work:this.state.work
+				// this.state.work.partList=newPartList
+				// this.setState({
+				// 	work:this.state.work
+				// })
+				this.props.state.propsWork.partList=newPartList
+				this.props.dispatch({
+					type:'workManage/propsWork',
+					payload:this.props.state.propsWork
 				})
 				message.success({ content: '图片删除成功!',  duration: 2,key });
 			}else{
@@ -965,10 +974,11 @@ class WorkManage extends React.Component {
 				payload:prdata
 			}).then(res=>{
 				message.destroy()
+				
 				if(res.data.result===0){
-					message.success('作业保存成功')
+					message.success(`作业${(type=='updateWork')?'保存':'发布'}成功`)
 				}else{
-					message.error('作业保存失败'+res.data.msg)
+					message.error(`作业${(type=='updateWork')?'保存':'发布'}失败'${res.data.msg}`)
 				}
 				(type=='updateWork')?this.setState({saveWorking:false}):this.setState({
 					commitWorking:false
@@ -1037,23 +1047,28 @@ createWork=()=>{
 
 
 	render() {
-		let pquestions=this.state.partQuestions.questions
-		let groupList=this.state.partQuestions.part
-		let partList=this.state.work.partList
+		// let pquestions=this.state.partQuestions.questions
+		// let groupList=this.state.partQuestions.part
+		// let partList=this.state.work.partList
+
+		const pquestions=[]
+		const groupList=this.props.state.propsWork.groupList
+		const partList=this.props.state.propsWork.partList
+
 		//let partList=this.state._partList
-        console.log("render -> partList", partList)
+    console.log("render -> partList", partList)
 		//let groupList=this.state.work.groupList
 		// console.log('groupList: ', groupList);
 		return (
-		<div id='con_work' style={{height:'100%',overflow:this.state.getWorking?'hidden':'auto',backgroundColor:'#fff',borderTop:'1px solid #f0f2f5'}}
-			onScroll={(e)=>{
-				e.stopPropagation()
-				this.containetScroll(e)
-			}}>
-			<Spin spinning={!this.state.iscreateWork&&this.state.getWorking} style={{height:'100%',overflow:'hidden'}}>
-				<div  className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}>
-				<>
-					<div className='work_name_area' style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:20}}>
+			<div id='con_work' style={{height:'100%',overflow:this.state.getWorking?'hidden':'auto',backgroundColor:'#fff',borderTop:'1px solid #f0f2f5'}}
+				onScroll={(e)=>{
+					e.stopPropagation()
+					this.containetScroll(e)
+				}}>
+				<Spin spinning={!this.state.iscreateWork&&this.state.getWorking} style={{height:'100%',overflow:'hidden'}}>
+					<div  className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}>
+					<>
+						<div className='work_name_area' style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:20}}>
 							<h4 style={{fontSize:20,height:40}} >
 								{
 									!this.state.editWorkName?
@@ -1079,9 +1094,7 @@ createWork=()=>{
 												}} 
 												style={{width:250}}
 												defaultValue={this.state.work.info.examName} 
-												onKeyUp={(e)=>{
-													this.setState({workNameFail:e.target.value.toString().length?false:true})
-												}}
+												
 											/>
 											{this.state.workNameFail?<div style={{color:'red',fontSize:12}}>作业名称不能为空.</div>:''}
 									</>
@@ -1173,10 +1186,10 @@ createWork=()=>{
 										>显示试题</Checkbox>
 
 										<div className={style.btn_box}>
-											<Button loading={this.state.saveWorking} onClick={()=>{this.updateWork('updateWork')}} >
+											<Button disabled={this.props.state.propsWork.info.status===9} loading={this.state.saveWorking} onClick={()=>{this.updateWork('updateWork')}} >
 												保存作业
 											</Button>
-											<Button loading={this.state.commitWorking} className={style.saveworkbtn} onClick={()=>{this.updateWork('publishWork')}} style={{marginLeft:14}} type='primary'>
+											<Button disabled={this.props.state.propsWork.info.status===9} loading={this.state.commitWorking} className={style.saveworkbtn} onClick={()=>{this.updateWork('publishWork')}} style={{marginLeft:14}} type='primary'>
 												发布作业
 											</Button>
 										</div>
@@ -1338,7 +1351,49 @@ createWork=()=>{
 														)
 													}):''
 												} 
-												{pquestions&&pquestions.length>0?<>{
+
+
+												{
+													partList.map((Part_ques, i) => {
+														return (
+															<div key={`${i}`} style={{marginTop:14}} className={style.queitem}>
+																{
+																	<div>
+																		{Part_ques.questions?Part_ques.questions.map((que, j) => {
+																			return (
+																				<div 
+																					key={`${i}${j}`}
+																					className={style.section_box}
+																					draggable="true" 
+																					
+																					onDragStart={(e)=>{
+																						this.setState({
+																							drapQuetionIndex:[j]
+																						})
+																					}}
+																					>
+																					<Section   showQuestion={this.state.lookQuestion} 
+																						index={j} question={que} 
+																						key={`${que.pageid}${j}`} 
+																						deleteSectionHander={(index)=>{
+																							// this.state._partList.splice(index,1)
+																							// this.setState({
+																							// 	_partList: this.state._partList,
+																							// })
+																						}}
+																						>
+																					</Section>
+																				
+																				</div>
+																				)
+																			}):''}
+																	</div>
+																}
+															</div>
+															)
+														})
+												}
+												{/* {pquestions&&pquestions.length>0?<>{
 													pquestions.map((item, i) => {
 															return (
 																<div 
@@ -1371,7 +1426,7 @@ createWork=()=>{
 																)
 													})
 												}</>
-												:''}
+												:''} */}
 											</div>
 										</div>
 										:''
@@ -1383,7 +1438,7 @@ createWork=()=>{
 								
 								<EditPageModal 
 										hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
-										_currentPicture={this.state._currentPicture} visible={this.state.showEditPictureModal}
+										_currentPicture={this.props.state._currentPicture2} visible={this.state.showEditPictureModal}
 										confirmPicture={(p)=>{
 											this.state._partList.splice(this.state.cpindex,1)
 											this.setState({
@@ -1417,13 +1472,13 @@ createWork=()=>{
 											console.log('this.state._partList',this.state._partList)
 										}}
 										_deleteCropItemHander={(index)=>{
-											this.props.dispatch({
-												type:'workManage/doQuesDelete',
-												payload:{
-													qusId:this.state._currentPicture.questions[index].qusId,
-													partId:this.state._currentPicture.partId
-												}
-											})
+											// this.props.dispatch({
+											// 	type:'workManage/doQuesDelete',
+											// 	payload:{
+											// 		qusId:this.state._currentPicture.questions[index].qusId,
+											// 		partId:this.state._currentPicture.partId
+											// 	}
+											// })
 											//重新调用一下
 										}}
 									></EditPageModal>
@@ -1562,6 +1617,7 @@ createWork=()=>{
 
 export default connect((state) => ({
   state: {
+		...state.workManage,
     workPageClass:state.workManage.workPageClass,
     years: state.temp.years,
     schoolSubId:state.workManage.schoolSubId,

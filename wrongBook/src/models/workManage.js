@@ -9,9 +9,9 @@ import {
 
 import {
 	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup,commitQuestions
-	,getStudentQuestions,wrongUsers,quesDelete
+	,getStudentQuestions,wrongUsers,quesDelete,refreshPart
 } from '../services/yukeService';
-
+import {initReposeData} from '../utils/ImageUploader'
 import { routerRedux } from 'dva/router';
 import store from 'store';
 import { message } from 'antd';
@@ -27,19 +27,34 @@ export default {
 		schoolSubId:0,
 		getWorkListFinish:false,
 		workList:[],
-		work:{
-			info:{},
-			patrList:[],
-			groupList:[]
-		},
 		workPartList:[],
 		workPartInfo:{},
 		logType:false,
 		students:[],
-		getClassStudentsFinish:false
+		getClassStudentsFinish:false,
+		propsWork:{
+			info:{
+				examName:'未命名作业',
+				className:'',
+				classId:[], //classess
+				subjectId:1,
+				pages:[],
+				workTime:''//time
+			},
+			groupList:[],
+			partList:[]
+		},
+		_currentPicture2:{
+
+		}
 	},
 	reducers: {
-		
+		_currentPicture2(state, { payload }) {
+			return { ...state, _currentPicture2: payload };
+		},
+		propsWork(state, { payload }) {
+			return { ...state, propsWork: payload };
+		},
 		getClassStudentsFinish(state, { payload }) {
 			return { ...state, getClassStudentsFinish: payload };
 		},
@@ -283,7 +298,7 @@ export default {
 			let res = yield examInfo(payload);
 			if(res.data.result===0){
 				yield put({
-					type: 'work',
+					type: 'propsWork',
 					payload: res.data.data
 				})
 				
@@ -317,14 +332,49 @@ export default {
 		},
 		*doQuesDelete({ payload }, { put, select }){
 			let res = yield quesDelete(payload);
-			console.log("*doQuesDelete -> res", res)
+			let newPart={}
+			if(res.data.result===0){
+				let { propsWork } = yield select(state => state.workManage)
+				propsWork.partList.splice(payload.index,1,res.data.data.info)
+				yield put({
+					type: 'propsWork',
+					payload: propsWork
+				})
+			}else{
+				message.error('题目删除失败:'+res.data.masg)
+			}
 			
+			newPart=initReposeData(res.data.data.info)
+			return {
+				code:res.data.result,
+				newPart
+			}
 		},
 		*deleteWork({ payload }, { put, select }){
 			let res = yield quesDelete(payload);
-			console.log("*doQuesDelete -> res", res)
 			return res
-		}
+		},
+		*doRfreshPart({ payload }, { put, select }){
+			let res = yield refreshPart(payload);
+			console.log("*doRfreshPart -> res", res)
+			if(res.data.result===0){
+				let { propsWork } = yield select(state => state.workManage)
+				propsWork.partList.splice(payload.index,1,res.data.data.partInfo)
+
+				yield put({
+					type: 'propsWork',
+					payload: propsWork
+				})
+
+				yield put({
+					type: '_currentPicture2',
+					payload: initReposeData(res.data.data.partInfo)
+				})
+			}else{
+				message.error('识别失败:'+res.data.masg)
+			}
+			return res
+		},
 		
 	},
 

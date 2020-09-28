@@ -117,6 +117,13 @@ function quesDelete(payload) {
         method: 'post'
     });
 }
+
+function refreshPart(payload) {
+    return requestYk(`${burl}exam/refreshPart?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 export {
     fetchQuestions,
     getWorkList,
@@ -130,5 +137,5 @@ export {
     delPart,
     publishWork,
     updateWork,
-    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete
+    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete,refreshPart
 };

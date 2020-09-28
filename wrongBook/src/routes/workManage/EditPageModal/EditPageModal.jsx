@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  Button,Input,Modal,Spin
+  Button,Input,message,Modal,Spin
 } from 'antd';
+import { connect } from 'dva';
 import style from './EditPageModal.less';
-
 
 class EditPageModal extends React.Component {
   constructor(props) {
@@ -36,7 +36,10 @@ class EditPageModal extends React.Component {
 			  },
 			mouseIsDown:false,
 			hideBar:false,
-			discovering:true
+			imgSpingData:{
+				text:'正在处理...',
+				isShow:false
+			}
     }
 	}
 
@@ -425,9 +428,25 @@ class EditPageModal extends React.Component {
 	}
 	
 	rediscover(){
-		console.log('开始重新识别...')
 		this.setState({
-			discovering:true
+			imgSpingData:{
+				text:'重新识别中...',
+				isShow:true
+			}
+		})
+		const {examId,partUrl,remark,partId}=this.props._currentPicture
+		this.props.dispatch({
+			type:'workManage/doRfreshPart',
+			payload:{
+				examId,partUrl,remark,partId,index:this.props._currentPicture.index
+			}
+		}).then(res=>{
+			this.setState({
+				imgSpingData:{
+					text:'识别成功',
+					isShow:false
+				}
+			})
 		})
 	}
 	_confirmArea(_index){
@@ -525,10 +544,53 @@ imgLoaded(url, callback) {
     }
   }
 }
+	//删除指定题目
+	deleteCropQuestion(index){
+
+		this.setState({
+			imgSpingData:{
+				text:"正在删除",
+				isShow:true
+			}
+		})
+		this.props.dispatch({
+			type:'workManage/doQuesDelete',
+			payload:{
+				qusId:this.props.state._currentPicture2.questions[index].qusId,
+				partId:this.props.state._currentPicture2.partId
+			}
+		}).then((res)=>{
+			if(res.code===0){
+				message.destroy()
+				message.success('题目删除成功')
+				this.props.dispatch({
+					type:'workManage/_currentPicture2',
+					payload:res.newPart
+				})
+			}
+			
+			this.setState({
+				imgSpingData:{
+					text:"正在删除",
+					isShow:false
+				},
+				showCropBox:false
+			})
+		})
+	}
+
 	render() {
 		return (
 			<Modal
 				id="mask9527"
+				afterClose={()=>{
+					this.setState({
+						imgSpingData:{
+							text:"",
+							isShow:false
+						}
+					})
+				}}
 				closable={true} 
 				keyboard={false}
 				maskClosable={false}
@@ -538,7 +600,7 @@ imgLoaded(url, callback) {
 				footer={[
 					<div key='1' style={{display:'inline-block',float:'left'}}>
 						备注：
-						<Input key='2' style={{width:'250px'}} type='text' 
+						<Input disabled={this.state.imgSpingData.isShow} style={{width:'250px'}} type='text' 
 							value={this.props._currentPicture.remark} 			
 							onChange={(e)=>{
 										this.setState({
@@ -552,16 +614,18 @@ imgLoaded(url, callback) {
 						</Input>
 					</div>
 						,
-					<Button key='3' onClick={()=>{this.newCropItem()}}>手动框题</Button>
+					<Button disabled={this.state.imgSpingData.isShow} key='3' onClick={()=>{this.newCropItem()}}>手动框题</Button>
 					,
-					<Button key='4'  onClick={()=>{this.rediscover()}}>重新识别</Button>
+					<Button disabled={this.state.imgSpingData.isShow} key='4'  onClick={()=>{this.rediscover()}}>重新识别</Button>
 					,
-					<Button onClick={()=>{this.checkCpicture()}} key='5' type='primary' >
+					<Button disabled={this.state.imgSpingData.isShow} onClick={()=>{this.checkCpicture()}} key='5' type='primary' >
 						确定
 					</Button>
 				]}
 			>
-				<Spin spinning={false&&this.state.discovering}>
+				<Spin spinning={this.state.imgSpingData.isShow}
+							tip={this.state.imgSpingData.text}
+					>
 					<div className={style.img_box}>
 
 						<img style={{width:720}} onLoad={(e)=>{
@@ -625,7 +689,7 @@ imgLoaded(url, callback) {
 										<Button 
 											id='delete_9527' 
 											onMouseUp={(e)=>{
-												this.props._deleteCropItemHander(this.state.cropIndex)
+												this.deleteCropQuestion(this.state.cropIndex)
 												e.stopPropagation()
 											}}
 										>
@@ -709,4 +773,9 @@ imgLoaded(url, callback) {
 
 }
 
-export default EditPageModal
+
+export default connect((state) => ({
+  state: {
+		...state.workManage
+  }
+}))(EditPageModal);
