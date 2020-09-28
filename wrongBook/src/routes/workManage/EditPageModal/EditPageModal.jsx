@@ -567,18 +567,6 @@ class EditPageModal extends React.Component {
 			}
 		}).then((res)=>{
 			if(res.code===0){
-				this.props.dispatch({
-					type:'workManage/_currentPicture2',
-					payload:res.newPart
-				})
-				let newPartList=this.props.state.propsWork.partList.splice(this.props.index,1,res.newPart)
-				this.props.dispatch({
-					type:'workManage/propsWork',
-					payload:{
-						...this.props.state.propsWork,
-						partList:newPartList
-					}
-				})
 				message.destroy()
 				message.success('题目删除成功')			
 				this.setState({

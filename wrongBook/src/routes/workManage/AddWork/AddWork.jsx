@@ -886,50 +886,9 @@ class WorkManage extends React.Component {
 		// 	]
 		// })
 	}
-	// onEditFinish=()=>{
-	// 	this.state.work.pages=this.state._partList
-	// 	this.state.work.partQuestions=this.state.partQuestions
-	// 	this.setState({
-	// 		work:this.state.work
-	// 	})
-	// 	console.log('this.state.work',this.state.work,this.state.partQuestions,this.state._partList)
-	// 	let msg=''
-	// 	  if(!this.state.work.subjectId) {
-	// 		  msg='请选择一个学科！'
-	// 	  }
-	// 	  if(!this.state.work.classes||!this.state.work.classes.length) {
-	// 		  msg='请选择一个班级！'
-	// 	  }
-	// 	  if(msg){
-	// 		  message.destroy()
-	// 		  message.warn(msg)
-	// 		  return
-	// 	  }
-	// 	  this.setState({
-	// 	  	commitWorking:true
-	// 	  })
-	// 	  setTimeout(() => {
-	// 		  this.props.dispatch({
-	// 				type:"workManage/publishWork",
-	// 				payload:{
-	// 					examId:10
-	// 				}
-	// 			}).then(res=>{
-	// 				message.destroy()
-	// 				if(res.data.result===0){
-	// 					message.success('作业发布成功')
-	// 				}else{
-	// 					message.error('作业发布失败')
-	// 				}
-	// 				this.setState({
-	// 					commitWorking:false
-	// 				})
-	// 			})
-				
-	// 		}, 200);
-			
-	  
-	// }
+	deleteQuestion=(index)=>{
+		
+	}
 	checkWorkValue(){
 		let msg=''
 
@@ -1330,11 +1289,11 @@ createWork=()=>{
 																				}}
 														
 																				>
-																				<Section ischecked={this.state.ischecked} showQuestion={this.state.lookQuestion} 
+																				<Section  showQuestion={this.state.lookQuestion} 
 																				index={k} question={item} 
 																				key={`${item.pageid}${k}`} 
 
-																				deleteSectionHander={(index)=>{
+																				deleteQuestionHander={(index)=>{
 																					this.state._partList.splice(index,1)
 																					this.setState({
 																						_partList: this.state._partList,
@@ -1383,11 +1342,12 @@ createWork=()=>{
 																					<Section   showQuestion={this.state.lookQuestion} 
 																						index={j} question={que} 
 																						key={`${que.pageid}${j}`} 
-																						deleteSectionHander={(index)=>{
+																						deleteQuestionHander={(index)=>{
 																							// this.state._partList.splice(index,1)
 																							// this.setState({
 																							// 	_partList: this.state._partList,
 																							// })
+																							this.deleteQuestion(index)
 																						}}
 																						>
 																					</Section>
@@ -1418,7 +1378,7 @@ createWork=()=>{
 																	<Section   showQuestion={this.state.lookQuestion} 
 																		index={i} question={item} 
 																		key={`${item.pageid}${i}`} 
-																		deleteSectionHander={(index)=>{
+																		deleteQuestionHander={(index)=>{
 																			this.state._partList.splice(index,1)
 																			this.setState({
 																				_partList: this.state._partList,

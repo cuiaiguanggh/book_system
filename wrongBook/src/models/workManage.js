@@ -324,7 +324,6 @@ export default {
 		},
 		*doQuesDelete({ payload }, { put, select }){
 			let res = yield quesDelete(payload);
-			let newPart={}
 			if(res.data.result===0){
 				let { propsWork } = yield select(state => state.workManage)
 				propsWork.partList.splice(payload.index,1,res.data.data.info)
@@ -332,15 +331,15 @@ export default {
 					type: 'propsWork',
 					payload: propsWork
 				})
+				yield put({
+					type: '_currentPicture2',
+					payload: initReposeData(res.data.data.info)
+				})
 			}else{
 				message.error('题目删除失败:'+res.data.masg)
 			}
 			
-			newPart=initReposeData(res.data.data.info)
-			return {
-				code:res.data.result,
-				newPart
-			}
+			return res
 		},
 
 		*deleteWork({ payload }, { put, select }){

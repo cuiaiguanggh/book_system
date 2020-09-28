@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import style from './Section.less';
+import { connect } from 'dva';
 import { Input, Button, Checkbox, message ,Popover,Popconfirm} from 'antd';
 const { TextArea } = Input;
 
-export default function Section(props) {
-    const [load, setLoad] = useState(0);
-		const [newsrc, setNewsrc] = useState(props.src);
+function Section(props) {
+		const [delting, setDeleting] = useState(false);
 		const [showParse, setShowParse] = useState(true);
     useEffect(() => {
-        if (newsrc !== props.src) {
-            setNewsrc(props.src)
-            setLoad(0)
-        }
+        
     });
 
-		
+		function deleteQuestion(que){
 
-
-
-		function deleteSectionQuestion(index){
-			props.question.areas.splice(index,1)
-			props.upSectionHander()
+			setDeleting(true)
+			props.dispatch({
+				type:'workManage/doQuesDelete',
+				payload:{
+					qusId:que.qusId,
+					partId:que.partId
+				}
+			}).then((res)=>{
+				setDeleting(false)
+				if(res.data.result===0){	
+					message.destroy()
+					message.success('题目删除成功')			
+				}
+			})
 		}
-
-
 
 		return (
 			<>
@@ -31,26 +35,16 @@ export default function Section(props) {
 				>
 				<div  className={style.que_box}>
 						<div className={style.title}>
-							{/* <Checkbox 
-									defaultChecked={props.ischecked}
-									onChange={(e)=>{
-										let _v=e.target.checked
-										let _myQid=`${props.question.pageid}${props.question.num}`
-										props.questionChangeSelect(_v,_myQid,props.question)
-									}}
-								>
-								{` 第${props.index+1}题`}
-							</Checkbox> */}
 							{` 第${props.index+1}题`}
 							<span style={{marginLeft:20}}>知识点：</span>
 							<div className={style._edit_box}>
-								{/* <Button type='primary' onClick={()=>deleteSectionQuestion(props.index)}>删除</Button> */}
-								{
+								<Button type='primary' loading={delting} onClick={()=>deleteQuestion(props.question)}>删除</Button>
+								{/* {
 									props.question.question?<></>:
 									<>
 									<Button type='primary'>重新匹配</Button>
 									</>
-								}
+								} */}
 								
 							</div>
 						</div>
@@ -88,3 +82,9 @@ export default function Section(props) {
     )
 
 }
+export default connect((state) => ({
+	state: {
+		
+
+	}
+}))(Section);
