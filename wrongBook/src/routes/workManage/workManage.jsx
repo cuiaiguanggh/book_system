@@ -49,7 +49,7 @@ class WorkManage extends React.Component {
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="学科"
-          value={this.props.state.schoolSubId<=0?this.props.state.schoolSubId:'请选择学科'}
+          value={this.props.state.schoolSubId>0?this.props.state.schoolSubId:'请选择学科'}
           onChange={(value) => {
               this.props.dispatch({
                 type:"workManage/schoolSubId",
