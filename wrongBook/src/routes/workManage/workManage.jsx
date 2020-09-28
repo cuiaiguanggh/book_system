@@ -160,6 +160,9 @@ class WorkManage extends React.Component {
                 logQuestions={(data)=>{
                   this.props.dispatch(routerRedux.push({pathname:'/LogQuestion',examId:data.examId}))
                 }}
+                lookReport={(data)=>{
+                  this.props.dispatch(routerRedux.push({pathname:'/WorkReport',examId:data.examId}))
+                }}
               >
               </WorkList>
                 

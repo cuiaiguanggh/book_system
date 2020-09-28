@@ -69,10 +69,10 @@ const StuReport = Loadable({
   loader: () => import('./routes/wrongReport/stuReport/stuReport'),
   loading: () => <List />,
 });
-const WorkReport = Loadable({
-  loader: () => import('./routes/wrongReport/workReport/workReport'),
-  loading: () => <List />,
-});
+// const WorkReport = Loadable({
+//   loader: () => import('./routes/wrongReport/WorkReport/WorkReport'),
+//   loading: () => <List />,
+// });
 const UserInfo = Loadable({
   loader: () => import('./routes/UserInfo/information'),
   loading: () => <List />,
@@ -134,7 +134,10 @@ const LogQuestion = Loadable({
   loader: () => import('./routes/workManage/LogQuestion/LogQuestion'),
   loading: () => <List />,
 });
-
+const WorkReport = Loadable({
+  loader: () => import('./routes/workManage/WorkReport'),
+  loading: () => <List />,
+});
 function RouterConfig({ history }) {
 
   return (
@@ -159,9 +162,10 @@ function RouterConfig({ history }) {
           <Route path="/user" component={UserList} />
           <Route path="/classReport" component={ClassReport} />
           <Route path="/stuReport" component={StuReport} />
-          {/* <Route path="/workReport" component={WorkReport} />*/}
+          {/* <Route path="/WorkReport" component={WorkReport} />*/}
           <Route path="/workCorrection" component={workCorrection} />
           <Route path="/workManage" component={workManage} />
+          <Route path="/WorkReport" component={WorkReport} />
           <Route path="/LogQuestion" component={LogQuestion} />
           <Route path="/addWork" component={AddWork} />
           <Route path="/userInfo" component={UserInfo} />

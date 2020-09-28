@@ -58,7 +58,7 @@ class HomeworkCenter extends React.Component {
 				return(
 					<>
 						<span className={style.caozuospan} onClick={()=>props.logQuestions(record)}>错题录入</span>
-						<span className={style.caozuospan}>查看报告</span>
+						<span className={style.caozuospan} onClick={()=>props.lookReport(record)}>查看报告</span>
 						<span className={style.caozuospan} onClick={()=>props.editWork(record)}>编辑</span>
 						<span className={style.caozuospan} onClick={()=>this.deleteWork(record)}>删除</span>
 					</>
