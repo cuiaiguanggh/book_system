@@ -615,9 +615,8 @@ class WorkManage extends React.Component {
 		reader.readAsDataURL(files[0]);
 		reader.onload = ()=>{
 			
-			let _arr=this.state._partList
 			let _pid=`_id:${new Date().getTime()}`
-			let _num=_arr.length+1
+			let _num=this.state.work.partList.length+1
 			let pitem={
 				...this.state.picture,
 				url:reader.result,
@@ -625,9 +624,9 @@ class WorkManage extends React.Component {
 				partName:'图片'+_num,
 				remark:'图片'+_num,
 			}
-			_arr.push(pitem)
+			this.state.work.partList.push(pitem)
 			this.setState({
-				_partList:_arr
+				work:this.state.work
 			})
 
 			this.uploadImage(files[0],pitem)
@@ -771,7 +770,7 @@ class WorkManage extends React.Component {
 		})
 		e.preventDefault();
 	}
-	questionGroupDrop(e,to){
+	questionGroupDrop1(e,to){
 		let _from=this.state.drapQuetionIndex
 		if(_from.length>1){
 			//从组拖拽
@@ -788,7 +787,7 @@ class WorkManage extends React.Component {
 			partActiveIndex:-1
 		})
 	}
-	questionGroupDrop0(e,to){
+	questionGroupDrop(e,to){
 		let _from=this.state.drapQuetionIndex
 
 		// let dtagQue=this.state.partQuestions.questions[_from[0]]
@@ -811,7 +810,6 @@ class WorkManage extends React.Component {
 			// partQuestions:this.state.partQuestions,
 			partActiveIndex:-1
 		})
-		console.log("questionGroupDrop -> this.state.partQuestions", this.state.partQuestions)
 		this.toUpdateGroupList(this.state.partQuestions.part)
 	}
 	toUpdateGroupList(allpart){

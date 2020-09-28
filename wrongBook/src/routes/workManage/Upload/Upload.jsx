@@ -50,7 +50,6 @@ class Upload1 extends React.Component {
 
 
   render() {
-    {console.log('...')}
 		return(
       <Spin spinning={this.props.picture.resCode<0} tip="正在识别...">
       <div className={style.uploadin}>
