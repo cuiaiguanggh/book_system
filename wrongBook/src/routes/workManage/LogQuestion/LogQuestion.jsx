@@ -244,7 +244,7 @@ class StuReport extends React.Component {
                     type: 'workManage/hasLoggedStudents',
                     payload: {
                       classIds:value,
-                      examId:this.props.location.examId||25
+                      examId:this.props.location.examId||10
                     }
                   }).then(wusers=>{
                     this.initStudents(allstudent,wusers)
@@ -303,7 +303,7 @@ class StuReport extends React.Component {
       type:"workManage/doGetStudentQuestions",
       payload:{
         userId:_userId,
-        examId:this.props.location.examId||25,
+        examId:this.props.location.examId||10,
       }
     }).then(res=>{
       console.log('doGetStudentQuestions: ', res);
@@ -341,7 +341,7 @@ class StuReport extends React.Component {
         type:"workManage/doCommitQuestions",
         payload:{
           userId:this.state.needCommitQuesData.studentId,
-          examId:this.props.location.examId||25,
+          examId:this.props.location.examId||10,
           qusIds:userQuids.length?userQuids.join(','):'',
           allRight:userQuids.length?0:1
         }
@@ -376,7 +376,7 @@ class StuReport extends React.Component {
       type:"workManage/doCommitQuestions",
       payload:{
         userId:this.state.nowuserid,
-        examId:this.props.location.examId||25,
+        examId:this.props.location.examId||10,
         qusIds:userQuids.length?userQuids.join(','):'',
         allRight:userQuids.length?0:1
       }
@@ -387,7 +387,7 @@ class StuReport extends React.Component {
           type: 'workManage/hasLoggedStudents',
           payload: {
             classIds:this.props.state.workPageClass.singleValue,
-            examId:this.props.location.examId||25
+            examId:this.props.location.examId||10
           }
         }).then(wusers=>{
           console.log('wusers',wusers)
@@ -485,7 +485,7 @@ class StuReport extends React.Component {
 
               <Content className={style.content}>
                 <Spin spinning={this.state.initWroking}>
-                  <div style={{padding:!this.props.state.logType?'20px':'',height:'100%',boxSizing:'border-box',position:'relative'}}>
+                  <div style={{padding:!this.props.state.logType?'20px':'',height:'100%',boxSizing:'border-box',position:'relative',display:'flex',overflow:'auto'}}>
                       {
                         !this.state._work.partList.length?
                         <Empty className={style.nowork} description='该份作业暂无内容' />:
@@ -500,8 +500,9 @@ class StuReport extends React.Component {
               </Content>
             </Layout>
           </div>
-          <Button  className={style.commitQuestionRadiusBtn}
-            disabled={this.state._work.partList.length==0} 
+          <Button  
+            className={style.commitQuestionRadiusBtn}
+            disabled={this.state.initWroking||this.state._work.partList.length==0} 
             loading={this.state.isCommitWrongQues} 
             onClick={()=>this.commitStudentQuestions()}
           >{this.state.isCommitWrongQues?'':'提交'}</Button>
@@ -536,7 +537,7 @@ class StuReport extends React.Component {
             type: 'workManage/hasLoggedStudents',
             payload: {
               classIds:classData.singleValue,
-              examId:this.props.location.examId||25
+              examId:this.props.location.examId||10
             }
           }).then(wusers=>{
             console.log('wusers',wusers)
@@ -553,7 +554,7 @@ class StuReport extends React.Component {
     dispatch({
 			type:"workManage/getExamInfo",
 			payload:{
-				examId:this.props.location.examId||25
+				examId:this.props.location.examId||10
 			}
 		}).then(workdata=>{
       console.log('workdata: ', workdata);

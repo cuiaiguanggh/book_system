@@ -9,7 +9,7 @@ import {
 
 import {
 	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup,commitQuestions
-	,getStudentQuestions,wrongUsers,quesDelete,refreshPart
+	,getStudentQuestions,wrongUsers,quesDelete,refreshPart,updatePartRemark
 } from '../services/yukeService';
 import {initReposeData} from '../utils/ImageUploader'
 import { routerRedux } from 'dva/router';
@@ -386,6 +386,29 @@ export default {
 				message.error('操作失败:'+res.data.masg)
 			}
 			return res
+
+		},
+		*doUpdatePartRemark({ payload }, { put, select }){
+			let res = yield updatePartRemark(payload);
+			if(res.data.result===0){
+
+				let pres=yield workPartInfo({
+					partId:payload.partId
+				})
+				if(pres.data.result===0){
+					let { propsWork } = yield select(state => state.workManage)
+					propsWork.partList.splice(payload.index,1,pres.data.data.partInfo)
+					yield put({
+						type: 'propsWork',
+						payload: propsWork
+					})
+				}
+				return res
+			}else{
+				message.error('页面修改失败:'+res.data.masg)
+				return res
+			}
+			
 
 		},
 		

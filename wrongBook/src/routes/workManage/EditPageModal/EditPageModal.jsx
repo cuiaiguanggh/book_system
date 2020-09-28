@@ -39,7 +39,9 @@ class EditPageModal extends React.Component {
 			imgSpingData:{
 				text:'正在处理...',
 				isShow:false
-			}
+			},
+			newRemark:'',
+			confirming:false
     }
 	}
 
@@ -238,7 +240,7 @@ class EditPageModal extends React.Component {
 	}
 
 	_saveCropItem (callback) {
-		if (this.state.cropIndex < 0) return
+		if (this.state.cropIndex< 0||this.state.cropIndex>=this.props._currentPicture.questions.length ) return
 
 		this.state.showCropBox = false
 		let _x = this.state.cutLeft / this.state.scwidth * 720
@@ -365,7 +367,9 @@ class EditPageModal extends React.Component {
 		}
 		// 新增一个框
 		this.toShowCropBox(cx, cy, cwidth, cheight)
-
+		this.setState({
+			cropIndex : this.props._currentPicture.questions.length
+		})
 		
 		// let _area = {
 		// 	x: _x,
@@ -393,9 +397,32 @@ class EditPageModal extends React.Component {
 	}
   
 
-	checkCpicture(){
-		this.props.confirmPicture(this.props._currentPicture)
-		console.log('this.state.workPages: ', this.state.workPages,this.props._currentPicture);
+	doUpdatePartRemark(){
+		console.log('this.state.newRemark: ', this.state.newRemark);
+		if(!this.state.newRemark){
+			message.destroy()
+			message.warn('备注不能为空')
+			return
+		}
+		if(this.state.newRemark===this.props.state._currentPicture2.remark){
+			this.props.confirmPicture()
+			return
+		}
+		this.setState({
+			confirming:true
+		})
+		this.props.dispatch({
+			type:'workManage/doUpdatePartRemark',
+			payload:{
+				partId:this.props.state._currentPicture2.partId,
+				remark:this.state.newRemark
+			}
+		}).then(res=>{
+			this.setState({
+				confirming:false
+			})
+			this.props.confirmPicture()
+		})
 	}
 	cancelModel(e){
 		this.props.hideModalHander()
@@ -423,19 +450,81 @@ class EditPageModal extends React.Component {
 			})
 		})
 	}
+	//删除指定题目
+	deleteCropQuestion(index){
+		let _currentArea=this.props.state._currentPicture2.questions[index]
+		if(!_currentArea){
+			this.setState({
+				showCropBox:false,
+				cropIndex:-1
+			})
+			return 
+		}
+
+		this.setState({
+			imgSpingData:{
+				text:"正在删除",
+				isShow:true
+			}
+		})
+		this.props.dispatch({
+			type:'workManage/doQuesDelete',
+			payload:{
+				qusId:this.props.state._currentPicture2.questions[index].qusId,
+				partId:this.props.state._currentPicture2.partId
+			}
+		}).then((res)=>{
+			if(res.data.result===0){
+				message.destroy()
+				message.success('题目删除成功')			
+				this.setState({
+					showCropBox:false,
+					cropIndex:-1
+				})
+			}
+
+			this.setState({
+				imgSpingData:{
+					text:"",
+					isShow:false
+				}
+			})
+		})
+	}
 	_confirmArea(_index){
+		console.log('_index: ', _index);
 		//重新做排序
 		
-		this._saveCropItem()
+		let _area=this.props.state._currentPicture2.questions[_index]
+		if(_index>=this.props._currentPicture.questions.length){
+			let _x = this.state.cutLeft / this.state.scwidth * 720
+			let _y = this.state.cutTop / this.state.scwidth * 720
+			let _width = this.state.cutWidth / this.state.scwidth * 720
+			let _height = this.state.cutHeight / this.state.scwidth * 720
 
+			_area = {
+				area:{
+					x: _x,
+					y: _y,
+					height: _height,
+					width: _width,
+					rotate: 0,
+					imgUrl:this.getQnCropUrl()
+				},
+				num: this.props._currentPicture.questions.length+1
+			}
+		}else{
+			this._saveCropItem()
+		}
 		this.setState({
 			imgSpingData:{
 				text:'正在处理...',
 				isShow:true
 			}
 		})
-		let _area=this.props.state._currentPicture2.questions[_index]
+		
 		console.log('_area: ', _area,this.state._currentPicture);
+
 		let _areaData={
 			partId:this.props.state._currentPicture2.partId,	
 			examId:this.props.state._currentPicture2.examId,
@@ -444,7 +533,7 @@ class EditPageModal extends React.Component {
 			pointY:_area.area.y,	
 			areaWidth:_area.area.width,		
 			areaHeight:_area.area.height,	
-			num:_area.num,
+			num:_area.num||_index+1,
 		}
 		console.log('_areaData: ', _areaData);
 		// this.setState({
@@ -542,47 +631,7 @@ class EditPageModal extends React.Component {
 		}
 	}
 
-	//删除指定题目
-	deleteCropQuestion(index){
-		let _currentArea=this.props.state._currentPicture2.questions[index]
-		if(!_currentArea){
-			this.setState({
-				showCropBox:false,
-				cropIndex:-1
-			})
-			return 
-		}
-
-		this.setState({
-			imgSpingData:{
-				text:"正在删除",
-				isShow:true
-			}
-		})
-		this.props.dispatch({
-			type:'workManage/doQuesDelete',
-			payload:{
-				qusId:this.props.state._currentPicture2.questions[index].qusId,
-				partId:this.props.state._currentPicture2.partId
-			}
-		}).then((res)=>{
-			if(res.code===0){
-				message.destroy()
-				message.success('题目删除成功')			
-				this.setState({
-					showCropBox:false,
-					cropIndex:-1
-				})
-			}
-
-			this.setState({
-				imgSpingData:{
-					text:"",
-					isShow:false
-				}
-			})
-		})
-	}
+	
 
 	render() {
 		return (
@@ -606,13 +655,10 @@ class EditPageModal extends React.Component {
 					<div key='1' style={{display:'inline-block',float:'left'}}>
 						备注：
 						<Input disabled={this.state.imgSpingData.isShow} style={{width:'250px'}} type='text' 
-							value={this.props._currentPicture.remark} 			
+							defaultValue={this.props._currentPicture.remark} 			
 							onChange={(e)=>{
 										this.setState({
-											_currentPicture:{
-												...this.props._currentPicture,
-												remark:e.target.value
-											}
+											newRemark:e.target.value
 										})
 								}}
 							>
@@ -623,7 +669,7 @@ class EditPageModal extends React.Component {
 					,
 					<Button disabled={this.state.imgSpingData.isShow} key='4'  onClick={()=>{this.rediscover()}}>重新识别</Button>
 					,
-					<Button disabled={this.state.imgSpingData.isShow} onClick={()=>{this.checkCpicture()}} key='5' type='primary' >
+					<Button disabled={this.state.imgSpingData.isShow} loading={this.state.confirming} onClick={()=>{this.doUpdatePartRemark()}} key='5' type='primary' >
 						确定
 					</Button>
 				]}
@@ -770,8 +816,10 @@ class EditPageModal extends React.Component {
 
   }
 
-  componentWillUnmount() {
-    
+  componentWillReceiveProps (nextProps) {
+		this.setState({
+			newRemark:nextProps._currentPicture.remark
+		})
   }
 
 

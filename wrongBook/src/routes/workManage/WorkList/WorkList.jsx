@@ -121,6 +121,7 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount() {
+		console.log('componentDidMount: ',111);
 	
 	}
 

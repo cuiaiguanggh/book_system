@@ -887,7 +887,7 @@ class WorkManage extends React.Component {
 		// })
 	}
 	deleteQuestion=(index)=>{
-		
+
 	}
 	checkWorkValue(){
 		let msg=''
@@ -1004,8 +1004,14 @@ createWork=()=>{
 		if(res&&res.data.result===0){
 			message.success('作业创建成功')
 			setTimeout(() => {
-				this.props.dispatch(routerRedux.push('/workManage'))
-			}, 500)
+				this.props.dispatch(routerRedux.push({
+					pathname:'/workManage',
+					data: {
+						classId:classId[0],
+						subjectId
+					},  
+				}))
+			}, 300)
 		}else{
 			message.warn('作业创建失败：'+res.data.msg)
 		}
@@ -1014,25 +1020,17 @@ createWork=()=>{
 
 
 	render() {
-		// let pquestions=this.state.partQuestions.questions
-		// let groupList=this.state.partQuestions.part
-		// let partList=this.state.work.partList
 
-		const pquestions=[]
 		const groupList=this.props.state.propsWork.groupList
 		const partList=this.props.state.propsWork.partList
-
-		//let partList=this.state._partList
     console.log("render -> partList", partList)
-		//let groupList=this.state.work.groupList
-		// console.log('groupList: ', groupList);
 		return (
 			<div id='con_work' style={{height:'100%',overflow:this.state.getWorking?'hidden':'auto',backgroundColor:'#fff',borderTop:'1px solid #f0f2f5'}}
 				onScroll={(e)=>{
 					e.stopPropagation()
 					this.containetScroll(e)
 				}}>
-				<Spin spinning={!this.state.iscreateWork&&this.state.getWorking} style={{height:'100%',overflow:'hidden'}}>
+				<Spin spinning={!this.state.iscreateWork&&this.state.getWorking} tip="正在加载..." style={{height:'100%',overflow:'hidden'}}>
 					<div  className={[style.page_box,this.state.hideTopContainer?"_position":""].join(" ")}>
 					<>
 						<div className='work_name_area' style={{display:'flex',flexDirection:'column',alignItems:"center",marginBottom:22,marginTop:20}}>
@@ -1124,9 +1122,9 @@ createWork=()=>{
 													<div  className={style.quelabel}>图片{i+1}</div> 
 													{
 														<div>
-															{item.questions?item.questions.map((area, j) => {
+															{item.questions?item.questions.map((que, j) => {
 															return (
-															<span key={j} className={style.quespanbtn}>{`${j+1} 选择题`}</span>
+															<span key={j} className={style.quespanbtn}>{`${j+1} ${que.qusType?que.qusType:'未知'}`}</span>
 																			)
 																}):''}
 														</div>
@@ -1409,13 +1407,10 @@ createWork=()=>{
 										_currentPicture={this.props.state._currentPicture2} 
 										visible={this.state.showEditPictureModal}
 										index={this.state.cpindex}
-										confirmPicture={(p)=>{
-											this.state._partList.splice(this.state.cpindex,1)
+										confirmPicture={()=>{
 											this.setState({
-												_partList:this.state._partList,
 												showEditPictureModal:false
 											})
-											console.log('this.state._partList',this.state._partList)
 										}}
 									
 										_deleteCropItemHander={(index)=>{

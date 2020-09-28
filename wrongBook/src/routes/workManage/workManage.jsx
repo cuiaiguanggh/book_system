@@ -72,14 +72,16 @@ class WorkManage extends React.Component {
       let item = classes[i]
       children.push(	<Option key={i} value={item.classId}>{item.className}</Option>);
     }
+    const _classData=this.props.location.data
+    const _classValue=_classData?_classData.classId:this.props.state.workPageClass.singleValue
 		return (
       <>
         <Select
-          style={{ width: 90,marginRight:20 }}
+          style={{ width: 140,marginRight:20 }}
           suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
           optionFilterProp="children"
           placeholder="班级"
-          value={this.props.state.workPageClass.value}
+          value={_classValue}
           onChange={(value) => {
               this.props.dispatch({
                 type:"workManage/workPageClass",
@@ -170,7 +172,12 @@ class WorkManage extends React.Component {
   }
 
   componentDidMount() {
-    
+    let query=this.props.location.data
+    if(query&&query.subjectId&&query.classId){
+      console.log('this.props.location.query',this.props.location.data)
+      this.getWorkList({classId:query.classId,subjectId:query.subjectId})
+      return
+    }
     const { dispatch } = this.props;
     let userNews = store.get('wrongBookNews');
     let data = {
@@ -193,7 +200,7 @@ class WorkManage extends React.Component {
       
      
     })
-    
+   
 
   }
 

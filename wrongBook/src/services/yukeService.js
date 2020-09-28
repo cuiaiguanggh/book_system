@@ -124,6 +124,12 @@ function refreshPart(payload) {
         method: 'post'
     });
 }
+function updatePartRemark(payload){
+    return requestYk(`${burl}exam/updatePartRemark?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 export {
     fetchQuestions,
     getWorkList,
@@ -137,5 +143,5 @@ export {
     delPart,
     publishWork,
     updateWork,
-    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete,refreshPart
+    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete,refreshPart,updatePartRemark
 };
