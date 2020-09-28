@@ -476,9 +476,9 @@ class WorkManage extends React.Component {
 	}
 	renderClassList() {
 			let classes = this.props.state.workPageClass.list;
-			let _value=this.props.state.workPageClass.value
+			let _classDisplayValue=this.props.state.workPageClass.value
 			if(!this.state.iscreateWork){
-				_value=this.state._editWorkClassList
+				_classDisplayValue=this.state._editWorkClassList
 			}
 			const children = [];
 			for (let i = 0; i < classes.length; i++) {
@@ -492,7 +492,7 @@ class WorkManage extends React.Component {
 					style={{ width: 200,marginRight:20 }}
 					suffixIcon={<Icon type="caret-down" style={{ color: "#646464", fontSize: 10 }} />}
 					optionFilterProp="children"
-					value={_value}
+					value={_classDisplayValue}
 					placeholder="请选择班级"
 					onPopupScroll={(e)=>{
 						e.stopPropagation()
@@ -954,7 +954,6 @@ class WorkManage extends React.Component {
 		this.setState({
 			work:this.state.work
 		})
-		console.log('this.state.work',this.state.work,this.state.partQuestions,this.state._partList)
 		if(this.checkWorkValue())return
 		(type=='updateWork')?this.setState({saveWorking:true}):this.setState({
 			commitWorking:true
@@ -966,26 +965,35 @@ class WorkManage extends React.Component {
 			classId:Array.isArray(classes)?classes.join(','):classes,
 			schoolId:store.get('wrongBookNews').schoolId,
 			workTime:time,
-			examId:10
+			examId:this.props.location.examId||this.props.state.propsWork.info.examId
 		}
 		setTimeout(() => {
 			this.props.dispatch({
 				type:`workManage/${type}`,
 				payload:prdata
 			}).then(res=>{
-				message.destroy()
 				
-				if(res.data.result===0){
-					message.success(`作业${(type=='updateWork')?'保存':'发布'}成功`)
-				}else{
-					message.error(`作业${(type=='updateWork')?'保存':'发布'}失败'${res.data.msg}`)
-				}
-				(type=='updateWork')?this.setState({saveWorking:false}):this.setState({
-					commitWorking:false
+				
+				this.props.dispatch({
+					type:"workManage/getExamInfo",
+					payload:{
+						examId:this.props.location.examId||this.props.state.propsWork.info.examId
+					}
+				}).then(()=>{
+					message.destroy()
+					if(res.data.result===0){
+						message.success(`作业${(type=='updateWork')?'保存':'发布'}成功`)
+					}else{
+						message.error(`作业${(type=='updateWork')?'保存':'发布'}失败'${res.data.msg}`)
+					}
+					(type=='updateWork')?this.setState({saveWorking:false}):this.setState({
+						commitWorking:false
+					})
 				})
+
 			})
 			
-		}, 200);
+		}, 50);
 	}
 	containetScroll(e) {
 
@@ -1438,7 +1446,9 @@ createWork=()=>{
 								
 								<EditPageModal 
 										hideModalHander={()=>{this.setState({showEditPictureModal:false})}} 
-										_currentPicture={this.props.state._currentPicture2} visible={this.state.showEditPictureModal}
+										_currentPicture={this.props.state._currentPicture2} 
+										visible={this.state.showEditPictureModal}
+										index={this.state.cpindex}
 										confirmPicture={(p)=>{
 											this.state._partList.splice(this.state.cpindex,1)
 											this.setState({
@@ -1447,30 +1457,7 @@ createWork=()=>{
 											})
 											console.log('this.state._partList',this.state._partList)
 										}}
-										_confirmAreaHander={(index)=>{
-											let _area=this.state._currentPicture.questions[index]
-											console.log('_area: ', _area,this.state._currentPicture);
-											let _areaData={
-												partId:this.state._currentPicture.partId,	
-												examId:this.state._currentPicture.examId||10,	
-												qusImgUrl:_area.area.imgUrl,	
-												pointX:_area.area.x,	
-												pointY:_area.area.y,	
-												areaWidth:_area.area.width,		
-												areaHeight:_area.area.height,	
-												num:_area.num||10||_area.orderBy
-											}
-											console.log('_areaData: ', _areaData);
-											// this.setState({
-											// 	// _partList:this.state._partList,
-											// 	showEditPictureModal:false
-											// })
-											this.props.dispatch({
-												type:'workManage/areaDiscern',
-												payload:_areaData
-											})
-											console.log('this.state._partList',this.state._partList)
-										}}
+									
 										_deleteCropItemHander={(index)=>{
 											// this.props.dispatch({
 											// 	type:'workManage/doQuesDelete',

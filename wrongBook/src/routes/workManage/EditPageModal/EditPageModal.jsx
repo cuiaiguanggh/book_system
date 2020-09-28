@@ -236,20 +236,7 @@ class EditPageModal extends React.Component {
 		if (_y < 0) _y = 0
 		return `${purl}${_str}/crop/!${parseInt(_width)}x${parseInt(_height)}a${parseInt(_x)}a${parseInt(_y)}`
 	}
-	_deleteCropItem () {
-		if (this.props._currentPicture.questions[this.state.cropIndex].addRect) {
-			this.props._currentPicture.questions.splice(this.state.cropIndex, 1)
-			// 新增题目支持删除
-		} else {
-			this.props._currentPicture.questions[this.state.cropIndex].selected = false
-		}
 
-		this.setState({
-			showCropBox:false,
-			cropIndex:-1,
-			showCropBox:false
-		})
-	}
 	_saveCropItem (callback) {
 		if (this.state.cropIndex < 0) return
 
@@ -270,6 +257,7 @@ class EditPageModal extends React.Component {
 			index: 999
 		}
 		let _index = this.state.cropIndex
+		console.log('_index: ', _index);
 		this.props._currentPicture.questions[_index].area = _area
 		
 		this.setState({
@@ -282,11 +270,11 @@ class EditPageModal extends React.Component {
 	needSave () {
 		return this.state.cropIndex > -1
 	}
-	reset () {
-		this.state.cropIndex = -1
-		this.showCropBox = false
-		this.state.showGifTip = true
-	}
+	// reset () {
+	// 	this.state.cropIndex = -1
+	// 	this.showCropBox = false
+	// 	this.state.showGifTip = true
+	// }
 	isCropItem (x, y) {
 		let index = -1
 		let _dism = this.state.imageData.displayImage
@@ -308,14 +296,9 @@ class EditPageModal extends React.Component {
 		return index
 	}
 	_cropMaskClick (e) {
-		//return
-		
 		var elm = document.querySelector('.modal9527')
 		let _cx=e.clientX-elm.offsetLeft-30
 		let _cy=e.clientY-elm.offsetTop-30
-		// let _clickY
-		console.log('click',_cx,_cy)
-		// return
 		this._saveCropItem()
 		if (this.props._currentPicture.questions.length > 0) {
 			let _index = this.isCropItem(_cx,_cy)
@@ -325,7 +308,6 @@ class EditPageModal extends React.Component {
 				this.cropItemClick(_index)
 			}
 		}
-		// e.stopPropagation()
 	}
 	AddCropData () {
 		let cropSize={
@@ -385,41 +367,33 @@ class EditPageModal extends React.Component {
 		this.toShowCropBox(cx, cy, cwidth, cheight)
 
 		
-		let _area = {
-			x: _x,
-			y: _y,
-			height: _height,
-			width: _width,
-			rotate: 0
+		// let _area = {
+		// 	x: _x,
+		// 	y: _y,
+		// 	height: _height,
+		// 	width: _width,
+		// 	rotate: 0
 			
-		}
-		this.props._currentPicture.questions.push({
-			area: _area,
-			mark: 0,
-			num: this.props._currentPicture.questions.length+1,
-			pageid: this.props._currentPicture.pageId,
-			type: 0,
-			selected: true,
-			addRect: true,
-			_index:99
-		})
-		this.setState({
-			cropIndex : this.props._currentPicture.questions.length-1,
-			_currentPicture:this.props._currentPicture
-		})
+		// }
+		// this.props._currentPicture.questions.push({
+		// 	area: _area,
+		// 	mark: 0,
+		// 	num: this.props._currentPicture.questions.length+1,
+		// 	pageid: this.props._currentPicture.pageId,
+		// 	type: 0,
+		// 	selected: true,
+		// 	addRect: true,
+		// 	_index:99
+		// })
+		// this.setState({
+		// 	cropIndex : this.props._currentPicture.questions.length-1,
+		// 	_currentPicture:this.props._currentPicture
+		// })
 		console.log('new crop', this.state.cutTop, this.state.imageData)
 	}
   
 
 	checkCpicture(){
-		// if(this.state.cpindex>=0){
-
-		// 	this.state.workPages.splice(this.state.cpindex,1,this.props._currentPicture)
-		// }
-
-		this.setState({
-			workPages:this.state.workPages
-		})
 		this.props.confirmPicture(this.props._currentPicture)
 		console.log('this.state.workPages: ', this.state.workPages,this.props._currentPicture);
 	}
@@ -453,26 +427,51 @@ class EditPageModal extends React.Component {
 		//重新做排序
 		
 		this._saveCropItem()
-		let _cropArea=this.props._currentPicture.questions[_index]
-		console.log('_cropArea: ', _cropArea);
-		// console.log('this.state._currentPicture.questions: ', this.props._currentPicture.questions);
-		this.props._confirmAreaHander(_index)
-		// let _questions=this.props._currentPicture.questions
-		// this.getOrderQuestions(_questions)
+
+		this.setState({
+			imgSpingData:{
+				text:'正在处理...',
+				isShow:true
+			}
+		})
+		let _area=this.props.state._currentPicture2.questions[_index]
+		console.log('_area: ', _area,this.state._currentPicture);
+		let _areaData={
+			partId:this.props.state._currentPicture2.partId,	
+			examId:this.props.state._currentPicture2.examId,
+			qusImgUrl:_area.area.imgUrl,	
+			pointX:_area.area.x,	
+			pointY:_area.area.y,	
+			areaWidth:_area.area.width,		
+			areaHeight:_area.area.height,	
+			num:_area.num,
+		}
+		console.log('_areaData: ', _areaData);
+		// this.setState({
+		// 	// _partList:this.state._partList,
+		// 	showEditPictureModal:false
+		// })
+		this.props.dispatch({
+			type:'workManage/areaDiscern',
+			payload:{
+				data:_areaData,
+				index:this.props.index
+			}
+		}).then(res=>{
+			this.setState({
+				imgSpingData:{
+					text:'正在处理...',
+					isShow:false
+				},
+				showCropBox:false,
+				cropIndex:-1
+			})
+
+		})
+
 
 
 		//针对questions做一次新的排序
-		// let _areaReqData={
-		// 	partId:_cropArea.pageid,//分片id
-		// 	examId:10,//	int
-		// 	qusImgUrl:_cropArea.area.imgUrl,
-		// 	x:	_cropArea.area.x,
-		// 	y	:_cropArea.area.y,
-		// 	width:_cropArea.area.width,
-		// 	height:_cropArea.area.height,
-		// 	num:_cropArea.num
-		// }
-		// console.log('_cropArea: ', _cropArea,_areaReqData);
 	}
 
 	getOrderQuestions(_questions){
@@ -518,21 +517,11 @@ class EditPageModal extends React.Component {
 		return xyArray;
 }
 
-imgLoaded(url, callback) {
-  var img = new Image();
-  img.src = url;
-  if (img.complete) {
-  // 如果图片被缓存，则直接返回缓存数据
-		// callback(img);
-		this.state.imageData.originWidth=img.width
-		this.state.imageData.originHeight=img.height
-		this.state.imageData.displayImage.height=720/(img.width/img.height)
-		this.setState({
-			imageData:this.state.imageData
-		})
-		console.log('img loaded...',img.width,img.height,this.state.imageData)
-  } else {
-    img.onload = function () {
+	imgLoaded(url, callback) {
+		var img = new Image();
+		img.src = url;
+		if (img.complete) {
+		// 如果图片被缓存，则直接返回缓存数据
 			// callback(img);
 			this.state.imageData.originWidth=img.width
 			this.state.imageData.originHeight=img.height
@@ -540,12 +529,29 @@ imgLoaded(url, callback) {
 			this.setState({
 				imageData:this.state.imageData
 			})
-			console.log('img loaded...',img.width,img.height,this.state.imageData)
-    }
-  }
-}
+		} else {
+			img.onload = function () {
+				// callback(img);
+				this.state.imageData.originWidth=img.width
+				this.state.imageData.originHeight=img.height
+				this.state.imageData.displayImage.height=720/(img.width/img.height)
+				this.setState({
+					imageData:this.state.imageData
+				})
+			}
+		}
+	}
+
 	//删除指定题目
 	deleteCropQuestion(index){
+		let _currentArea=this.props.state._currentPicture2.questions[index]
+		if(!_currentArea){
+			this.setState({
+				showCropBox:false,
+				cropIndex:-1
+			})
+			return 
+		}
 
 		this.setState({
 			imgSpingData:{
@@ -561,20 +567,31 @@ imgLoaded(url, callback) {
 			}
 		}).then((res)=>{
 			if(res.code===0){
-				message.destroy()
-				message.success('题目删除成功')
 				this.props.dispatch({
 					type:'workManage/_currentPicture2',
 					payload:res.newPart
 				})
+				let newPartList=this.props.state.propsWork.partList.splice(this.props.index,1,res.newPart)
+				this.props.dispatch({
+					type:'workManage/propsWork',
+					payload:{
+						...this.props.state.propsWork,
+						partList:newPartList
+					}
+				})
+				message.destroy()
+				message.success('题目删除成功')			
+				this.setState({
+					showCropBox:false,
+					cropIndex:-1
+				})
 			}
-			
+
 			this.setState({
 				imgSpingData:{
-					text:"正在删除",
+					text:"",
 					isShow:false
-				},
-				showCropBox:false
+				}
 			})
 		})
 	}

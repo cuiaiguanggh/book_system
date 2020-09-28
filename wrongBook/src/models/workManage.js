@@ -246,11 +246,7 @@ export default {
 			// 	payload: data
 			// })
 		},
-		*areaDiscern({ payload }, { put, select }){
-			let res = yield areaDiscern(payload);
-			console.log('areaDiscern res: ', res);
 
-		},
 		*createPartAndDiscover({ payload }, { put, select }){
 			let res = yield createPartAndDiscover(payload);
 			console.log('createPartAndDiscover res: ', res);
@@ -304,17 +300,13 @@ export default {
 				
 			}
 			return res.data.data
-			console.log('examId res: ', res);
 		},
 		*addOrUpdateExamGroup({ payload }, { put, select }){
 			let res = yield updateGroup(payload);
-			
-			console.log('examId res: ', res);
 		},
 		*doCommitQuestions({ payload }, { put, select }){
 			let res = yield commitQuestions(payload);
 			
-			console.log('examId res: ', res);
 			return res
 		},
 		*doGetStudentQuestions({ payload }, { put, select }){
@@ -350,6 +342,7 @@ export default {
 				newPart
 			}
 		},
+
 		*deleteWork({ payload }, { put, select }){
 			let res = yield quesDelete(payload);
 			return res
@@ -374,6 +367,27 @@ export default {
 				message.error('识别失败:'+res.data.masg)
 			}
 			return res
+		},
+		*areaDiscern({ payload }, { put, select }){
+			let res = yield areaDiscern(payload.data);
+			if(res.data.result===0){
+				let { propsWork } = yield select(state => state.workManage)
+				propsWork.partList.splice(payload.index,1,res.data.data.partInfo)
+				
+				yield put({
+					type: 'propsWork',
+					payload: propsWork
+				})
+				yield put({
+					type: '_currentPicture2',
+					payload: initReposeData(res.data.data.partInfo)
+				})
+				message.success('操作成功！')
+			}else{
+				message.error('操作失败:'+res.data.masg)
+			}
+			return res
+
 		},
 		
 	},
