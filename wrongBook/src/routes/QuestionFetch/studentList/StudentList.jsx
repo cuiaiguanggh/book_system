@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-	Layout, Table, Modal, Select, Spin, Checkbox, Icon
+	Layout, Table, Modal, Select, Spin, Checkbox, Icon, Button
 } from 'antd';
 import { connect } from 'dva';
 import style from './studentList.less';
@@ -37,12 +37,16 @@ class HomeworkCenter extends React.Component {
 			editable: true,
 			render: (text, record) => (text)
 		}, {
-			title: <div >联系电话</div>,
+			title: <div >修改题目顺序</div>,
 			dataIndex: 'parentPhones',
 			align: 'center',
 			editable: false,
 			className:'thphone',
-			render: (text, record) => (text)
+			render: (text, record) => {
+				return(
+					<Button>修改</Button>
+				)
+			}
 		}, {
 			title: <div >请勾选一个学生按照时间查询错题</div>,
 			align: 'center',

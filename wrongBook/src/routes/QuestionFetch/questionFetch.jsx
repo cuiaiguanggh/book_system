@@ -63,17 +63,18 @@ class StuReport extends React.Component {
       }
       console.log(ele)
       if(this.props.state.saleId&&ele.userId===this.props.state.saleId){
-        if(ele.qustionlist){
-          for (let index = 0; index < ele.qustionlist.length; index++) {
-            let picid=ele.qustionlist[index].picId
-            console.log('picid: ', picid);
-            if(picid){
-              picid=picid.split('-')[1]
-              // console.log('new picid: ', picid);
-              item.uqIds.push('')
-            }
-          }
-        }
+        // if(ele.qustionlist){
+        //   for (let index = 0; index < ele.qustionlist.length; index++) {
+        //     let picid=ele.qustionlist[index].picId
+        //     console.log('picid: ', picid);
+        //     if(picid){
+        //       picid=picid.split('-')[1]
+        //       // console.log('new picid: ', picid);
+        //       item.uqIds.push(picid)
+        //     }
+        //   }
+        // }
+        item.uqIds=[]
       }else if(ele&&ele.questionHook){
         for (let key in ele.questionHook) {
           let _keys=key.split('-')
@@ -186,8 +187,10 @@ class StuReport extends React.Component {
 
   
   getQuestions=(newSubid)=>{
-    if(!this.props.state.getClassMembersFinish){
-      return console.log('正在查询...')
+    if(!this.props.state.subId){
+      message.destroy()
+      message.warn({content:'请选择学科',duration:1})
+      return
     }
     if(!this.state.currentSudent.userId){
       message.destroy()
