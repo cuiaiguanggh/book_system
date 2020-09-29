@@ -9,7 +9,7 @@ import {
 
 import {
 	areaDiscern,createWork, workList,createPartAndDiscover,workPartList,workPartInfo,examInfo,delPart,publishWork,updateWork,updateGroup,commitQuestions
-	,getStudentQuestions,wrongUsers,quesDelete,refreshPart,updatePartRemark
+	,getStudentQuestions,wrongUsers,quesDelete,refreshPart,updatePartRemark,deleteWork
 } from '../services/yukeService';
 import {initReposeData} from '../utils/ImageUploader'
 import { routerRedux } from 'dva/router';

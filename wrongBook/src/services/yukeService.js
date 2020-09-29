@@ -130,6 +130,12 @@ function updatePartRemark(payload){
         method: 'post'
     });
 }
+function deleteWork(payload){
+    return requestYk(`${burl}exam/del?token=${token}`, {
+        data: payload,
+        method: 'post'
+    });
+}
 export {
     fetchQuestions,
     getWorkList,
@@ -143,5 +149,5 @@ export {
     delPart,
     publishWork,
     updateWork,
-    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete,refreshPart,updatePartRemark
+    updateGroup,commitQuestions,getStudentQuestions,wrongUsers,quesDelete,refreshPart,updatePartRemark,deleteWork
 };
