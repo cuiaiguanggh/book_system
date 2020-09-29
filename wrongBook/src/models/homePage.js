@@ -79,10 +79,14 @@ export default {
 		nowschool: '',
 		beginGrade: 0,
 		endGrade: 0,
-		saleId:0
+		saleId:0,
+		_selectedRowkey:[]
 
 	},
 	reducers: {
+		_selectedRowkey(state, { payload }) {
+			return { ...state, _selectedRowkey: payload };
+		},
 		setSaleId(state, { payload }) {
 			return { ...state, saleId: payload };
 		},

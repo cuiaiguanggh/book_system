@@ -4,15 +4,12 @@ import {
 } from 'antd';
 
 import { connect } from 'dva';
-// import {EditableCell,EditableFormRow} from '../../components/Example'
 import style from './questionFetch.less';
 import moment from 'moment';
-// import { dataCenter } from '../../../config/dataCenter'
 import store from 'store';
 import StudentList from './studentList/StudentList'
 import * as XLSX from 'xlsx';
 import {readExcelToJson}  from '../../utils/file';
-import LoadingModal from '../../component/LoadingModal/LoadingModal'
 const { RangePicker } = DatePicker;
 
 //作业中心界面内容
@@ -41,7 +38,6 @@ class StuReport extends React.Component {
     }
   }
   timeHanderChange(dates, dateString) {
-    console.log('dateString: ', dateString);
     this.setState({
           sdate: dateString[0],
           edate: dateString[1]
@@ -65,14 +61,14 @@ class StuReport extends React.Component {
         userId:ele.userId,
         uqIds:[]
       }
+      console.log(ele)
       if(this.props.state.saleId&&ele.userId===this.props.state.saleId){
-       
         if(ele.qustionlist){
           for (let index = 0; index < ele.qustionlist.length; index++) {
             let picid=ele.qustionlist[index].picId
-            // console.log('picid: ', picid);
+            console.log('picid: ', picid);
             if(picid){
-              picid=picid.substring(5)
+              picid=picid.split('-')[1]
               // console.log('new picid: ', picid);
               item.uqIds.push('')
             }
@@ -83,7 +79,7 @@ class StuReport extends React.Component {
           let _keys=key.split('-')
 //           let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].questionId||0
           let _qid=_arr[parseInt(_keys[0])].qustionlist[parseInt(_keys[1])].picId
-          _qid=_qid.substring(5)
+          _qid=_qid.split('-')[1]
           item.uqIds.push(_qid)
         }
       }
@@ -91,7 +87,8 @@ class StuReport extends React.Component {
       item.uqIds=item.uqIds.toString()
       prdata.push(item)
     }
-    // console.log('prdata: ', prdata,JSON.stringify(prdata));
+    console.log('prdata: ', prdata,JSON.stringify(prdata));
+   // return
     this.props.dispatch({
       type: 'classHome/fetchQuestions',
       payload:  {
@@ -132,6 +129,19 @@ class StuReport extends React.Component {
         type: 3,
         classId:e.key
       }
+    }).then(()=>{
+      this.setState({
+        currentSudent:{}
+      })
+      this.props.dispatch({
+        type: 'homePage/setSaleId',
+        payload:0
+      })
+      this.props.dispatch({
+        type: 'homePage/_selectedRowkey',
+        payload: []
+      })
+      console.log('this.props.state.saleId',this.props.state.saleId)
     })
 
   }
@@ -181,7 +191,7 @@ class StuReport extends React.Component {
     }
     if(!this.state.currentSudent.userId){
       message.destroy()
-      message.warn('请选择一个要查询的学生')
+      message.warn({content:'请选择一个要查询的学生',duration:1})
       return
     }
     if(!this.state.nowclassid||!this.props.state.years||!this.props.state.subId){
@@ -196,7 +206,7 @@ class StuReport extends React.Component {
       classId: this.state.nowclassid,
       year: this.props.state.years,
       subjectId: newSubid||this.props.state.subId,
-      userId: this.state.currentSudent.userId||5035401752333312,
+      userId: this.state.currentSudent.userId,
       info: 0,
       pageSize: 9999,
       pageNum: 1,
@@ -218,7 +228,7 @@ class StuReport extends React.Component {
         })
       }else{
         message.destroy()
-        message.warn(`当前学生在这个时间段没有题目`)
+        message.warn({content:`当前学生在这个时间段没有题目`,duration:1})
         this.setState({
           questions:[]
         })

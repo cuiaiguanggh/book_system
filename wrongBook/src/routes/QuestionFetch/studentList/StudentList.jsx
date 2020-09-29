@@ -93,7 +93,12 @@ class HomeworkCenter extends React.Component {
 		let rowRadioSelection={
 			type:'radio',
 			columnTitle:"选择",
+			selectedRowKeys:this.props.state._selectedRowkey,
 			onSelect: (selectedRowKeys, selectedRows) => {
+				this.props.dispatch({
+					type: 'homePage/_selectedRowkey',
+					payload: [selectedRowKeys.userId]
+				})
 				console.log(selectedRowKeys, selectedRows)
 				this.props.selectStudentHander(selectedRowKeys,selectedRows)
 				this.props.dispatch({

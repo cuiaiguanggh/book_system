@@ -1138,7 +1138,6 @@ class StuReport extends React.Component {
       nowQuestionId:item.id,
     }
     let currentRecommend=this.state.optimizationcuotiMistakes[0]
-    console.log('优选错题: ',currentRecommend);
     if(this.state.updateRecommend){
       //替换优选错题
       data.adviseId=item.id
@@ -1151,7 +1150,7 @@ class StuReport extends React.Component {
       //   data.adviseId=currentRecommend.adviseId
       // }
     }
-    console.log('data: ', data);
+    console.log('request data: ', data);
 
     this.setState({
       currentQuestionIndex:index
