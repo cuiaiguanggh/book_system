@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Layout, Menu, Button, message, Select, Modal, Icon, Checkbox, Spin, DatePicker, Empty
+  Layout, Menu, Button, message, Select, Modal, Icon, Checkbox, Spin, DatePicker, Empty,Input,Pagination 
 } from 'antd';
 import { connect } from 'dva';
 import style from './stuReport.less';
@@ -18,10 +18,11 @@ const { RangePicker } = DatePicker;
 const {
   Header, Footer, Sider, Content,
 } = Layout;
+const { TextArea } = Input;
 const antIcon = <Icon type="loading" style={{ fontSize: 50 }} spin />;
 const confirm = Modal.confirm;
 let hei = 200;
-
+let _currentQuestion={}
 class StuReport extends React.Component {
   constructor(props) {
     super(props);
@@ -45,7 +46,21 @@ class StuReport extends React.Component {
       nowWindows: {},
       optimizationcuotiMistakes: [],
       nowRecommendId: '',
-      videoId: ''
+      videoId: '',
+      thvisilble:false,
+      quering:{
+        queryText:false,
+        queryZsd:false,
+        queryZsd1:false
+      },
+      zsds:[],
+      zsdid:-1,
+      currentPageIndex:1,
+      queryQuestionsType:'text',
+      _questionKeyword:'',
+      _zsdKeyword:'',
+      currentQuestionIndex:-1,
+      currentQuestion:{}
     }
   }
 
@@ -475,7 +490,12 @@ class StuReport extends React.Component {
                     </span>
                   </div>
                   <div style={{ padding: '20px', height: '250px', overflow: "hidden" }} onClick={() => {
+                    console.log('item: ', item);
                     if (item.picId) {
+                      this.setState({
+                        currentQuestion:item
+                      })
+                      _currentQuestion=item
                       this.props.dispatch({
                         type: 'report/recommend',
                         payload: {
@@ -486,6 +506,8 @@ class StuReport extends React.Component {
                           optimizationcuotiMistakes: res
                         })
                       })
+                    }else{
+                      message.warn('没有picid')
                     }
                     this.setState({
                       nowWindows: item,
@@ -493,8 +515,8 @@ class StuReport extends React.Component {
                       pptype: item.type
                     });
                   }}>
-
-                    {(item.title && item.type === 0) || !item.questionUrl ?
+                    {/* type==2时候也显示匹配题目 type不清楚是什么 item.title&& item.type === 0|| !item.questionUrl */}
+                    {item.title&&item.type === 0  ?
                       <div dangerouslySetInnerHTML={{ __html: item.title }} />
                       :
                       <img key={i} style={{ width: '100%' }}
@@ -960,13 +982,278 @@ class StuReport extends React.Component {
             userId: store.get('wrongBookNews').userId,
             way: 2
           }
+        }).then(res=>{
+          that.state.nowWindows.type = 2;
+          that.setState({
+            nowWindows:that.state.nowWindows
+          })
         });
+        // that.reFreshQueryQuestions()
         that.setState({ topicxy: true })
-        that.state.nowWindows.type = 1;
+       
       },
     });
   }
+  showPipei(){
+    this.props.dispatch({
+      type: 'report/doRecoverQuestion',
+      payload: {
+        uqId: this.state.nowWindows.recommendId,
+        userId: store.get('wrongBookNews').userId
+      }
+    }).then(res=>{
+      message.destroy()
+      if(res.data.result===0){
+        message.success('恢复匹配成功')
+        this.reFreshQueryQuestions()
+        this.setState({
+          visible:false,
+          topicxy:false
+        })
+      }else{
+        message.error('恢复匹配失败')
+      }
+    });
+  }
+  getZsd=()=>{
+    if(!this.state._zsdKeyword.length){
+      message.destroy()
+      message.warn('请输入要查询知识点的关键字')
+      return
+    }
+    this.setState({
+      quering:{
+        ...this.state.quering,
+        queryZsd:true
+      }
+    })
+    this.props.dispatch({
+      type:'report/getZsdByKeyWord',
+      payload:this.state._zsdKeyword
+    }).then((res)=>{
+      if(res.length){
+        this.setState({
+          zsdid:res[0].id
+        })
+      }
+      console.log(this.state.zsdid)
+      this.setState({
+        zsds:res||[]
+      })
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryZsd:false
+        }
+      })
+    })
+  }
+  queryQuestionsBy=(text,index)=>{
+    if(text==='text'){
+      if(!this.state._questionKeyword.length){
+        message.destroy()
+        message.warn('请输入要查询题目的关键字')
+        return
+      }
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryText:true
+        },
+        queryQuestionsType:'text'
+      })
+    }else{
+      if(this.state.zsdid==-1){
+        message.destroy()
+        return message.warn('请选择知识点')
+        
+      }
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryZsd1:true
+        },
+        queryQuestionsType:'zsd'
+      })
+    }
+    console.log(this.state.zsdid)
+    
+    let data={
+      
+      pageNum:index||1,
+      pageSize:20
+    }
 
+    if(text=='text') {
+      data.questionKeyword=this.state._questionKeyword
+    }else if(this.state.zsdid>-1){
+      let zsdKeyword=this.state.zsds.find((v)=>{return(v.id===this.state.zsdid)}).knowledgeName
+      data.knowledgeKeyword=zsdKeyword
+    }
+    this.props.dispatch({
+      type:"report/queryQuestionsBy",
+      payload:data
+    }).then(res=>{
+      console.log('res: ', res);
+      this.setState({
+        quering:{
+          ...this.state.quering,
+          queryText:false,
+          queryZsd1:false
+        }
+      })
+    })
+
+  }
+
+  resetThModal(){
+    console.log('resetThModal: ');
+    this.setState({
+      quering:{
+        queryText:false,
+        queryZsd:false,
+        queryZsd1:false
+      },
+      zsds:[],
+      zsdid:-1,
+      currentPageIndex:1,
+      queryQuestionsType:'text',
+      _questionKeyword:'',
+      _zsdKeyword:'',
+      currentQuestionIndex:-1,
+      // currentQuestion:{},
+    })
+    //_currentQuestion={}
+    this.props.dispatch({
+      type:'report/_questiondata',
+      payload:{
+        count:0,
+        qsList:[]
+      }
+    })
+  }
+  toUpdateOldQuestion(newquestion){
+    console.log('oldquestion...: ',_currentQuestion,this.state.nowWindows);
+    console.log('newquestion...: ',newquestion);
+    _currentQuestion.questionId=newquestion.id?newquestion.id.toString():'-1'
+    _currentQuestion.title=newquestion.title
+    _currentQuestion.parse=newquestion.parse
+    _currentQuestion.answer=newquestion.answer
+
+    this.setState({
+      nowWindows:_currentQuestion
+    })
+    this.props.dispatch({
+      type: 'report/recommend',
+      payload: {
+        uqId: _currentQuestion.picId.split('-')[1]
+      }
+    }).then((res) => {
+      this.setState({
+        optimizationcuotiMistakes: res
+      })
+    })
+  }
+  doUpdateQuestion=(item,index)=>{
+    let _cuque=_currentQuestion//this.state.currentQuestion
+    let _uqId=_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0
+    console.log('_currentQuestion: ',_currentQuestion,this.state.nowWindows);
+    console.log('new item: ',item);
+    //return
+    let data={
+      uqId:_uqId,
+      oldQuestionId:_cuque.questionId,
+      nowQuestionId:item.id,
+    }
+    let currentRecommend=this.state.optimizationcuotiMistakes[0]
+    console.log('优选错题: ',currentRecommend);
+    if(this.state.updateRecommend){
+      //替换优选错题
+      data.adviseId=item.id
+      // data.oldQuestionId=currentRecommend.questionId
+      // data.oldQuestionId=currentRecommend.questionId
+      delete data.nowQuestionId
+    }else{
+      //替换原题时候不保留优选错题
+      // if(currentRecommend&&currentRecommend.adviseId){
+      //   data.adviseId=currentRecommend.adviseId
+      // }
+    }
+    console.log('data: ', data);
+
+    this.setState({
+      currentQuestionIndex:index
+    })
+    setTimeout(() => {
+      this.props.dispatch({
+        type:"report/doUpdateQuestion",
+        payload:data
+      }).then(res=>{
+        this.setState({
+          currentQuestionIndex:-1
+        })
+
+        if(res.data.result===0){
+          //关掉model刷新页面
+          this.reFreshQueryQuestions()
+          //this.toUpdateOldQuestion(item)
+          this.setState({
+            thvisilble:false,
+            visible:false
+          })
+          message.destroy()
+          let msg='题目替换成功'
+          if(this.state.updateRecommend)msg='优选错题替换成功'
+          message.success(msg)
+        }else{
+          message.destroy()
+          message.warn('替换失败'+res.data.msg)
+  
+        }
+      })
+    }, 200);
+  }
+  reFreshQueryQuestions(){
+    let data = {
+      classId: this.props.state.classId,
+      year: this.props.state.years,
+      subjectId: this.props.state.subId,
+      userId: this.props.state.userId,
+      info: 0,
+      pageSize: 20,
+      pageNum: 1
+    }
+    //月份
+    if (this.props.state.mouNow != 0) {
+      data.month = this.props.state.mouNow.v
+    }
+    //时间段
+    if (this.props.state.stbegtoendTime.length > 0) {
+      data.startTime = this.props.state.stbegtoendTime[0];
+      data.endTime = this.props.state.stbegtoendTime[1];
+    }
+    let knowledgenow = this.props.state.knowledgenow;
+    
+    //知识点
+    if (knowledgenow.length !== 0) {
+      data.knowledgeName = knowledgenow
+    }
+    if (!data.subjectId) {
+      message.error('请选择学科');
+      return;
+    }
+    this.props.dispatch({
+      type: 'report/userQRdetail',
+      payload: data
+    });
+  }
+  changePagination=(page,pagesize)=>{
+    console.log('page,pagesize: ', page,pagesize);
+    this.setState({
+      currentPageIndex:page
+    })
+    this.queryQuestionsBy(this.state.queryQuestionsType,page)
+  }
 
   render() {
     let mounthList = this.props.state.mounthList;
@@ -974,7 +1261,7 @@ class StuReport extends React.Component {
     let studentList = this.props.state.studentList;
     let detail = this.props.state.qrdetailList1;
     let fileLink = this.props.state.pdfUrl.fileLink;
-
+    let items=[1,2,3]
     this.sfgun = detail.data && detail.data.end;
     return (
       <Content style={{ background: '#fff', minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper'>
@@ -1115,6 +1402,7 @@ class StuReport extends React.Component {
             </Content>
           </Layout>
           <Modal
+            zIndex={101}
             visible={this.state.visible}
             width={(this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy) ? '80%' : '50%'}
             className="showques"
@@ -1126,12 +1414,22 @@ class StuReport extends React.Component {
               this.setState({ visible: false, topicxy: false, })
             }}
           >
+            
             {this.state.nowWindows.title && this.state.pptype === 0 && !this.state.topicxy ?
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex',userSelect:'text' }}>
                 <div className={style.topicbox} style={{ width: '40%' }}>
-                  <h3 className={style.fonsfwc} style={{ marginBottom: 20 }}>题目
+                  <h3 className={style.fonsfwc} style={{ marginBottom: 20,height:35,lineHeight:"35px" }}>
+                    题目
+
                     <span className={style.matchingError} onClick={this.pipeicw.bind(this)}>
-                      <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错 </span></h3>
+                      <Icon theme='filled' type="exclamation-circle" style={{ color: '#C0C8CF' }} /> 题目匹配报错
+                    </span>
+
+                    <Button style={{float:"right",marginRight:15}} onClick={()=>{
+                      this.setState({thvisilble:true,updateRecommend:false})
+                    }}>替换</Button>
+
+                  </h3>
                   <div style={{ overflow: 'auto', maxHeight: '600px', minHeight: '230px' }}>
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.title }} />
                     <div className={style.leftText}>【考点】 </div>
@@ -1140,6 +1438,18 @@ class StuReport extends React.Component {
                     <div dangerouslySetInnerHTML={{ __html: this.state.nowWindows.parse }} />
                     <h2 className={style.leftText}>
                       {serverType === 0 && this.state.optimizationcuotiMistakes.length > 0 && this.state.optimizationcuotiMistakes[0].isGood === 1 ? '【优选错题】' : '优选错题'}
+                      {/* {
+                        this.state.optimizationcuotiMistakes.length>0&&this.state.optimizationcuotiMistakes[0].adviseId?
+                        <Button style={{float:"right",marginRight:15}} onClick={()=>{
+                          this.setState({thvisilble:true,updateRecommend:true})
+                        }}>替换</Button>:''
+                      } */}
+                      {
+                        true?
+                        <Button style={{float:"right",marginRight:15}} onClick={()=>{
+                          this.setState({thvisilble:true,updateRecommend:true})
+                        }}>替换</Button>:''
+                      }
                     </h2>
 
                     {this.state.optimizationcuotiMistakes.length === 0 ?
@@ -1173,6 +1483,20 @@ class StuReport extends React.Component {
                 </div>
               </div> :
               <div>
+                {
+                   this.state.nowWindows.type === 0&&this.state.nowWindows.type!=2?
+                   <div>
+                      <Button style={{float:"right",marginBottom:15}} onClick={()=>{
+                        this.setState({thvisilble:true,updateRecommend:false})
+                      }}>替换</Button>
+                  </div>:''
+                }
+                {
+                  (this.state.nowWindows.type===2||this.state.nowWindows.type===1)?
+                  <span className={style.matchingError} style={{marginBottom:10}} onClick={this.showPipei.bind(this)}>
+                    恢复匹配
+                  </span>:''
+                }
                 {this.state.nowWindows.userAnswerList && this.state.nowWindows.userAnswerList[0].answer.split(',').map((item, i) => (
                   <img key={i} style={{ width: '100%', margin: 'auto' }} src={item.indexOf('?') > 0 ? `${item}/thumbnail/1000x` : `${item}?imageMogr2/thumbnail/1000x`}></img>
                 ))}
@@ -1236,6 +1560,89 @@ class StuReport extends React.Component {
             </div>
 
           </Modal>
+
+
+
+          <Modal
+            zIndex={102}
+            maskClosable={false}
+            afterClose={()=>this.resetThModal()}
+            visible={this.state.thvisilble}
+            destroyOnClose={true}
+            footer={null}
+            style={{top:50,minWidth:950}}
+            width='950px'
+            title='选择题目替换'
+            onCancel={()=>{
+              this.setState({
+                thvisilble: false
+              })
+            }}
+            >
+            <div>
+                <div style={{display:'flex',justifyContent:'space-between'}}>
+                  <div>
+                    <TextArea 
+                      onChange={(e)=>{
+                        console.log('e: ', e,e.target.value);
+                        this.setState({
+                          _questionKeyword:e.target.value
+                        })
+                      }} 
+                      style={{width:"260px",marginRight:15,height:75}}></TextArea> 
+                    <Button loading={this.state.quering.queryText} onClick={()=>this.queryQuestionsBy('text')}>按关键字匹配</Button>
+                  </div>
+
+                  <div style={{width:350}}>
+                    <Input style={{width:"200px",marginRight:15}} placeholder='输入关键字查询知识点'
+                      onChange={(e)=>{
+                        this.setState({
+                          _zsdKeyword:e.target.value
+                        })
+                      }} 
+                    ></Input> 
+                    <Button loading={this.state.quering.queryZsd} onClick={()=>this.getZsd()}>搜索知识点</Button>
+                    <div style={{marginTop:10}}>
+                      <Select
+                          style={{ width: 200 }}
+                          placeholder="选择知识点"
+                          value={this.state.zsdid>-1?this.state.zsdid:'选择知识点'}
+                          onChange={(value)=>{
+                            this.setState({
+                              zsdid:value
+                            })
+                          }}
+                        >
+                        {this.state.zsds.length&&this.state.zsds.map(item => (
+                          <Option key={item.id} value={item.id}>{item.knowledgeName}</Option>
+                        ))}
+                      </Select>
+                      <Button style={{marginLeft:15}} onClick={()=>this.queryQuestionsBy('zsd')}> 按知识点匹配</Button>
+                    </div>
+                  </div>
+                </div>
+                <Spin spinning={this.state.quering.queryText||this.state.quering.queryZsd1}>
+                  <div style={{border:'1px solid #eee',padding:'10px',marginTop:15,maxHeight:600,overflowY:'auto',minHeight:200}}>
+                    <h3 style={{color:"#1890FF"}}>{this.props.state._questiondata.count?"请从下面的搜索结果中选择一道题，点击确定":''}</h3>
+                    {this.props.state._questiondata.count?this.props.state._questiondata.qsList.map((item,index) => (
+                        <div className='clearfix' key={item.title} style={{borderBottom:'1px solid #eee',padding:10}}>
+                          <div dangerouslySetInnerHTML={{ __html: item.title }}></div>
+                          <div>【知识点】<span>{item.knowledgeName}</span></div>
+                          <div>
+                            【答案】
+                            <div dangerouslySetInnerHTML={{ __html: item.answer }}></div>
+                          </div>
+                          <Button loading={this.state.currentQuestionIndex===index} type='primary' style={{float:'right'}} onClick={()=>this.doUpdateQuestion(item,index)}>确定</Button>
+                        </div>
+                    )):<Empty description='暂无题目'></Empty>}
+  
+                  </div>
+                </Spin>
+                <div style={{paddingTop:15}}>
+                  <Pagination  current={this.state.currentPageIndex} hideOnSinglePage={true} onChange={(page,pagesize)=>this.changePagination(page,pagesize)} total={this.props.state._questiondata.count} />
+                </div>
+            </div>
+          </Modal>
         </div>
       </Content>
     )
@@ -1289,6 +1696,7 @@ class StuReport extends React.Component {
       type: 'report/maidian',
       payload: { functionId: 7, actId: 2 }
     })
+
   }
 
   componentWillUnmount() {

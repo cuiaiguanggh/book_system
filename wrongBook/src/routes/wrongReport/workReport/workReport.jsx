@@ -632,11 +632,12 @@ class WorkReport extends React.Component {
 
   //搜索题目跳转链接
   tiaoz(picId) {
-    let wi = window.open('about:blank', '_blank');
-    this.props.dispatch({
-      type: 'report/searchLink',
-      payload: { picId, wi },
-    });
+    // let wi = window.open('about:blank', '_blank');
+    console.log(picId)
+    // this.props.dispatch({
+    //   type: 'report/searchLink',
+    //   payload: { picId, wi },
+    // });
   }
 
   //错题列表

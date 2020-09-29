@@ -91,7 +91,7 @@ class StuReport extends React.Component {
       item.uqIds=item.uqIds.toString()
       prdata.push(item)
     }
-    console.log('prdata: ', prdata,JSON.stringify(prdata));
+    // console.log('prdata: ', prdata,JSON.stringify(prdata));
     this.props.dispatch({
       type: 'classHome/fetchQuestions',
       payload:  {
