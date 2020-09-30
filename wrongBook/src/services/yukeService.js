@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-09-10 09:35:26
- * @LastEditTime: 2020-09-30 17:49:44
+ * @LastEditTime: 2020-09-30 18:08:42
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \wrongBook\src\services\yukeService.js
@@ -12,7 +12,7 @@ import requestYk from '../utils/requestYk';
 let burl = process.env.API_ENV === 't' ? "http://dayour.mizholdings.com:8080/mizhu/api/" : 'https://cloud.mizholdings.com/mizhu/api/'
 
 let burl2 = process.env.API_ENV === 't' ? "http://dayour.mizholdings.com:8080/mizhu/api/" : 'https://api.huijudi.cn/mizhu/api/'
-let burl3 = process.env.API_ENV === 't' ? "http://shfc.kacha.xin/" : 'http://shfc.kacha.xin/'
+let burl3 = process.env.API_ENV === 't' ? "https://shfc.kacha.xin/" : 'https://shfc.kacha.xin/'
 function fetchQuestions(payload) {
     return requestYk(`${burl}exam/quick?token=`, {
         data: payload,
