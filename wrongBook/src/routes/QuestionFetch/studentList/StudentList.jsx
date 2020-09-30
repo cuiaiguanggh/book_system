@@ -12,16 +12,24 @@ import locale from 'antd/es/date-picker/locale/zh_CN';
 moment.locale('zh-cn');
 const { Content } = Layout;
 const Option = Select.Option;
+let queryPage=1
+let _quecontainerScrollHeight=200
+let pageSize=50
 class HomeworkCenter extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.Ref = ref => {
+      this.questionContainerRef = ref
+    };
 		this.state = {
 			selectUser: '',
 			queModalVisible:false,
 			chilDName:'',
 			getQuestioning:true,
-			studentLoadingIndex:-1
+			studentLoadingIndex:-1,
+			hasNextPage:true,
+			quering:false
 		};
 		this.studentColum = [
 			{
@@ -41,13 +49,14 @@ class HomeworkCenter extends React.Component {
 							this.setState({
 								getQuestioning:true
 							})
+							queryPage=1
 							this.props.dispatch({
 								type: 'homePage/doQueryChilQuestions',
 								payload: {
 									subjectId: 2,
 									startTime: "2019-11-07",
-									childId: 4645964827397120||record.userId,
-									pageSize: 50,
+									childId: 4645964827397120,
+									pageSize,
 									page: 1
 								}
 							}).then((ques) => {
@@ -145,24 +154,68 @@ class HomeworkCenter extends React.Component {
 		console.log('item,index,value: ', item,index,value);
 		const key='changetime'
 		message.loading({content:'正在修改时间...',key})
+		let newDate=moment(value).format('YYYY-MM-DD HH:mm:ss')
 		this.props.dispatch({
 			type:'homePage/_updatePageDate',
 			payload:{
 				pageId:item.page,
-				date:moment(value).format('YYYY-MM-DD HH:mm:ss')
+				date:newDate
 			}
 		}).then(res=>{
+			this.props.dispatch({
+				type:'homePage/updateChangeDateSuccess',
+				payload:{
+					questions:this.props.state.childQuestionData.questions,
+					oldDate:item.uploadTime,
+					newDate
+				}
+			})
 			if(res.data.result===0){
 				message.success({content:'修改成功',key})
 			}else{
 				message.error({content:'修改失败',key})
 			}
 		})
-  }
+	}
 
+  //滚动加载错题
+	qustionsContainerScroll(e) {
+		if (_quecontainerScrollHeight-200 < e.target.scrollTop + e.target.clientHeight&&this.state.hasNextPage&&!this.state.quering) {
+			  queryPage++
+				this.setState({
+					quering:true
+				})
+				this.props.dispatch({
+					type: 'homePage/doQueryChilQuestionsNext',
+					payload: {
+						subjectId: 2,
+						startTime: "2019-11-07",
+						childId: 4645964827397120,
+						pageSize,
+						page: queryPage
+					}
+				}).then((res) => {
+					console.log('cuerrent ques: ', res,res.data.data.list.length>=pageSize);
+					if(res.data.result===0&&res.data.data.list){
+						this.setState({
+							hasNextPage:res.data.data.list.length>=pageSize
+						})
+					}else{
+						this.setState({
+							hasNextPage:false
+						})
+						queryPage=1
+					}
+					setTimeout(() => {
+						this.setState({
+							quering:false
+						})
+					}, 300);
+				})
+		}
+	}
 	render() {
 		let state = this.props.state;
-		let rodeType = store.get('wrongBookNews').rodeType;
 		let dataSource = state.classStudentList;
 		let rowRadioSelection={
 			type:'radio',
@@ -192,6 +245,8 @@ class HomeworkCenter extends React.Component {
 				children.push(<Option key={data.k}>{data.v}</Option>);
 			}
 		}
+		
+		
 		return (
 			<>
 				<Layout style={{
@@ -251,8 +306,16 @@ class HomeworkCenter extends React.Component {
 											})
 										}
 								</div>
-								<div className={style._modal_con}>
-								<div style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}>
+								<div style={{flex:"auto",paddingLeft:10}}>
+								<div 
+									style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}
+								 	ref={this.Ref}
+									onScroll={(e)=>this.qustionsContainerScroll(e)}
+									onWheel={(e) => {
+										const { scrollHeight } = this.questionContainerRef;
+										_quecontainerScrollHeight = scrollHeight;
+									}}
+								>
 									<div
 										className={style.clearfix}
 									
@@ -264,9 +327,9 @@ class HomeworkCenter extends React.Component {
 														{que.showAddTime?
 															<div className={style.time_item} style={{marginBottom:10,fontSize:15}}
 															>
-																{que.uploadTime}
-
-		
+																<span>
+																	{que.uploadTime}
+																</span>
 																<div>
 																	<DatePicker  format="YYYY-MM-DD HH:mm" width={200} panelRender={'选择时间修改'} locale={locale} showTime onOk={this.onOkTime.bind(this,que,qi)}  />
 																</div>
@@ -277,16 +340,7 @@ class HomeworkCenter extends React.Component {
 												)
 											})
 										}
-											{/* <div v-if="q.showAddTime" class="differentAddTime">{{q.uploadDate}}</div>
-											<questionitem
-												:selected='q.selected'
-												:questionUrls='q.questionUrls'
-												:teachVideo='q.teachVideo'
-												:canSelect='canSelectQuestion'
-												:collect='q.collect'
-												@onBtnClickHander='onTeacherVideoClick(q.teachVideo)'
-											>
-											</questionitem> */}
+											{/* 后期加入加载提示 */}
 
 										</div>
 									</div>

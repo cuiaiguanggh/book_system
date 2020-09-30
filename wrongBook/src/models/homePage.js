@@ -937,6 +937,7 @@ export default {
 			if(res.data.result===0){
 				if(res.data.data.list){
 					let _qdata=initQuestions(res.data.data.list)
+					console.log('_qdata: ', _qdata);
 					yield put({
 						type: 'childQuestionData',
 						payload: {
@@ -970,6 +971,26 @@ export default {
 				message.destroy()
 				message.error('查询题目失败')
 			}
+			return res
+		},
+		*updateChangeDateSuccess({ payload }, { put, select }) {
+			let {questions,oldDate,newDate}=payload
+			for (let i = 0; i < questions.length; i++) {
+				if(questions[i].uploadTime===oldDate){
+					questions[i].uploadTime=newDate
+					questions[i].timeHander=true
+				}
+				
+			}
+			let _qdata=initQuestions(questions)
+			console.log('new _qdata: ', _qdata);
+			yield put({
+				type: 'childQuestionData',
+				payload: {
+					questions:_qdata.ques,
+					times:_qdata.time
+				}
+			})
 		},
 		*_updatePageDate({ payload }, { put, select }) {
 			let res = yield updatePageDate(payload);

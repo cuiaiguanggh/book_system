@@ -1,3 +1,4 @@
+
 function noResposeDataCon(){
   return(
     <div style={{textAlign:'center',top:'25%',width:'100%',position:'relative',display:'flex',justifyContent:'center'}}>
@@ -16,7 +17,6 @@ function noResposeDataCon(){
 
 
 function initQuestions (arr) {
-  // console.log('list', arr)
   let time=[]
   let currentYear = new Date().getFullYear() + '年'
   arr.forEach(element => {
@@ -25,6 +25,7 @@ function initQuestions (arr) {
     }
   })
   arr[0].showAddTime = true
+  time.push(arr[0].uploadTime)
   for (let i = 0; i < arr.length; i++) {
     // let _questions = []
     // arr[i].questionUrls ? _questions = arr[i].questionUrls : _questions = []
@@ -38,15 +39,14 @@ function initQuestions (arr) {
     //   }
     // }
     if (i < arr.length - 1) {
-      if (arr[i].uploadDate == arr[i + 1].uploadDate) {
+      if (arr[i].uploadTime == arr[i + 1].uploadTime) {
         arr[i + 1].showAddTime = false
       } else {
-        time.push(arr[i].uploadTime)
+        time.push(arr[i+1].uploadTime)
         arr[i + 1].showAddTime = true
       }
     }
   }
-  // console.log('list1', arr)
   return {
     ques:arr,
     time
