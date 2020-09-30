@@ -30,7 +30,8 @@ class HomeworkCenter extends React.Component {
 			studentLoadingIndex:-1,
 			hasNextPage:true,
 			quering:false,
-			currentChild:{}
+			currentChild:{},
+			_currentDateIndex:0
 		};
 		this.studentColum = [
 			{
@@ -62,7 +63,8 @@ class HomeworkCenter extends React.Component {
 							}
 							this.setState({
 								getQuestioning:true,
-								currentChild:record
+								currentChild:record,
+								_currentDateIndex:0
 							})
 							queryPage=1
 							this.props.dispatch({
@@ -317,8 +319,15 @@ class HomeworkCenter extends React.Component {
 													{
 														this.props.state.childQuestionData.times.map((time,qj)=>{
 															return(
-																<div key={`${qj}`} style={{width:'100%',marginBottom:10}}>
-																	<div>{time}</div>
+																<div key={`${qj}`} style={{width:'100%',marginBottom:10}}
+																	onClick={()=>{
+																		this.setState({
+																			_currentDateIndex:qj
+																		})
+																		document.getElementById('question_con').scrollTop = document.getElementById(time).offsetTop
+																	}}
+																>
+																	<span className={this.state._currentDateIndex===qj?style.currentIndexTime:''}>{time}</span>
 																</div>
 															)
 														})
@@ -326,6 +335,7 @@ class HomeworkCenter extends React.Component {
 											</div>
 											<div style={{flex:"auto",paddingLeft:10}}>
 													<div 
+														id="question_con"
 														style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}
 														ref={this.Ref}
 														onScroll={(e)=>this.qustionsContainerScroll(e)}
@@ -343,7 +353,7 @@ class HomeworkCenter extends React.Component {
 																	return(
 																		<div key={`${qi}`} style={{marginBottom:15}}>
 																			{que.showAddTime?
-																				<div className={style.time_item} style={{marginBottom:10,fontSize:15}}
+																				<div className={style.time_item} id={que.uploadTime} style={{marginBottom:10,fontSize:15}}
 																				>
 																					<span>
 																						{que.uploadTime}
