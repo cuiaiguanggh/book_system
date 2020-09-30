@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-	Layout, Table, Modal, Select, Spin, Checkbox, Button,DatePicker, message
+	Layout, Table, Modal, Select, Spin, Checkbox, Button,DatePicker, message, Empty
 } from 'antd';
 import { connect } from 'dva';
 import style from './studentList.less';
@@ -29,7 +29,8 @@ class HomeworkCenter extends React.Component {
 			getQuestioning:true,
 			studentLoadingIndex:-1,
 			hasNextPage:true,
-			quering:false
+			quering:false,
+			currentChild:{}
 		};
 		this.studentColum = [
 			{
@@ -46,16 +47,30 @@ class HomeworkCenter extends React.Component {
 				return (
 					<span className={style.name_span}
 						onClick={()=>{
+							let msg=''
+							console.log('->',this.props.state.subId,this.props.sdate)
+							if(!this.props.state.subId){
+								msg='请选择学科'
+							}
+							if(!this.props.sdate){
+								msg='请选择时间'
+							}
+							if(msg){
+								message.destroy()
+								message.warn(msg)
+								return
+							}
 							this.setState({
-								getQuestioning:true
+								getQuestioning:true,
+								currentChild:record
 							})
 							queryPage=1
 							this.props.dispatch({
 								type: 'homePage/doQueryChilQuestions',
 								payload: {
-									subjectId: 2,
-									startTime: "2019-11-07",
-									childId: 4645964827397120,
+									subjectId: this.props.state.subId,
+									startTime: this.props.sdate,
+									childId: record.userId,
 									pageSize,
 									page: 1
 								}
@@ -188,14 +203,14 @@ class HomeworkCenter extends React.Component {
 				this.props.dispatch({
 					type: 'homePage/doQueryChilQuestionsNext',
 					payload: {
-						subjectId: 2,
-						startTime: "2019-11-07",
-						childId: 4645964827397120,
+						subjectId: this.props.state.subId,
+						startTime: this.props.sdate,
+						childId: this.state.currentChild.userId,
 						pageSize,
 						page: queryPage
 					}
 				}).then((res) => {
-					console.log('cuerrent ques: ', res,res.data.data.list.length>=pageSize);
+					console.log('cuerrent ques: ', res);
 					if(res.data.result===0&&res.data.data.list){
 						this.setState({
 							hasNextPage:res.data.data.list.length>=pageSize
@@ -294,58 +309,65 @@ class HomeworkCenter extends React.Component {
             }}
             >
 						<Spin spinning={this.state.getQuestioning}>
-							<div style={{display:'flex'}}>
-								<div className={style._modal_time} style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}>
-										{
-											this.props.state.childQuestionData.times.map((time,qj)=>{
-												return(
-													<div key={`${qj}`} style={{width:'100%',marginBottom:10}}>
-														<div>{time}</div>
-													</div>
-												)
-											})
-										}
-								</div>
-								<div style={{flex:"auto",paddingLeft:10}}>
-								<div 
-									style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}
-								 	ref={this.Ref}
-									onScroll={(e)=>this.qustionsContainerScroll(e)}
-									onWheel={(e) => {
-										const { scrollHeight } = this.questionContainerRef;
-										_quecontainerScrollHeight = scrollHeight;
-									}}
-								>
-									<div
-										className={style.clearfix}
-									
-									>
-										{
-											this.props.state.childQuestionData.questions.map((que,qi)=>{
-												return(
-													<div key={`${qi}`} style={{marginBottom:15}}>
-														{que.showAddTime?
-															<div className={style.time_item} style={{marginBottom:10,fontSize:15}}
-															>
-																<span>
-																	{que.uploadTime}
-																</span>
-																<div>
-																	<DatePicker  format="YYYY-MM-DD HH:mm" width={200} panelRender={'选择时间修改'} locale={locale} showTime onOk={this.onOkTime.bind(this,que,qi)}  />
+							<div style={{display:'flex',minHeight:150}}>
+								{
+										this.props.state.childQuestionData.times.length<=0&&this.props.state.childQuestionData.questions.length<=0?<Empty className={style.noclass} description='暂无数据' style={{ position: 'relative', top: 80, transform: 'translate(0, -50%)',margin:"auto" }} />:
+										<>
+											<div className={style._modal_time} style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}>
+													{
+														this.props.state.childQuestionData.times.map((time,qj)=>{
+															return(
+																<div key={`${qj}`} style={{width:'100%',marginBottom:10}}>
+																	<div>{time}</div>
 																</div>
-															</div>:''
+															)
+														})
+													}
+											</div>
+											<div style={{flex:"auto",paddingLeft:10}}>
+													<div 
+														style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}
+														ref={this.Ref}
+														onScroll={(e)=>this.qustionsContainerScroll(e)}
+														onWheel={(e) => {
+															const { scrollHeight } = this.questionContainerRef;
+															_quecontainerScrollHeight = scrollHeight;
+														}}
+													>
+														<div
+															className={style.clearfix}
+														
+														>
+															{
+																this.props.state.childQuestionData.questions.map((que,qi)=>{
+																	return(
+																		<div key={`${qi}`} style={{marginBottom:15}}>
+																			{que.showAddTime?
+																				<div className={style.time_item} style={{marginBottom:10,fontSize:15}}
+																				>
+																					<span>
+																						{que.uploadTime}
+																					</span>
+																					<div>
+																						<DatePicker  format="YYYY-MM-DD HH:mm" width={200} panelRender={'选择时间修改'} locale={locale} showTime onOk={this.onOkTime.bind(this,que,qi)}  />
+																					</div>
+																				</div>:''
+																				}
+																			<img style={{width:'100%'}} src={que.questionUrls} alt=""/>
+																		</div>
+																	)
+																})
 															}
-														<img style={{width:'100%'}} src={que.questionUrls} alt=""/>
-													</div>
-												)
-											})
-										}
-											{/* 后期加入加载提示 */}
+																{/* 后期加入加载提示 */}
 
-										</div>
-									</div>
-							
-								</div>
+															</div>
+														</div>
+												
+													</div>
+										</>
+								}
+
+								
 							</div>
 							
 						</Spin>
@@ -377,6 +399,7 @@ export default connect((state) => ({
 	state: {
 		...state.homePage,
 		getClassMembersFinish:state.classModel.getClassMembersFinish,
-		classStudentList:state.classModel.classStudentList
+		classStudentList:state.classModel.classStudentList,
+		subId:state.temp.subId,
 	}
 }))(HomeworkCenter);

@@ -383,8 +383,11 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-              <StudentList  current='student'  selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}
-              
+              <StudentList  
+                sdate={this.state.sdate||this.state.defaultDate}
+                edate={this.state.edate||this.state.defaultDate}
+                selectStudentHander={this.selectStudentFun.bind(this)} 
+         
               >
                 </StudentList>
                 {
