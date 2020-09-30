@@ -314,7 +314,7 @@ class HomeworkCenter extends React.Component {
             visible={this.state.queModalVisible}
             destroyOnClose={true}
             footer={null}
-            style={{top:50,minWidth:950}}
+            style={{top:30,minWidth:950}}
             width='950px'
             title={`修改时间-${this.state.chilDName}`}
             onCancel={()=>{
