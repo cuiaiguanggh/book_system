@@ -361,7 +361,13 @@ class HomeworkCenter extends React.Component {
 																						{que.uploadTime}
 																					</span>
 																					<div>
-																						<DatePicker  format="YYYY-MM-DD HH:mm:ss" width={200} panelRender={'选择时间修改'} locale={locale} showTime onOk={this.onOkTime.bind(this,que,qi)}  />
+																						<DatePicker  
+																							disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(30, 'day')}
+																							format="YYYY-MM-DD HH:mm:ss" 
+																							width={200} panelRender={'选择时间修改'} 
+																							locale={locale} showTime 
+																							onOk={this.onOkTime.bind(this,que,qi)}  
+																							/>
 																					</div>
 																				</div>:''
 																				}
