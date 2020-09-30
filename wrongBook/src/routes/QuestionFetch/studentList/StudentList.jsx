@@ -20,7 +20,8 @@ class HomeworkCenter extends React.Component {
 			selectUser: '',
 			queModalVisible:false,
 			chilDName:'',
-			getQuestioning:true
+			getQuestioning:true,
+			studentLoadingIndex:-1
 		};
 		this.studentColum = [
 			{
@@ -74,9 +75,28 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: false,
 			className:'thphone',
-			render: (text, record) => {
+			render: (text, record,index) => {
 				return(
-					<Button>修改</Button>
+					<Button 
+						loading={this.state.studentLoadingIndex===index}
+						onClick={()=>{
+							const key='loadingModel'
+							this.setState({
+								studentLoadingIndex:index
+							})
+							message.destroy()
+							message.loading({content:`正在修改【${record.userName}】的题目排序`,duration:1,key})
+
+							setTimeout(() => {
+								message.success({content:`【${record.userName}】的题目排序修改成功`,duration:1,key})
+								this.setState({
+									studentLoadingIndex:-1
+								})
+							}, 1000);
+							console.log('record: ', record);
+
+						}}>
+					修改</Button>
 				)
 			}
 		}, {

@@ -1115,29 +1115,28 @@ class StuReport extends React.Component {
     this.setState({
       nowWindows:_currentQuestion
     })
-    this.props.dispatch({
-      type: 'report/recommend',
-      payload: {
-        uqId: _currentQuestion.picId.split('-')[1]
-      }
-    }).then((res) => {
-      this.setState({
-        optimizationcuotiMistakes: res
-      })
-    })
+    // this.props.dispatch({
+    //   type: 'report/recommend',
+    //   payload: {
+    //     uqId: _currentQuestion.picId.split('-')[1]
+    //   }
+    // }).then((res) => {
+    //   this.setState({
+    //     optimizationcuotiMistakes: res
+    //   })
+    // })
   }
   doUpdateQuestion=(item,index)=>{
-    let _cuque=_currentQuestion//this.state.currentQuestion
+    let _cuque=_currentQuestion
     let _uqId=_currentQuestion.picId?_currentQuestion.picId.split('-')[1]:0
     console.log('_currentQuestion: ',_currentQuestion,this.state.nowWindows);
-    console.log('new item: ',item);
-    //return
+    console.log('new question: ',item);
     let data={
       uqId:_uqId,
       oldQuestionId:_cuque.questionId,
       nowQuestionId:item.id,
     }
-    let currentRecommend=this.state.optimizationcuotiMistakes[0]
+    // let currentRecommend=this.state.optimizationcuotiMistakes[0]
     if(this.state.updateRecommend){
       //替换优选错题
       data.adviseId=item.id
@@ -1163,21 +1162,20 @@ class StuReport extends React.Component {
         this.setState({
           currentQuestionIndex:-1
         })
-
+        message.destroy()
         if(res.data.result===0){
+          //这里题目不一定会替换成功
           //关掉model刷新页面
-          this.reFreshQueryQuestions()
-          //this.toUpdateOldQuestion(item)
+          //this.reFreshQueryQuestions()不做页面刷新
+          this.toUpdateOldQuestion(item)
           this.setState({
             thvisilble:false,
             visible:false
           })
-          message.destroy()
           let msg='题目替换成功'
           if(this.state.updateRecommend)msg='优选错题替换成功'
           message.success(msg)
         }else{
-          message.destroy()
           message.warn('替换失败'+res.data.msg)
   
         }
