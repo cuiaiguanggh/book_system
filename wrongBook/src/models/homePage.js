@@ -945,6 +945,14 @@ export default {
 							times:_qdata.time
 						}
 					})
+				}else{
+					yield put({
+						type: 'childQuestionData',
+						payload: {
+							questions:[],
+							times:[]
+						}
+					})
 				}
 			}else{
 				message.destroy()
