@@ -111,10 +111,10 @@ class HomeworkCenter extends React.Component {
 								studentLoadingIndex:index
 							})
 							message.destroy()
-							message.loading({content:`正在修改【${record.userName}】的题目排序`,duration:1,key})
+							message.loading({content:`正在修改【${record.userName}】的题目排序`,key})
 
 							setTimeout(() => {
-								message.success({content:`【${record.userName}】的题目排序修改成功`,duration:1,key})
+								message.success({content:`【${record.userName}】的题目排序修改成功`,duration:2,key})
 								this.setState({
 									studentLoadingIndex:-1
 								})
