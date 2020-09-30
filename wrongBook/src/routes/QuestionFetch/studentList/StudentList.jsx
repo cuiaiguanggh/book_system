@@ -72,7 +72,7 @@ class HomeworkCenter extends React.Component {
 							let prdata={
 								subjectId: this.props.state.subId,
 								startTime: this.props.sdate,
-								childId: this.state.currentChild.userId,
+								childId: record.userId,
 								pageSize,
 								page: queryPage
 							}
