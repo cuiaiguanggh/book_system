@@ -95,37 +95,38 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (text)
-		}, {
-			title: <div >修改题目顺序</div>,
-			dataIndex: 'parentPhones',
-			align: 'center',
-			editable: false,
-			className:'thphone',
-			render: (text, record,index) => {
-				return(
-					<Button 
-						loading={this.state.studentLoadingIndex===index}
-						onClick={()=>{
-							const key='loadingModel'
-							this.setState({
-								studentLoadingIndex:index
-							})
-							message.destroy()
-							message.loading({content:`正在修改【${record.userName}】的题目排序`,key})
+		},// {
+		// 	title: <div >修改题目顺序</div>,
+		// 	dataIndex: 'parentPhones',
+		// 	align: 'center',
+		// 	editable: false,
+		// 	className:'thphone',
+		// 	render: (text, record,index) => {
+		// 		return(
+		// 			<Button 
+		// 				loading={this.state.studentLoadingIndex===index}
+		// 				onClick={()=>{
+		// 					const key='loadingModel'
+		// 					this.setState({
+		// 						studentLoadingIndex:index
+		// 					})
+		// 					message.destroy()
+		// 					message.loading({content:`正在修改【${record.userName}】的题目排序`,key})
 
-							setTimeout(() => {
-								message.success({content:`【${record.userName}】的题目排序修改成功`,duration:2,key})
-								this.setState({
-									studentLoadingIndex:-1
-								})
-							}, 1000);
-							console.log('record: ', record);
+		// 					setTimeout(() => {
+		// 						message.success({content:`【${record.userName}】的题目排序修改成功`,duration:2,key})
+		// 						this.setState({
+		// 							studentLoadingIndex:-1
+		// 						})
+		// 					}, 1000);
+		// 					console.log('record: ', record);
 
-						}}>
-					修改</Button>
-				)
-			}
-		}, {
+		// 				}}>
+		// 			修改</Button>
+		// 		)
+		// 	}
+		 //}/
+		  {
 			title: <div >请勾选一个学生按照时间查询错题</div>,
 			align: 'center',
 			editable: false,
