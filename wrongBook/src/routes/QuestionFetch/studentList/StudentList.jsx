@@ -67,15 +67,21 @@ class HomeworkCenter extends React.Component {
 								_currentDateIndex:0
 							})
 							queryPage=1
+
+
+							let prdata={
+								subjectId: this.props.state.subId,
+								startTime: this.props.sdate,
+								childId: this.state.currentChild.userId,
+								pageSize,
+								page: queryPage
+							}
+							if(this.props.edate){
+								prdata.endTime=this.props.edate
+							}
 							this.props.dispatch({
 								type: 'homePage/doQueryChilQuestions',
-								payload: {
-									subjectId: this.props.state.subId,
-									startTime: this.props.sdate,
-									childId: record.userId,
-									pageSize,
-									page: 1
-								}
+								payload: prdata
 							}).then((ques) => {
 								this.setState({
 									getQuestioning:false
@@ -205,15 +211,19 @@ class HomeworkCenter extends React.Component {
 				this.setState({
 					quering:true
 				})
+				let prdata={
+					subjectId: this.props.state.subId,
+					startTime: this.props.sdate,
+					childId: this.state.currentChild.userId,
+					pageSize,
+					page: queryPage
+				}
+				if(this.props.edate){
+					prdata.endTime=this.props.edate
+				}
 				this.props.dispatch({
 					type: 'homePage/doQueryChilQuestionsNext',
-					payload: {
-						subjectId: this.props.state.subId,
-						startTime: this.props.sdate,
-						childId: this.state.currentChild.userId,
-						pageSize,
-						page: queryPage
-					}
+					payload: prdata
 				}).then((res) => {
 					console.log('cuerrent ques: ', res);
 					if(res.data.result===0&&res.data.data.list){
