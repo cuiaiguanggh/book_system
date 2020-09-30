@@ -125,7 +125,8 @@ class StuReport extends React.Component {
       }
     }).then(()=>{
       this.setState({
-        currentSudent:{}
+        currentSudent:{},
+        questions:[]
       })
       this.props.dispatch({
         type: 'homePage/setSaleId',
