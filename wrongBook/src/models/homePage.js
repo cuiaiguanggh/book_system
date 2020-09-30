@@ -28,8 +28,13 @@ import {
 	refundStudents,
 	addStudent,
 	changeStudent,
-	resetPassword,
+	resetPassword,queryChilQuestions
 } from '../services/homePageService';
+import {
+	updatePageDate
+} from '../services/yukeService';
+
+import {initQuestions} from '../utils/common'
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
 import store from 'store';
@@ -80,10 +85,17 @@ export default {
 		beginGrade: 0,
 		endGrade: 0,
 		saleId:0,
-		_selectedRowkey:[]
+		_selectedRowkey:[],
+		childQuestionData:{
+			questions:[],
+			times:[]
+		}
 
 	},
 	reducers: {
+		childQuestionData(state, { payload }) {
+			return { ...state, childQuestionData: payload };
+		},
 		_selectedRowkey(state, { payload }) {
 			return { ...state, _selectedRowkey: payload };
 		},
@@ -919,6 +931,50 @@ export default {
 			} else {
 				message.error(res.data.msg)
 			}
+		},
+		*doQueryChilQuestions({ payload }, { put, select }) {
+			let res = yield queryChilQuestions(payload);
+			if(res.data.result===0){
+				if(res.data.data.list){
+					let _qdata=initQuestions(res.data.data.list)
+					yield put({
+						type: 'childQuestionData',
+						payload: {
+							questions:_qdata.ques,
+							times:_qdata.time
+						}
+					})
+				}
+			}else{
+				message.destroy()
+				message.error('查询题目失败')
+			}
+		},
+		*doQueryChilQuestionsNext({ payload }, { put, select }) {
+			let res = yield queryChilQuestions(payload);
+			let { childQuestionData } = yield select(state => state.homePage);
+			if(res.data.result===0){
+				if(res.data.data.list){
+					let _ques=childQuestionData.questions.concat(res.data.data.list)
+					let _qdata=initQuestions(_ques)
+					_ques=_qdata.ques
+					yield put({
+						type: 'childQuestionData',
+						payload: {
+							questions:_qdata.ques,
+							times:_qdata.time
+						}
+					})
+				}
+			}else{
+				message.destroy()
+				message.error('查询题目失败')
+			}
+		},
+		*_updatePageDate({ payload }, { put, select }) {
+			let res = yield updatePageDate(payload);
+			
+			return res
 		},
 	},
 

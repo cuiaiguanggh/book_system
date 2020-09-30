@@ -59,8 +59,17 @@ function recoverQuestion(payload) {
         }
     })
 }
+function updatePageDate(payload) {
+    return requestYk(`${burl2}ques/updatePageDate?token=`, {
+        data: payload,
+        method: 'post',
+        headers:{
+            'Content-Type':'application/x-www-form-urlencoded'
+        }
+    })
+}
 export {
     fetchQuestions,
     queryQuestionsBy,
-    getZsd,recoverQuestion,updateQuestion
+    getZsd,recoverQuestion,updateQuestion,updatePageDate
 };

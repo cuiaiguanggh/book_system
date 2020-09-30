@@ -14,6 +14,45 @@ function noResposeDataCon(){
   )
 }
 
+
+function initQuestions (arr) {
+  // console.log('list', arr)
+  let time=[]
+  let currentYear = new Date().getFullYear() + '年'
+  arr.forEach(element => {
+    if (element.uploadDate.indexOf(currentYear) === 0) {
+      element.uploadDate = element.uploadDate.split(currentYear + '').join('')
+    }
+  })
+  arr[0].showAddTime = true
+  for (let i = 0; i < arr.length; i++) {
+    // let _questions = []
+    // arr[i].questionUrls ? _questions = arr[i].questionUrls : _questions = []
+    // if (_questions.length > 0) {
+    //   for (let j = 0; j < _questions.length; j++) {
+    //     if (arr[i].questionUrls[j].indexOf('?imageMogr2') > -1) {
+    //       arr[i].questionUrls[j] += '/?imageslim'
+    //     } else {
+    //       arr[i].questionUrls[j] += '?imageMogr2/?imageslim'
+    //     }
+    //   }
+    // }
+    if (i < arr.length - 1) {
+      if (arr[i].uploadDate == arr[i + 1].uploadDate) {
+        arr[i + 1].showAddTime = false
+      } else {
+        time.push(arr[i].uploadTime)
+        arr[i + 1].showAddTime = true
+      }
+    }
+  }
+  // console.log('list1', arr)
+  return {
+    ques:arr,
+    time
+  }
+}
+
 export  {
-	noResposeDataCon
+	noResposeDataCon,initQuestions
 } 

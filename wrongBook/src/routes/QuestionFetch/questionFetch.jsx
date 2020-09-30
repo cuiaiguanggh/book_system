@@ -8,8 +8,9 @@ import style from './questionFetch.less';
 import moment from 'moment';
 import store from 'store';
 import StudentList from './studentList/StudentList'
-import * as XLSX from 'xlsx';
+
 import {readExcelToJson}  from '../../utils/file';
+
 const { RangePicker } = DatePicker;
 
 //作业中心界面内容
@@ -34,7 +35,7 @@ class StuReport extends React.Component {
       sdate:'',
       edate:'',
       defaultDate:moment().locale('zh-cn').format('YYYY-MM-DD'),
-      excelMatching:false
+      excelMatching:false,
     }
   }
   timeHanderChange(dates, dateString) {
@@ -104,14 +105,6 @@ class StuReport extends React.Component {
   
   menuClick = (e) => {
     const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'homePage/infoClass',
-    //   payload: e.key
-    // });
-    // dispatch({
-    //   type: 'classHome/classId',
-    //   payload:  e.key
-    // })
     this.setState({
       nowclassid: e.key
     })
@@ -390,7 +383,9 @@ class StuReport extends React.Component {
                 {this.menulist()}
               </Sider>
               <Content className={style.content} ref='warpper'>
-              <StudentList  current='student'  selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}>
+              <StudentList  current='student'  selectStudentHander={this.selectStudentFun.bind(this)} location={this.props.location}
+              
+              >
                 </StudentList>
                 {
                   
@@ -424,6 +419,7 @@ class StuReport extends React.Component {
               </Content>
             </Layout>
           </div>
+         
         </Content>
       </>
     )
@@ -447,6 +443,10 @@ class StuReport extends React.Component {
         this.updateClassMembers(classId)
       }
     })
+
+
+
+    
 
   }
 

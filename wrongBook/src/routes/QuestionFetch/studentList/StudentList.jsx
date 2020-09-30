@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import {
-	Layout, Table, Modal, Select, Spin, Checkbox, Icon, Button
+	Layout, Table, Modal, Select, Spin, Checkbox, Button,DatePicker, message
 } from 'antd';
 import { connect } from 'dva';
 import style from './studentList.less';
 import store from 'store';
 import observer from '../../../utils/observer'
 import moment from 'moment';
+import 'moment/locale/zh-cn';
+import locale from 'antd/es/date-picker/locale/zh_CN';
 moment.locale('zh-cn');
-
 const { Content } = Layout;
 const Option = Select.Option;
 class HomeworkCenter extends React.Component {
@@ -17,6 +18,9 @@ class HomeworkCenter extends React.Component {
 		super(props);
 		this.state = {
 			selectUser: '',
+			queModalVisible:false,
+			chilDName:'',
+			getQuestioning:true
 		};
 		this.studentColum = [
 			{
@@ -29,7 +33,35 @@ class HomeworkCenter extends React.Component {
 			dataIndex: 'userName',
 			align: 'center',
 			editable: true,
-			render: (text, record) => (text)
+			render: (text, record) => {
+				return (
+					<span className={style.name_span}
+						onClick={()=>{
+							this.setState({
+								getQuestioning:true
+							})
+							this.props.dispatch({
+								type: 'homePage/doQueryChilQuestions',
+								payload: {
+									subjectId: 2,
+									startTime: "2019-11-07",
+									childId: 4645964827397120||record.userId,
+									pageSize: 50,
+									page: 1
+								}
+							}).then((ques) => {
+								this.setState({
+									getQuestioning:false
+								})
+							})
+							this.setState({
+								queModalVisible:true,
+								chilDName:record.userName
+							})
+						}}
+					>{text}</span>
+				)
+			}
 		}, {
 			title: '账号',
 			dataIndex: 'account',
@@ -89,6 +121,24 @@ class HomeworkCenter extends React.Component {
 			payload: _pageHomeworkDetiles
 		})
 	}
+	onOkTime(item,index,value) {
+		console.log('item,index,value: ', item,index,value);
+		const key='changetime'
+		message.loading({content:'正在修改时间...',key})
+		this.props.dispatch({
+			type:'homePage/_updatePageDate',
+			payload:{
+				pageId:item.page,
+				date:moment(value).format('YYYY-MM-DD HH:mm:ss')
+			}
+		}).then(res=>{
+			if(res.data.result===0){
+				message.success({content:'修改成功',key})
+			}else{
+				message.error({content:'修改失败',key})
+			}
+		})
+  }
 
 	render() {
 		let state = this.props.state;
@@ -149,6 +199,83 @@ class HomeworkCenter extends React.Component {
 						</div>
 					</Content>
 				</Layout >
+
+				<Modal
+            zIndex={102}
+            maskClosable={false}
+            afterClose={()=>{
+              console.log('hide')
+            }}
+            visible={this.state.queModalVisible}
+            destroyOnClose={true}
+            footer={null}
+            style={{top:50,minWidth:950}}
+            width='950px'
+            title={`修改时间-${this.state.chilDName}`}
+            onCancel={()=>{
+              this.setState({
+                queModalVisible: false
+              })
+            }}
+            >
+						<Spin spinning={this.state.getQuestioning}>
+							<div style={{display:'flex'}}>
+								<div className={style._modal_time} style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}>
+										{
+											this.props.state.childQuestionData.times.map((time,qj)=>{
+												return(
+													<div key={`${qj}`} style={{width:'100%',marginBottom:10}}>
+														<div>{time}</div>
+													</div>
+												)
+											})
+										}
+								</div>
+								<div className={style._modal_con}>
+								<div style={{padding:0,minHeight:400,overflow:'auto',maxHeight:800}}>
+									<div
+										className={style.clearfix}
+									
+									>
+										{
+											this.props.state.childQuestionData.questions.map((que,qi)=>{
+												return(
+													<div key={`${qi}`} style={{marginBottom:15}}>
+														{que.showAddTime?
+															<div className={style.time_item} style={{marginBottom:10,fontSize:15}}
+															>
+																{que.uploadTime}
+
+		
+																<div>
+																	<DatePicker  format="YYYY-MM-DD HH:mm" width={200} panelRender={'选择时间修改'} locale={locale} showTime onOk={this.onOkTime.bind(this,que,qi)}  />
+																</div>
+															</div>:''
+															}
+														<img style={{width:'100%'}} src={que.questionUrls} alt=""/>
+													</div>
+												)
+											})
+										}
+											{/* <div v-if="q.showAddTime" class="differentAddTime">{{q.uploadDate}}</div>
+											<questionitem
+												:selected='q.selected'
+												:questionUrls='q.questionUrls'
+												:teachVideo='q.teachVideo'
+												:canSelect='canSelectQuestion'
+												:collect='q.collect'
+												@onBtnClickHander='onTeacherVideoClick(q.teachVideo)'
+											>
+											</questionitem> */}
+
+										</div>
+									</div>
+							
+								</div>
+							</div>
+							
+						</Spin>
+            </Modal>
 			</>
 		);
 	}
@@ -176,7 +303,6 @@ export default connect((state) => ({
 	state: {
 		...state.homePage,
 		getClassMembersFinish:state.classModel.getClassMembersFinish,
-		classStudentList:state.classModel.classStudentList,
-		years: state.temp.years
+		classStudentList:state.classModel.classStudentList
 	}
 }))(HomeworkCenter);

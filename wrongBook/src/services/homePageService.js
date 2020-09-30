@@ -162,6 +162,13 @@ function resetPassword(payload) {
         data: payload,
     });
 }
+function queryChilQuestions(payload) {
+    return request(dataCenter('/wrongbook/questions'), {
+        data: payload,
+        method: 'get'
+    });
+}
+
 export {
     resetPassword,
     addStudent,
@@ -193,4 +200,5 @@ export {
     getEnableYears,
     batchExit,
     refundStudents,
+    queryChilQuestions
 };
