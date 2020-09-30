@@ -186,12 +186,14 @@ class HomeworkCenter extends React.Component {
 					oldDate:item.uploadTime,
 					newDate
 				}
+			}).then(()=>{
+				if(res.data.result===0){
+					message.success({content:'修改成功',key})
+				}else{
+					message.error({content:'修改失败',key})
+				}
 			})
-			if(res.data.result===0){
-				message.success({content:'修改成功',key})
-			}else{
-				message.error({content:'修改失败',key})
-			}
+			
 		})
 	}
 
