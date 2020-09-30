@@ -31,7 +31,7 @@ import {
 	resetPassword,queryChilQuestions
 } from '../services/homePageService';
 import {
-	updatePageDate
+	updatePageDate,updateQuestionsNum
 } from '../services/yukeService';
 
 import {initQuestions} from '../utils/common'
@@ -1003,6 +1003,10 @@ export default {
 		*_updatePageDate({ payload }, { put, select }) {
 			let res = yield updatePageDate(payload);
 			
+			return res
+		},
+		*_updateQuestionsNum({ payload }, { put, select }) {
+			let res = yield updateQuestionsNum(payload);
 			return res
 		},
 	},

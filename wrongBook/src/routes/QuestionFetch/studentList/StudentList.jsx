@@ -101,37 +101,50 @@ class HomeworkCenter extends React.Component {
 			align: 'center',
 			editable: true,
 			render: (text, record) => (text)
-		},// {
-		// 	title: <div >修改题目顺序</div>,
-		// 	dataIndex: 'parentPhones',
-		// 	align: 'center',
-		// 	editable: false,
-		// 	className:'thphone',
-		// 	render: (text, record,index) => {
-		// 		return(
-		// 			<Button 
-		// 				loading={this.state.studentLoadingIndex===index}
-		// 				onClick={()=>{
-		// 					const key='loadingModel'
-		// 					this.setState({
-		// 						studentLoadingIndex:index
-		// 					})
-		// 					message.destroy()
-		// 					message.loading({content:`正在修改【${record.userName}】的题目排序`,key})
+		}, {
+			title: <div >修改题目顺序</div>,
+			dataIndex: 'parentPhones',
+			align: 'center',
+			editable: false,
+			className:'thphone',
+			render: (text, record,index) => {
+				return(
+					<Button 
+						loading={this.state.studentLoadingIndex===index}
+						onClick={()=>{
+							const key='loadingModel'
+							this.setState({
+								studentLoadingIndex:index
+							})
+							message.destroy()
+							message.loading({content:`正在修改【${record.userName}】的题目排序`,key})
 
-		// 					setTimeout(() => {
-		// 						message.success({content:`【${record.userName}】的题目排序修改成功`,duration:2,key})
-		// 						this.setState({
-		// 							studentLoadingIndex:-1
-		// 						})
-		// 					}, 1000);
-		// 					console.log('record: ', record);
+							this.props.dispatch({
+								type: 'homePage/_updateQuestionsNum',
+								payload: {
+									userId:record.userId,
+									start:moment(this.props.sdate).unix()||"1601256270000"
+								}
+							}).then(res=>{
+								if(res&&res.data.success){
+									message.success({content:`【${record.userName}】的题目排序修改成功`,duration:2,key})
+								}else{
+									message.error({content:`【${record.userName}】的题目排序修改失败`,duration:2,key})
+								}
+	
+								
+								this.setState({
+									studentLoadingIndex:-1
+								})
 
-		// 				}}>
-		// 			修改</Button>
-		// 		)
-		// 	}
-		 //}/
+							})
+
+
+						}}>
+					修改</Button>
+				)
+			}
+		 },
 		  {
 			title: <div >请勾选一个学生按照时间查询错题</div>,
 			align: 'center',
@@ -414,6 +427,8 @@ class HomeworkCenter extends React.Component {
 		// 	type: 'homePage/subjectNodeList',
 		// 	payload: {}
 		// })
+
+
 	}
 	UNSAFE_componentWillMount() {
 		// this.props.dispatch({
