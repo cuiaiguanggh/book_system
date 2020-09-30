@@ -153,9 +153,9 @@ class HomeworkCenter extends React.Component {
 
 	}
 	onChangeCheck(index,i,ele){
-        console.log("HomeworkCenter -> onChangeCheck -> index,i,ele", index,i,ele)
+		console.log("HomeworkCenter -> onChangeCheck -> index,i,ele", index,i,ele)
 		let qh=ele.questionHook||{}
-        console.log("HomeworkCenter -> onChangeCheck -> qh", qh)
+		console.log("HomeworkCenter -> onChangeCheck -> qh", qh)
 		if(qh[`${index}-${i}`]){
 			delete qh[`${index}-${i}`]
 		}else{
@@ -410,6 +410,17 @@ class HomeworkCenter extends React.Component {
 		// 	type: 'homePage/tealist',
 		// 	payload: []
 		// });
+	}
+	componentWillUnmount(){
+		console.log('组件卸载...')
+		this.props.dispatch({
+			type: 'homePage/_selectedRowkey',
+			payload: []
+		})
+		this.props.dispatch({
+			type: 'homePage/setSaleId',
+			payload: 0
+		})
 	}
 
 }
