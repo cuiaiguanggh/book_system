@@ -20,8 +20,8 @@ class HomeworkCenter extends React.Component {
 	constructor(props) {
 		super(props);
 		this.Ref = ref => {
-      this.questionContainerRef = ref
-    };
+			this.questionContainerRef = ref
+		};
 		this.state = {
 			selectUser: '',
 			queModalVisible:false,
@@ -38,11 +38,12 @@ class HomeworkCenter extends React.Component {
 			{
 				title: '序号',
 				align: 'center',
-				render: (text, record, index) => `${index + 1}` // 显示每一行的序号
+				render: (record) => record.index // 显示每一行的序号
 			},
 			{
 			title: '姓名',
 			dataIndex: 'userName',
+			width:100,
 			align: 'center',
 			editable: true,
 			render: (text, record) => {
@@ -110,14 +111,14 @@ class HomeworkCenter extends React.Component {
 			dataIndex: 'account',
 			align: 'center',
 			editable: true,
-			render: (text, record) => (text)
+			render: (text) => (text)
 		}, {
 			title: <div >修改题目顺序</div>,
 			dataIndex: 'parentPhones',
 			align: 'center',
 			editable: false,
 			className:'thphone',
-			render: (text, record,index) => {
+			render: ( record,index) => {
 				return(
 					<Button 
 						loading={this.state.studentLoadingIndex===index}
@@ -157,19 +158,16 @@ class HomeworkCenter extends React.Component {
 		 },
 		  {
 			title: <div >请勾选一个学生按照时间查询错题</div>,
-			align: 'center',
-			editable: false,
-			render: (text, record,index) => {
-				return record.qustionlist?record.qustionlist.map((item, i) => {
+			align: 'left',
+			render: (record) => {
+				return record.qustionlist?record.qustionlist.map((item,i) => {
 					return (
 						<Checkbox
-							key={i}
-							checked={(record.userId&&this.props.state.saleId===record.userId)||(record.questionHook&&record.questionHook[`${index}-${i}`])}
+							key={`${i}${record.index}`}
+							checked={(record.userId&&this.props.state.saleId===record.userId)||(record.questionHook&&record.questionHook[`${record.index-1}-${i}`])}
 							disabled={record.userId&&this.props.state.saleId===record.userId}
-							onClick={(e) => {
-								e.preventDefault()
-								e.stopPropagation()
-								this.onChangeCheck(index,i,record)
+							onChange={() => {
+								this.onChangeCheck(record,i)
 							}}
 						>
 						{i+1}
@@ -181,24 +179,26 @@ class HomeworkCenter extends React.Component {
 		];
 
 	}
-	onChangeCheck(index,i,ele){
-		console.log("HomeworkCenter -> onChangeCheck -> index,i,ele", index,i,ele)
+	onChangeCheck=(ele,i)=>{
+		const index=ele.index-1
 		let qh=ele.questionHook||{}
-		console.log("HomeworkCenter -> onChangeCheck -> qh", qh)
 		if(qh[`${index}-${i}`]){
 			delete qh[`${index}-${i}`]
 		}else{
 			qh[`${index}-${i}`]=true
 		}
+		
 		let _pageHomeworkDetiles = this.props.state.classStudentList;
+		// let _index=ele.index-1
+		// _pageHomeworkDetiles[_index].qustionlist[i].selected=e.target.checked
 		_pageHomeworkDetiles[index].questionHook=qh
+		
 		this.props.dispatch({
 			type: 'classModel/classStudentList',
 			payload: _pageHomeworkDetiles
 		})
 	}
 	onOkTime(item,index,value) {
-		console.log('item,index,value: ', item,index,value);
 		const key='changetime'
 		message.loading({content:'正在修改时间...',key})
 		let newDate=moment(value).format('YYYY-MM-DD HH:mm:ss')
@@ -229,10 +229,7 @@ class HomeworkCenter extends React.Component {
 
   //滚动加载错题
 	qustionsContainerScroll(e) {
-		// console.log('log',_quecontainerScrollHeight,  e.target.scrollTop + e.target.clientHeight)
 		console.log('滚到底部?',_quecontainerScrollHeight < e.target.scrollTop + e.target.clientHeight)
-		// if(_quecontainerScrollHeight < e.target.scrollTop + e.target.clientHeight){
-		// }
 		if (_quecontainerScrollHeight< e.target.scrollTop + e.target.clientHeight&&this.state.hasNextPage&&!this.state.quering) {
 			  queryPage++
 				this.setState({
@@ -252,7 +249,6 @@ class HomeworkCenter extends React.Component {
 					type: 'homePage/doQueryChilQuestionsNext',
 					payload: prdata
 				}).then((res) => {
-					console.log('cuerrent ques: ', res);
 					if(res.data.result===0&&res.data.data.list){
 						this.setState({
 							hasNextPage:res.data.data.list.length>=pageSize
@@ -288,7 +284,6 @@ class HomeworkCenter extends React.Component {
 				num: element.newnum||element.trueNum,
 			})
 		}
-		console.log('num: ',this.props.state.childQuestionData.questions,r);
 		if(!_update){
 			this.setState({
 				updateQuenuming:false,
@@ -321,7 +316,6 @@ class HomeworkCenter extends React.Component {
 					type: 'homePage/_selectedRowkey',
 					payload: [selectedRowKeys.userId]
 				})
-				console.log(selectedRowKeys, selectedRows)
 				this.props.selectStudentHander(selectedRowKeys,selectedRows)
 				this.props.dispatch({
 					type: 'homePage/setSaleId',
@@ -330,7 +324,6 @@ class HomeworkCenter extends React.Component {
 			}
 		}
 
-		let columns = this.studentColum;
 
 		let sublist = this.props.state.sublist;
 		const children = [];
@@ -351,20 +344,20 @@ class HomeworkCenter extends React.Component {
 					<Content style={{ background:"#fff" }}>
 						<div className={style.gradeboder} >
 							<div style={{position:'relative'}}>
-								<Spin spinning={!this.props.state.getClassMembersFinish} style={{height:'100%'}}> 
-									<div className={style.table}>
-										<Table
-											rowSelection={rowRadioSelection}
-											rowKey={record => record.userId}
-											className={style.scoreDetTable}
-											dataSource={dataSource}
-											columns={columns}
-											pagination={false}
-											style={{ userSelect: 'text' }}
-											rowClassName="editable-row" />
+							<div className={style.table}>
+								<Table
+									loading={!this.props.state.getClassMembersFinish}
+									rowSelection={rowRadioSelection}
+									key={record => record.index}
+									rowKey={record => record.userId}
+									className={style.scoreDetTable}
+									dataSource={dataSource}
+									columns={this.studentColum}
+									pagination={true}
+									style={{ userSelect: 'text' }}
+									rowClassName="editable-row" />
 
-									</div>
-								</Spin>
+							</div>
 							</div>
 						</div>
 					</Content>
@@ -515,17 +508,7 @@ class HomeworkCenter extends React.Component {
 		);
 	}
 	componentDidMount() {
-		// this.props.dispatch({
-		// 	type: 'homePage/getGrade',
-		// 	payload: { schoolId: store.get('wrongBookNews').schoolId }
-		// })
-
-		// this.props.dispatch({
-		// 	type: 'homePage/subjectNodeList',
-		// 	payload: {}
-		// })
-
-
+		
 	}
 	UNSAFE_componentWillMount() {
 

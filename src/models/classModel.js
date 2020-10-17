@@ -2,12 +2,6 @@ import {
 	pageClass,
 	teacherList
 } from '../services/classHomeService';
-import {
-	fetchQuestions
-} from '../services/yukeService';
-import {
-	pageRelevantSchool
-} from '../services/homePageService';
 import { routerRedux } from 'dva/router';
 import store from 'store';
 import { message } from 'antd';
@@ -79,13 +73,6 @@ export default {
 			return _classList
 		},
 		getClassMembers: [function* ({ payload }, { put, select }) {
-			// let { getClassMembersFinish } = yield select(state => state.classModel)
-			// if(getClassMembersFinish){
-			// 	yield put({
-			// 		type: 'getClassMembersFinish',
-			// 		payload: false
-			// 	})
-			// }
 			yield put({
 				type: 'getClassMembersFinish',
 				payload: false
@@ -101,7 +88,15 @@ export default {
 			let _classStudentList=[]
 			let res = yield teacherList(data);
 			if (res.data && res.data.result === 0&&res.data.data) {
-				_classStudentList=res.data.data
+
+				_classStudentList=res.data.data.map((item,i)=>{
+                
+					return {
+						index:i+1,
+						...item
+					}
+				})
+				
 			}
 			else if (res.hasOwnProperty("err")||res.data.result === 2) {
 				yield put(routerRedux.push('/login'))
@@ -118,6 +113,7 @@ export default {
 				payload: true
 			})
 
+
 		}],
 		*initStudentList({ payload }, { put, select }) {
 			let { classStudentList } = yield select(state => state.classModel);
@@ -128,42 +124,14 @@ export default {
 					}
 					return {...item,qustionlist:payload}
 				})
+
 				yield put({
 					type: 'classStudentList',
 					payload: arr
 				})
 			}
 		},
-		*classInfo({ payload }, { put, select }) {
-			// 班级信息
-			// let res = yield classInfo(payload);
-			// if (res.hasOwnProperty("err")) {
-			// 	// yield put(routerRedux.push('/login'))
-			// } else
-			// 	if (res.data && res.data.result === 0) {
-			// 		yield put({
-			// 			type: 'classNews',
-			// 			payload: res.data
-			// 		})
-			// 		yield put({
-			// 			type: 'className',
-			// 			payload: res.data.data.className
-			// 		})
-			// 		yield put({
-			// 			type: 'classAdmin',
-			// 			payload: res.data.data.classAdmin
-			// 		})
-			// 	}
-			// 	else {
-			// 		if (res.data.result === 2) {
-			// 			yield put(routerRedux.push('/login'))
-			// 		} else if (res.data.msg == '服务器异常') {
-
-			// 		} else {
-			// 			message.error(res.data.msg)
-			// 		}
-			// 	}
-		},
+		
 		
 
 	},

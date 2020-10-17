@@ -207,14 +207,13 @@ class StuReport extends React.Component {
       info: 0,
       pageSize: 9999,
       pageNum: 1,
-      startTime:this.state.sdate||this.state.defaultDate,//'2020-06-02'||
+      startTime:this.state.sdate||this.state.defaultDate,//'2020-06-02'||'2019-01-01'||
       endTime:this.state.edate||this.state.defaultDate
     }
     this.props.dispatch({
       type: 'report/userQRdetail',
       payload: data
-    }).then(res=>{
-      console.log('res: ', res);  
+    }).then(res=>{ 
       if(res.data&&res.data.questionList&&res.data.questionList.length){
         this.setState({
           questions:res.data.questionList
@@ -358,7 +357,6 @@ class StuReport extends React.Component {
         <p>{this.state.uploadFileName||'请选择EXCEL文件导入'}</p>
       </div>
     )
-    const  subs = this.props.state.subList;
       return (
       <>
         <div className={style.whoBox}> 
@@ -374,7 +372,7 @@ class StuReport extends React.Component {
                 disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(30, 'day')}
                 onChange={this.timeHanderChange.bind(this)} />
             </div>
-            <Button style={{marginRight:'20px'}} type="primary" onClick={()=>{this.getQuestions()}} >查询</Button>
+            <Button style={{marginRight:'20px'}} type="primary"  onClick={()=>{this.getQuestions()}} >查询</Button>
             <span >{this.state.questions.length}题</span>
         </div>
         <Content style={{ minHeight: 280, overflow: 'auto', position: 'relative' }} ref='warpper' >
