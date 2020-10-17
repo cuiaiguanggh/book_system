@@ -56,6 +56,10 @@
     background: #fff;
     margin    : 0 32px 0;
     float     : left;
+    overflow-y: auto;
+   :global(.ant-spin-spinning){
+       height: 400px !important;
+   }
 }
 
 .danren {
@@ -135,7 +139,7 @@
         background-color: #fff;
         margin-top      : 10px;
         position        : relative;
-        padding         : 20px 70px 40px 70px;
+        // padding         : 20px 70px 40px 70px;
 
         img {
             float: none !important;
@@ -147,30 +151,28 @@
             margin-bottom: 20px;
         }
 
-        .topicCut {
-            position   : absolute;
-            top        : -1px;
-            right      : -1px;
-            width      : 63px;
-            height     : 38px;
-            line-height: 38px;
+        .topic_btn {
+            width      : 80px;
+            height     : 40px;
+            line-height: 40px;
             border     : 1px solid rgba(64, 158, 255, 1);
             color      : #409EFF;
             text-align : center;
             cursor     : pointer;
+            background-color: rgb(249,249,249);
+            position: relative;top:-1px;
         }
 
-        .topicChange {
+        .topicChange_box {
             position   : absolute;
-            top        : -1px;
-            right      : 83px;
-            width      : 80px;
-            height     : 38px;
-            line-height: 38px;
-            border     : 1px solid rgba(64, 158, 255, 1);
-            color      : #409EFF;
-            text-align : center;
-            cursor     : pointer;
+            top        : 0px;
+            right      : -1px;height: 40px;
+            width      : 180px;
+            background-color: rgb(249,249,249);
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+
         }
 
         .topicBottom {

@@ -1,14 +1,14 @@
 import React from 'react';
 import style from './bulkPrint.less';
 import { connect } from 'dva';
-import { Layout, InputNumber, DatePicker, Select, Icon, Checkbox, Progress, message } from 'antd';
+import { Layout, InputNumber, DatePicker, Select, Icon, Checkbox, Progress, message,Spin ,Modal,Button} from 'antd';
 import { dataCenter, dataCen } from '../../config/dataCenter'
 import store from 'store';
 import moment from 'moment';
 import observer from '../../utils/observer'
 
 const { Content } = Layout;
-
+const modal = Modal.confirm;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
@@ -31,7 +31,8 @@ class bulkPrint extends React.Component {
             showTitle: [],
             selectShowTitle: [],
             downPlan: -1,
-            editableTopic: ''
+            editableTopic: '',getPrinting:false,printByStudentQueCount:true,printByQueCount:false,printModalShow:true,
+            cancelPrinting:false
         };
 
         observer.addSubscribe('printCut', (subjectId) => {
@@ -78,11 +79,13 @@ class bulkPrint extends React.Component {
     //调用接口
     callInterface(subjectId = this.props.state.subId) {
         if (!subjectId) { return }
+
         this.setState({
             printList: [],
             selectStu: [],
             selectShowTitle: [],
-            showTitle: []
+            showTitle: [],
+            getPrinting:true
         });
         let data = {
             classId: this.props.state.classId,
@@ -156,6 +159,7 @@ class bulkPrint extends React.Component {
                 }
                 this.setState({
                     printList: res.printList,
+                    getPrinting:false
                 })
 
             }
@@ -470,16 +474,23 @@ class bulkPrint extends React.Component {
 
 
     }
+    cancelPrint(){
+        this.setState({
+            printModalShow:false,
+            cancelPrinting:true
+        })
 
+        //取消长链接..
+    }
     render() {
         let { mounthList } = this.props.state;
 
         return (
             <>
-                {this.state.downPlan !== -1 &&
+                {/* {this.state.downPlan !== -1 &&
                     <div style={{ position: 'absolute', top: 20, left: '40%', width: 200 }}>
                         <Progress percent={Math.round(this.state.downPlan)} status="active" />
-                    </div>}
+                    </div>} */}
                 <Layout>
                     <div className={style.header}>
                         <div>时间：
@@ -493,14 +504,18 @@ class bulkPrint extends React.Component {
                                         className={style.month} key={i} onClick={this.monthtime.bind(this, item)}>  {item.k}   </span>)
                             })}
 
-                            <RangePicker
-                                style={{ width: 213, marginLeft: 20 }}
-                                format="YYYY-MM-DD"
-                                placeholder={['开始时间', '结束时间']}
-                                value={this.state.dates}
-                                disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
-                                onChange={this.quantumtime.bind(this)} />
+                            <span style={{marginLeft: 20}}>
+                                创建时间：
+                                <RangePicker
+                                    style={{ width: 240,  }}
+                                    format="YYYY-MM-DD"
+                                    placeholder={['开始时间', '结束时间']}
+                                    value={this.state.dates}
+                                    disabledDate={current => current && current > moment().endOf('day') || current < moment().subtract(2, 'year')}
+                                    onChange={this.quantumtime.bind(this)} />
 
+                            </span>
+                            
                         </div>
                         <div>
                             <span> 打印对象：</span>
@@ -511,39 +526,55 @@ class bulkPrint extends React.Component {
                                 <Option value='2'>付费用户</Option>
                             </Select>
 
-                            <span style={{ margin: '0 10px 0 60px' }}> 单人题量：</span>
-                            <InputNumber min={1} value={this.state.soloNum} className={style.danren}
-                                onChange={(value) => { this.setState({ soloNum: value }) }} onBlur={() => { this.callInterface() }} />
+      
+                            <Checkbox checked={this.state.printByStudentQueCount} style={{marginLeft:30}}
+                                onChange={(e)=>{
+                                    this.setState({ printByStudentQueCount: e.target.checked,printByQueCount: !e.target.checked })
+                                }}
+                            >按学生已有错题打印</Checkbox>
+                            <span style={{marginLeft:25}}> 
+                                <Checkbox checked={this.state.printByQueCount}
+                                    onChange={(e)=>{
+                                        this.setState({ printByQueCount: e.target.checked,printByStudentQueCount: !e.target.checked })
+                                    }}
+                                >固定题量：</Checkbox>
+                                <InputNumber disabled={this.state.printByStudentQueCount} min={1} value={this.state.soloNum} className={style.danren} max={70} 
+                                onChange={(value) => { this.setState({ soloNum: value }) }} onBlur={() => { this.callInterface() }} /> 道 <span style={{marginLeft:8}}>最大70道，如不足班级错题补足</span>
+                            </span>
+                            
                         </div>
                     </div>
 
                     <Content style={{ padding: '20px 0 34px' }}>
                         <div className={style.leftBox} >
-                            <div className={`${style.leftHeader} ${style.stumargin}`}>
-                                <span style={{ marginLeft: -5 }}>
-                                    <Checkbox checked={this.state.selectStu.length&&this.state.selectStu.length === this.state.printList.length}
-                                        onClick={this.selectStuAll.bind(this)} >学生 &nbsp;</Checkbox></span>
-                                <span> 帐号</span>
-                                <span style={{ marginRight: -20 }}>已选 <span className={style.displayBox}>{this.state.soloNum}</span> 题</span>
-                            </div>
+                            <Spin spinning={this.state.getPrinting}>
+                                <div className={`${style.leftHeader} ${style.stumargin}`}>
+                                    <span style={{width:95}}>
+                                        <Checkbox checked={this.state.selectStu.length&&this.state.selectStu.length === this.state.printList.length}
+                                            onClick={this.selectStuAll.bind(this)} >学生 &nbsp;</Checkbox></span>
+                                    <span> 帐号</span>
+                                    {/* <span style={{ marginRight: -20 }}>已选 <span className={style.displayBox}>{this.state.soloNum}</span> 题</span> */}
+                                    <span >已同步错题数</span>
+                                </div>
 
-                            <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}>
-                                {this.state.printList.map((item, i) => (
-                                    <div className={style.stumargin} key={i}>
-                                        <span style={{ width: 95, height: 50 }}>
-                                            <Checkbox checked={this.state.selectStu.includes(item.userId)}
-                                                style={{
-                                                    overflow: 'hidden',
-                                                    whiteSpace: 'nowrap',
-                                                    textOverflow: 'ellipsis',
-                                                    width: '100%'
-                                                }}
-                                                onChange={this.selectStuOne.bind(this, item)}>{item.userName}</Checkbox>
-                                        </span>
-                                        <span style={{ width: '25%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}> {item.account}</span>
-                                        <span className={style.displayBox}>{item.papers.length}</span>
-                                    </div>))}
-                            </div>
+                                <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}>
+                                    {this.state.printList.map((item, i) => (
+                                        <div className={style.stumargin} key={i}>
+                                            <span style={{ width: 95, height: 50 }}>
+                                                <Checkbox checked={this.state.selectStu.includes(item.userId)}
+                                                    style={{
+                                                        overflow: 'hidden',
+                                                        whiteSpace: 'nowrap',
+                                                        textOverflow: 'ellipsis',
+                                                        width: '100%'
+                                                    }}
+                                                    onChange={this.selectStuOne.bind(this, item)}>{item.userName}</Checkbox>
+                                            </span>
+                                            <span style={{ width: '25%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}> {item.account}</span>
+                                            <span>{item.papers.length}道</span>
+                                        </div>))}
+                                </div>
+                            </Spin>
 
                         </div>
                         <div className={style.topicBox}>
@@ -562,13 +593,10 @@ class bulkPrint extends React.Component {
                                                 <div className={style.oneTopic} key={i} style={this.state.selectTopic === item ? { border: '1px solid #409EFF' } : undefined}
                                                     onClick={() => { this.setState({ selectTopic: item }) }}>
                                                     {this.state.selectTopic === item &&
-                                                        <>
-                                                            <div className={style.topicCut}
-                                                                onClick={this.changeTopic.bind(this, data, item)} >
-                                                                换一题   </div>
+                                                        <div className={style.topicChange_box}>
 
-                                                            {this.state.editableTopic === item.uqId ?
-                                                                <div className={style.topicChange}
+                                                                {this.state.editableTopic === item.uqId ?
+                                                                <div className={style.topic_btn}
                                                                     onClick={(e) => {
 
                                                                         for (let obj of this.state.showTitle) {
@@ -583,7 +611,7 @@ class bulkPrint extends React.Component {
                                                                             editableTopic: ''
                                                                         });
                                                                     }}>  确认修改 </div> :
-                                                                <div className={style.topicChange}
+                                                                <div className={style.topic_btn}
                                                                     onClick={(e) => {
                                                                         if (item.title) {
                                                                             this.setState({
@@ -592,19 +620,29 @@ class bulkPrint extends React.Component {
                                                                         }
 
                                                                     }}>  修改题目 </div>}
-
-                                                        </>
+                                                            <div className={style.topic_btn} 
+                                                                onClick={this.changeTopic.bind(this, data, item)} >
+                                                                换一题   </div>
+                                                        </div>
                                                     }
 
-                                                    <p>题目{i + 1} 知识点：{item.knowledgeName} </p>
+                                                    <p style={{background:"rgb(249 ,249 ,249)",padding:'15px 10px'}}>
+                                                        题目{i + 1} 
+                                                        <span style={{marginLeft:10}}>习题册名称：</span>
+                                                        <span style={{margin:'0 10px'}}>页码：</span>
+                                                        <span>第3道</span>
+                                                        <span style={{float:'right'}}>学段-学科：</span>
+                                                    </p>
+                                                   <div style={{padding:25}}>
                                                     {item.title ?
-                                                        < div dangerouslySetInnerHTML={{ __html: item.title }} id={item.uqId} contentEditable={this.state.editableTopic === item.uqId}
-                                                            style={{ borderBottom: '1px dashed #E7E7E7', paddingBottom: 20, marginBottom: 20 }} />
-                                                        : <img src={item.url} style={{ width: '100%' }} alt='' />}
+                                                            < div dangerouslySetInnerHTML={{ __html: item.title }} id={item.uqId} contentEditable={this.state.editableTopic === item.uqId}
+                                                                style={{ borderBottom: '1px dashed #E7E7E7', paddingBottom: 20, marginBottom: 20 }} />
+                                                            : <img src={item.url} style={{ width: '100%' }} alt='' />}
+                                                        <div>【知识点：】{item.knowledgeName}</div>
+                                                        <p>优选练习 </p>
 
-                                                    <p>优选练习 </p>
-
-                                                    <div dangerouslySetInnerHTML={{ __html: item.goodTitle }} />
+                                                        <div dangerouslySetInnerHTML={{ __html: item.goodTitle }} />
+                                                   </div>
 
                                                     <div className={style.topicBottom} >
                                                         <span className={style.delete} onClick={this.getRid.bind(this, data, item)}><Icon type="minus-circle" style={{ marginRight: 5 }} />剔除</span>
@@ -635,11 +673,40 @@ class bulkPrint extends React.Component {
                     </Content>
 
 
-                    <div className={style.printButton} onClick={this.clickPrint.bind(this)}>
+                    <div className={style.printButton} onClick={
+                        ()=>{
+                            modal({
+                                title: `确定一键打印吗？`,
+                                okText: '确认',
+                                cancelText: '取消',
+                                width: 480,
+                                icon: null,
+                                onOk:()=> {
+                                    this.clickPrint()
+                                },
+                            });
+                        }
+                        
+                        }>
                         <img src='http://homework.mizholdings.com/kacha/kcsj/562bfef7c9d97ba3/.png' style={{ marginBottom: 10 }} alt='' />
                         一<br />键<br />打<br />印  <span className={style.yuan}> {this.state.selectShowTitle.length} </span>
                     </div>
-
+                
+                    <Modal
+                        maskClosable={false}
+                        keyboard={false}
+                        title=""
+                        footer={false}
+                        closable={false}
+                        visible={this.state.printModalShow}
+                        >
+                        <div style={{display:'flex',justifyContent:'space-around',flexDirection:'column',alignItems:'center',height:170}}>
+                            <div>正在生成错题本</div>
+                            <div style={{width:300}}><Progress percent={Math.round(this.state.downPlan)} status="active" /></div>
+                            <div>请稍候，请勿随意取消生成……</div>
+                            <Button loading={this.state.cancelPrinting} style={{marginTop:10}} onClick={()=>{this.cancelPrint()}}>取消生成</Button>
+                        </div>
+                    </Modal>
                 </Layout>
             </>
         )
