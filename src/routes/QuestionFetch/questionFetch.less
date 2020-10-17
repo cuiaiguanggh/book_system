@@ -1,0 +1,189 @@
+.layout {
+    overflow: hidden;
+    position: absolute;
+    top     : 0;
+    bottom  : 0px;
+    width   : 100%;
+    padding : 15px 25px 35px;
+
+    .innerOut {
+        position: absolute;
+        top     : 20px;
+        bottom  : 20px;
+        left    : 20px;
+        right   : 20px;
+        border  : 1px solid #ebeef5;
+    }
+
+    .sider {
+        background: #fff;
+        box-shadow: 0 1px 3px #1a1a1a1a;
+        position  : relative;
+        min-width : 140px !important;
+        max-width : 140px !important;
+        width     : 140px !important;
+
+        .leftInfo {
+            position: absolute;
+            top     : 0;
+            bottom  : 0;
+            width   : 100%;
+        }
+
+        .menu {
+            position  : absolute;
+            top       : 0px;
+            bottom    : 0;
+            overflow  : auto;
+            overflow-x: hidden;
+            width     : 100%;
+        }
+    }
+
+    .content {
+        width      : 100%;
+        margin-left: 15px;
+        position   : relative;
+        background : #fff;
+        padding    : 20px;
+        box-sizing: border-box;
+        // height: calc( 100% - 50px );
+        overflow: hidden;
+        .questionBody {
+            width : 450px;
+            border: 1px solid #ebeef5;
+            margin: 10px;
+            float : left;
+
+            .questionTop {
+                background : #f5f7fa;
+                padding    : 0px 10px;
+                height     : 40px;
+                line-height: 40px;
+            }
+        }
+    }
+}
+
+.outBody {
+    overflow: hidden;
+}
+
+:global(.choseMonth) {
+    padding      : 1px 10px;
+    margin       : 5px 10px;
+    border-radius: 2px;
+    cursor       : pointer;
+}
+
+:global(.choseMonthOn) {
+    padding      : 1px 10px;
+    margin       : 5px 10px;
+    border-radius: 2px;
+    cursor       : pointer;
+    background   : #1890ff;
+    color        : #fff;
+}
+
+.classCase {
+    border: 0;
+}
+
+.daorubj {
+    text-align : center;
+    color      : #fff;
+    cursor     : pointer;
+    position   : absolute;
+    bottom     : 17px;
+    left       : 17px;
+    width      : 106px;
+    height     : 32px;
+    line-height: 32px;
+    background : #409EFF;
+}
+
+.shenjibj {
+    text-align : center;
+    color      : #595959;
+    cursor     : pointer;
+    position   : absolute;
+    bottom     : 63px;
+    left       : 17px;
+    width      : 106px;
+    height     : 30px;
+    line-height: 30px;
+    border     : 1px solid #D9D9D9;
+    background : transparent;
+
+}
+
+.explain {
+    position: absolute;
+    z-index : 1000;
+    bottom  : 45px;
+    left    : 185px;
+}
+
+:global(.shenji) {
+    :global(.ant-modal-header) {
+        border: 0;
+    }
+
+    :global(.ant-modal-footer) {
+        border: 0;
+    }
+
+    .title {
+        font-size  : 14px;
+        font-weight: 400;
+        color      : rgba(96, 98, 102, 1);
+    }
+
+    .bottom {
+        font-size  : 14px;
+        font-weight: 400;
+        color      : rgba(153, 153, 153, 1);
+        margin     : 25px 0 0 0;
+    }
+}
+
+.whoBox{
+    position: absolute;
+    left    : 70px;
+    top: 0px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+}
+.whoBox>:global(.ant-spin-nested-loading) {
+    display: flex;
+    align-items: center;
+}
+.queFetchFooter{
+    height:40px ;
+    // position: absolute;
+    // bottom: 10px;
+    // // border-top:1px solid #ccc;
+    // right: 20px;
+    float: right;
+    margin-top: 20px;
+}
+.fetchBtn{
+    position: relative;
+    overflow: hidden;
+    margin-right:15px;
+}
+.fetchBtn input{
+    position: absolute;
+    left:0;
+    top:0;
+    width:100%;height: 100%;
+    opacity: 0;z-index: 1;
+}
+:global(.ant-spin-nested-loading){
+    height: 100%;
+}
+.noclass :global(.ant-empty-image svg){
+    width: 100%;
+}
+

@@ -1,0 +1,66 @@
+.bigBox {
+    position: fixed;
+    height  : 220px;
+    z-index : 100;
+
+    &:hover {
+        .left {
+            display: block;
+        }
+    }
+}
+
+.left {
+    width     : 185px;
+    float     : left;
+    border    : 1px solid rgba(64, 158, 255, 1);
+    background: #fff;
+    height    : 100%;
+    display   : none;
+
+    .qkong {
+        font-size : 12px;
+        color     : #83878D;
+        text-align: center;
+        margin-top: 50px;
+        cursor    : pointer;
+
+    }
+
+    .yulang {
+        width        : 130px;
+        height       : 30px;
+        line-height  : 30px;
+        background   : rgba(64, 158, 255, 1);
+        border-radius: 3px;
+        color        : #FFFFFF;
+        text-align   : center;
+        margin       : 10px auto 0;
+        cursor       : pointer;
+        display      : block;
+    }
+}
+
+.right {
+    width          : 50px;
+    float          : right;
+    background     : rgba(64, 158, 255, 1);
+    display        : flex;
+    flex-direction : column;
+    justify-content: center;
+    align-items    : center;
+    cursor         : pointer;
+    height         : 100%;
+    color          : #fff;
+
+    .yuan {
+        width        : 30px;
+        height       : 30px;
+        background   : rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        font-size    : 15px;
+        text-align   : center;
+        line-height  : 30px;
+        margin-top   : 15px;
+    }
+}

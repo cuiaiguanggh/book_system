@@ -1,0 +1,1227 @@
+.layoutHead {
+  background : #fff;
+  padding    : 0 20px;
+  height     : auto;
+  line-height: 50px
+}
+
+.headTop {
+  background: #fff;
+  height    : 50px;
+  padding   : 0px;
+  position  : absolute;
+  left      : 70px;
+}
+
+
+.innerOut {
+  position       : absolute;
+  top            : 0px;
+  bottom         : 0;
+  padding        : 20px 0 10px;
+  width          : 100%;
+  justify-content: center;
+}
+
+.left {
+  height        : 100%;
+  min-width     : 240px !important;
+  background    : rgba(255, 255, 255, 1);
+  padding-bottom: 25px;
+  font-weight   : 400;
+  position      : relative;
+
+  .submitBox {
+    position     : relative;
+    text-align   : center;
+    line-height  : 32px;
+    margin       : 20px auto 0;
+    width        : 180px;
+    height       : 32px;
+    background   : #F3F3F3;
+    border       : 1px solid rgba(225, 225, 225, 1);
+    border-radius: 17px;
+    color        : #6A6A6A;
+
+    .refer {
+      width        : 90px;
+      border-radius: 16px;
+      position     : absolute;
+    }
+
+    .norefer {
+      width        : 90px;
+      border-radius: 16px;
+      position     : absolute;
+      left         : 90px;
+    }
+
+    .pitchButt {
+      background: rgba(64, 158, 255, 1);
+      z-index   : 2;
+      color     : rgba(255, 255, 255, 1);
+
+    }
+  }
+
+  .daochu {
+    width        : 180px;
+    height       : 36px;
+    background   : rgba(232, 244, 255, 1);
+    border       : 1px solid rgba(209, 233, 255, 1);
+    border-radius: 4px;
+    color        : rgba(64, 158, 255, 1);
+    line-height  : 36px;
+    text-align   : center;
+    position     : absolute;
+    bottom       : 13px;
+    left         : 30px;
+    cursor       : pointer;
+  }
+
+  .noClick {
+    color     : rgba(144, 147, 153, 1);
+    background: rgba(244, 244, 245, 1);
+    border    : 1px solid rgba(233, 233, 235, 1);
+    cursor    : no-drop;
+  }
+
+  .dataDisplay {
+    font-size      : 16px;
+    height         : 60px;
+    border-bottom  : 1px solid #E7E7E7;
+    display        : flex;
+    flex-direction : column;
+    justify-content: center;
+    padding-left   : 30px;
+  }
+
+  .stuname {
+    float   : left;
+    position: relative;
+  }
+
+  .resubmissions {
+    width        : 42px;
+    height       : 21px;
+    background   : #fdf9ec;
+    border-radius: 3px;
+    color        : #ffbf00;
+    line-height  : 21px;
+    text-align   : center;
+    margin-left  : 18px;
+  }
+
+  .leftTop {
+    margin-top    : 20px;
+    padding-left  : 30px;
+    display       : flex;
+    align-items   : center;
+    padding-bottom: 10px;
+
+    .text {
+      font-size  : 16px;
+      color      : rgba(51, 51, 51, 1);
+      margin-left: 8px;
+    }
+  }
+
+  .stu {
+    padding      : 0 20px 0 30px;
+    font-size    : 14px;
+    color        : #4D4D4D;
+    height       : 36px;
+    line-height  : 36px;
+    text-overflow: ellipsis;
+    white-space  : nowrap;
+  }
+
+  .pitch {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(242, 250, 253, 1);
+    }
+  }
+
+  .xuanzhong {
+    background: #F5F7FA;
+  }
+
+  .already {
+    color: #13CE66;
+  }
+
+  .remind {
+    width        : 61px;
+    height       : 21px;
+    background   : rgba(255, 146, 0, 1);
+    border-radius: 5px;
+    font-size    : 12px;
+    color        : rgba(255, 255, 255, 1);
+    line-height  : 21px;
+    margin-left  : 19px;
+    display      : inline-block;
+    text-align   : center;
+    cursor       : pointer;
+  }
+
+}
+
+
+.correction {
+  height     : 100%;
+  background : rgba(255, 255, 255, 1);
+  margin-left: 20px;
+  position   : relative;
+  overflow   : auto;
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(209, 209, 209, 0.5);
+    height          : 25px;
+    border-radius   : 0px;
+    width           : 15px;
+  }
+
+  &::-webkit-scrollbar {
+    width: 15px;
+    /* 纵向滚动条*/
+    height: 15px;
+    /* 横向滚动条 */
+    background-color: #fff;
+  }
+
+  .allfinish {
+    text-align: center;
+    margin-top: 10%;
+
+    .textfinish {
+      font-size : 24px;
+      color     : rgb(38, 38, 38);
+      margin-top: 30px;
+    }
+
+    .boxfinish {
+      width          : 60%;
+      height         : 218px;
+      background     : rgba(248, 249, 251, 1);
+      border-radius  : 10px;
+      margin         : 40px auto 30px;
+      display        : flex;
+      justify-content: space-around;
+      align-items    : center;
+
+      .inbox {
+        display       : flex;
+        flex-direction: column;
+        width         : 50%;
+      }
+
+      .finumber {
+        font-family: BebasNeue;
+        font-size  : 48px;
+        color      : #6E89A0;
+        font-weight: Regular;
+      }
+
+      .finhanzi {
+        font-family: PingFang-SC-Bold;
+        font-size  : 26px;
+        color      : #B1C1D1;
+        font-weight: Bold;
+      }
+
+      .zishu {
+        font-size  : 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color      : rgba(77, 77, 77, 1);
+      }
+
+    }
+  }
+
+}
+
+.checkPicture {
+  width: 100%;
+
+
+  .imgtop {
+    height     : 50px;
+    line-height: 50px;
+    font-weight: bold;
+    font-size  : 16px;
+    text-align : center;
+    position   : relative;
+    background : #fff;
+  }
+
+  .allTrue {
+    width      : 85px;
+    height     : 30px;
+    background : #C7CACD;
+    color      : #fff;
+    line-height: 30px;
+    display    : inline-block;
+
+  }
+
+  .changesize {
+    float       : right;
+    margin-right: 10px;
+    display     : flex;
+    align-items : center;
+    position    : relative;
+
+    .suobox {
+      line-height: 25px;
+
+      .suo {
+        display      : none;
+        font-size    : 16px;
+        color        : #eff1f5;
+        width        : 58px;
+        height       : 33px;
+        background   : rgba(0, 0, 0, 0.5);
+        border-radius: 3px;
+        text-align   : center;
+        position     : absolute;
+        bottom       : -29px;
+        left         : -16px;
+        line-height  : 33px;
+        font-weight  : 400;
+        z-index      : 20;
+
+      }
+
+      &:hover {
+        i {
+          color: #409EFF;
+        }
+
+        .suo {
+          display: block;
+        }
+      }
+    }
+
+    .fangbox {
+      line-height: 25px;
+
+      .fang {
+        display      : none;
+        font-size    : 16px;
+        color        : #eff1f5;
+        width        : 58px;
+        height       : 33px;
+        background   : rgba(0, 0, 0, 0.5);
+        border-radius: 3px;
+        text-align   : center;
+        position     : absolute;
+        bottom       : -29px;
+        left         : 45px;
+        line-height  : 33px;
+        font-weight  : 400;
+        z-index      : 20;
+      }
+
+
+      &:hover {
+        i {
+          color: #409EFF;
+        }
+
+        .fang {
+          display: block;
+        }
+      }
+
+    }
+
+
+    .numberx {
+      font-size: 18px;
+      margin   : 0 10px;
+    }
+
+
+    i {
+      font-size: 25px;
+      cursor   : pointer;
+    }
+  }
+
+  .leftCut {
+    &:hover {
+      background: url('../images/blueleft.png') no-repeat center;
+    }
+
+    margin    : 12px 3% 0px 0px;
+    cursor    : pointer;
+    float     : right;
+    width     :16px;
+    height    :22px;
+    background: url('../images/left.png') no-repeat center;
+  }
+
+  .rightCut {
+    &:hover {
+      background: url('../images/blueright.png') no-repeat center;
+    }
+
+    margin    : 12px 3% 0px 0px;
+    cursor    : pointer;
+    float     : right;
+    width     :16px;
+    height    :22px;
+    background: url('../images/right.png') no-repeat center;
+  }
+
+  .fangda {
+    &:hover {
+      background: url('../images/bluefangda.png') no-repeat center;
+    }
+
+    cursor    : pointer;
+    float     : right;
+    margin    : 10px 3% 0px 0px;
+    width     : 26px;
+    height    : 26px;
+    background: url('../images/fangda.png') no-repeat center;
+  }
+
+  .quandui {
+    font-size  : 16px;
+    font-family: PingFang-SC-Medium;
+    font-weight: 500;
+    color      : rgba(109, 116, 126, 1);
+    float      : right;
+    cursor     : pointer;
+    padding    : 0 25px;
+    border-left: 2px solid #6D747E;
+    height     : 15px;
+    margin-top : 15px;
+    line-height: 15px;
+
+    &:hover {
+      color: rgba(62, 159, 255, 1);
+    }
+  }
+
+  .xuanzhuang {
+    &:hover {
+      .hintText {
+        display: block;
+      }
+
+      background: url('../images/bluerotate.png') no-repeat center;
+    }
+
+    position  : relative;
+    cursor    : pointer;
+    float     : right;
+    margin    : 10px 5% 0px 0px;
+    width     : 26px;
+    height    : 26px;
+    background: url('../images/rotate.png') no-repeat center;
+  }
+
+
+  .AtextBox {
+    float : right;
+    width : 25px;
+    height: 32px;
+    margin: 13px 5% 0px 0px;
+
+    &:hover {
+      // .triangle {
+      //   display: block;
+      // }
+
+      // .drawType {
+      //   display: flex;
+      // }
+
+      .Atext {
+        background: url('../images/Ahover.png') no-repeat center;
+      }
+
+    }
+  }
+
+  .Atext {
+    &.nowSelect {
+      background: url('../images/Ahover.png') no-repeat center;
+    }
+
+    &:hover {
+      background: url('../images/Ahover.png') no-repeat center;
+    }
+
+
+    position   : relative;
+    cursor     : pointer;
+    width      : 22px;
+    height     : 22px;
+    background : url('../images/Adefault.png') no-repeat center;
+
+    .nowSelect {
+      color: #409EFF
+    }
+
+    .triangle {
+      display           : none;
+      border            : 8px solid #fff;
+      position          : absolute;
+      top               : 35px;
+      border-left-color : transparent;
+      border-top-color  : transparent;
+      border-right-color: transparent;
+      left              : 2px;
+    }
+
+    // .drawType {
+    //   width          : 120px;
+    //   height         : 40px;
+    //   background     : rgba(255, 255, 255, 1);
+    //   box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+    //   border-radius  : 5px;
+    //   position       : absolute;
+    //   top            : 50px;
+    //   left           : -45px;
+    //   justify-content: center;
+    //   align-items    : center;
+    //   display        : none;
+    //   font-size      : 14px;
+
+    //   span:hover {
+    //     color: #409EFF
+    //   }
+    // }
+
+
+  }
+
+  .trash {
+
+    &.nowSelect {
+      background: url('../images/blueTrash.png') no-repeat center;
+    }
+
+
+    &:hover {
+      .hintText {
+        display: block;
+      }
+
+      background: url('../images/blueTrash.png') no-repeat center;
+    }
+
+    cursor    : pointer;
+    float     : right;
+    margin    : 10px 5% 0px 0px;
+    width     : 27px;
+    height    : 27px;
+    background: url('../images/trash.png') no-repeat center;
+    position  : relative;
+  }
+
+  .circleBox {
+    float : right;
+    width : 24px;
+    height: 35px;
+    margin: 10px 5% 0px 0px;
+
+    &:hover {
+      .triangle {
+        display: block;
+      }
+
+      // .drawType {
+      //   display: flex;
+      // }
+
+      .circle {
+        background: url('../images/blueFang.png') no-repeat center;
+      }
+
+
+      // .circle.box {
+      //   background: url('../images/blueSide.png') no-repeat center;
+      // }
+
+      .circle.tilde {
+        background: url('../images/blueTilde.png') no-repeat center;
+      }
+
+      .circle.line {
+        background: url('../images/blueLine.png') no-repeat center;
+      }
+
+    }
+
+  }
+
+  .circle {
+    width          : 24px;
+    height         : 24px;
+    cursor         : pointer;
+    position       : relative;
+    background     : url('../images/fang.png') no-repeat center;
+
+    // &.box {
+    //   background: url('../images/side.png') no-repeat center;
+    // }
+
+    &.tilde {
+      background: url('../images/side.png') no-repeat center;
+    }
+
+    &.line {
+      background: url('../images/line.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background     : url('../images/blueFang.png') no-repeat center;
+    }
+
+    &.nowSelect.line {
+      background: url('../images/blueLine.png') no-repeat center;
+    }
+
+    &.nowSelect.tilde {
+      background: url('../images/blueTilde.png') no-repeat center;
+    }
+
+    // .triangle {
+    //   display           : none;
+    //   border            : 8px solid #fff;
+    //   position          : absolute;
+    //   top               : 35px;
+    //   border-left-color : transparent;
+    //   border-top-color  : transparent;
+    //   border-right-color: transparent;
+    //   left              : 2px;
+    // }
+
+    // .drawType {
+    //   width          : 120px;
+    //   height         : 40px;
+    //   background     : rgba(255, 255, 255, 1);
+    //   box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+    //   border-radius  : 5px;
+    //   position       : absolute;
+    //   top            : 50px;
+    //   left           : -45px;
+    //   justify-content: center;
+    //   align-items    : center;
+    //   display        : none;
+
+    //   .littleBox {
+    //     width     : 15px;
+    //     height    : 15px;
+    //     background: url('../images/side.png') no-repeat center;
+
+    //     &:hover {
+    //       background: url('../images/blueSide.png') no-repeat center;
+    //     }
+
+    //     &.nowSelect {
+    //       background: url('../images/blueSide.png') no-repeat center;
+    //     }
+    //   }
+
+    //   .line {
+    //     background: url('../images/line.png') no-repeat center;
+    //     width     : 22px;
+    //     height    : 22px;
+    //     display   : inline-block;
+    //     margin    : 0 14px;
+
+    //     &:hover {
+    //       background: url('../images/blueLine.png') no-repeat center;
+    //     }
+
+    //     &.nowSelect {
+    //       background: url('../images/blueLine.png') no-repeat center;
+    //     }
+
+    //   }
+
+    //   .tilde {
+    //     background: url('../images/tilde.png') no-repeat center;
+    //     width     : 22px;
+    //     height    : 22px;
+    //     display   : inline-block;
+
+    //     &:hover {
+    //       background: url('../images/blueTilde.png') no-repeat center;
+    //     }
+
+    //     &.nowSelect {
+    //       background: url('../images/blueTilde.png') no-repeat center;
+    //     }
+
+    //   }
+
+    // }
+
+  }
+
+
+
+  .defaultIcon {
+
+
+    &.nowSelect {
+      background: url('../images/blueDefaultIcon.png') no-repeat center;
+    }
+
+    &:hover {
+      .hintText {
+        display: block;
+      }
+
+      background: url('../images/blueDefaultIcon.png') no-repeat center;
+    }
+
+    cursor    : pointer;
+    float     : right;
+    margin    : 10px 5% 0px 0px;
+    width     : 27px;
+    height    : 27px;
+    background: url('../images/defaultIcon.png') no-repeat center;
+    position  : relative;
+  }
+
+  .hintText {
+    display      : none;
+    font-size    : 16px;
+    color        : #eff1f5;
+    width        : 58px;
+    height       : 33px;
+    background   : rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    text-align   : center;
+    position     : absolute;
+    bottom       : -40px;
+    right        : -18px;
+    line-height  : 33px;
+    font-weight  : 400;
+    z-index      : 20;
+  }
+
+  .dagou {
+    position : absolute;
+    z-index  : 5;
+    left     : 50%;
+    top      : 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .verygood {
+    position: absolute;
+    right   : 0;
+    top     : 0;
+  }
+
+  .level {
+    position: absolute;
+    right   : 0;
+    top     : 0;
+  }
+
+  .nowImg {
+    position  : relative;
+    cursor    : url('../images/faultMouse.png') 17 17, pointer;
+    width     : 100%;
+    overflow  : hidden;
+    margin-top: 50px;
+  }
+
+  .clearImg {
+    cursor: url('../images/trash.png') 12 12, pointer !important;
+  }
+
+  .textOutBox {
+    position: absolute;
+    color   : rgba(255, 0, 0, 1);
+    border  : 1px solid;
+    overflow: hidden;
+    z-index : 20;
+  }
+
+  .textBox {
+    // position        : absolute;
+    background         : transparent;
+    // color           : rgba(255, 0, 0, 1);
+    // border          : 1px solid;
+    // overflow        : hidden;
+    // cursor          : default;
+  }
+
+  .rectangle {
+    position     : absolute;
+    border       : 2px solid rgba(255, 0, 0, 1);
+    border-radius: 5px;
+  }
+
+  .circleLine {
+    position  : absolute;
+    background: url('../images/lineTwo.png') center repeat-x;
+    background: radial-gradient(circle, red, red) repeat-x;
+  }
+
+  .circleTilde {
+    position                 : absolute;
+    background               : url('../images/tildeTwo.png') center repeat-x;
+    // background            : radial-gradient(circle at 10px -9px, transparent 8px, red 8px, red 11px, transparent 10px) repeat-x, radial-gradient(circle at 10px 27px, transparent 8px, red 8px, red 10px, transparent 10px) repeat-x;
+    // background-size       : 20px 20px;
+    // background-position   : 10px 3px, 0px -17px;
+
+  }
+
+
+
+}
+
+.checkCuo {
+  position   : absolute;
+  cursor     : url('../images/correctMouse.png') 17 17, pointer;
+  // padding : 20px;
+  z-index    : 10;
+  transform  : translate(-50%, -50%);
+}
+
+.checkDui {
+  position   : absolute;
+  cursor     : pointer;
+  // padding : 20px;
+  cursor     : url('../images/rightMouse.png') 17 17, pointer;
+  z-index    : 10;
+  transform  : translate(-50%, -50%);
+
+}
+
+.anniu {
+  display        : flex;
+  flex-direction : column;
+  justify-content: flex-end;
+  margin-top     : 20px;
+
+  .tishi {
+    width        : 30px;
+    height       : 30px;
+    cursor       : pointer;
+    border-radius: 50%;
+    font-size    : 21px;
+    font-weight  : bold;
+    color        : rgba(255, 255, 255, 1);
+    line-height  : 30px;
+    text-align   : center;
+    margin       : 0 0 20px 23px;
+    position     : relative;
+    background   : url('../images/tintMark.png') no-repeat center;
+    z-index      : 20;
+    // &         :hover {
+    //   background: url('../images/blueHint.png') no-repeat center;
+    // }
+
+    .triangle {
+      position           : absolute;
+      border             : 9px solid #5393FF;
+      border-top-color   : transparent;
+      border-right-color : transparent;
+      border-bottom-color: transparent;
+      top                : 5px;
+      right              : 30px;
+    }
+
+    .howbutton {
+      width        : 102px;
+      height       : 35px;
+      background   : #5494ff;
+      border-radius: 2px;
+      font-size    : 14px;
+      font-weight  : 400;
+      color        : #fff;
+      text-align   : center;
+      line-height  : 35px;
+      margin       : 20px auto 0;
+      cursor       : pointer;
+    }
+
+    .howdoit {
+      width        : 370px;
+      height       : 500px;
+      background   : rgba(255, 255, 255, 1);
+      border       : 1px solid rgba(83, 147, 255, 1);
+      border-radius: 10px;
+      font-size    : 15.5px;
+      position     : absolute;
+      top          : -400px;
+      right        : 48px;
+      color        : #474747;
+      font-weight  : 400;
+      padding      : 0 25px;
+      text-align   : left;
+      line-height  : 26px;
+      cursor       : auto;
+      z-index      : 10;
+
+      .howtitle {
+        color        : rgba(0, 0, 0, 1);
+        line-height  : 60px;
+        border-bottom: 1px solid #EEEEEE;
+        text-align   : center;
+        margin-bottom: 10px;
+      }
+
+    }
+  }
+
+
+  .tishiOnce {
+    position: relative;
+    z-index : 20;
+
+    .whiteTriangle {
+      position           : absolute;
+      border             : 9px solid rgba(255, 255, 255, 1);
+      border-top-color   : transparent;
+      border-right-color : transparent;
+      border-bottom-color: transparent;
+      top                : 30px;
+      right              : 250px;
+      z-index            : 10;
+    }
+
+    .content {
+      font-size    : 20px;
+      font-weight  : 400;
+      position     : absolute;
+      width        : 470px;
+      height       : 175px;
+      background   : rgba(255, 255, 255, 1);
+      box-shadow   : 0px 10px 28px 1px rgba(0, 0, 0, 0.35);
+      border-radius: 5px;
+      padding      : 25px 50px 0px 20px;
+      right        : 268px;
+      top          : -30px;
+    }
+
+  }
+
+  .jobEvaluation {
+    width          : 80px;
+    height         : 80px;
+    background     : #8AC1FB;
+    color          : rgba(255, 255, 255, 1);
+    cursor         : pointer;
+    border-radius  : 50%;
+    font-size      : 18px;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    font-size      : 19px;
+
+    &:hover {
+      background: #409EFF;
+    }
+  }
+
+}
+
+.correctBox {
+  width        : 220px;
+  background   : rgba(255, 255, 255, 1);
+  border-radius: 3px;
+  padding      : 20px 20px 15px 20px;
+  color        : rgba(98, 98, 98, 1);
+
+
+  .giveMark {
+    font-size  : 14px;
+    font-weight: 400;
+    color      : #626262;
+
+    .yuan {
+      width        : 28px;
+      height       : 28px;
+      border       : 1px solid rgba(219, 219, 219, 1);
+      border-radius: 50%;
+      text-align   : center;
+      line-height  : 28px;
+      display      : inline-block;
+      margin       : 0 4px;
+      cursor       : pointer;
+    }
+
+  }
+
+  .words {
+    font-size: 12px;
+    color    : #b1b1b1;
+    position : absolute;
+    right    : 35px;
+    bottom   : 0;
+  }
+
+  .wcanniu {
+    width      : 120px;
+    height     : 36px;
+    background : rgb(64, 158, 255);
+    margin-left: 50%;
+    transform  : translateX(-50%);
+  }
+
+  :global(.ant-radio-group) {
+    :global(.ant-radio-wrapper) {
+      margin-bottom: 10px;
+    }
+  }
+
+}
+
+
+.pagination {
+  display       : flex;
+  flex-direction: column;
+  height        : 80%;
+  margin-left   : 20px;
+  overflow      : auto;
+  overflow-x    : hidden;
+
+  .text {
+    color        : #333333;
+    font-size    : 16px;
+    margin-bottom: 20px;
+  }
+
+  .number {
+    font-size    : 18px;
+    color        : #606266;
+    width        : 36px;
+    height       : 36px;
+    background   : rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    text-align   : center;
+    line-height  : 36px;
+    margin       : 10px 0;
+    cursor       : pointer;
+
+    &:hover {
+      background: rgba(64, 158, 255, 1);
+      color     : #fff;
+    }
+  }
+
+  .finish {
+    color     : rgba(19, 206, 102, 1);
+    background: rgba(19, 206, 102, 0.15);
+  }
+
+  .current {
+    background: rgba(64, 158, 255, 1);
+    color     : #fff;
+  }
+
+
+}
+
+.usefulBox {
+  height     : 30px;
+  line-height: 30px;
+  font-size  : 14px;
+  color      : #ffffff;
+  padding    : 0 10px;
+  background : #b6bac3;
+  margin     : 10px 14px 10px 0;
+  display    : inline-block;
+  cursor     : pointer;
+}
+
+
+
+
+.evaluatePopUp {
+
+  .alterOfContent {
+    width        : 920px;
+    min-height   : 44px;
+    background   : rgb(244, 244, 245);
+    border       : 1px solid rgb(233, 233, 235);
+    border-radius: 2px;
+    padding      : 10px;
+  }
+
+  .words {
+    font-size: 12px;
+    color    : rgb(177, 177, 177);
+    position : absolute;
+    right    : 35px;
+    top      : 265px;
+  }
+
+  .giveMark {
+    font-size  : 14px;
+    font-weight: 400;
+    color      : #626262;
+    margin     : 30px 0;
+
+    .yuanq {
+      width        : 24px;
+      height       : 24px;
+      border       : 1px solid rgba(219, 219, 219, 1);
+      border-radius: 50%;
+      text-align   : center;
+      line-height  : 24px;
+      display      : inline-block;
+      margin       : 0 10px;
+      cursor       : pointer;
+    }
+
+  }
+
+  :global(.ant-switch) {
+    background: #DCDFE6;
+    min-width : 40px;
+    height    : 20px;
+
+    &::after {
+      width : 16px;
+      height: 16px;
+    }
+  }
+
+  :global(.ant-switch-checked) {
+    background: #1890ff;
+  }
+
+}
+
+
+.gifBox {
+  width        : 620px;
+  height       : 235px;
+  background   : #fff;
+  display      : flex;
+  position     : fixed;
+  padding      : 15px;
+  margin-top   : 13%;
+  box-shadow   : 0px 2px 4px 0px rgba(140, 153, 173, 0.57);
+  border-radius: 5px;
+  z-index      : 50;
+
+  .guanbi {
+
+    width       : 68px;
+    height      : 36px;
+    background  : rgba(138, 193, 251, 1);
+    color       : rgb(255, 255, 255);
+    text-align  : center;
+    line-height : 36px;
+    float       : right;
+    margin-right: 25px;
+    cursor      : pointer;
+  }
+}
+
+
+
+
+.drawTypeA {
+  width          : 120px;
+  height         : 40px;
+  background     : rgba(255, 255, 255, 1);
+  box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+  border-radius  : 5px;
+  position       : absolute;
+  left           : -55px;
+  justify-content: center;
+  align-items    : center;
+  display        : flex;
+  font-size      : 14px;
+
+  .nowSelect {
+    color: #409EFF
+  }
+
+  span {
+    cursor     : pointer;
+    font-weight: bold;
+    font-size  : 14px;
+  }
+
+  span:hover {
+    color: #409EFF
+  }
+
+}
+
+
+.drawTypeC {
+  width          : 120px;
+  height         : 40px;
+  background     : rgba(255, 255, 255, 1);
+  box-shadow     : 0px 2px 3px 0px rgba(54, 54, 54, 0.17);
+  border-radius  : 5px;
+  position       : absolute;
+  left           : -55px;
+  justify-content: center;
+  align-items    : center;
+  display        : flex;
+
+  div {
+    cursor: pointer;
+  }
+
+  .littleBox {
+    width     : 15px;
+    height    : 15px;
+    background: url('../images/side.png') no-repeat center;
+
+    &:hover {
+      background: url('../images/blueSide.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background: url('../images/blueSide.png') no-repeat center;
+    }
+  }
+
+  .line {
+    background: url('../images/line.png') no-repeat center;
+    width     : 22px;
+    height    : 22px;
+    display   : inline-block;
+    margin    : 0 14px;
+
+    &:hover {
+      background: url('../images/blueLine.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background: url('../images/blueLine.png') no-repeat center;
+    }
+
+  }
+
+  .tilde {
+    background: url('../images/tilde.png') no-repeat center;
+    width     : 22px;
+    height    : 22px;
+    display   : inline-block;
+
+    &:hover {
+      background: url('../images/blueTilde.png') no-repeat center;
+    }
+
+    &.nowSelect {
+      background: url('../images/blueTilde.png') no-repeat center;
+    }
+
+  }
+
+}

@@ -1,0 +1,134 @@
+// :global(.chomePageContaier) {
+// 	min-width: 100% !important;
+// }
+* {
+    padding: 0;
+    margin : 0;
+}
+
+:global(.hidden) {
+    display: none;
+}
+
+.cagtable {
+
+    th,
+    td {
+        background: #fff !important;
+    }
+
+    :global(th.ant-table-row-cell-last) {
+        border-right: 1px solid #e8e8e8 !important;
+    }
+}
+
+.cagtable tr>td,
+.ant-table-tbody>tr>td {
+    padding: 16px !important;
+}
+
+.topbar {
+    display: flex;
+    height : 100%;
+}
+
+.searchInput {
+    position : relative;
+    width    : 100%;
+    height   : 60px;
+    font-size: 16px;
+    color    : #666666;
+}
+
+.timemenu {
+    list-style: none;
+    display   : flex;
+    margin    : 0;
+    height    : 100%;
+
+    li {
+        width     : 52px;
+        text-align: center;
+
+        &:nth-of-type(n+2) {
+            margin: 0 5px;
+        }
+
+        cursor  : pointer;
+        position: relative;
+
+        &:hover {
+            // border-bottom:2px solid #1890ff;
+            color           : #000;
+        }
+
+        &:global(.selected) {
+            border-bottom: 2px solid #1890ff;
+        }
+    }
+
+}
+
+
+.blueButton {
+    width        : 96px;
+    height       : 36px;
+    background   : rgba(47, 155, 255, 1);
+    border-radius: 3px 0px 0px 3px;
+    cursor       : pointer;
+    text-align   : center;
+    line-height  : 36px;
+    color        : rgba(255, 255, 255, 1);
+}
+
+.whiteButton {
+    width        : 96px;
+    height       : 36px;
+    border       : 1px solid rgba(220, 223, 230, 1);
+    border-radius: 0px 3px 3px 0px;
+    cursor       : pointer;
+    text-align   : center;
+    line-height  : 36px;
+    color        : rgba(96, 98, 102, 1);
+}
+
+.classSelects {
+    position   : absolute;
+    line-height: 30px;
+    text-align : center;
+    font-size  : 14px;
+    color      : rgba(96, 98, 102, 1);
+    top        : 60px;
+    left       : 25px;
+    z-index    : 10;
+
+    span {
+        border : 1px solid rgba(221, 221, 221, 1);
+        height : 30px;
+        display: inline-block;
+        cursor : pointer;
+    }
+}
+
+.chartExport {
+    position : absolute;
+    right    : 25px;
+    top      : 30px;
+    color    : rgb(24, 144, 255);
+    font-size: 14px;
+    cursor   : pointer;
+    z-index  : 10;
+
+    img {
+        vertical-align: text-top;
+        margin-right  : 5px;
+    }
+}
+
+.chartbox {
+    margin          : 0px 20px 30px;
+    background-color: rgb(255, 255, 255);
+    overflow        : auto hidden;
+    position        : relative;
+    padding         : 20px
+}

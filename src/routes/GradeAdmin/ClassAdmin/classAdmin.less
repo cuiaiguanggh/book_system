@@ -1,0 +1,230 @@
+.gradeboder {
+    background: #fff;
+
+    .menu {
+        background: #f5f7fa;
+
+        :global(.ant-menu-item-selected) {
+            background: #fff !important;
+            border    : none !important;
+            margin-top: 0 !important;
+            top       : 0;
+            transition: none !important;
+        }
+
+        :global(.ant-menu-item) {
+            // background:#fff!important;
+            border    : none !important;
+            margin-top: 0 !important;
+            top       : 0;
+            transition: none !important;
+        }
+
+        :global(.ant-menu-item-active) {
+            // background:#fff!important;
+            margin-top: 0 !important;
+            transition: none !important;
+            border    : none !important;
+            top       : 0;
+        }
+    }
+
+    .ptitle {
+        font-weight  : 500;
+        font-size    : 16px;
+        display      : inline-block;
+        color        : #fff;
+        background   : #1bb6fb;
+        padding      : 10px 15px;
+        border-radius: 5px;
+    }
+
+    .scoreDetTable {
+        :global(.operateLink) {
+            color : #1bb6fb;
+            cursor: pointer;
+        }
+    }
+
+    :global(.ant-pagination) {
+        display: block;
+    }
+}
+
+:global(.ant-menu-horizontal) {
+    border-bottom: none;
+}
+
+.addGrade {
+    color           : #fff;
+    background-color: #1890ff;
+    border-color    : #1890ff;
+    line-height     : 32px;
+    display         : inline-block;
+    font-weight     : 400;
+    text-align      : center;
+    -ms-touch-action: manipulation;
+    touch-action    : manipulation;
+    cursor          : pointer;
+    background-image: none;
+    border          : 1px solid transparent;
+    white-space     : nowrap;
+    font-size       : 14px;
+    height          : 32px;
+    width           : 114px;
+}
+
+.table {
+    // padding : 10px;
+    // position: absolute;
+    // top     : 55px;
+    // bottom  : 0;
+    // width   : 100%;
+    margin-top: 20px;
+    overflow  : auto;
+    position  : relative;
+
+    th {
+        color: #252525 !important;
+    }
+
+    :global(.ant-pagination) {
+        display: block !important;
+    }
+
+    :global(.ant-table-bordered) :global(.ant-table-thead)>tr>th,
+    :global(.ant-table-bordered) :global(.ant-table-tbody)>tr>td {
+        padding: 13px 16px;
+    }
+}
+
+
+/* 定义滚动条 */
+.table::-webkit-scrollbar {
+    width              : 30px;
+    height             : 16px;
+    /* background-color: rgb(98,98,98); */
+    background-color   : rgba(0, 0, 0, 0.2);
+}
+
+.table::-webkit-scrollbar {
+    width           : 10px;
+    height          : 11px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.table::-webkit-scrollbar:hover {
+    background-color: rgb(0, 0, 0);
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+.table::-webkit-scrollbar-track {
+    border-radius   : 0;
+    background-color: #FFF;
+}
+
+/*定义滑块 内阴影+圆角*/
+.table::-webkit-scrollbar-thumb {
+    border-radius   : 8px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+
+.annniu {
+    color        : rgb(255, 255, 255);
+    display      : inline-block;
+    width        : 60px;
+    cursor       : pointer;
+    margin       : 0px 10px;
+    padding      : 5px 0px;
+    border-radius: 5px;
+    text-align   : center;
+}
+
+.yqma {
+    background      : rgba(231, 244, 255, 1);
+    line-height     : 32px;
+    display         : inline-block;
+    text-align      : center;
+    -ms-touch-action: manipulation;
+    touch-action    : manipulation;
+    cursor          : pointer;
+    background-image: none;
+    border          : 1px solid transparent;
+    white-space     : nowrap;
+    padding         : 0 15px;
+    font-size       : 14px;
+    height          : 32px;
+    color           : rgba(64, 158, 255, 1);
+    margin-left     : 10px;
+    border          : 1px solid rgba(189, 224, 255, 1);
+}
+
+.banzhuren {
+    margin-left  : 5px;
+    padding      : 5px 10px;
+    background   : rgb(231, 244, 255);
+    color        : rgb(64, 158, 255);
+    border-radius: 3px;
+    border       : 1px solid rgb(189, 224, 255);
+    display      : inline-block;
+}
+
+.hoverGray {
+    width      : 114px;
+    height     : 35px;
+    margin     : 0;
+    text-align : center;
+    line-height: 35px;
+    left       : -16px;
+    position   : absolute;
+    cursor     : pointer;
+
+    &:hover {
+        background: rgba(245, 247, 250, 1);
+
+    }
+}
+
+:global(.ant-popover-open) {
+    border-bottom: 1px solid;
+
+    i {
+        transform: rotate(180deg);
+    }
+
+}
+
+.spaceEvenly {
+    display        : flex;
+    justify-content: space-evenly;
+
+    i {
+        font-size: 14px;
+    }
+}
+
+.tableBottomButton {
+    width      : 60px;
+    border     : 1px solid rgba(217, 217, 217, 1);
+    color      : #D9D9D9;
+    text-align : center;
+    line-height: 30px;
+    color      : #595959;
+    display    : inline-block;
+    position   : absolute;
+    bottom     : 16px;
+    cursor     : pointer;
+}
+
+.userIdentity {
+    width        : 66px;
+    height       : 24px;
+    background   : rgba(191, 191, 191, 1);
+    border-radius: 4px;
+    text-align   : center;
+    line-height  : 24px;
+    color        : #fff;
+    font-size    : 12px;
+    display      : inline-block;
+}

@@ -1,0 +1,168 @@
+.gradeboder {
+    padding   : 24px;
+    background: #F9F9F9;
+
+    .addGrade {
+        width        : 600px;
+        height       : 160px;
+        border       : 1px dashed #ccc;
+        border-radius: 5px;
+        margin       : 0 auto;
+        text-align   : center;
+        line-height  : 160px;
+        background   : #fff;
+
+        .addSpan {
+            padding       : 0 20px;
+            vertical-align: middle;
+
+            font-size  : 22px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color      : rgba(187, 187, 187, 1);
+        }
+
+        .addButon {
+            width           : 74px;
+            height          : 30px;
+            border-radius   : 3px;
+            background-color: #409eff;
+            margin-left     : 20px;
+            color           : #fff;
+            display         : inline-block;
+            line-height     : 30px;
+            font-family     : PingFang SC;
+            font-weight     : 500;
+            font-size       : 14px;
+            cursor          : pointer;
+            position        : relative;
+            top             : -3px;
+        }
+    }
+
+    :global(.ant-table-pagination) {
+        display: block;
+    }
+}
+
+.tableBox {
+    border    : 1px solid rgba(220, 223, 230, 1);
+    box-shadow: 0px 3px 6px 0px rgba(202, 202, 202, 0.6);
+    margin    : 20px 30px 0;
+
+    .header {
+        display        : flex;
+        justify-content: center;
+        align-items    : flex-end;
+        margin         : 0;
+        height         : 40px;
+        background     : #fff;
+        color          : #252525;
+        font-size      : 14px;
+    }
+
+    .twoHeader {
+        margin     : 0;
+        height     : 30px;
+        background : #fff;
+        line-height: 30px;
+
+        span {
+            display   : inline-block;
+            width     : 60px;
+            border    : 1px solid rgba(221, 221, 221, 1);
+            text-align: center;
+            cursor    : pointer;
+        }
+    }
+
+    .baise {
+        background  : #fff;
+        color       : #1890FF;
+        border-color: #2397FF !important;
+    }
+}
+
+:global(.tableTr) {
+    th {
+        color    : #252525 !important;
+        font-size: 12px;
+    }
+
+    i {
+        font-size  : 14px;
+        color      : #faad14;
+        margin-left: 10px;
+    }
+}
+
+.normal {
+    font-size: 12px;
+
+    &::before {
+        width        : 6px;
+        height       : 6px;
+        content      : '';
+        background   : #4CB050;
+        display      : inline-block;
+        border-radius: 50%;
+        margin       : 0 7px 2px 0;
+    }
+}
+
+.failure {
+    font-size: 12px;
+
+    &::before {
+        width        : 6px;
+        height       : 6px;
+        content      : '';
+        background   : #F22735;
+        display      : inline-block;
+        border-radius: 50%;
+        margin       : 0 7px 2px 0;
+    }
+
+}
+
+:global(.ant-radio-wrapper-checked).radiobox {
+    border-color: rgba(24, 144, 255, 1);
+    color       : rgba(24, 144, 255, 1)
+}
+
+.radiobox {
+    width        : 88px;
+    height       : 36px;
+    border       : 1px solid #DCDFE6;
+    border-radius: 3px;
+    text-align   : center;
+    line-height  : 36px;
+    background   : #fff;
+
+    :global(.ant-radio-checked) {
+        :global(.ant-radio-inner) {
+            background-color: #1890FF;
+        }
+    }
+
+    :global(.ant-radio-inner) {
+        width : 14px;
+        height: 14px;
+        top   : -2px;
+
+        &::after {
+            background-color: #fff;
+            top             : 4px;
+            left            : 4px;
+            width           : 4px;
+            height          : 4px;
+        }
+    }
+}
+
+.drbutton {
+    margin       : 0px 10px;
+    width        : 99px;
+    height       : 40px;
+    border-radius: 3px;
+}
